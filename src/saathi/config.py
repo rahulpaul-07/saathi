@@ -1,6 +1,6 @@
 from functools import lru_cache
 
-from pydantic import SecretStr
+from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -10,6 +10,8 @@ class Settings(BaseSettings):
     gnani_api_key: SecretStr
     gnani_base_url: str = "https://api.vachana.ai"
     gnani_timeout_s: float = 30.0
+    # 1 = greedy. Slice 5 compares it against beam search on FLORES before it is trusted.
+    translator_num_beams: int = Field(default=1, ge=1, le=10)
 
 
 @lru_cache

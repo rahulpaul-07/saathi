@@ -5,14 +5,27 @@ description = "Live two-way voice interpreter between Indian languages"
 authors = [
     { name = "Rahul Paul", email = "paulrahulami@gmail.com" }
 ]
-requires-python = ">=3.12"
+requires-python = ">=3.12,<3.13"
 dependencies = [
     "fastapi>=0.142.2",
     "httpx>=0.28.1",
     "pydantic-settings>=2.15.0",
     "python-multipart>=0.0.32",
     "uvicorn[standard]>=0.54.0",
+    "torch==2.9.1",
+    # transformers 5 breaks IndicTransToolkit's imports; 4.57 breaks the model's KV-cache code.
+    "transformers==4.46.3",
+    "IndicTransToolkit==1.1.1",
+    "sentencepiece==0.2.2",
 ]
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cu128", marker = "sys_platform == 'win32' or sys_platform == 'linux'" }]
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
 
 [build-system]
 requires = ["uv_build>=0.12.9,<0.13.0"]
@@ -30,6 +43,9 @@ dev = [
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+# Real-model tests need the GPU and the cached IndicTrans2 weights: run them with `-m model`.
+addopts = "-m 'not model'"
+markers = ["model: loads the real IndicTrans2 model (slow, needs the weights)"]
 
 [tool.ruff]
 line-length = 100
@@ -41,3 +57,8 @@ select = ["E", "F", "I", "UP", "B"]
 [tool.mypy]
 strict = true
 mypy_path = "src"
+
+[[tool.mypy.overrides]]
+# These packages ship no type stubs or py.typed marker; their objects are held as Any.
+module = ["IndicTransToolkit.*", "transformers.*"]
+ignore_missing_imports = true
