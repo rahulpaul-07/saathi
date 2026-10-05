@@ -12,6 +12,8 @@ class Settings(BaseSettings):
     gnani_timeout_s: float = 30.0
     # 1 = greedy. Slice 5 compares it against beam search on FLORES before it is trusted.
     translator_num_beams: int = Field(default=1, ge=1, le=10)
+    # Each turn spends Gnani credits, so the public endpoint is capped per client IP.
+    turn_rate_limit_per_minute: int = Field(default=10, ge=1)
 
 
 @lru_cache

@@ -7,7 +7,8 @@ Pipeline per turn: Gnani Prisma v2.5 (speech to text) -> IndicTrans2 (translatio
 -> Gnani Timbre v2.5 (text to speech). The translation step sits behind a `Translator` interface
 so it can be swapped.
 
-Status: work in progress. Done so far: the Gnani client and the IndicTrans2 translator.
+Status: work in progress. Done so far: the Gnani client, the IndicTrans2 translator and the
+`/turn` API. The web UI and the evaluation are next.
 
 ## Requirements
 
@@ -55,6 +56,17 @@ from the locked one:
 
 Once, on a fast connection, run a plain `uv sync`. It fills the uv cache with the locked torch
 wheel, and from then on the flags are not needed.
+
+## Run the API
+
+```
+uv run --no-sync uvicorn saathi.app:create_app --factory --port 8000
+```
+
+Startup loads the model and runs one warm-up translation (about 15 s). Then
+`POST /turn` takes multipart `audio` (a 16 kHz mono WAV, 60 s at most), `src` and `tgt`
+(`bn`<->`kn` or `hi`<->`ta`) and returns the transcript, the translation, base64 WAV audio of the
+translation and per-stage timings. Each turn spends a small amount of Gnani credit.
 
 ## Tests
 
