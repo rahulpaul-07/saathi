@@ -8,7 +8,7 @@ Pipeline per turn: Gnani Prisma v2.5 (speech to text) -> IndicTrans2 (translatio
 so it can be swapped.
 
 Status: work in progress. Done so far: the Gnani client, the IndicTrans2 translator and the
-`/turn` API. The web UI and the evaluation are next.
+`/turn` API. The web UI is built (phone check pending); the evaluation is next.
 
 ## Requirements
 
@@ -67,6 +67,33 @@ Startup loads the model and runs one warm-up translation (about 15 s). Then
 `POST /turn` takes multipart `audio` (a 16 kHz mono WAV, 60 s at most), `src` and `tgt`
 (`bn`<->`kn` or `hi`<->`ta`) and returns the transcript, the translation, base64 WAV audio of the
 translation and per-stage timings. Each turn spends a small amount of Gnani credit.
+
+## Run the UI
+
+Start the server so the phone can reach it, then open the page:
+
+```
+uv run --no-sync uvicorn saathi.app:create_app --factory --host 0.0.0.0 --port 8000
+```
+
+- Laptop: open `http://localhost:8000` (localhost counts as a secure context, so the microphone works).
+- Phone on the same Wi-Fi: open `http://<laptop-ip>:8000` (find the address with `ipconfig`). Windows
+  Firewall asks to allow Python on private networks the first time; allow it, or add an inbound rule
+  for TCP 8000.
+- The microphone only works on HTTPS or localhost. For a plain `http://<laptop-ip>:8000` origin on
+  Android Chrome: open `chrome://flags/#unsafely-treat-insecure-origin-as-secure`, add
+  `http://<laptop-ip>:8000`, set it to Enabled and relaunch Chrome. iOS Safari has no such flag and
+  would need real HTTPS (for example a tunnel); that is not set up.
+- Pick a pair, tap "Speak <language>", talk, tap again. A busy Gnani ("One moment...") is retried
+  automatically; after that, "Try again" resends the same recording.
+
+UI checks (dev tools only, `npm ci` once):
+
+```
+npm run typecheck   # tsc --noEmit, strict
+npm test            # node --test for the WAV encoder, retry policy and turn client
+npm run e2e         # Playwright, fake microphone, /turn intercepted (no Gnani calls)
+```
 
 ## Tests
 

@@ -78,3 +78,33 @@ throwaway sentence at startup.
 After warm-up, on AC power, real Gnani calls, short single-sentence turns:
 STT 320-560 ms, translate 380-460 ms, TTS 680-860 ms, total 1.5-1.8 s (3 turns). Three turns
 are an existence proof, not a distribution; slice 5 measures p50/p95 properly.
+
+## Browser UI (slice 4)
+- Plain ES modules with `// @ts-check` and JSDoc, strict `tsc --noEmit`, served by FastAPI
+  `StaticFiles` mounted at `/` after the API routes (same origin, no CORS). `package.json` is
+  dev-only (`typescript`, `@playwright/test`, `@types/node`, all pinned; nothing ships). TypeScript 7
+  still provides the `tsc` command.
+- Mounting at `/` means `GET /turn` now returns 404 instead of 405. `POST /turn` is unchanged.
+- `.js` is registered as `text/javascript` at import: on Windows Python reads MIME types from the
+  registry, where it can be `text/plain`, and browsers refuse ES modules served that way.
+- WAV: `OfflineAudioContext(1, 1, 16000).decodeAudioData` decodes and resamples to 16 kHz, a second
+  mono offline render mixes channels down, then PCM16 is written and clamped at 60 s (about 1.9 MB,
+  under the 2.5 MB server cap).
+- Retry policy lives in `retry.js` (pure) and `turn-client.js`: 503 and network errors or a 45 s
+  timeout retry up to 3 times at about 1, 2, 4 s with +-25% jitter. Our own 429 is never auto
+  retried. The recording `Blob` is held in `state.pending` until success or Discard; 400, 413 and
+  422 drop it because resending cannot help.
+- Double STT spend: a 503 means Gnani rate limited either STT or TTS. If it was TTS, the retry
+  runs STT again and pays twice. A network timeout after the server finished does the same.
+  Accepted; avoiding it needs a server-side cache keyed by recording hash or a split API.
+- Tap-to-playback is measured in the browser from the stop tap (or Try again tap) to the audio
+  element's `playing` event, so it includes WAV encoding, upload, the server stages and decoding.
+- Transcripts and translations are set with `textContent` only. The Playwright test feeds
+  `<b>heard</b>` and asserts it appears as literal text.
+- Playwright check: `npm run e2e` starts the real app with a stub translator, uses Chromium's fake
+  microphone and intercepts `/turn` (503, 503, 200; and 4x503 then Try again; and 429). It compares a
+  SHA-256 of the WAV part of each request, because the multipart boundary differs per request.
+  Chromium itself logs each 503 as a console error; those stubbed ones are filtered, anything else
+  fails the test.
+- Not verified yet: a real phone (Android Chrome with the insecure-origin flag), and playback of the
+  Gnani-made WAV on iOS Safari.
