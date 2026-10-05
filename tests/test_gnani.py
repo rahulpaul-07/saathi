@@ -3,8 +3,10 @@ import pytest
 import respx
 from pydantic import SecretStr
 
+from saathi.audio import wav_duration_s
 from saathi.config import Settings
 from saathi.gnani import STT_PATH, TTS_PATH, GnaniClient, GnaniError
+from wavs import make_streaming_wav
 
 BASE = "https://api.test"
 
@@ -29,10 +31,19 @@ async def test_transcribe_sends_key_language_and_returns_transcript(client: Gnan
 @respx.mock
 async def test_synthesize_returns_audio_bytes(client: GnaniClient) -> None:
     route = respx.post(f"{BASE}{TTS_PATH}").mock(
-        return_value=httpx.Response(200, content=b"RIFFwav")
+        return_value=httpx.Response(200, content=make_streaming_wav())
     )
-    assert await client.synthesize("hi", "kn-IN", "Saanvi") == b"RIFFwav"
+    audio = await client.synthesize("hi", "kn-IN", "Saanvi")
+    # Gnani sends 0xFFFFFFFF sizes; the client must hand back a WAV with real ones.
+    assert wav_duration_s(audio) == pytest.approx(0.5)
     assert b'"timbre-v2.5"' in route.calls.last.request.content
+
+
+@respx.mock
+async def test_synthesize_rejects_non_wav_payload(client: GnaniClient) -> None:
+    respx.post(f"{BASE}{TTS_PATH}").mock(return_value=httpx.Response(200, content=b"<html>"))
+    with pytest.raises(GnaniError):
+        await client.synthesize("hi", "kn-IN", "Saanvi")
 
 
 @respx.mock

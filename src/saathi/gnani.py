@@ -7,6 +7,7 @@ import logging
 
 import httpx
 
+from saathi.audio import AudioError, finalize_streaming_wav
 from saathi.config import Settings
 
 log = logging.getLogger(__name__)
@@ -71,7 +72,13 @@ class GnaniClient:
                 },
             },
         )
-        return response.content
+        if container != "wav":
+            return response.content
+        try:
+            return finalize_streaming_wav(response.content)
+        except AudioError as exc:
+            log.error("Gnani TTS returned an invalid WAV: %s", exc)
+            raise GnaniError("speech service returned invalid audio") from exc
 
     async def _post(self, path: str, **kwargs: object) -> httpx.Response:
         try:

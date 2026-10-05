@@ -43,6 +43,7 @@ dev = [
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+pythonpath = ["tests"]  # shared helpers such as wavs.py
 # Real-model tests need the GPU and the cached IndicTrans2 weights: run them with `-m model`.
 addopts = "-m 'not model'"
 markers = ["model: loads the real IndicTrans2 model (slow, needs the weights)"]
@@ -56,7 +57,7 @@ select = ["E", "F", "I", "UP", "B"]
 
 [tool.mypy]
 strict = true
-mypy_path = "src"
+mypy_path = "src:tests"
 
 [[tool.mypy.overrides]]
 # These packages ship no type stubs or py.typed marker; their objects are held as Any.
