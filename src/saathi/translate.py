@@ -15,6 +15,10 @@ from saathi.languages import LANGUAGES
 DEFAULT_MODEL = "ai4bharat/indictrans2-indic-indic-dist-320M"
 MAX_INPUT_CHARS = 2000  # a 60 s STT clip is well under this
 MAX_BEAMS = 10
+# Normal output is 0.9-1.2x the input in tokens (measured); a runaway loop is ~8x. 2x plus slack
+# bounds a loop to a fraction of the model's 256-position limit without cutting real translations.
+OUTPUT_TOKEN_RATIO = 2
+OUTPUT_TOKEN_SLACK = 10
 
 # Break after sentence-final punctuation (including the Devanagari/Bengali danda).
 _SENTENCE_BREAK = re.compile(r"(?<=[।.!?])\s+")
@@ -24,10 +28,19 @@ class TranslationInputError(ValueError):
     """The caller asked for something outside what the translator supports."""
 
 
+class DegenerateTranslationError(Exception):
+    """The model hit its output cap without finishing: a runaway loop, not a result."""
+
+
 class Translator(Protocol):
     def translate(self, text: str, src: str, tgt: str) -> str:
         """Translate `text` from language key `src` to `tgt` (keys from `LANGUAGES`)."""
         ...
+
+
+def output_token_cap(longest_input_tokens: int, model_limit: int) -> int:
+    """Most tokens one translation may generate: relative to the input, within the model limit."""
+    return min(OUTPUT_TOKEN_RATIO * longest_input_tokens + OUTPUT_TOKEN_SLACK, model_limit)
 
 
 def split_sentences(text: str) -> list[str]:
@@ -115,13 +128,23 @@ class IndicTrans2Translator:
                 truncation=True,
                 max_length=self._max_length,
             ).to(loaded.device)
+            longest_input = int(inputs["input_ids"].shape[1])
+            cap = output_token_cap(longest_input, self._max_length)
             with torch.inference_mode():
                 generated = loaded.model.generate(
                     **inputs,
                     num_beams=self._num_beams,
                     num_return_sequences=1,
-                    max_length=self._max_length,
+                    max_new_tokens=cap,
                     use_cache=True,
+                )
+            # A finished row has an EOS after its first token (shorter rows are padded after it).
+            # Column 0 is skipped because this model's decoder start token is also EOS (id 2).
+            # No EOS means the cap cut the row off mid-loop.
+            finished = (generated[:, 1:] == loaded.tokenizer.eos_token_id).any(dim=1)
+            if not bool(finished.all()):
+                raise DegenerateTranslationError(
+                    f"generation hit the {cap}-token cap without finishing"
                 )
             decoded = loaded.tokenizer.batch_decode(
                 generated, skip_special_tokens=True, clean_up_tokenization_spaces=True
