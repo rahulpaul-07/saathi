@@ -5,7 +5,7 @@ export const MAX_AUTO_RETRIES = 3;
 const BASE_DELAY_MS = 1000;
 
 /**
- * @typedef {"ok" | "transient" | "rate_limited" | "upstream" | "no_speech" | "bad_input"} Outcome
+ * @typedef {"ok" | "transient" | "rate_limited" | "upstream" | "no_speech" | "unreliable_translation" | "bad_input"} Outcome
  * @typedef {{outcome: Exclude<Outcome, "ok">, message: string, keepRecording: boolean}} Verdict
  */
 
@@ -29,6 +29,12 @@ const VERDICTS = {
     message: "Didn't catch that, please try again.",
     keepRecording: false,
   },
+  // The message is built in turn-client.js, which has the transcript; this is the fallback text.
+  unreliable_translation: {
+    outcome: "unreliable_translation",
+    message: "I couldn't translate that reliably. Please try again.",
+    keepRecording: false,
+  },
   bad_input: {
     outcome: "bad_input",
     message: "That recording can't be used. Please record again.",
@@ -39,13 +45,17 @@ const VERDICTS = {
 /**
  * Map an HTTP status (null for a network error or timeout) to what the UI should do.
  * @param {number | null} status
+ * @param {string | null} [code] machine-readable error code from a 422 body, if there was one
  * @returns {Verdict | {outcome: "ok"}}
  */
-export function classify(status) {
+export function classify(status, code = null) {
   if (status !== null && status >= 200 && status < 300) return { outcome: "ok" };
   if (status === null || status === 503) return VERDICTS.transient;
   if (status === 429) return VERDICTS.rate_limited;
-  if (status === 422) return VERDICTS.no_speech;
+  if (status === 422) {
+    // An unknown code falls back to the generic message rather than failing.
+    return code === "unreliable_translation" ? VERDICTS.unreliable_translation : VERDICTS.no_speech;
+  }
   if (status === 400 || status === 413) return VERDICTS.bad_input;
   // 502 and anything unexpected on the server side: keep the recording. Other 4xx: it is our bug.
   return status >= 500 ? VERDICTS.upstream : VERDICTS.bad_input;

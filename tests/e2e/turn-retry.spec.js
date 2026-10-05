@@ -67,8 +67,8 @@ function watchConsole(page) {
   /** @type {string[]} */
   const problems = [];
   page.on("console", (message) => {
-    // Chromium logs every non-2xx response by itself; the 503s here are the stubbed failures.
-    const stubbedFailure = /status of 503/.test(message.text());
+    // Chromium logs every non-2xx response by itself; the 503s and 422s here are the stubbed failures.
+    const stubbedFailure = /status of (503|422)/.test(message.text());
     if (["error", "warning"].includes(message.type()) && !stubbedFailure) {
       problems.push(message.text());
     }
@@ -127,4 +127,35 @@ test("our own 429 is not retried automatically", async ({ page }) => {
   await page.getByRole("button", { name: "Try again" }).click();
   await expect(page.locator("#transcript")).toHaveText(TRANSCRIPT);
   expect(new Set(hashes).size).toBe(1);
+});
+
+test("unreliable translation: shows the transcript as text, no retry, no stored recording", async ({
+  page,
+}) => {
+  const problems = watchConsole(page);
+  let requests = 0;
+  await page.route("**/turn", async (route) => {
+    requests += 1;
+    await route.fulfill({
+      status: 422,
+      json: {
+        detail: {
+          code: "unreliable_translation",
+          message: "could not translate reliably",
+          transcript: TRANSCRIPT,
+        },
+      },
+    });
+  });
+
+  await recordOneTurn(page);
+  await expect(page.getByRole("status")).toHaveText(
+    `I heard: ${TRANSCRIPT}. I couldn't translate that reliably. Please try again.`,
+  );
+  await page.waitForTimeout(2500); // longer than the first backoff, so a retry would show up
+  expect(requests).toBe(1);
+  expect(await page.locator("#status b").count()).toBe(0);
+  await expect(page.getByRole("button", { name: "Try again" })).toBeHidden();
+  await expect(page.getByRole("button", { name: "Speak Bengali" })).toBeEnabled();
+  expect(problems).toEqual([]);
 });

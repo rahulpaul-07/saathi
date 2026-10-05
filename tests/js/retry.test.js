@@ -10,6 +10,10 @@ test("classify maps each status to the documented behaviour", () => {
   assert.equal(classify(503).outcome, "transient");
   assert.equal(classify(429).outcome, "rate_limited");
   assert.equal(classify(422).outcome, "no_speech");
+  assert.equal(classify(422, "no_speech").outcome, "no_speech");
+  assert.equal(classify(422, "unreliable_translation").outcome, "unreliable_translation");
+  assert.equal(classify(422, "something_new").outcome, "no_speech");
+  assert.equal(classify(503, "unreliable_translation").outcome, "transient");
   assert.equal(classify(400).outcome, "bad_input");
   assert.equal(classify(413).outcome, "bad_input");
   assert.equal(classify(502).outcome, "upstream");
@@ -24,6 +28,8 @@ test("recording is kept for retryable failures and dropped for unusable audio", 
     const verdict = classify(status);
     assert.ok("keepRecording" in verdict && !verdict.keepRecording, `status ${status}`);
   }
+  const unreliable = classify(422, "unreliable_translation");
+  assert.ok("keepRecording" in unreliable && !unreliable.keepRecording);
 });
 
 test("backoffDelayMs doubles each attempt and stays within +-25% jitter", () => {

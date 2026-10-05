@@ -16,10 +16,11 @@ const RESULT = {
 
 /**
  * A fake fetch that answers with the given statuses in order (null = network error) and records
- * the audio file of every request.
+ * the audio file of every request. `errorBody` is the raw body of every non-200 answer.
  * @param {(number | null)[]} statuses
+ * @param {string} [errorBody]
  */
-function fakeFetch(statuses) {
+function fakeFetch(statuses, errorBody = "{}") {
   /** @type {FormDataEntryValue[]} */
   const sentAudio = [];
   const queue = [...statuses];
@@ -30,7 +31,7 @@ function fakeFetch(statuses) {
     if (status === undefined || status === null) throw new TypeError("network");
     return status === 200
       ? new Response(JSON.stringify(RESULT), { status })
-      : new Response("{}", { status });
+      : new Response(errorBody, { status });
   };
   return { fetchFn, sentAudio };
 }
@@ -81,5 +82,44 @@ test("422 and 400 are not retried and discard the recording", async () => {
     const outcome = await sendTurn(wav, "bn", "kn", { fetchFn, sleep: noSleep });
     assert.equal(sentAudio.length, 1);
     assert.equal(!outcome.ok && outcome.keepRecording, false);
+  }
+});
+
+const unreliableBody = (/** @type {unknown} */ transcript) =>
+  JSON.stringify({
+    detail: { code: "unreliable_translation", message: "m", transcript },
+  });
+
+test("unreliable_translation 422: no retry, recording dropped, transcript exposed", async () => {
+  const { fetchFn, sentAudio } = fakeFetch([422, 200], unreliableBody("<b>heard</b>"));
+  const outcome = await sendTurn(wav, "bn", "kn", { fetchFn, sleep: noSleep });
+  assert.equal(sentAudio.length, 1);
+  assert.deepEqual(outcome, {
+    ok: false,
+    message: "I heard: <b>heard</b>. I couldn't translate that reliably. Please try again.",
+    keepRecording: false,
+    code: "unreliable_translation",
+    transcript: "<b>heard</b>",
+  });
+});
+
+test("no_speech 422 keeps the existing message", async () => {
+  const body = JSON.stringify({ detail: { code: "no_speech", message: "no speech detected" } });
+  const outcome = await sendTurn(wav, "bn", "kn", { fetchFn: fakeFetch([422], body).fetchFn });
+  assert.equal(!outcome.ok && outcome.message, "Didn't catch that, please try again.");
+  assert.equal(!outcome.ok && outcome.keepRecording, false);
+});
+
+test("422 with a non-JSON, unknown-code or malformed body falls back to the no-speech message", async () => {
+  const bodies = [
+    "<html>oops</html>",
+    JSON.stringify({ detail: { code: "future_code" } }),
+    JSON.stringify({ detail: "no speech detected" }),
+    JSON.stringify({ detail: { code: "unreliable_translation", transcript: 5 } }),
+    "null",
+  ];
+  for (const body of bodies) {
+    const outcome = await sendTurn(wav, "bn", "kn", { fetchFn: fakeFetch([422], body).fetchFn });
+    assert.equal(!outcome.ok && outcome.message, "Didn't catch that, please try again.", body);
   }
 });
