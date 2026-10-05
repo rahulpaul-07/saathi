@@ -167,3 +167,21 @@ async def test_rate_limit_returns_429_after_the_cap(
     async with build_client(translator, rate_limit=2) as limited:
         statuses = [(await post_turn(limited, make_wav())).status_code for _ in range(3)]
     assert statuses == [200, 200, 429]
+
+
+async def test_static_ui_is_served_same_origin(client: httpx.AsyncClient) -> None:
+    index = await client.get("/")
+    assert index.status_code == 200
+    assert index.headers["content-type"].startswith("text/html")
+    assert "<title>Saathi</title>" in index.text
+
+    script = await client.get("/js/main.js")
+    assert script.status_code == 200
+    assert "javascript" in script.headers["content-type"]
+
+
+async def test_static_mount_does_not_serve_files_outside_the_static_dir(
+    client: httpx.AsyncClient,
+) -> None:
+    assert (await client.get("/js/../../app.py")).status_code == 404
+    assert (await client.get("/%2e%2e/app.py")).status_code == 404

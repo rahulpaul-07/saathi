@@ -3,11 +3,14 @@
 import asyncio
 import base64
 import logging
+import mimetypes
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import Annotated
 
 from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from saathi.audio import MAX_AUDIO_BYTES, AudioError, AudioTooLargeError, wav_duration_s
@@ -20,6 +23,11 @@ from saathi.translate import IndicTrans2Translator, Translator
 log = logging.getLogger(__name__)
 
 WARMUP_TEXT = "আমি যাচ্ছি।"
+STATIC_DIR = Path(__file__).parent / "static"
+
+# Windows takes MIME types from the registry, where .js is sometimes text/plain, and browsers
+# refuse to run ES modules served that way.
+mimetypes.add_type("text/javascript", ".js")
 
 
 class TimingsOut(BaseModel):
@@ -112,5 +120,8 @@ def create_app(
             audio_base64=base64.b64encode(result.audio).decode("ascii"),
             timings=TimingsOut(**vars(timings)),
         )
+
+    # Mounted last so it never shadows /turn. Same origin as the API, so no CORS.
+    app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="ui")
 
     return app
