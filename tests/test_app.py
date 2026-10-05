@@ -19,10 +19,11 @@ BASE = "https://api.test"
 class FakeTranslator:
     def __init__(self) -> None:
         self.calls: list[tuple[str, str, str]] = []
+        self.output = "kannada text"
 
     def translate(self, text: str, src: str, tgt: str) -> str:
         self.calls.append((text, src, tgt))
-        return "kannada text"
+        return self.output
 
 
 @pytest.fixture
@@ -137,8 +138,23 @@ async def test_empty_transcript_returns_422_and_skips_translate_and_tts(
     )
     response = await post_turn(client, make_wav())
     assert response.status_code == 422
+    assert response.json()["detail"] == {"code": "no_speech", "message": "no speech detected"}
     assert translator.calls == []
     assert upstream.calls.call_count == 1
+
+
+async def test_degenerate_translation_returns_422_with_transcript_and_skips_tts(
+    translator: FakeTranslator, upstream: respx.MockRouter
+) -> None:
+    translator.output = "ಆ ಚಿಕ್ಕ ಆ ಚಿಕ್ಕ ಆ ಚಿಕ್ಕ ಆ ಚಿಕ್ಕ"
+    async with build_client(translator) as client:
+        response = await post_turn(client, make_wav())
+    assert response.status_code == 422
+    detail = response.json()["detail"]
+    assert detail["code"] == "unreliable_translation"
+    assert detail["transcript"] == "namaskar"
+    assert detail["message"]
+    assert upstream.calls.call_count == 1  # STT only, no paid TTS
 
 
 async def test_upstream_failure_returns_generic_502(

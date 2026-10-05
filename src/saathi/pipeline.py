@@ -1,12 +1,16 @@
 """One interpreter turn: speech in the source language -> speech in the target language."""
 
 import asyncio
+import logging
 import time
 from dataclasses import dataclass
 
 from saathi.gnani import GnaniClient
+from saathi.guard import has_repeated_phrase
 from saathi.languages import LANGUAGES, SUPPORTED_PAIRS
-from saathi.translate import Translator
+from saathi.translate import DegenerateTranslationError, Translator
+
+log = logging.getLogger(__name__)
 
 AUDIO_FILENAME = "turn.wav"  # the browser always uploads WAV, so the name is fixed
 
@@ -17,6 +21,14 @@ class TurnInputError(ValueError):
 
 class NoSpeechError(Exception):
     """Prisma returned an empty transcript, so there is nothing to translate or speak."""
+
+
+class UnreliableTranslationError(Exception):
+    """The translation looks like a runaway loop; speaking it would be paid nonsense."""
+
+    def __init__(self, transcript: str) -> None:
+        super().__init__("unreliable translation")
+        self.transcript = transcript
 
 
 @dataclass(frozen=True)
@@ -59,7 +71,27 @@ async def run_turn(
         raise NoSpeechError
 
     # The model is blocking and GPU-bound; keep it off the event loop.
-    translation = await asyncio.to_thread(translator.translate, transcript, src, tgt)
+    try:
+        translation = await asyncio.to_thread(translator.translate, transcript, src, tgt)
+    except DegenerateTranslationError as exc:
+        log.warning(
+            "degenerate translation %s->%s: %s (transcript %d chars)",
+            src,
+            tgt,
+            "output cap hit",
+            len(transcript),
+        )
+        raise UnreliableTranslationError(transcript) from exc
+    if has_repeated_phrase(translation):
+        log.warning(
+            "degenerate translation %s->%s: %s (output %d chars, transcript %d chars)",
+            src,
+            tgt,
+            "repeated phrase",
+            len(translation),
+            len(transcript),
+        )
+        raise UnreliableTranslationError(transcript)
     t2 = time.perf_counter()
 
     speech = await gnani.synthesize(translation, tgt_lang.gnani_code, tgt_lang.tts_voice)

@@ -16,7 +16,13 @@ from pydantic import BaseModel
 from saathi.audio import MAX_AUDIO_BYTES, AudioError, AudioTooLargeError, wav_duration_s
 from saathi.config import Settings, get_settings
 from saathi.gnani import GnaniClient, GnaniError
-from saathi.pipeline import NoSpeechError, TurnInputError, run_turn, validate_pair
+from saathi.pipeline import (
+    NoSpeechError,
+    TurnInputError,
+    UnreliableTranslationError,
+    run_turn,
+    validate_pair,
+)
 from saathi.ratelimit import SlidingWindowLimiter
 from saathi.translate import IndicTrans2Translator, Translator
 
@@ -96,7 +102,19 @@ def create_app(
         try:
             result = await run_turn(data, src, tgt, gnani, translator)
         except NoSpeechError as exc:
-            raise HTTPException(422, "no speech detected") from exc
+            raise HTTPException(
+                422, {"code": "no_speech", "message": "no speech detected"}
+            ) from exc
+        except UnreliableTranslationError as exc:
+            # The transcript is untrusted text from STT; clients must render it as text only.
+            raise HTTPException(
+                422,
+                {
+                    "code": "unreliable_translation",
+                    "message": "could not translate reliably",
+                    "transcript": exc.transcript,
+                },
+            ) from exc
         except GnaniError as exc:
             if exc.status == 429:
                 raise HTTPException(503, "speech service busy, retry shortly") from exc
