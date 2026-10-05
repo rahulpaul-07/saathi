@@ -50,7 +50,7 @@ or identical language pairs are rejected at the boundary.
   and the 24 kHz clip is under 200 KB for a short sentence.
 - Everything free is checked before anything paid: language pair, WAV header, size (2.5 MB) and
   duration (60 s, Prisma's limit). A bad request never spends credits.
-- Status codes: 400 bad input, 413 too large, 422 no speech detected, 429 our per-IP limit
+- Status codes: 400 bad input, 413 too large, 422 no speech detected or an unreliable (looping) translation, told apart by `detail.code`, 429 our per-IP limit
   (default 10 turns a minute, `TURN_RATE_LIMIT_PER_MINUTE`), 503 Gnani is rate limiting us
   (retry), 502 any other Gnani failure. Upstream bodies are logged, never returned.
 - The limiter is in memory and keyed on the socket IP, which is right for one process on one
@@ -108,3 +108,35 @@ are an existence proof, not a distribution; slice 5 measures p50/p95 properly.
   fails the test.
 - Not verified yet: a real phone (Android Chrome with the insecure-origin flag), and playback of the
   Gnani-made WAV on iOS Safari.
+
+## Runaway translations (found in the phone check)
+- Root cause: Gnani misheard the first two words ("সেই শর্ট" for "হে ঈশ্বর"). Greedy decoding on that
+  garbled input fell into a "ಆ ಚಿಕ್ಕ ಚಿಕ್ಕ ..." loop and ran to `max_length=256` (about 5.8 s, 1525
+  characters), which then went to paid TTS (7.8 s). The ground-truth text translates correctly in
+  0.7 s, so this is an STT error amplified by the decoding loop. Reproduced with the real model.
+- Cap: `generate(max_new_tokens=min(2 * longest_input_tokens + 10, 256))`. Measured normal
+  output/input token ratio is 0.9-1.2; the runaway is about 8x (256 tokens from 33). The input
+  length is `input_ids.shape[1]` after tokenization (padded batch, so the longest sentence). 256 is
+  the model's position limit and input truncation is unchanged. A separate length-ratio check is
+  not needed: the cap makes a ratio above about 2x unreachable.
+- Signal 1, EOS (in `IndicTrans2Translator.translate`): a row with no EOS id was cut off by the
+  cap, so the translator raises `DegenerateTranslationError`. Checked per row, since shorter rows
+  of a batch are padded. This model's decoder start token is also EOS (id 2), so column 0 is
+  skipped; my first version checked the whole row and never fired (caught by the real-model test,
+  and the fake-model unit tests now begin rows with the start token). Long legitimate sentences
+  (64 and 69 input tokens, bn->kn and hi->ta) finish at about 1.0x with EOS, far below the cap.
+- Signal 2, `guard.has_repeated_phrase` (any Translator's output, run by the pipeline): a phrase of
+  1 to 3 words repeated 4 or more times consecutively, words split on whitespace with surrounding
+  punctuation stripped. Three repeats ("না না না") are natural emphasis and pass; this also covers
+  alternating loops and engines other than IndicTrans2.
+- Either signal makes `run_turn` raise `UnreliableTranslationError(transcript)` before TTS, so no
+  paid call is made. The event is logged with lengths and reason only, not text or audio.
+- API: both 422s now carry a code so the UI can tell them apart:
+  `{"code": "no_speech", "message": ...}` and
+  `{"code": "unreliable_translation", "message": ..., "transcript": <STT text>}`. The transcript is
+  untrusted; the UI renders it with `textContent`. The UI does not retry and drops the recording
+  for both, and an unknown 422 code falls back to the no-speech message.
+- Deferred: a repetition penalty or `no_repeat_ngram_size` would prevent the loop instead of
+  detecting it, but it can hurt legitimate output (repeated words are normal in these languages).
+  It waits for the slice 5 eval to measure the chrF cost. Beam search (4) happened not to loop on
+  this one input; that is luck on one sample, not a guard.

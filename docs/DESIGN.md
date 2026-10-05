@@ -92,6 +92,18 @@ translator, a negotiated Gnani quota. At 100x: hosted GPU inference and multiple
 - Slice 5: FLORES-based quality (chrF) with greedy vs beam search, and p50/p95 turn latency,
   paced to respect Gnani's limits.
 
+Real cases from the phone check (include in the slice 5 eval set):
+1. bn->kn. Said "হে ঈশ্বর আমায় ভালো রাখো আমায় এই যন্ত্রণার জ্বালা দিও না ঠিক করো আমায় একটা
+   বড় চাকরি দাও প্রিপারেশনটা ভালো করে করাও". Gnani heard the first two words as "সেই শর্ট".
+   STT error at the start of the clip. With greedy decoding the garbled transcript made the
+   translator emit "ಆ ಚಿಕ್ಕ ಚಿಕ್ಕ ..." to the length cap (reproduced; see DECISIONS.md).
+   The ground-truth text translates correctly, so this is an STT error that the translator
+   amplified.
+2. bn->kn. "আমার লাইফ তো পুরো বেকারই চলছে": বেকার (pointless, wasted) was translated as
+   ನಿರುದ್ಯೋಗಿ (unemployed). A translation word-sense error from correct STT (reproduced).
+Laptop baseline from the first real run: STT 1470 ms, translation 502 ms, TTS 2056 ms, stop tap
+to playback 4152 ms. The phone run was STT 1668, translation 5794, TTS 7817, 15845 total.
+
 ## 12. Scope
 - Must: Gnani client, translator, `/turn` API, browser UI with 429 handling, evaluation.
 - Should: README demo section with screenshots and measured numbers; phone HTTPS setup notes.
@@ -104,7 +116,7 @@ translator, a negotiated Gnani quota. At 100x: hosted GPU inference and multiple
 | 2 | Swappable IndicTrans2 translator on the GPU | local translation works and is fast | - | done |
 | 3 | `POST /turn` with timings, validation, rate limiting | one full turn over HTTP | - | done |
 | 4 | Browser UI: pair picker, two tap-to-talk buttons, WAV encoding, playback, timings incl. tap-to-playback; Gnani 429 handled ("One moment...", backoff retry, recording never lost); served by FastAPI; checked on a real phone | a person can use it | - | built and tested on desktop; Android phone check pending |
-| 5 | Evaluation harness: FLORES chrF greedy vs beam, p50/p95 latency, paced calls with 429 backoff | honest numbers | - | |
+| 5 | Evaluation harness: FLORES chrF greedy vs beam, p50/p95 latency, paced calls with 429 backoff. Score STT errors separately from translation errors (feed ground-truth text to the translator to isolate it), and check whether STT errors cluster at the start of recordings (phone mic clipping the first syllables). Includes the real phone cases below. | honest numbers | - | |
 | 6 | (Should) README demo section, phone HTTPS notes, final polish | presentable | - | |
 
 ## 14. Open questions
