@@ -32,6 +32,15 @@ class DegenerateTranslationError(Exception):
     """The model hit its output cap without finishing: a runaway loop, not a result."""
 
 
+@dataclass(frozen=True)
+class TranslationResult:
+    text: str
+    longest_input_tokens: int
+    longest_output_tokens: int  # the cap compares this against longest_input_tokens
+    cap: int
+    capped: bool  # at least one row hit the cap without finishing
+
+
 class Translator(Protocol):
     def translate(self, text: str, src: str, tgt: str) -> str:
         """Translate `text` from language key `src` to `tgt` (keys from `LANGUAGES`)."""
@@ -108,9 +117,21 @@ class IndicTrans2Translator:
         return _Loaded(model, tokenizer, IndicProcessor(inference=True), device)
 
     def translate(self, text: str, src: str, tgt: str) -> str:
+        result = self.translate_with_stats(text, src, tgt)
+        if result.capped:
+            raise DegenerateTranslationError(
+                f"generation hit the {result.cap}-token cap without finishing"
+            )
+        return result.text
+
+    def translate_with_stats(self, text: str, src: str, tgt: str) -> TranslationResult:
+        """Translate and report token counts and whether the output cap was hit (no exception).
+
+        `translate` is the guarded entry point; the evaluation uses this one to measure the cap.
+        """
         sentences = validate_request(text, src, tgt)
         if not sentences:
-            return ""
+            return TranslationResult("", 0, 0, 0, capped=False)
         loaded = self.load()
         src_code = LANGUAGES[src].indictrans_code
         tgt_code = LANGUAGES[tgt].indictrans_code
@@ -141,13 +162,18 @@ class IndicTrans2Translator:
             # A finished row has an EOS after its first token (shorter rows are padded after it).
             # Column 0 is skipped because this model's decoder start token is also EOS (id 2).
             # No EOS means the cap cut the row off mid-loop.
-            finished = (generated[:, 1:] == loaded.tokenizer.eos_token_id).any(dim=1)
-            if not bool(finished.all()):
-                raise DegenerateTranslationError(
-                    f"generation hit the {cap}-token cap without finishing"
-                )
+            is_eos = generated[:, 1:] == loaded.tokenizer.eos_token_id
+            finished = is_eos.any(dim=1)
+            # Tokens generated per row, EOS included: the position of the first EOS, else all.
+            row_lengths = torch.where(finished, is_eos.int().argmax(dim=1) + 1, is_eos.shape[1])
             decoded = loaded.tokenizer.batch_decode(
                 generated, skip_special_tokens=True, clean_up_tokenization_spaces=True
             )
             translated: list[str] = loaded.processor.postprocess_batch(decoded, lang=tgt_code)
-        return " ".join(translated)
+        return TranslationResult(
+            text=" ".join(translated),
+            longest_input_tokens=longest_input,
+            longest_output_tokens=int(row_lengths.max()),
+            cap=cap,
+            capped=not bool(finished.all()),
+        )

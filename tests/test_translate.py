@@ -148,6 +148,27 @@ def test_padded_shorter_row_with_eos_is_fine() -> None:
     assert translator.translate("a. b.", "bn", "kn") == "row0 row1"
 
 
+def test_stats_report_token_counts_without_raising_when_capped() -> None:
+    translator, _ = _translator_with([[EOS, 7, EOS, 0], [EOS, 7, 8, 9]], 4)
+    result = translator.translate_with_stats("a. b.", "bn", "kn")
+    assert result.capped
+    assert result.longest_input_tokens == 4
+    assert result.longest_output_tokens == 3  # the unfinished row: every generated column
+    assert result.cap == 18
+
+
+def test_stats_count_tokens_up_to_and_including_the_first_eos() -> None:
+    translator, _ = _translator_with([[EOS, 7, EOS, 0], [EOS, 7, 8, EOS]], 1)
+    result = translator.translate_with_stats("a. b.", "bn", "kn")
+    assert not result.capped
+    assert result.longest_output_tokens == 3
+
+
+def test_stats_for_blank_text_are_empty() -> None:
+    result = IndicTrans2Translator().translate_with_stats("  ", "bn", "kn")
+    assert result.text == "" and not result.capped
+
+
 # --- Real-model tests: `uv run pytest -m model` (GPU, cached weights) ---
 
 # Unicode blocks of each target script, to catch a model that answers in the wrong language.
