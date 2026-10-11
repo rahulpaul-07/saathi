@@ -140,3 +140,38 @@ are an existence proof, not a distribution; slice 5 measures p50/p95 properly.
   detecting it, but it can hurt legitimate output (repeated words are normal in these languages).
   It waits for the slice 5 eval to measure the chrF cost. Beam search (4) happened not to loop on
   this one input; that is luck on one sample, not a guard.
+
+## Evaluation harness (slice 5)
+- chrF++ is sacrebleu `CHRF(word_order=2)` (pinned 2.6.0). Scores are corpus-level on the FLORES
+  devtest sample; the greedy-vs-beam gain is also reported per sentence with a paired bootstrap
+  confidence interval (fixed seed), because 50 sentences per pair is a noisy sample.
+- Sample: 50 evenly spaced devtest sentences (`sample_indices`), the same for every pair, 12
+  directed pairs, greedy vs 5 beams. Greedy is also run on all 1012 sentences for the 4 app
+  directions, to give the token-ratio and guard checks more than 50 samples. The FLORES archive is
+  pinned by SHA-256 (trust on first use) and kept in gitignored `eval/data/` (CC BY-SA 4.0).
+- `IndicTrans2Translator.translate_with_stats` returns the text plus token counts and whether the
+  cap was hit; `translate()` is a thin wrapper that still raises on a cap hit. Added so the eval
+  can record a runaway and keep going instead of catching an exception.
+- Power: every timed run reads the Windows power state, refuses to start off AC (`--allow-battery`
+  runs but tags results as battery), aborts if the state changes mid-run, and never accepts
+  "unknown". The translation script waits up to 8 h for AC and redoes a shard it started on a
+  changed state. Battery and AC numbers are never pooled.
+- Gnani budget: `plan` 132 expected calls (40 TTS, 41 turns x 2 = 82, 10 real STT) against a hard
+  cap of 155 kept in a ledger file (`eval/state/`, gitignored) across runs. Every HTTP call is
+  counted, retries included. Pacing is a sliding window of at most 3 calls per 10 s (Gnani allows
+  about 4); a turn reserves both its calls up front, outside the timed region, so waiting never
+  inflates latency. A first plan of one turn per 6 s was wrong (4 calls inside 10 s) and was
+  replaced by the window. A 429 is retried 3 times with 10/20/30 s backoff; a retried turn is
+  excluded from the latency sample and the retry count is reported.
+- The first of the 41 turns is a warm-up and is discarded, so the latency sample is 40 turns. With
+  n=40 the p95 is close to the maximum, so n is printed beside it.
+- TTS-to-STT audio is Gnani's voice into Gnani's ears: clean, an optimistic best case. It is
+  labeled "clean synthetic audio" everywhere. The real-speech set (10 clips, the author's own
+  voice) is every 4th of those 40 sentences, so each recording has a synthetic twin. TTS output
+  (24 kHz) is resampled to 16 kHz with `audioop.ratecv` (Python 3.12 only; it is removed in 3.13)
+  to match what the browser uploads.
+- STT text is normalized (NFC, punctuation to space, whitespace collapsed, case folded) before CER,
+  chrF++ and word matching. Start-of-clip analysis aligns normalized words with difflib and
+  compares the miss rate of the first 2 words with the rest.
+- Not added: a `sounddevice` recording script (a new dependency that was not approved). Recording
+  instructions use Audacity instead (docs/EVAL.md).

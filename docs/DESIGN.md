@@ -116,7 +116,7 @@ to playback 4152 ms. The phone run was STT 1668, translation 5794, TTS 7817, 158
 | 2 | Swappable IndicTrans2 translator on the GPU | local translation works and is fast | - | done |
 | 3 | `POST /turn` with timings, validation, rate limiting | one full turn over HTTP | - | done |
 | 4 | Browser UI: pair picker, two tap-to-talk buttons, WAV encoding, playback, timings incl. tap-to-playback; Gnani 429 handled ("One moment...", backoff retry, recording never lost); served by FastAPI; checked on a real phone | a person can use it | - | built and tested on desktop; Android phone check pending |
-| 5 | Evaluation harness: FLORES chrF greedy vs beam, p50/p95 latency, paced calls with 429 backoff. Score STT errors separately from translation errors (feed ground-truth text to the translator to isolate it), and check whether STT errors cluster at the start of recordings (phone mic clipping the first syllables). Includes the real phone cases below. | honest numbers | - | |
+| 5 | Evaluation harness: FLORES chrF greedy vs beam, p50/p95 latency, paced calls with 429 backoff. Score STT errors separately from translation errors (feed ground-truth text to the translator to isolate it), and check whether STT errors cluster at the start of recordings (phone mic clipping the first syllables). Includes the real phone cases below. | honest numbers | - | Translation eval and code done; Gnani steps (synth, latency, real STT) wait for a human run, see docs/EVAL.md |
 | 6 | (Should) README demo section, phone HTTPS notes, final polish | presentable | - | |
 
 ## 14. Open questions
