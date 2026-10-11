@@ -175,3 +175,43 @@ are an existence proof, not a distribution; slice 5 measures p50/p95 properly.
   compares the miss rate of the first 2 words with the rest.
 - Not added: a `sounddevice` recording script (a new dependency that was not approved). Recording
   instructions use Audacity instead (docs/EVAL.md).
+
+## Direction change: delivery directions (2026-10-12)
+- Why: generic interpreters (Google conversation mode, Bhashini, Samsung) exist; the gap is a
+  customer giving code-mixed directions to a rider in traffic. Product, scope, evaluation and
+  slice plan are in DESIGN.md; this records the choices made at approval.
+- Approved: landmark names via IndicTrans2 on the span alone, class-label-only fallback, no
+  IndicXlit; rider has quick replies only (no free speech); no public tunnel, demo is a recorded
+  LAN video; RNNoise and the local-LLM comparison are out.
+- Any-to-any over the 10 languages Gnani supports for both STT and TTS. Odia is in neither (docs
+  checked 2026-10-11). Tiers: kn en hi bn verified, te reviewed, gu ml mr pa ta beta.
+- Fact extraction: universal layer (digits, English direction words) for all languages, native
+  rules for the verified core only.
+- Quick replies: English source, offline machine translation, static table, per-language review
+  status. Audio generated on first use and cached on disk (fixed phrases, no personal data,
+  gitignored).
+- Gnani call cap raised from 155 to 290 for the new evaluation (breakdown in DESIGN.md 11). The
+  old FLORES-based Gnani plan in `eval_turns.py` is replaced in slice 6; until then it still runs.
+- Day-one probe (`scripts/probe_codemix.py`, 22 calls, probe cap 26): records how Gnani writes
+  numbers and English words in Kannada and English transcripts. It uses synthetic TTS audio, so it
+  shows the form of transcripts, not recognition accuracy on real code-mixed speech.
+
+## Probe findings: how Gnani writes numbers (2026-10-12, 22 calls, synthetic audio)
+- kn-IN STT output is all Kannada script: NO digits and NO Latin. Numbers are Kannada words
+  (ಎರಡು, ಮೂರನೇ, ಮುನ್ನೂರ ನಾಲ್ಕು = 304); a split ordinal appears ("ಎರಡು ನೇ"); 14 came out as
+  digit-by-digit words ("ಒಂದು ನಾಲ್ಕು"); English words are transliterated (ಗೇಟ್ ನಂಬರ್, ಕ್ರಾಸ್,
+  ಮೇನ್, ಆಪೋಸಿಟ್, ಥರ್ಡ್ ಫ್ಲೋರ್, ಫೈವ್ ಬಿ) with spelling variants (ಫ್ಲ್ಯಾಟ್ / ಫ್ಲಾಟ್).
+- en-IN on Kannada speech is worse: romanized Kannada, a wrong number ("gate number edu"), one
+  empty transcript, one cut-off. Decision: use the speaker's own language code only; no second pass.
+- en-IN English output mixes forms: "2nd cross 3rd main" (digits) but "gate number two" (word),
+  and "fourth floor" came out as "1/4 floor" (a text-normalization error that turns a floor
+  into a fraction).
+- Consequence for the extractor: the digit-based universal layer is not enough for Indic output.
+  Needed: (1) a number parser per core language (cardinals, ordinals incl. split "ನೇ", hundreds,
+  digit-by-digit sequences) normalizing to Arabic digits; (2) trigger lexicons that include the
+  native-script transliterations of English words, with spelling variants, normalized for
+  ZWJ/virama differences; (3) a rule that reads "1/N floor" as floor N, flagged low confidence;
+  (4) ambiguous values (14 vs "1 4") flagged so the chip shows what was heard. Beta languages
+  without native rules get only what survives as digits or Latin text, which is a stated limit.
+- Caveat: the audio is Gnani TTS, which itself reads "2nd" as "ಎರಡು ನೇ"; real speech will differ.
+  The consented Kannada clips are the real test.
