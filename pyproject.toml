@@ -17,6 +17,8 @@ dependencies = [
     "transformers==4.46.3",
     "IndicTransToolkit==1.1.1",
     "sentencepiece==0.2.2",
+    # chrF++ for the slice 5 evaluation; already pulled in by IndicTransToolkit, pinned directly.
+    "sacrebleu==2.6.0",
 ]
 
 [tool.uv.sources]
