@@ -7,7 +7,7 @@
   stt-real   Gnani STT on your 10 recordings in eval/audio/real/          (10 calls)
   report     combine the result files into eval/results/stt_summary.md   (no calls)
 
-All Gnani calls are counted in eval/state/gnani_ledger.json (cap 155 across every step) and paced
+All Gnani calls are counted in eval/state/gnani_ledger.json (global cap in calls.py) and paced
 to at most 3 calls per 10 s. The audio in `synth` is Gnani TTS fed to Gnani STT: clean synthetic
 audio, an optimistic best case. `stt-real` is the honest set: your voice on the laptop microphone.
 """

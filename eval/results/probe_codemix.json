@@ -1,0 +1,272 @@
+{
+ "audio": "clean synthetic (Gnani TTS fed to Gnani STT), synthetic addresses",
+ "rows": [
+  {
+   "key": "kn-mix-latin-digits",
+   "text": "ನಮ್ಮ ಮನೆ 2nd cross, 3rd main, gate number 2 ಹತ್ತಿರ, opposite Ganesha temple",
+   "stt_language": "kn-IN",
+   "transcript": "ನಮ್ಮ ಮನೆ ಎರಡು ನೇ ಕ್ರಾಸ್ ಮೂರನೇ ಮೇನ್ ಗೇಟ್ ನಂಬರ್ ಎರಡು ಹತ್ತಿರ ಆಪೋಸಿಟ್ ಗಣೇಶ ಟೆಂಪಲ್",
+   "tokens_by_form": {
+    "digits": [],
+    "latin": [],
+    "kannada-number-word": [
+     "ಎರಡು",
+     "ಮೂರನೇ",
+     "ಎರಡು",
+     "ಹತ್ತಿರ"
+    ]
+   },
+   "retries": 0
+  },
+  {
+   "key": "kn-mix-latin-digits",
+   "text": "ನಮ್ಮ ಮನೆ 2nd cross, 3rd main, gate number 2 ಹತ್ತಿರ, opposite Ganesha temple",
+   "stt_language": "en-IN",
+   "transcript": "namane eradu ne cross muru ne main gate number edu hathira opposite ganesha temple",
+   "tokens_by_form": {
+    "digits": [],
+    "latin": [
+     "namane",
+     "eradu",
+     "ne",
+     "cross",
+     "muru",
+     "ne",
+     "main",
+     "gate",
+     "number",
+     "edu",
+     "hathira",
+     "opposite",
+     "ganesha",
+     "temple"
+    ],
+    "kannada-number-word": []
+   },
+   "retries": 0
+  },
+  {
+   "key": "kn-mix-floor-flat",
+   "text": "ಬ್ಲೂ ಬಿಲ್ಡಿಂಗ್, third floor, flat 304, ಲಿಫ್ಟ್ ಇಲ್ಲ",
+   "stt_language": "kn-IN",
+   "transcript": "ಬ್ಲೂ ಬಿಲ್ಡಿಂಗ್ ಥರ್ಡ್ ಫ್ಲೋರ್ ಫ್ಲ್ಯಾಟ್ ಮುನ್ನೂರ ನಾಲ್ಕು ಲಿಫ್ಟ್ ಇಲ್ಲ",
+   "tokens_by_form": {
+    "digits": [],
+    "latin": [],
+    "kannada-number-word": [
+     "ನಾಲ್ಕು"
+    ]
+   },
+   "retries": 0
+  },
+  {
+   "key": "kn-mix-floor-flat",
+   "text": "ಬ್ಲೂ ಬಿಲ್ಡಿಂಗ್, third floor, flat 304, ಲಿಫ್ಟ್ ಇಲ್ಲ",
+   "stt_language": "en-IN",
+   "transcript": "blue building 3rd floor flat munnura nalku liftilla",
+   "tokens_by_form": {
+    "digits": [
+     "3rd"
+    ],
+    "latin": [
+     "blue",
+     "building",
+     "floor",
+     "flat",
+     "munnura",
+     "nalku",
+     "liftilla"
+    ],
+    "kannada-number-word": []
+   },
+   "retries": 0
+  },
+  {
+   "key": "kn-translit-words",
+   "text": "ಟವರ್ ಬಿ, ಬ್ಲಾಕ್ ಫೋರ್, ಗೇಟ್ ನಂಬರ್ ಎರಡು ಹತ್ತಿರ ಬನ್ನಿ",
+   "stt_language": "kn-IN",
+   "transcript": "ಟವರ್ ಬಿ ಬ್ಲಾಕ್ ಫೋರ್ ಗೇಟ್ ನಂಬರ್ ಎರಡು ಹತ್ತಿರ ಬನ್ನಿ",
+   "tokens_by_form": {
+    "digits": [],
+    "latin": [],
+    "kannada-number-word": [
+     "ಎರಡು",
+     "ಹತ್ತಿರ"
+    ]
+   },
+   "retries": 0
+  },
+  {
+   "key": "kn-translit-words",
+   "text": "ಟವರ್ ಬಿ, ಬ್ಲಾಕ್ ಫೋರ್, ಗೇಟ್ ನಂಬರ್ ಎರಡು ಹತ್ತಿರ ಬನ್ನಿ",
+   "stt_language": "en-IN",
+   "transcript": "tower b block four gate number",
+   "tokens_by_form": {
+    "digits": [],
+    "latin": [
+     "tower",
+     "b",
+     "block",
+     "four",
+     "gate",
+     "number"
+    ],
+    "kannada-number-word": []
+   },
+   "retries": 0
+  },
+  {
+   "key": "kn-native-ordinals",
+   "text": "ಎರಡನೇ ಕ್ರಾಸ್, ಮೂರನೇ ಮೇನ್, ಗಣೇಶ ದೇವಸ್ಥಾನದ ಎದುರು",
+   "stt_language": "kn-IN",
+   "transcript": "ಎರಡನೇ ಕ್ರಾಸ್ ಮೂರನೇ ಮೇನ್ ಗಣೇಶ ದೇವಸ್ಥಾನದ ಎದುರು",
+   "tokens_by_form": {
+    "digits": [],
+    "latin": [],
+    "kannada-number-word": [
+     "ಎರಡನೇ",
+     "ಮೂರನೇ"
+    ]
+   },
+   "retries": 0
+  },
+  {
+   "key": "kn-native-ordinals",
+   "text": "ಎರಡನೇ ಕ್ರಾಸ್, ಮೂರನೇ ಮೇನ್, ಗಣೇಶ ದೇವಸ್ಥಾನದ ಎದುರು",
+   "stt_language": "en-IN",
+   "transcript": "",
+   "tokens_by_form": {
+    "digits": [],
+    "latin": [],
+    "kannada-number-word": []
+   },
+   "retries": 0
+  },
+  {
+   "key": "kn-mix-house-number",
+   "text": "ಸೈಕಲ್ ಅಂಗಡಿ ಪಕ್ಕ ಲೆಫ್ಟ್ ತಗೊಳ್ಳಿ, house number 14, ಹಸಿರು ಗೇಟ್",
+   "stt_language": "kn-IN",
+   "transcript": "ಸೈಕಲ್ ಅಂಗಡಿ ಪಕ್ಕ ಲೆಫ್ಟ್ ತಗೊಳ್ಳಿ ಹೌಸ್ ನಂಬರ್ ಒಂದು ನಾಲ್ಕು ಹಸಿರು ಗೇಟ್",
+   "tokens_by_form": {
+    "digits": [],
+    "latin": [],
+    "kannada-number-word": [
+     "ಒಂದು",
+     "ನಾಲ್ಕು"
+    ]
+   },
+   "retries": 0
+  },
+  {
+   "key": "kn-mix-house-number",
+   "text": "ಸೈಕಲ್ ಅಂಗಡಿ ಪಕ್ಕ ಲೆಫ್ಟ್ ತಗೊಳ್ಳಿ, house number 14, ಹಸಿರು ಗೇಟ್",
+   "stt_language": "en-IN",
+   "transcript": "cycle angadi pakka left thogali house number one the nalaku hasiru gate",
+   "tokens_by_form": {
+    "digits": [],
+    "latin": [
+     "cycle",
+     "angadi",
+     "pakka",
+     "left",
+     "thogali",
+     "house",
+     "number",
+     "one",
+     "the",
+     "nalaku",
+     "hasiru",
+     "gate"
+    ],
+    "kannada-number-word": []
+   },
+   "retries": 0
+  },
+  {
+   "key": "kn-mix-apartment",
+   "text": "ಅಪಾರ್ಟ್‌ಮೆಂಟ್ ಹೆಸರು Sunrise Residency, ಫ್ಲಾಟ್ 5B, ಎರಡನೇ ಮಹಡಿ",
+   "stt_language": "kn-IN",
+   "transcript": "ಅಪಾರ್ಟ್ಮೆಂಟ್ ಹೆಸರು ಸನ್ ರೈಸ್ ರೆಸಿಡೆನ್ಸಿ ಫ್ಲ್ಯಾಟ್ ಫೈವ್ ಬಿ ಎರಡನೇ ಮಹಡಿ",
+   "tokens_by_form": {
+    "digits": [],
+    "latin": [],
+    "kannada-number-word": [
+     "ಎರಡನೇ"
+    ]
+   },
+   "retries": 0
+  },
+  {
+   "key": "kn-mix-apartment",
+   "text": "ಅಪಾರ್ಟ್‌ಮೆಂಟ್ ಹೆಸರು Sunrise Residency, ಫ್ಲಾಟ್ 5B, ಎರಡನೇ ಮಹಡಿ",
+   "stt_language": "en-IN",
+   "transcript": "apartment heseru sunrise residency flat five b yeradane mahadi",
+   "tokens_by_form": {
+    "digits": [],
+    "latin": [
+     "apartment",
+     "heseru",
+     "sunrise",
+     "residency",
+     "flat",
+     "five",
+     "b",
+     "yeradane",
+     "mahadi"
+    ],
+    "kannada-number-word": []
+   },
+   "retries": 0
+  },
+  {
+   "key": "en-cross-main",
+   "text": "Second cross, third main, gate number 2, opposite the Ganesha temple.",
+   "stt_language": "en-IN",
+   "transcript": "2nd cross 3rd main gate number two opposite the ganesha temple",
+   "tokens_by_form": {
+    "digits": [
+     "2nd",
+     "3rd"
+    ],
+    "latin": [
+     "cross",
+     "main",
+     "gate",
+     "number",
+     "two",
+     "opposite",
+     "the",
+     "ganesha",
+     "temple"
+    ],
+    "kannada-number-word": []
+   },
+   "retries": 0
+  },
+  {
+   "key": "en-block-flat",
+   "text": "Block C, flat 402, fourth floor, near the blue building.",
+   "stt_language": "en-IN",
+   "transcript": "block c flat 402 1/4 floor near the blue building",
+   "tokens_by_form": {
+    "digits": [
+     "402",
+     "1/4"
+    ],
+    "latin": [
+     "block",
+     "c",
+     "flat",
+     "floor",
+     "near",
+     "the",
+     "blue",
+     "building"
+    ],
+    "kannada-number-word": []
+   },
+   "retries": 0
+  }
+ ],
+ "calls_spent": 22
+}
