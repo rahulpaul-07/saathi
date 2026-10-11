@@ -16,6 +16,11 @@ wheels/
 .pytest_cache/
 .ruff_cache/
 .mypy_cache/
+# Evaluation inputs that stay local: FLORES text, audio (including voice recordings), call ledger.
+# Results under eval/results/ are committed.
+eval/data/
+eval/audio/
+eval/state/
 node_modules/
 test-results/
 playwright-report/
