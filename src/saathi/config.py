@@ -14,6 +14,9 @@ class Settings(BaseSettings):
     translator_num_beams: int = Field(default=1, ge=1, le=10)
     # Each turn spends Gnani credits, so the public endpoint is capped per client IP.
     turn_rate_limit_per_minute: int = Field(default=10, ge=1)
+    # Room codes carry about 30 bits, so create and join attempts are capped per client IP.
+    room_rate_limit_per_minute: int = Field(default=10, ge=1)
+    max_rooms: int = Field(default=50, ge=1)
 
 
 @lru_cache

@@ -14,6 +14,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from saathi.audio import MAX_AUDIO_BYTES, AudioError, AudioTooLargeError, wav_duration_s
+from saathi.catalog_routes import catalog_router
 from saathi.config import Settings, get_settings
 from saathi.gnani import GnaniClient, GnaniError
 from saathi.pipeline import (
@@ -24,11 +25,14 @@ from saathi.pipeline import (
     validate_pair,
 )
 from saathi.ratelimit import SlidingWindowLimiter
+from saathi.room_routes import room_router
+from saathi.rooms import RoomManager
 from saathi.translate import RoutingTranslator, Translator
 
 log = logging.getLogger(__name__)
 
 # One throwaway translation per model route: (text, src, tgt) for indic-indic, en-indic, indic-en.
+# The pairs are arbitrary representatives of their route; no pair is special to any role.
 WARMUPS = (("আমি যাচ্ছি।", "bn", "kn"), ("I am coming.", "en", "hi"), ("मैं आ रहा हूँ।", "hi", "en"))
 STATIC_DIR = Path(__file__).parent / "static"
 
@@ -58,6 +62,7 @@ def create_app(
     settings: Settings | None = None,
     gnani: GnaniClient | None = None,
     translator: Translator | None = None,
+    rooms: RoomManager | None = None,
 ) -> FastAPI:
     """Build the app. Dependencies are injectable so tests need no network, GPU or model."""
     logging.basicConfig(level=logging.INFO)  # uvicorn only configures its own loggers
@@ -80,6 +85,18 @@ def create_app(
         await gnani.aclose()
 
     app = FastAPI(title="Saathi", lifespan=lifespan)
+    rooms = rooms or RoomManager(max_rooms=settings.max_rooms)
+    app.include_router(
+        room_router(
+            rooms,
+            gnani,
+            translator,
+            settings.room_rate_limit_per_minute,
+            settings.turn_rate_limit_per_minute,
+        )
+    )
+
+    app.include_router(catalog_router())
 
     @app.post("/turn")
     async def turn(
