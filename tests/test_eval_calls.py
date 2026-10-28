@@ -5,12 +5,10 @@ import pytest
 
 from saathi.config import Settings
 from saathi.evaluation.calls import (
-    GNANI_CALL_CAP,
     BudgetExceededError,
     CallLedger,
     MeteredGnani,
     SlidingWindowLimiter,
-    planned_total,
 )
 
 
@@ -77,11 +75,6 @@ def test_ledger_counts_persists_and_refuses_past_the_cap(tmp_path: Path) -> None
     assert reloaded.total == 3 and reloaded.spent("synth") == 2
     with pytest.raises(BudgetExceededError):
         reloaded.spend("synth")
-
-
-def test_planned_calls_fit_under_the_cap_with_a_retry_reserve() -> None:
-    assert planned_total() == 132
-    assert GNANI_CALL_CAP - planned_total() >= 20
 
 
 async def test_metered_client_counts_each_call_and_blocks_at_the_cap(tmp_path: Path) -> None:

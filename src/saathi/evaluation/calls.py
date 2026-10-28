@@ -17,17 +17,8 @@ from saathi.gnani import GnaniClient
 
 GNANI_CALL_CAP = 290  # across every eval command, persisted in the ledger (see docs/DESIGN.md 11)
 
-# The call plan, by command. A latency turn is one STT and one TTS call; the first turn is a
-# warm-up (connection setup) and is not reported.
-SYNTH_CLIPS = 40
-LATENCY_TURNS = 41
-REAL_CLIPS = 10
+# A latency turn is one STT and one TTS call.
 CALLS_PER_TURN = 2
-PLANNED_CALLS = {
-    "synth": SYNTH_CLIPS,
-    "latency": LATENCY_TURNS * CALLS_PER_TURN,
-    "stt-real": REAL_CLIPS,
-}
 
 # Stay under the observed limit with margin: at most 3 calls in any 10 s window.
 MAX_CALLS_PER_WINDOW = 3
@@ -121,7 +112,3 @@ class MeteredGnani(GnaniClient):
     async def _post(self, path: str, **kwargs: object) -> httpx.Response:
         self._ledger.spend(self._label)
         return await super()._post(path, **kwargs)
-
-
-def planned_total() -> int:
-    return sum(PLANNED_CALLS.values())
