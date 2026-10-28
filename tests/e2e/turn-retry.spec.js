@@ -46,8 +46,8 @@ async function stubTurn(page, statuses) {
       await route.fulfill({
         status,
         json: {
-          src: "bn",
-          tgt: "kn",
+          src: "ta",
+          tgt: "ml",
           transcript: TRANSCRIPT,
           translation: "translated",
           audio_base64: replyBase64(),
@@ -79,8 +79,12 @@ function watchConsole(page) {
 
 /** @param {import("@playwright/test").Page} page */
 async function recordOneTurn(page) {
-  await page.goto("/");
-  await page.getByRole("button", { name: "Speak Bengali" }).click();
+  await page.goto("/solo.html");
+  // Any two different languages work; nothing is preselected.
+  await expect(page.getByRole("button", { name: "Choose two languages" }).first()).toBeDisabled();
+  await page.locator("#lang-a").selectOption("ta");
+  await page.locator("#lang-b").selectOption("ml");
+  await page.getByRole("button", { name: "Speak Tamil" }).click();
   await expect(page.getByRole("status")).toContainText("Recording");
   await page.waitForTimeout(1500); // let the fake microphone produce some audio
   await page.getByRole("button", { name: "Stop and translate" }).click();
@@ -109,7 +113,7 @@ test("still busy after 3 retries: Try again resends the same recording", async (
 
   await recordOneTurn(page);
   await expect(page.getByRole("status")).toContainText("Still busy", { timeout: 20_000 });
-  await expect(page.getByRole("button", { name: "Speak Bengali" })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Speak Tamil" })).toBeDisabled();
   await page.getByRole("button", { name: "Try again" }).click();
   await expect(page.locator("#transcript")).toHaveText(TRANSCRIPT, { timeout: 15_000 });
 
@@ -156,6 +160,6 @@ test("unreliable translation: shows the transcript as text, no retry, no stored 
   expect(requests).toBe(1);
   expect(await page.locator("#status b").count()).toBe(0);
   await expect(page.getByRole("button", { name: "Try again" })).toBeHidden();
-  await expect(page.getByRole("button", { name: "Speak Bengali" })).toBeEnabled();
+  await expect(page.getByRole("button", { name: "Speak Tamil" })).toBeEnabled();
   expect(problems).toEqual([]);
 });
