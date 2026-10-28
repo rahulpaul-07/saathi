@@ -15,7 +15,7 @@ from saathi.evaluation.flores import (
     load_devtest,
     sha256_of,
 )
-from saathi.languages import LANGUAGES
+from saathi.languages import EVALUATED_LANGUAGES
 
 DATA_DIR = Path("eval/data")
 ARCHIVE = DATA_DIR / "flores200_dataset.tar.gz"
@@ -39,7 +39,7 @@ def main() -> None:
     if not FLORES_SHA256:
         print("FLORES_SHA256 is not pinned yet: copy the hash above into evaluation/flores.py")
     extract_devtest(ARCHIVE, DATA_DIR, expected_sha256=FLORES_SHA256)
-    for lang in LANGUAGES:
+    for lang in EVALUATED_LANGUAGES:
         print(f"{lang}: {len(load_devtest(DATA_DIR, lang))} devtest sentences")
 
 

@@ -24,7 +24,7 @@ from saathi.evaluation.flores import load_devtest, sample_indices
 from saathi.evaluation.power import PowerError, PowerGuard, wait_for_ac
 from saathi.evaluation.runinfo import run_metadata
 from saathi.evaluation.translation import SentenceRow, evaluate_sentence, summarize
-from saathi.languages import LANGUAGES, SUPPORTED_PAIRS
+from saathi.languages import EVALUATED_LANGUAGES, EVALUATED_PAIRS
 from saathi.translate import IndicTrans2Translator
 
 DATA_DIR = Path("eval/data")
@@ -102,19 +102,19 @@ def main() -> int:
             print("still on battery; nothing was run", file=sys.stderr)
             return 2
 
-    corpora = {lang: load_devtest(DATA_DIR, lang) for lang in LANGUAGES}
+    corpora = {lang: load_devtest(DATA_DIR, lang) for lang in EVALUATED_LANGUAGES}
     total = len(corpora["bn"])
     jobs: list[tuple[str, int, str, str]]  # (config, beams, src, tgt)
     if args.full:
         indices = list(range(total))
         jobs = []
-        for pair in sorted(sorted(p) for p in SUPPORTED_PAIRS):
+        for pair in sorted(sorted(p) for p in EVALUATED_PAIRS):
             jobs += [("greedy-full", 1, pair[0], pair[1]), ("greedy-full", 1, pair[1], pair[0])]
     else:
         indices = sample_indices(total, args.count)
         jobs = [
             (config, beams, src, tgt)
-            for src, tgt in itertools.permutations(LANGUAGES, 2)
+            for src, tgt in itertools.permutations(EVALUATED_LANGUAGES, 2)
             for config, beams in (("greedy", 1), (f"beam{args.beams}", args.beams))
         ]
 

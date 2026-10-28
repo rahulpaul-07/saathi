@@ -8,7 +8,7 @@ import hashlib
 import tarfile
 from pathlib import Path
 
-from saathi.languages import LANGUAGES
+from saathi.languages import EVALUATED_LANGUAGES, LANGUAGES
 
 FLORES_URL = "https://dl.fbaipublicfiles.com/nllb/flores200_dataset.tar.gz"
 # Trust-on-first-use pin: computed on the first download, then enforced on every later one.
@@ -39,7 +39,8 @@ def extract_devtest(archive: Path, data_dir: Path, *, expected_sha256: str) -> N
         raise FloresError("FLORES archive does not match the pinned SHA256")
     data_dir.mkdir(parents=True, exist_ok=True)
     with tarfile.open(archive) as tar:
-        for lang, info in LANGUAGES.items():
+        for lang in EVALUATED_LANGUAGES:
+            info = LANGUAGES[lang]
             name = f"{ARCHIVE_ROOT}/devtest/{info.indictrans_code}.devtest"
             try:
                 member = tar.extractfile(name)

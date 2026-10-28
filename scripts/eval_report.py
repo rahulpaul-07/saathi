@@ -14,7 +14,7 @@ from saathi.evaluation.flores import load_devtest
 from saathi.evaluation.metrics import bootstrap_mean_ci, percentile
 from saathi.evaluation.translation import SentenceRow, ratio_summary
 from saathi.guard import has_repeated_phrase
-from saathi.languages import LANGUAGES, SUPPORTED_PAIRS
+from saathi.languages import EVALUATED_LANGUAGES, EVALUATED_PAIRS
 
 DATA_DIR = Path("eval/data")
 SHARD_DIR = Path("eval/results/translation")
@@ -66,7 +66,7 @@ def comparison_section(shards: dict[Key, Shard], beam: str) -> str:
         if config != "greedy" or (beam, src, tgt) not in shards:
             continue
         other = shards[(beam, src, tgt)]
-        product = frozenset({src, tgt}) in SUPPORTED_PAIRS
+        product = frozenset({src, tgt}) in EVALUATED_PAIRS
         g, b = greedy["summary"], other["summary"]
         for row_g, row_b in zip(rows_of(greedy), rows_of(other), strict=True):
             deltas[product].append(row_b.chrf - row_g.chrf)
@@ -162,7 +162,7 @@ def ratio_section(shards: dict[Key, Shard]) -> str:
 
 def reference_guard_section() -> str:
     body = []
-    for lang in LANGUAGES:
+    for lang in EVALUATED_LANGUAGES:
         sentences = load_devtest(DATA_DIR, lang)
         hits = [s for s in sentences if has_repeated_phrase(s)]
         body.append([lang, str(len(sentences)), str(len(hits))])
