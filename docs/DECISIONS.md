@@ -215,3 +215,218 @@ are an existence proof, not a distribution; slice 5 measures p50/p95 properly.
   without native rules get only what survives as digits or Latin text, which is a stated limit.
 - Caveat: the audio is Gnani TTS, which itself reads "2nd" as "ಎರಡು ನೇ"; real speech will differ.
   The consented Kannada clips are the real test.
+
+## Slice 1: fact extraction (text only)
+- Structure: `saathi.facts` = tokenizer with original offsets (spans index the input), a `key()`
+  normalizer (NFC, casefold, ZWJ/ZWNJ removed, nukta dropped, chandrabindu to anusvara, all Unicode
+  digits to ASCII, trailing virama stripped) applied to transcripts and lexicon entries alike, a
+  `Lexicon` dataclass per language, and number grammar in `numbers.py`. Language support is data
+  (`lexicons.py`); the English layer is merged under kn, hi and bn. Other table languages get only
+  the English/digit layer (stated limit).
+- Rules come from the probe: no digits in kn output so Kannada number words incl. split ordinal
+  "ನೇ" and tens sandhi; transliterated trigger words with spelling variants; "1/N floor" is read as
+  floor N with confidence "low".
+- Ambiguity: a run of two or more single digits ("ಒಂದು ನಾಲ್ಕು", "1 4") is never merged. `value` is
+  the words as heard, `reading` the candidate ("14"), `ambiguous=True`, so the chip shows what was heard.
+- Precision first: triggers combine with a value after or before (optionally through "number").
+  Candidates are resolved by priority (explicit/trigger-first, then bare value-first, then bare
+  value-after) and claim token ranges, so one value never feeds two facts. Range caps: gate, cross,
+  main, block 99; floor 60; flat 9999 (larger is STT noise, not extracted).
+- Landmarks: prefix trigger ("opposite X") or postposition after the name ("X के सामने"), capped at 4
+  tokens, stopping at punctuation, claimed values, stopwords and other landmark words. Postposition
+  landmarks are open-ended, so they are "low" confidence. "house" maps to the flat kind.
+- Scoring (`evaluation/factscore.py`, `scripts/score_facts.py`): exact match on kind and normalized
+  value. Ambiguous predictions are not asserted: excluded from precision, counted as a recall
+  miss, reported separately with whether the candidate reading matched.
+- Gold set `eval/gold/directions.json`: 30 synthetic utterances (12 en, 10 kn, 4 hi, 4 bn). Split
+  rule: dev iff the number in the id is divisible by 3 (10 dev, 20 test). The test split is frozen by
+  a SHA-256 pinned in `tests/test_fact_gold.py`; `--errors` is refused on test. Rules were tuned on
+  dev only; test was scored once.
+- Results (text only): dev precision 1.00, recall 0.94; test precision 1.00, recall 0.96 (3 misses:
+  unsupported "ground floor", two ambiguous digit-by-digit flats). Caveat: the author wrote both the
+  gold texts (in the probe's observed forms, not real STT output) and the lexicons, so these are
+  optimistic and partly circular. Real accuracy needs the consented clips.
+- Limits: no "ground floor"; Hindi and Bengali numbers cover roughly up to 50 plus tens and hundreds;
+  native lexicons are not validated against real speaker STT.
+
+## Slice 2: room backend
+- Code: `rooms.py` (state, no HTTP) and `room_routes.py` (router built by `create_app`, managers and
+  fakes injected). The old `POST /turn` is untouched; the UI of slice 3 moves to room turns.
+- Room code: 6 symbols from a 31-symbol alphabet without I L O 0 1 (about 29.7 bits). Path format is
+  validated; guessing is limited by a per-IP limiter on create and join (`ROOM_RATE_LIMIT_PER_MINUTE`,
+  default 10) that counts every attempt, hit or miss, plus 50 rooms at most (`MAX_ROOMS`).
+- Tokens: `secrets.token_urlsafe(16)` (128 bits), one per slot, sent as `Authorization: Bearer`. Not in
+  the URL, because uvicorn logs URLs. Consequence: browser `EventSource` cannot set headers, so the
+  slice 3 UI reads the SSE stream with `fetch` and a stream reader.
+- Authorization fails closed with one answer: unknown room, expired room, wrong token and another
+  room's token all return the same 404 `room not found`, so codes cannot be probed. Tokens are compared
+  with `hmac.compare_digest`. Role rules after that: only the customer sends turns (403 otherwise),
+  only the rider sends quick replies. Audio is served only inside its own room and only by id.
+- Slots: the creator is the customer, the joiner is the rider; the same language on both sides is
+  refused (nothing to interpret). The language pair comes from the room, never from the client.
+- TTL: 30 min idle (touched by join, turn, quick reply; SSE keepalives do not count), 2 h hard.
+  Expiry is lazy (checked on access and on create) with no background task; the room cap bounds memory.
+- Events: one queue per role (32 slots, oldest dropped when a reader stalls). A new SSE connection
+  replaces the old one for that role, which suits a phone that reconnects. Each stream starts with a
+  `state` snapshot (so a join that happened before connecting is not missed). Events for a role with
+  no open stream are dropped, not replayed; turns are not retried. `closed` ends the stream.
+- Turn audio: kept in memory 60 s, last 5 per room, fetched at `/rooms/{code}/turns/{id}/audio`. The
+  rider's `turn` event carries translation, facts, `verified` and the audio path. The customer's HTTP
+  response carries facts and `verified` only: no transcript or translation is returned to anyone
+  but the rider, and the unreliable-translation error no longer echoes the transcript.
+- `verified`: `run_turn` now returns `facts` (from the source transcript, so chips survive a bad
+  translation) and `verified=True` when the runaway guards passed. Real verification (number
+  placeholders returning once) arrives with masking in slice 5; until then the flag means "guards passed".
+- Quick replies: the endpoint accepts a `phrase_id` from three placeholder ids (`coming_2_min`,
+  `reached_gate`, `cannot_find`). Text, translations and audio belong to the quick-reply table.
+- Audio upload checks: content type must be a WAV type (415), WAV header and 60 s limit (400), 2.5 MB
+  (413) via the existing validator. The size check happens after Starlette has spooled the multipart
+  body, so an oversized upload still costs the server the transfer (fine on a LAN, not for the internet).
+- Logs carry language codes, fact counts and timings only.
+
+## Slice 3: rider and customer screens
+- Pages: `index.html` (role choice), `customer.html`, `rider.html`, each a small ES module (`customer.js`,
+  `rider.js`) over shared `room-client.js`, `ui.js`, `audio-player.js`. The old single-phone page moved
+  unchanged to `solo.html` (still `main.js`, still `/turn`) so its retry e2e keeps guarding that logic.
+- SSE: `fetch` streaming with `Authorization: Bearer`, parsed by the pure `sse.js` (chunk-split, CRLF,
+  comments, bad JSON dropped). The stream reconnects after 2 s unless the room is closed or gone (404);
+  events missed while disconnected are not replayed (slice 2 behaviour).
+- Tokens live in JS memory only (no storage). A page reload leaves the room; the customer ends rooms
+  with End room (DELETE). The rider link carries only the code (`rider.html?code=`), never a token.
+- Audio: one persistent `<audio>` element. The rider's Join tap (and the customer's Create tap) plays
+  50 ms of silence, which lets later turns auto-play. Audio needs the token, so it is fetched with
+  fetch into an object URL; only paths under `/rooms/<own code>/turns/` are fetched. Repeat replays
+  that object URL: no network call (the e2e counts audio requests).
+- Room turns are sent once, with no automatic retry (unlike `/turn`), so a 503 cannot silently pay for
+  STT twice. The WAV stays for "Try again" when the error class allows it (`classify` in `retry.js`).
+- Chips (`chips.js`) come from `facts`, ordered gate, floor, cross, main, block, flat, landmark; an
+  ambiguous fact shows the words heard plus "could be 14"; low confidence gets a dashed border and
+  "check this". English labels only; localized labels were not done (cut first, per plan).
+- Language picker: `GET /languages` (new, public, read-only) from `languages.py`; labels add
+  "(reviewed)" for te and "(beta)" for the beta tier, none for the verified core.
+- Quick replies (contract change, strictly needed): the rider's POST must reach the customer as words
+  and audio, so the table now exists. `quickreplies.py` holds 3 phrases for en (source), hi, bn, kn
+  (machine output supplied by the author, `review_status: "pending"`, shown to the customer as
+  "Unreviewed machine translation"). `GET /quick-replies` serves the table. Ids changed:
+  `cannot_find` became `which_floor` (the third phrase is "Which floor?"); `reached_gate` and
+  `coming_2_min` are unchanged. The quick-reply event now carries `phrase_id`, `text`, `review_status`
+  and `audio_path` (null if TTS failed; the text is still delivered). Text is chosen by the customer's
+  language on the server; if the customer's language has no phrases the POST returns 400 and the rider
+  UI disables the buttons with a reason. The rider sees labels in their own language when the table has
+  it, else English. Audio is synthesized on first use per (language, phrase), cached in memory for the
+  process (fixed phrases hold no personal data; no disk cache yet), and served through the existing
+  turn-audio route. First use of each phrase therefore costs one Gnani TTS call.
+- E2E: `tests/e2e/serve.py` now injects a fake Gnani and a fake translator (the translator returns
+  markup to prove text-only rendering). `rooms.spec.js` uses two browser contexts, Chromium's fake
+  microphone, and fails on any console error or warning.
+- Not verified: real phones, iOS audio unlock, real Gnani audio in the new screens.
+
+## Slice 4: TTS loudness and integration (offline part)
+- Where: `GnaniClient.synthesize` is the one place TTS audio is produced (turns and quick replies),
+  so `loudness.normalize_or_passthrough` runs there, after the streaming-WAV repair, in a worker thread.
+- Algorithm (`loudness.py`): RMS level to -18 dBFS, then a smoothed look-around peak limiter with a
+  -1 dBFS ceiling (required gain min-filtered then box-averaged over 5 ms, so the ceiling holds without
+  clicks). Gain is capped at +30 dB. Clips below -70 dBFS RMS are treated as silence and returned as is.
+  RMS, not LUFS: no K-weighting needed for short single-voice clips; simpler and testable.
+- Formats: 16-bit PCM, any rate, mono or multichannel (levelled together). Anything else raises
+  `AudioError` in `normalize_wav`.
+- Failure policy: passthrough. Quiet audio beats no audio, and Gnani was already asked for 16-bit
+  mono, so a rejection is logged as a warning (reason only) and the original WAV is served.
+- Dependency: numpy is imported but not declared; it is a hard dependency of transformers and
+  sacrebleu (both pinned). Declare it in pyproject if those ever change.
+- Integration: `tests/test_integration.py` runs customer WAV -> real `GnaniClient` (respx) -> facts ->
+  fake translator -> rider event -> audio fetch, and checks the served level. No gaps found; the
+  e2e suite uses a fake Gnani, so it does not cover normalization.
+- Not verified: how the normalized audio sounds on real Gnani output and phone speakers; the LAN check
+  (`docs/LAN_CHECK.md`) is prepared, not run.
+
+## Priority 2 / noise eval (offline part)
+- Harness: `scripts/eval_noise.py` (`run [--dry-run]`, `report`) over `src/saathi/evaluation/noisemix.py`
+  and `noiseeval.py`. It supersedes `scripts/eval_turns.py` (FLORES-based, old 155-call plan).
+  Author approved 2026-10-29: `eval_turns.py`, `PLANNED_CALLS`, `planned_total` and the old clip
+  counts are deleted; `evaluation/turns.py` (`measure_turn`) stays for the latency study, which
+  needs a new script when it is planned.
+- numpy is declared (`numpy==2.5.3`, the version already in uv.lock) because `loudness.py` and
+  `noisemix.py` import it directly.
+- Plan: 30 gold utterances x 4 conditions = 120 STT calls, ledger label `noise-stt`. Dry run prints
+  every call, flags missing recordings, and fails (exit 2) if spent + planned passes the cap. A real
+  run refuses unless every recording exists, passes `check_recording` and every mix succeeds, so no
+  call is paid for before the inputs are known good. Results are saved after each call and a
+  rerun skips finished clips (a crash or a 429 stop does not waste paid calls).
+- Recordings: `eval/audio/gold/<gold id>.wav`, 16 kHz mono 16-bit (gitignored). Wrong rate is
+  refused, never resampled, so the mixer cannot silently change what Gnani hears.
+- SNR = speech-active RMS / whole-clip noise RMS. Activity detector: 20 ms frames, active when frame
+  RMS is within 20 dB of the 95th-percentile frame RMS and above -60 dBFS. Settings are logged per
+  mix and stored in the results meta. Noise RMS is over the whole clip because noise does not pause.
+- Noise: a seeded window of a local WAV, or seeded 1/f pink noise (default; no downloads). Synthetic
+  pink noise is a controlled stressor, not street audio: the write-up must not call it traffic.
+  Per-clip seed = sha256(seed, utterance id, condition), so output is byte-identical for a seed.
+- Peak handling: if speech plus noise passes 0.99 full scale the whole mix is scaled down, never
+  clipped; SNR is unchanged. The clean condition sends the recording byte for byte.
+- Scoring reuses `factscore` (`score_transcript`): STT transcript -> `extract_facts` -> same
+  precision/recall rules as the text-only gold scores (ambiguous readings count as a miss).
+  Bootstrap: 2000 resamples of utterances, seed fixed, percentile 95% CI; the same resampled
+  indices are used for every condition so "recall drop vs clean" is a paired interval. Only
+  utterances present in all four conditions are used. Test (20) and dev (10) are reported separately;
+  the headline is test. With about 20 utterances the intervals are wide.
+
+## Priority 2 / noise eval: recorded street noise primary (2026-10-29)
+- Conditions are now clean, `street_20`, `street_10`, `street_5` (primary) and `pink_10` (secondary):
+  150 planned STT calls, ledger 22 spent + 150 = 172 of cap 290, headroom 118 for 429 retries.
+  Replaces the earlier `snr20/10/5` pink-only plan (no results had been produced under those names).
+- Why: seeded pink noise is repeatable but is not traffic; a recording of real street noise is the
+  claim worth making. Pink stays as one 10 dB stressor so there is a controlled reference.
+- Street bed: `eval/audio/noise/street.wav` (`--street-file`), 16 kHz mono 16-bit, at least 30 s and at
+  least as long as the longest utterance; `eval/audio/` is already gitignored. No upper limit (the
+  60 s cap is for speech). Each clip uses a random window chosen by the per-clip seed. A missing or
+  invalid file is one problem line; dry-run prints `Street noise: ... [MISSING]` and a real run
+  refuses before any call. Pink clips are still prepared without it.
+- The report prints street and pink as separate tables, each against clean. They are never pooled:
+  different noise, different claim. `convert_recording.py --street` makes the bed from a phone
+  recording (ffmpeg, argument list, output validated by `check_recording` with bounds 30 s and no
+  maximum; written via a temp file so a failed conversion never replaces an existing file).
+- Whatever the bed contains is whatever the author recorded: the write-up should describe it
+  (place, time, phone) and not call it representative of all Indian streets.
+
+## Quick replies reviewed; slice 5 priorities (2026-10-29)
+
+- bn and hi quick replies were corrected by the author and are marked `reviewed`; kn stays
+  `pending` until a friend checks it. hi "coming in 2 minutes" is "बस 2 मिनट" because "आ रहा हूँ"
+  is gendered and the rider's gender is unknown.
+- Loanwords used as-is in Indian addresses (cross, main, gate, floor, opposite, block, flat) must
+  stay as transliterated loanwords in the target script. The live kn->bn turn mistranslated
+  "opposite" and "main", so this is the top item of slice 5 (masking).
+- Landmark chips must render in the rider's language, not the speaker's script (a Bengali rider
+  could not read the Kannada landmark). Second top item of slice 5.
+
+## Roles are independent of languages; two-way turns and per-role quick replies (2026-10-29)
+
+- Product rule: the customer and the rider can each use any of the 10 languages, in both
+  directions. No code, default, fixture or doc may tie a role to a language. Language pairs in
+  tests, demos and the eval live-turn fixture (`evaluation/liveturn.py`, kn to bn) are examples
+  only; demo casting is undecided. Both screens offer all 10 languages with no preselected choice
+  (placeholder option; buttons stay disabled until chosen). The solo page has two pickers with the
+  same rule.
+- Either role may POST a turn. The source language is the speaker's, the target is the other
+  participant's, and the `turn` event goes to the other role only; the sender gets the response and
+  shows chips of what they said. Fact extraction already depends only on the spoken language, so
+  the universal layer (all 10) and the native rules (kn en hi bn) apply to riders exactly as to
+  customers. Landmark rendering in the listener's language is still slice 5, not done here.
+- The rider's talk button is deliberately secondary ("use when stopped") and sits below the quick
+  replies: riding is the case the product is designed around.
+- Quick replies: three ids per sender role. Rider: `reached_gate`, `which_floor`, `coming_2_min`.
+  Customer: `come_to_gate`, `coming_down`, `leave_at_security`. An id from the other role is
+  rejected (422). The phrase is sent in the RECIPIENT's language. All 10 languages are covered.
+- `come_to_gate` is "Come to the gate" with no number. A fixed, pre-translated phrase cannot carry
+  a variable, and splicing a number into machine-translated text would be exactly the unverified
+  number handling the product exists to avoid. The customer says the number by voice. This
+  deliberately deviates from the brief's "Come to gate number ...".
+- Review status is per phrase, not per language: the rider's bn and hi phrases the author corrected
+  stay `reviewed` (texts unchanged); en is the source; everything else is `pending`, including the
+  new customer bn and hi phrases and the rider's kn. The UI shows the "unreviewed machine
+  translation" note for pending phrases.
+- The table was generated once with `scripts/gen_quick_replies.py` (local en-indic model, no
+  network) and pasted unedited as data. Known weaknesses of that output, left pending on purpose
+  for a speaker to fix: some Tamil phrases look truncated or subjectless; Punjabi uses a decomposed
+  nukta and an ASCII apostrophe; Hindi "I'm coming down" is gendered; Telugu rider phrases use a
+  third-person verb; Marathi "gate" is an odd word; several phrases end in a danda or full stop.
