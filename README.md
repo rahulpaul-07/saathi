@@ -1,23 +1,74 @@
 # Saathi
 
-A live two-way voice interpreter between Indian languages. One person speaks Bengali and the other
-hears Kannada, and the reply goes back the other way. Turns are walkie-talkie style (tap to talk).
+A delivery-directions interpreter. A customer gives directions by voice; a rider who uses another
+Indian language gets the critical facts (gate, floor, cross/main, landmark) as big chips plus
+translated audio, in a short-lived room. A rider cannot wait for a perfect sentence, so the chips
+are the fast, redundant channel and the audio is the backup.
 
-Pipeline per turn: Gnani Prisma v2.5 (speech to text) -> IndicTrans2 (translation, runs locally)
--> Gnani Timbre v2.5 (text to speech). The translation step sits behind a `Translator` interface
-so it can be swapped.
+Roles are independent of languages: the customer and the rider can each use any of the 10
+languages, in either direction, and either can answer by voice or with a quick reply. Any language
+pair shown in demos or tests is only an example; the demo casting is not decided.
 
-Status: work in progress. Done so far: the Gnani client, the IndicTrans2 translator and the
-`/turn` API. The web UI is built (phone check pending); the evaluation is next.
+Pipeline per turn: Gnani Prisma (speech to text) -> fact extraction (native-script rules per
+language) -> IndicTrans2 (translation, runs locally) -> Gnani Timbre (text to speech, loudness
+normalized for outdoor playback). No hosted LLM.
+
+Status: portfolio project, work in progress. The room backend, both screens and the offline
+evaluation tooling are built and tested with fakes. The real-voice evaluation has not been run yet,
+so this README makes no accuracy claim; results will be in `docs/EVAL.md` when they exist.
+
+## Languages and support tiers
+
+Any-to-any across the 10 languages Gnani supports for both speech input and output:
+Bengali, English, Gujarati, Hindi, Kannada, Malayalam, Marathi, Punjabi, Tamil, Telugu.
+
+| Tier | Languages | What backs it |
+|---|---|---|
+| Verified core | kn, en, hi, bn | native-word fact extraction rules and a synthetic gold set; quick replies in bn and hi partly author-reviewed (see below) |
+| Reviewed | te | quick replies to be checked by a speaker |
+| Beta | gu, ml, mr, pa, ta | the path is wired through the language table; labelled "beta" in the UI; quality is not evaluated |
+
+Odia, Assamese and Urdu are not offered: Gnani supports none of them for both speech input and
+output, and a translation-only language cannot be spoken or heard here.
+
+Quick replies exist for both roles in all 10 languages and are sent in the recipient's language.
+Rider: "I'm at the gate", "Which floor?", "Coming in 2 minutes". Customer: "Come to the gate",
+"I'm coming down", "Leave it at the security desk". They are fixed phrases, not free speech.
+Review is tracked per phrase: only the rider's bn and hi phrases are author-reviewed; every other
+translation is machine output, marked unreviewed in the UI until a speaker checks it. The fixed
+"Come to the gate" cannot carry a number, so a customer who needs to name a gate says it by voice.
+
+## How it works
+
+1. The customer creates a room and shares the 6-character code; the rider joins with it. Each
+   participant gets a random 128-bit token, sent as a Bearer header.
+2. Either person taps the talk button, speaks, and taps again. The server runs speech to text,
+   fact extraction (on the speaker's language), translation and text to speech.
+3. The other person's phone shows chips (gate, floor, cross/main, landmark) and auto-plays the
+   audio. Repeat replays the audio locally with no network call. The speaker sees chips of what
+   they said.
+4. Either person can tap a quick reply; the other sees it as text and hears it. On the rider
+   screen the talk button is secondary ("use when stopped") and the quick replies come first.
+
+Privacy: addresses are personal data. Rooms are in memory and expire (30 min idle, 2 h hard).
+Transcripts are never logged or stored. Tests, evaluation and demos use synthetic addresses only.
+
+Honest limits: values the speech recognizer renders ambiguously (for example digit-by-digit flat
+numbers) are shown as heard, not guessed; a "1/N" floor is shown with low confidence. Number and
+landmark masking in translation is not built yet, so a translated number can still be wrong; the
+chips are extracted from the original transcript for that reason.
 
 ## Requirements
 
-- Windows, Python 3.12 (managed by `uv`), and an NVIDIA GPU (the model used 0.6 GB of VRAM in
-  fp16 on an RTX 3050; the code falls back to CPU, which I have not tested)
+- Windows, Python 3.12 (managed by `uv`), and an NVIDIA GPU (all three translation models together
+  use about 1.4 GB of VRAM in fp16 on an RTX 3050 6 GB; the code falls back to CPU, which I have not
+  tested)
 - Microsoft C++ Build Tools ("Desktop development with C++"): IndicTransToolkit compiles a
   Cython extension on install
-- A Hugging Face account that has accepted the terms for
-  `ai4bharat/indictrans2-indic-indic-dist-320M` (gated), then `uv run hf auth login`
+- A Hugging Face account that has accepted the terms for the three gated models
+  `ai4bharat/indictrans2-indic-indic-dist-320M`, `ai4bharat/indictrans2-en-indic-dist-200M` and
+  `ai4bharat/indictrans2-indic-en-dist-200M`, then `uv run hf auth login`
+- ffmpeg (only to convert evaluation recordings)
 - A Gnani API key in `.env` as `GNANI_API_KEY` (copy `.env.example`)
 
 ## Setup
@@ -57,50 +108,51 @@ from the locked one:
 Once, on a fast connection, run a plain `uv sync`. It fills the uv cache with the locked torch
 wheel, and from then on the flags are not needed.
 
-## Run the API
-
-```
-uv run --no-sync uvicorn saathi.app:create_app --factory --port 8000
-```
-
-Startup loads the model and runs one warm-up translation (about 15 s). Then
-`POST /turn` takes multipart `audio` (a 16 kHz mono WAV, 60 s at most), `src` and `tgt`
-(`bn`<->`kn` or `hi`<->`ta`) and returns the transcript, the translation, base64 WAV audio of the
-translation and per-stage timings. Each turn spends a small amount of Gnani credit.
-
-## Run the UI
-
-Start the server so the phone can reach it, then open the page:
+## Run
 
 ```
 uv run --no-sync uvicorn saathi.app:create_app --factory --host 0.0.0.0 --port 8000
 ```
 
-- Laptop: open `http://localhost:8000` (localhost counts as a secure context, so the microphone works).
-- Phone on the same Wi-Fi: open `http://<laptop-ip>:8000` (find the address with `ipconfig`). Windows
-  Firewall asks to allow Python on private networks the first time; allow it, or add an inbound rule
-  for TCP 8000.
-- The microphone only works on HTTPS or localhost. For a plain `http://<laptop-ip>:8000` origin on
-  Android Chrome: open `chrome://flags/#unsafely-treat-insecure-origin-as-secure`, add
-  `http://<laptop-ip>:8000`, set it to Enabled and relaunch Chrome. iOS Safari has no such flag and
-  would need real HTTPS (for example a tunnel); that is not set up.
-- Pick a pair, tap "Speak <language>", talk, tap again. A busy Gnani ("One moment...") is retried
-  automatically; after that, "Try again" resends the same recording.
+Startup loads the models and runs warm-up translations (about 12 s per model). Pages:
 
-UI checks (dev tools only, `npm ci` once):
+- `/customer.html` creates a room, shows what the rider says and sends quick replies.
+- `/rider.html` joins with the code, shows chips, plays audio and sends quick replies; it can also
+  record a turn.
+- Neither page preselects a language.
+- `/solo.html` is the original single-phone page (one device, both directions).
 
-```
-npm run typecheck   # tsc --noEmit, strict
-npm test            # node --test for the WAV encoder, retry policy and turn client
-npm run e2e         # Playwright, fake microphone, /turn intercepted (no Gnani calls)
-```
+The microphone only works on localhost or HTTPS. On a laptop, use `http://localhost:8000`. For two
+phones on a LAN, follow `docs/LAN_CHECK.md` (Android Chrome flag, hotspot, firewall rule and
+cleanup). iOS Safari has no such flag; an iPhone can only be the rider, and that is untested.
+This is a LAN-only project: no accounts, no history, no public deployment or tunnels.
 
-## Tests
+Each turn spends Gnani credit. Real evaluation calls go through a persisted ledger with a hard cap,
+and every evaluation script has a `--dry-run` that shows the planned calls first.
+
+## Tests and checks
 
 ```
-uv run pytest              # fast tests, no GPU or network
-uv run pytest -m model     # real IndicTrans2 model on the GPU (needs the cached weights)
-uv run ruff check . ; uv run mypy src tests scripts
+uv run --no-sync pytest              # fast tests, no GPU or network (fakes)
+uv run --no-sync pytest -m model     # real IndicTrans2 models on the GPU (needs the cached weights)
+uv run --no-sync ruff check . ; uv run --no-sync mypy src tests scripts
+npm ci                               # once; dev tooling only
+npm run typecheck                    # tsc --noEmit, strict
+npm test                             # node --test for the UI logic
+npm run e2e                          # Playwright, two browser contexts, fake Gnani and translator
 ```
 
-`uv run python scripts/smoke.py --langs bn` calls the real Gnani APIs and spends credits.
+Text-only fact extraction scores on the synthetic gold set: `uv run --no-sync python scripts/score_facts.py`.
+Those scores are optimistic (the gold texts are written in the forms the recognizer was observed to
+produce, not real recognizer output); the real test is the recorded-speech evaluation.
+
+## Evaluation
+
+- `docs/EVAL.md`: translation quality (done) and the speech evaluation (pending real results).
+- `scripts/eval_noise.py run --dry-run`: the noise evaluation plan. Recorded gold utterances are
+  played clean and mixed with real street-traffic noise at 20, 10 and 5 dB SNR, plus a pink-noise
+  stressor; critical-fact precision and recall are reported with bootstrap confidence intervals.
+  Recording instructions: `docs/recording/`.
+- `docs/DESIGN.md` (architecture and plan) and `docs/DECISIONS.md` (why things are the way they are).
+- Recordings of people stay in `eval/audio/` (gitignored) and are reported as consented human
+  speech.

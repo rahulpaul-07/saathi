@@ -24,3 +24,4 @@ eval/state/
 node_modules/
 test-results/
 playwright-report/
+scratch/

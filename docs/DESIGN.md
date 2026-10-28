@@ -7,9 +7,13 @@ git history.
 ## 1. Problem
 A generic two-way interpreter is already covered by Google Translate conversation mode, Bhashini
 and Samsung's interpreter. Saathi narrows to a problem they handle badly: a delivery customer
-giving directions to a rider who speaks another language, often code-mixed
+giving directions to a rider who uses another language, often code-mixed
 ("2nd cross, 3rd main, gate number 2 ke paas, opposite Ganesha temple"), with the rider in
 traffic on a bike.
+
+Roles are independent of languages. The customer and the rider can each use any of the 10
+languages in either direction, and either can speak a turn or send a quick reply. Every language
+pair named in this document, in tests or in demos is an example only; demo casting is TBD.
 
 ## 2. Goals and non-goals
 - Goals:
@@ -33,7 +37,7 @@ Kannada-English mixing works is measured by the day-one probe (`scripts/probe_co
 
 | Tier | Languages | What backs it |
 |---|---|---|
-| Verified core | kn, en, hi, bn | full evaluation, native-word extraction rules, reviewed quick replies |
+| Verified core | kn, en, hi, bn | full evaluation, native-word extraction rules (applied to whoever speaks that language), partly reviewed quick replies |
 | Reviewed | te | quick replies checked by a speaker, small human-speech smoke test (not in the main metric) |
 | Beta | gu, ml, mr, pa, ta | labelled "beta" in the UI and README; one TTS-generated smoke test each proving the path works, not quality |
 
@@ -44,11 +48,16 @@ lexicon reference. No per-language branches in the pipeline.
 ## 4. Users and core flow
 1. The customer creates a room and picks their language; the app shows a 6-character code and a
    link. The rider opens it on their phone and picks theirs.
-2. The customer holds the talk button and speaks the directions.
-3. The server runs STT, fact extraction, number masking, translation, restore, check, TTS.
-4. The rider's phone receives the event: chips appear, the translated audio auto-plays.
-5. The rider taps Repeat (replays locally, no call) or a quick reply ("I'm at the gate", "Which
-   floor?", "Coming in 2 minutes"), which is pre-translated and spoken to the customer.
+2. Either person taps to talk and speaks (the customer gives directions; the rider can ask or
+   answer by voice when stopped).
+3. The server runs STT, fact extraction on the speaker's language, number masking, translation to
+   the other person's language, restore, check, TTS.
+4. The other phone receives the event: chips appear, the translated audio auto-plays. The speaker's
+   own screen shows chips of what they said.
+5. Either person taps Repeat (replays locally, no call) or a quick reply, which is pre-translated
+   and spoken to the other person in their language. Rider: "I'm at the gate", "Which floor?",
+   "Coming in 2 minutes". Customer: "Come to the gate", "I'm coming down", "Leave it at the
+   security desk". Ids are valid per sender role.
 
 ## 5. Architecture
 ```text
@@ -109,9 +118,11 @@ about 30 bits); a third participant is refused.
   320M, en-indic 200M, indic-en 200M), loaded lazily by route. Greedy decoding with the runaway
   guard stays (docs/EVAL.md). VRAM with all three loaded is measured in slice 0 (estimate
   about 1.5 GB of 6 GB; not yet verified).
-- Quick replies: written once in English, machine-translated offline into all 10, stored as a
-  static table with a review status per language (bn, hi: author; kn, te: friends; the rest
-  "unreviewed"). Never translated at runtime. Audio is synthesized on first use and cached.
+- Quick replies: six phrases written once in English (three per sender role), machine-translated
+  offline into all 10 by `scripts/gen_quick_replies.py`, stored as a static table with a review
+  status per phrase (the rider's bn and hi phrases: author-reviewed; the rest pending). Sent in the
+  recipient's language, never translated at runtime. Audio is synthesized on first use and cached
+  per (language, phrase).
 - Noise: the STT API has no denoise option. Ship browser `noiseSuppression` and
   `autoGainControl`. Loudness-normalize TTS output for the rider (audibility in wind is checked
   by hand outdoors, not by SNR). RNNoise and a local LLM are out; revisit after Oct 19 only with
@@ -119,8 +130,9 @@ about 30 bits); a third participant is refused.
   4.0), generated noise as a fallback. SNR is computed against speech-active RMS, seeded.
 - Transport: upload with POST, push to the other phone with Server-Sent Events. Rejected:
   WebSocket (more machinery for one-way pushes), polling.
-- Network: LAN only, no public tunnel. Mic needs a secure context, so only the customer phone
-  needs HTTPS or the Chrome insecure-origin flag; the rider phone has no microphone use.
+- Network: LAN only, no public tunnel. Mic needs a secure context, so any phone that
+  records (the customer's always, the rider's only for the optional talk button) needs HTTPS or the
+  Chrome insecure-origin flag; quick replies need no microphone.
 - Kept from the first design: plain ES modules with JSDoc and strict `tsc`; the browser encodes
   16 kHz mono WAV itself; UI and API on one origin (no CORS); Gnani 429 handling with backoff
   and a kept recording. Details in `DECISIONS.md`.
@@ -188,7 +200,7 @@ slice 6). The 290 cap is NOT approved until the author reports the credit balanc
 - Must: rooms, rider screen with chips and Repeat, universal extraction plus kn/en rules, masking
   with measurement, noise evaluation, any-to-any translation, 10-language table.
 - Should: hi/bn native rules, quick replies in all 10, localized labels, README with demo video.
-- Cut order if time runs out: localized labels first; never the chips or the minimal quick replies (3 phrases in en, kn, hi, bn; they are the rider's only way to respond). The full 10-language table follows after Oct 19.
+- Cut order if time runs out: localized labels first; never the chips or the quick replies (3 phrases per role; the rider's quick replies are the safe way to respond, and the table now covers all 10 languages).
 - Won't: see section 2 non-goals.
 
 ## 13. Slice plan
@@ -200,7 +212,7 @@ Build days Oct 12-16; away Oct 17-18 (hackathon); Oct 19 to Nov 6; submit Nov 7.
 | 0 | Oct 12 | Day-one probe (dry run reviewed, then run) and its findings; 10-language data table; three-model routing; VRAM with all three loaded; en-to-hi/bn and a rider-side route working locally | in progress (probe built) |
 | 1 | Oct 13-14 | Fact extractor: universal layer and kn/en native rules, synthetic gold set with dev/test split, text-only scores (no Gnani); Kannada and Telugu recording scripts (due Oct 13) | |
 | 2 | Oct 14-15 | Room backend: create/join, tokens, TTL, SSE, in-memory turn audio, rate limits; pipeline returns translation, facts, verified; fakes in tests | |
-| 3 | Oct 15-16 | Rider and customer screens: chips, auto-play, Repeat, language picker for 10 languages, two-context Playwright test; minimal quick replies (3 phrases x en, kn, hi, bn) are CORE; localized labels only if time (cut first) | |
+| 3 | Oct 15-16 | Rider and customer screens: chips, auto-play, Repeat, language picker for 10 languages, two-context Playwright test; quick replies (3 phrases per role, all 10 languages) are CORE; localized labels only if time (cut first) | |
 | 4 | Oct 16 | Demo core integrated: real Gnani turn (few calls), TTS loudness normalization, LAN two-phone check; buffer for slips | |
 | - | Oct 17-18 | away | |
 | 5 | Oct 19-21 | Number and landmark masking, restore, fact-summary fallback; 3-arm text A/B; hi and bn native extraction rules | |

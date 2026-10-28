@@ -6,6 +6,10 @@ audio, in a short-lived room. Gnani STT/TTS plus local IndicTrans2, any-to-any a
 languages Gnani supports for both (bn en gu hi kn ml mr pa ta te). Direction change of 2026-10-12;
 see docs/DESIGN.md.
 
+Roles are independent of languages: customer and rider can each use any of the 10, either can
+speak a turn or send a quick reply, and no default, fixture or doc may tie a role to a language.
+Any pair named in tests or demos is an example; demo casting is TBD.
+
 This file is the shared instruction file for every coding agent used on this repo
 (Claude Code, Codex, Copilot, Cursor). Keep it accurate and short.
 
@@ -47,7 +51,7 @@ This file is the shared instruction file for every coding agent used on this rep
   (gitignored) and are reported as "consented human speech".
 - Language support is data in one table (`languages.py`), never per-language branches.
 - Tiers: kn, en, hi, bn verified; te reviewed; gu, ml, mr, pa, ta beta (labelled in UI and README).
-- No hosted LLM. Cut order if time runs out: localized labels first; never the chips or the minimal quick replies (3 phrases in en, kn, hi, bn).
+- No hosted LLM. Cut order if time runs out: localized labels first; never the chips or the quick replies (3 phrases per role, all 10 languages, review status per phrase).
 
 ## Out of scope
 

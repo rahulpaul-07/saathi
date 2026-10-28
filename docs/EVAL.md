@@ -98,9 +98,12 @@ No recordings of either phone case exist, so no audio-level check was possible.
 
 ## STT, latency, start-of-clip: pending
 
-Everything here needs Gnani calls and has not been run. Call plan: 40 TTS + 41 turns x 2 + 10
-real-voice STT = 132 expected, hard cap 155, at most 3 calls per 10 s (`eval_turns.py plan`).
-Expected outputs, all labeled "clean synthetic audio" where TTS-made:
+Everything here needs Gnani calls and has not been run. The old FLORES-based plan
+(`eval_turns.py`, 155-call cap) was replaced on 2026-10-29: the call plan and hard cap of 290 now
+live in docs/DESIGN.md section 11, and the noise evaluation is `scripts/eval_noise.py` (see
+docs/DECISIONS.md "Priority 2"). The latency study has no script yet. The list below is the old
+plan's intent, kept until the new results replace it. Expected outputs, all labeled "clean
+synthetic audio" where TTS-made:
 
 - turn latency p50/p95 per stage for bn->kn, 40 measured turns (the first is a warm-up);
   with n=40 the p95 is close to the maximum;
@@ -115,12 +118,5 @@ set; the reader may deviate from the printed text, which counts as an STT error.
 
 ## How to record the real-speech set
 
-1. `uv run --no-sync python scripts/eval_turns.py sentences` writes
-   `eval/audio/real/sentences.txt`: ten lines, a file name and the sentence to read. Some
-   FLORES lines carry stray quote marks; read the words, not the quotes.
-2. In Audacity: set the project rate (bottom left) to 16000 Hz and the input to Mono. Record one
-   sentence in a quiet room, at normal speaking pace, starting after a short pause.
-3. File > Export > Export as WAV, "Signed 16-bit PCM", named exactly as on the line (for example
-   `bn_0080.wav`) into `eval/audio/real/`. The folder is gitignored; do not commit recordings.
-4. `eval_turns.py stt-real` validates all ten files (16 kHz mono 16-bit, 1 to 60 s) before it
-   spends any call.
+Superseded by the gold-set recordings: see docs/recording/rahul_script.md (the old
+`eval_turns.py sentences` / `stt-real` steps no longer exist).
