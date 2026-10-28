@@ -2,10 +2,13 @@
 import { MAX_AUTO_RETRIES } from "./retry.js";
 import { wavUrlFromBase64 } from "./player.js";
 import { RecorderError, startRecording, toWav } from "./recorder.js";
+import { parseLanguages } from "./languages.js";
+import { getJson } from "./room-client.js";
 import { sendTurn } from "./turn-client.js";
+import { fillLanguageSelect } from "./ui.js";
 
-/** @type {Record<string, string>} */
-const LANGUAGE_NAMES = { bn: "Bengali", kn: "Kannada", hi: "Hindi", ta: "Tamil" };
+/** @type {import("./languages.js").Language[]} */
+let languages = [];
 
 /**
  * @template {HTMLElement} T
@@ -29,9 +32,7 @@ const transcriptEl = byId("transcript", HTMLElement);
 const translationEl = byId("translation", HTMLElement);
 const replayButton = byId("replay", HTMLButtonElement);
 const timingsEl = byId("timings", HTMLElement);
-const pairInputs = /** @type {HTMLInputElement[]} */ ([
-  ...document.querySelectorAll('input[name="pair"]'),
-]);
+const pickers = [byId("lang-a", HTMLSelectElement), byId("lang-b", HTMLSelectElement)];
 
 /**
  * @typedef {{wav: Blob, src: string, tgt: string}} Pending a recording not yet turned into a result
@@ -49,10 +50,15 @@ const state = {
   audioUrl: null,
 };
 
-/** @returns {string[]} the two language codes of the selected pair */
+/** @returns {string[] | null} the two chosen language codes, or null until they are two different ones */
 function currentPair() {
-  const selected = pairInputs.find((input) => input.checked);
-  return (selected?.value ?? "bn,kn").split(",");
+  const [a, b] = pickers.map((picker) => picker.value);
+  return a && b && a !== b ? [a, b] : null;
+}
+
+/** @param {string} code */
+function languageName(code) {
+  return languages.find((language) => language.code === code)?.name ?? code;
 }
 
 /**
@@ -71,14 +77,14 @@ function renderControls() {
     const label = button.querySelector(".label");
     const isRecordingThis = recording && state.side === side;
     if (label) {
-      label.textContent = isRecordingThis
-        ? "Stop and translate"
-        : `Speak ${LANGUAGE_NAMES[pair[side]]}`;
+      if (isRecordingThis) label.textContent = "Stop and translate";
+      else label.textContent = pair ? `Speak ${languageName(pair[side])}` : "Choose two languages";
     }
     button.setAttribute("aria-pressed", String(isRecordingThis));
-    button.disabled = state.busy || state.pending !== null || (recording && !isRecordingThis);
+    button.disabled =
+      !pair || state.busy || state.pending !== null || (recording && !isRecordingThis);
   });
-  for (const input of pairInputs) input.disabled = state.busy || recording || state.pending !== null;
+  for (const picker of pickers) picker.disabled = state.busy || recording || state.pending !== null;
   actionsEl.hidden = state.pending === null || state.busy;
 }
 
@@ -103,7 +109,9 @@ async function finishRecording() {
   const recording = state.recording;
   if (!recording || state.busy) return;
   const tappedStopAt = performance.now();
-  const [src, tgt] = state.side === 0 ? currentPair() : [...currentPair()].reverse();
+  const pair = currentPair();
+  if (!pair) return; // pickers are locked while recording, so this cannot happen
+  const [src, tgt] = state.side === 0 ? pair : [...pair].reverse();
   state.recording = null;
   state.busy = true;
   renderControls();
@@ -236,5 +244,12 @@ replayButton.addEventListener("click", () => {
   void playCurrent();
 });
 
-for (const input of pairInputs) input.addEventListener("change", renderControls);
+for (const picker of pickers) picker.addEventListener("change", renderControls);
+
+try {
+  languages = parseLanguages(await getJson("/languages"));
+  for (const picker of pickers) fillLanguageSelect(picker, languages);
+} catch {
+  setStatus("Could not load the language list. Reload the page.", true);
+}
 renderControls();

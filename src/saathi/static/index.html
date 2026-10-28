@@ -12,52 +12,17 @@
     <main>
       <header>
         <h1>Saathi</h1>
-        <p class="sub">Tap, speak, tap again. The other person hears it in their language.</p>
+        <p class="sub">
+          The customer speaks the directions. The delivery rider gets the gate, floor and landmark
+          in big letters, and hears them in their own language. Both pick any language, and
+          either can answer by voice or with a quick reply.
+        </p>
       </header>
-
-      <fieldset class="pairs">
-        <legend>Language pair</legend>
-        <label><input type="radio" name="pair" value="bn,kn" checked /> Bengali and Kannada</label>
-        <label><input type="radio" name="pair" value="hi,ta" /> Hindi and Tamil</label>
-      </fieldset>
-
-      <div class="talk">
-        <button type="button" class="talk-btn" id="talk-a" aria-pressed="false">
-          <svg class="icon icon-mic" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2Z" />
-          </svg>
-          <svg class="icon icon-stop" viewBox="0 0 24 24" aria-hidden="true">
-            <rect x="6" y="6" width="12" height="12" rx="2" />
-          </svg>
-          <span class="label"></span>
-        </button>
-        <button type="button" class="talk-btn" id="talk-b" aria-pressed="false">
-          <svg class="icon icon-mic" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2Z" />
-          </svg>
-          <svg class="icon icon-stop" viewBox="0 0 24 24" aria-hidden="true">
-            <rect x="6" y="6" width="12" height="12" rx="2" />
-          </svg>
-          <span class="label"></span>
-        </button>
-      </div>
-
-      <p id="status" class="status" role="status" aria-live="polite">Ready.</p>
-
-      <div id="actions" class="actions" hidden>
-        <button type="button" id="retry">Try again</button>
-        <button type="button" id="discard" class="secondary">Discard recording</button>
-      </div>
-
-      <section id="result" class="result" hidden aria-label="Last turn">
-        <h2>Heard</h2>
-        <p id="transcript"></p>
-        <h2>Translation</h2>
-        <p id="translation"></p>
-        <button type="button" id="replay" class="secondary">Play again</button>
-        <dl class="timings" id="timings"></dl>
-      </section>
+      <nav class="entry" aria-label="Choose your role">
+        <a class="big-btn" href="customer.html">I am the customer</a>
+        <a class="big-btn secondary" href="rider.html">I am the delivery rider</a>
+      </nav>
+      <p class="sub"><a href="solo.html">Single-phone test page</a></p>
     </main>
-    <script type="module" src="js/main.js"></script>
   </body>
 </html>
