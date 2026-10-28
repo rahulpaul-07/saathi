@@ -3,12 +3,14 @@
 Request shapes follow docs.gnani.ai/api/STT/speech-to-text and /api/TTS/tts-inference.
 """
 
+import asyncio
 import logging
 
 import httpx
 
 from saathi.audio import AudioError, finalize_streaming_wav
 from saathi.config import Settings
+from saathi.loudness import normalize_or_passthrough
 
 log = logging.getLogger(__name__)
 
@@ -75,10 +77,12 @@ class GnaniClient:
         if container != "wav":
             return response.content
         try:
-            return finalize_streaming_wav(response.content)
+            wav = finalize_streaming_wav(response.content)
         except AudioError as exc:
             log.error("Gnani TTS returned an invalid WAV: %s", exc)
             raise GnaniError("speech service returned invalid audio") from exc
+        # The single place TTS audio is produced: turns and quick replies both come through here.
+        return await asyncio.to_thread(normalize_or_passthrough, wav)
 
     async def _post(self, path: str, **kwargs: object) -> httpx.Response:
         try:
