@@ -80,6 +80,26 @@ def test_routing_translator_dispatches_each_pair_to_its_model(
     assert [c[0] for c in calls] == ["indic-indic", "en-indic", "indic-en"]
 
 
+def test_all_90_directions_reach_the_right_model_with_their_own_codes(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls: list[tuple[str, str, str, str]] = []
+    router = RoutingTranslator()
+    monkeypatch.setattr(
+        router, "_by_route", {route: _RecordingRoute(route, calls) for route in ROUTE_MODELS}
+    )
+    pairs = list(itertools.permutations(LANGUAGES, 2))
+    for src, tgt in pairs:
+        router.translate("x", src, tgt)
+    assert [(c[2], c[3]) for c in calls] == pairs  # codes pass through unchanged, in order
+    for route, _, src, tgt in calls:
+        expected = "en-indic" if src == "en" else "indic-en" if tgt == "en" else "indic-indic"
+        assert route == expected
+        # en-indic and indic-en models are single-direction: the English side must be the right one.
+        assert ("en" in (src, tgt)) == (route != "indic-indic")
+    assert len(set(ROUTE_MODELS.values())) == 3  # three distinct checkpoints
+
+
 @pytest.mark.parametrize(("src", "tgt"), [("en", "en"), ("xx", "kn"), ("bn", "or")])
 def test_routing_translator_rejects_bad_pairs_before_loading_any_model(src: str, tgt: str) -> None:
     with pytest.raises(TranslationInputError):

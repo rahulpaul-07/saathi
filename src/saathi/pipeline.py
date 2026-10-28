@@ -5,6 +5,7 @@ import logging
 import time
 from dataclasses import dataclass
 
+from saathi.facts import Fact, extract_facts
 from saathi.gnani import GnaniClient
 from saathi.guard import has_repeated_phrase
 from saathi.languages import LANGUAGES
@@ -47,6 +48,11 @@ class TurnResult:
     translation: str
     audio: bytes
     timings: Timings
+    # Facts come from the source transcript, not the translation, so they survive a bad translation.
+    facts: tuple[Fact, ...] = ()
+    # True when the output passed the runaway guards. Number masking (slice 5) tightens this to
+    # "every number placeholder came back once"; until then it is the only check there is.
+    verified: bool = True
 
 
 def validate_pair(src: str, tgt: str) -> None:
@@ -102,4 +108,5 @@ async def run_turn(
         translation,
         speech,
         Timings(_ms(t0, t1), _ms(t1, t2), _ms(t2, t3), _ms(t0, t3)),
+        facts=tuple(extract_facts(transcript, src)),
     )
