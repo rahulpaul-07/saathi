@@ -36,8 +36,13 @@ def resample_to_16k(wav_bytes: bytes) -> bytes:
     return out.getvalue()
 
 
-def check_recording(wav_bytes: bytes) -> float:
-    """Validate a recorded clip before any paid call; returns its duration in seconds."""
+def check_recording(
+    wav_bytes: bytes, min_seconds: float = MIN_SECONDS, max_seconds: float | None = MAX_SECONDS
+) -> float:
+    """Validate a recorded clip before any paid call; returns its duration in seconds.
+
+    Speech clips use the default 1-60 s window; a noise bed passes its own bounds (no maximum).
+    """
     try:
         with wave.open(io.BytesIO(wav_bytes)) as clip:
             channels, width, rate = clip.getnchannels(), clip.getsampwidth(), clip.getframerate()
@@ -49,8 +54,11 @@ def check_recording(wav_bytes: bytes) -> float:
             f"need 16 kHz mono 16-bit, got {rate} Hz, {channels} channel(s), {width * 8}-bit"
         )
     seconds: float = frames / rate
-    if not MIN_SECONDS <= seconds <= MAX_SECONDS:
-        raise RecordingError(
-            f"duration {seconds:.1f} s is outside {MIN_SECONDS:.0f}-{MAX_SECONDS:.0f} s"
+    if seconds < min_seconds or (max_seconds is not None and seconds > max_seconds):
+        window = (
+            f"{min_seconds:.0f}-{max_seconds:.0f} s"
+            if max_seconds is not None
+            else f"at least {min_seconds:.0f} s"
         )
+        raise RecordingError(f"duration {seconds:.1f} s is outside {window}")
     return seconds
