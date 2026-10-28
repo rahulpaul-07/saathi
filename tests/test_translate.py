@@ -1,17 +1,22 @@
+import itertools
 from typing import Any
 
 import pytest
 from pydantic import ValidationError
 
 from saathi.config import Settings
+from saathi.languages import LANGUAGES
 from saathi.translate import (
     MAX_INPUT_CHARS,
+    ROUTE_MODELS,
     DegenerateTranslationError,
     IndicTrans2Translator,
+    RoutingTranslator,
     TranslationInputError,
     Translator,
     _Loaded,
     output_token_cap,
+    route_for,
     split_sentences,
     validate_request,
 )
@@ -42,6 +47,43 @@ def test_split_sentences_keeps_decimal_and_ignores_blank() -> None:
 def test_validate_request_rejects_bad_input(text: str, src: str, tgt: str) -> None:
     with pytest.raises(TranslationInputError):
         validate_request(text, src, tgt)
+
+
+def test_every_ordered_pair_has_exactly_one_route() -> None:
+    routes = {(s, t): route_for(s, t) for s, t in itertools.permutations(LANGUAGES, 2)}
+    assert len(routes) == 90
+    assert {r for (s, _), r in routes.items() if s == "en"} == {"en-indic"}
+    assert {r for (_, t), r in routes.items() if t == "en"} == {"indic-en"}
+    assert {r for (s, t), r in routes.items() if "en" not in (s, t)} == {"indic-indic"}
+
+
+class _RecordingRoute:
+    def __init__(self, route: str, calls: list[tuple[str, str, str, str]]) -> None:
+        self._route, self._calls = route, calls
+
+    def translate(self, text: str, src: str, tgt: str) -> str:
+        self._calls.append((self._route, text, src, tgt))
+        return f"{self._route}:{text}"
+
+
+def test_routing_translator_dispatches_each_pair_to_its_model(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls: list[tuple[str, str, str, str]] = []
+    router = RoutingTranslator()
+    monkeypatch.setattr(
+        router, "_by_route", {route: _RecordingRoute(route, calls) for route in ROUTE_MODELS}
+    )
+    assert router.translate("a", "bn", "kn") == "indic-indic:a"
+    assert router.translate("b", "en", "hi") == "en-indic:b"
+    assert router.translate("c", "ta", "en") == "indic-en:c"
+    assert [c[0] for c in calls] == ["indic-indic", "en-indic", "indic-en"]
+
+
+@pytest.mark.parametrize(("src", "tgt"), [("en", "en"), ("xx", "kn"), ("bn", "or")])
+def test_routing_translator_rejects_bad_pairs_before_loading_any_model(src: str, tgt: str) -> None:
+    with pytest.raises(TranslationInputError):
+        RoutingTranslator().translate("hello", src, tgt)
 
 
 def test_blank_text_returns_empty_without_loading_the_model(

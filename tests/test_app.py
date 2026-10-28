@@ -99,7 +99,7 @@ async def test_reverse_direction_uses_target_language_voice(
     assert json.loads(upstream.calls[1].request.content)["voice"] == "Nalini"
 
 
-@pytest.mark.parametrize(("src", "tgt"), [("bn", "hi"), ("bn", "bn"), ("xx", "kn"), ("bn", "")])
+@pytest.mark.parametrize(("src", "tgt"), [("bn", "ur"), ("bn", "bn"), ("xx", "kn"), ("bn", "")])
 async def test_unsupported_pair_is_rejected_before_any_paid_call(
     client: httpx.AsyncClient, upstream: respx.MockRouter, src: str, tgt: str
 ) -> None:

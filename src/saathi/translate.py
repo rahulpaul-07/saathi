@@ -13,6 +13,13 @@ from typing import Any, Protocol
 from saathi.languages import LANGUAGES
 
 DEFAULT_MODEL = "ai4bharat/indictrans2-indic-indic-dist-320M"
+ENGLISH_CODE = "eng_Latn"
+# One distilled model per direction family; every pair of LANGUAGES maps to exactly one route.
+ROUTE_MODELS: dict[str, str] = {
+    "indic-indic": DEFAULT_MODEL,
+    "en-indic": "ai4bharat/indictrans2-en-indic-dist-200M",
+    "indic-en": "ai4bharat/indictrans2-indic-en-dist-200M",
+}
 MAX_INPUT_CHARS = 2000  # a 60 s STT clip is well under this
 MAX_BEAMS = 10
 # Normal output is 0.9-1.2x the input in tokens (measured); a runaway loop is ~8x. 2x plus slack
@@ -54,6 +61,15 @@ def output_token_cap(longest_input_tokens: int, model_limit: int) -> int:
 
 def split_sentences(text: str) -> list[str]:
     return [part for part in _SENTENCE_BREAK.split(text.strip()) if part]
+
+
+def route_for(src: str, tgt: str) -> str:
+    """Which model family translates src -> tgt (keys from `LANGUAGES`, already validated)."""
+    if LANGUAGES[src].indictrans_code == ENGLISH_CODE:
+        return "en-indic"
+    if LANGUAGES[tgt].indictrans_code == ENGLISH_CODE:
+        return "indic-en"
+    return "indic-indic"
 
 
 def validate_request(text: str, src: str, tgt: str) -> list[str]:
@@ -177,3 +193,34 @@ class IndicTrans2Translator:
             cap=cap,
             capped=not bool(finished.all()),
         )
+
+
+class RoutingTranslator:
+    """Any-to-any translation: each pair goes to the indic-indic, en-indic or indic-en model.
+
+    Models load lazily per route (or all at once with `load`), so a deployment that never
+    translates into English never pays the VRAM for that model.
+    """
+
+    def __init__(self, *, num_beams: int = 1, max_length: int = 256) -> None:
+        self._by_route = {
+            route: IndicTrans2Translator(
+                model_name=name, num_beams=num_beams, max_length=max_length
+            )
+            for route, name in ROUTE_MODELS.items()
+        }
+
+    def load(self, routes: tuple[str, ...] = tuple(ROUTE_MODELS)) -> None:
+        for route in routes:
+            self._by_route[route].load()
+
+    def translate(self, text: str, src: str, tgt: str) -> str:
+        return self._by_route[self._route(src, tgt)].translate(text, src, tgt)
+
+    def translate_with_stats(self, text: str, src: str, tgt: str) -> TranslationResult:
+        return self._by_route[self._route(src, tgt)].translate_with_stats(text, src, tgt)
+
+    @staticmethod
+    def _route(src: str, tgt: str) -> str:
+        validate_request("", src, tgt)  # language keys and src != tgt, before choosing a model
+        return route_for(src, tgt)

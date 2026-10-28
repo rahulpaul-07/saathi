@@ -24,11 +24,12 @@ from saathi.pipeline import (
     validate_pair,
 )
 from saathi.ratelimit import SlidingWindowLimiter
-from saathi.translate import IndicTrans2Translator, Translator
+from saathi.translate import RoutingTranslator, Translator
 
 log = logging.getLogger(__name__)
 
-WARMUP_TEXT = "আমি যাচ্ছি।"
+# One throwaway translation per model route: (text, src, tgt) for indic-indic, en-indic, indic-en.
+WARMUPS = (("আমি যাচ্ছি।", "bn", "kn"), ("I am coming.", "en", "hi"), ("मैं आ रहा हूँ।", "hi", "en"))
 STATIC_DIR = Path(__file__).parent / "static"
 
 # Windows takes MIME types from the registry, where .js is sometimes text/plain, and browsers
@@ -63,16 +64,18 @@ def create_app(
     settings = settings or get_settings()
     gnani = gnani or GnaniClient(settings)
     default_translator = translator is None
-    translator = translator or IndicTrans2Translator(num_beams=settings.translator_num_beams)
+    translator = translator or RoutingTranslator(num_beams=settings.translator_num_beams)
     limiter = SlidingWindowLimiter(settings.turn_rate_limit_per_minute)
 
     @asynccontextmanager
     async def lifespan(_: FastAPI) -> AsyncIterator[None]:
-        if isinstance(translator, IndicTrans2Translator) and default_translator:
-            # Load and run one throwaway translation now: loading takes ~12 s and the first
-            # generate() adds ~2.5 s of one-time CUDA setup, neither of which a user should wait on.
+        if isinstance(translator, RoutingTranslator) and default_translator:
+            # Load every model and run one throwaway translation each now: loading takes ~12 s
+            # and the first generate() adds ~2.5 s of one-time CUDA setup per model, neither of
+            # which a user should wait on.
             await asyncio.to_thread(translator.load)
-            await asyncio.to_thread(translator.translate, WARMUP_TEXT, "bn", "kn")
+            for text, src, tgt in WARMUPS:
+                await asyncio.to_thread(translator.translate, text, src, tgt)
         yield
         await gnani.aclose()
 

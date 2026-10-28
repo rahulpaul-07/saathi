@@ -7,7 +7,7 @@ from dataclasses import dataclass
 
 from saathi.gnani import GnaniClient
 from saathi.guard import has_repeated_phrase
-from saathi.languages import LANGUAGES, SUPPORTED_PAIRS
+from saathi.languages import LANGUAGES
 from saathi.translate import DegenerateTranslationError, Translator
 
 log = logging.getLogger(__name__)
@@ -50,7 +50,7 @@ class TurnResult:
 
 
 def validate_pair(src: str, tgt: str) -> None:
-    if frozenset({src, tgt}) not in SUPPORTED_PAIRS:
+    if src not in LANGUAGES or tgt not in LANGUAGES or src == tgt:
         raise TurnInputError("unsupported language pair")
 
 
