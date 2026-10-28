@@ -19,6 +19,8 @@ dependencies = [
     "sentencepiece==0.2.2",
     # chrF++ for the slice 5 evaluation; already pulled in by IndicTransToolkit, pinned directly.
     "sacrebleu==2.6.0",
+    # WAV loudness normalization and the noise mixer; was only a transitive dependency before.
+    "numpy==2.5.3",
 ]
 
 [tool.uv.sources]
