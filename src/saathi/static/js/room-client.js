@@ -107,16 +107,33 @@ export function sendQuickReply(room, phraseId) {
 /**
  * @param {RoomInfo} room
  * @param {Blob} wav
+ * @param {boolean} [demoClip] a prepared demo clip, not live speech; the listener is told
  * @returns {Promise<Result>}
  */
-export function postTurn(room, wav) {
+export function postTurn(room, wav, demoClip = false) {
   const form = new FormData();
   form.append("audio", wav, "turn.wav");
   return request(`/rooms/${room.code}/turn`, {
     method: "POST",
     body: form,
-    headers: bearer(room.token),
+    headers: demoClip ? { ...bearer(room.token), "X-Demo-Clip": "1" } : bearer(room.token),
   });
+}
+
+/**
+ * A prepared demo clip as a WAV blob (demo input mode only).
+ * @param {string} clipId
+ * @returns {Promise<Blob | null>}
+ */
+export async function fetchDemoClip(clipId) {
+  try {
+    const response = await fetch(`/demo/clips/${encodeURIComponent(clipId)}.wav`, {
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+    });
+    return response.ok ? await response.blob() : null;
+  } catch {
+    return null;
+  }
 }
 
 /**

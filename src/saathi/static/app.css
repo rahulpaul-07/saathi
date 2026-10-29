@@ -113,3 +113,14 @@ button.secondary { min-height: 2.75rem; padding: 0 1rem; border-radius: 0.6rem; 
 .talk-btn.minor[aria-pressed="false"]:not(:disabled) { border-width: 2px; }
 .talk-btn.minor .icon { width: 1.25rem; height: 1.25rem; }
 #repeat.secondary { margin: 0.5rem 0; }
+.badge {
+  display: inline-block; margin: 0.25rem 0; padding: 0.15rem 0.6rem; border: 2px solid var(--accent);
+  border-radius: 999px; color: var(--accent); font-size: 0.85rem; font-weight: 700;
+}
+.demo-banner {
+  margin: 0 0 1rem; padding: 0.5rem 0.75rem; border: 2px dashed var(--accent);
+  border-radius: 0.6rem; color: var(--text); font-weight: 600;
+}
+.demo { display: grid; gap: 0.5rem; margin: 1rem 0; }
+.demo select { min-height: 2.75rem; }
+.demo button { min-height: 2.75rem; }

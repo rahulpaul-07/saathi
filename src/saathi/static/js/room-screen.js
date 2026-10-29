@@ -5,10 +5,18 @@
 // or on any language.
 import { AudioPlayer } from "./audio-player.js";
 import { chipsFromFacts } from "./chips.js";
+import { clipsForLanguage, parseDemoClips } from "./demo-clips.js";
 import { languageLabel } from "./languages.js";
 import { parseQuickReplyTable, quickReplyOptions } from "./quick-replies.js";
 import { RecorderError, startRecording, toWav } from "./recorder.js";
-import { fetchAudioUrl, getJson, postTurn, readEvents, sendQuickReply } from "./room-client.js";
+import {
+  fetchAudioUrl,
+  fetchDemoClip,
+  getJson,
+  postTurn,
+  readEvents,
+  sendQuickReply,
+} from "./room-client.js";
 import { byId, renderChips, setStatus } from "./ui.js";
 
 const RECONNECT_DELAY_MS = 2000;
@@ -37,6 +45,7 @@ export function enterRoom(room, languages, players) {
   const sentEmptyEl = byId("sent-empty", HTMLElement);
   const incomingStatusEl = byId("incoming-status", HTMLElement);
   const chipsEl = byId("chips", HTMLElement);
+  const chipsNoteEl = byId("chips-note", HTMLElement);
   const translationEl = byId("translation", HTMLElement);
   const repeatButton = byId("repeat", HTMLButtonElement);
   const repliesEl = byId("replies", HTMLElement);
@@ -45,11 +54,25 @@ export function enterRoom(room, languages, players) {
   const replyTextEl = byId("reply-text", HTMLElement);
   const replyNoteEl = byId("reply-note", HTMLElement);
   const replyReplayButton = byId("reply-replay", HTMLButtonElement);
+  const demoBannerEl = byId("demo-banner", HTMLElement);
+  const demoEl = byId("demo", HTMLElement);
+  const demoSelect = byId("demo-clip", HTMLSelectElement);
+  const demoSendButton = byId("demo-send", HTMLButtonElement);
+  const demoBadgeEl = byId("demo-badge", HTMLElement);
+  const sentDemoBadgeEl = byId("sent-demo-badge", HTMLElement);
 
   const idleLabel = talkLabel.textContent ?? "";
   /** @type {{recording: import("./recorder.js").Recording | null, busy: boolean,
-   *   peerJoined: boolean, pending: Blob | null}} */
-  const state = { recording: null, busy: false, peerJoined: false, pending: null };
+   *   peerJoined: boolean, pending: Blob | null, pendingDemo: boolean}} */
+  const state = {
+    recording: null,
+    busy: false,
+    peerJoined: false,
+    pending: null,
+    pendingDemo: false,
+  };
+  /** @type {import("./demo-clips.js").DemoClip[]} */
+  let demoClips = [];
   const stream = new AbortController();
   /** @type {import("./quick-replies.js").QuickReplyTable | null} */
   let quickReplies = null;
@@ -69,7 +92,52 @@ export function enterRoom(room, languages, players) {
     talkLabel.textContent = recording ? "Tap to stop and send" : idleLabel;
     actionsEl.hidden = state.pending === null || state.busy;
     sentEmptyEl.hidden = sentChipsEl.childElementCount > 0;
+    demoSendButton.disabled =
+      !state.peerJoined || state.busy || state.pending !== null || demoClips.length === 0;
     renderQuickReplies();
+  }
+
+  /** Offer prepared clips only when the server has demo input on (it is off by default). */
+  async function setUpDemo() {
+    try {
+      const features = /** @type {any} */ (await getJson("/features"));
+      if (features?.demo_input !== true) return;
+      demoClips = clipsForLanguage(parseDemoClips(await getJson("/demo/clips")), room.language);
+    } catch {
+      return;
+    }
+    demoSelect.replaceChildren(
+      ...demoClips.map((clip) => {
+        const option = document.createElement("option");
+        option.value = clip.id;
+        option.textContent = clip.label;
+        return option;
+      }),
+    );
+    if (demoClips.length === 0) {
+      const none = document.createElement("option");
+      none.textContent = "No demo clips in this language";
+      demoSelect.replaceChildren(none);
+      demoSelect.disabled = true;
+    }
+    demoBannerEl.hidden = false;
+    demoEl.hidden = false;
+    render();
+  }
+
+  async function sendDemoClip() {
+    if (state.busy || state.pending !== null || !demoSelect.value) return;
+    state.busy = true;
+    render();
+    try {
+      setStatus(statusEl, "Loading demo clip...");
+      const clip = await fetchDemoClip(demoSelect.value);
+      if (!clip) setStatus(statusEl, "Could not load the demo clip.", true);
+      else await submit(clip, true);
+    } finally {
+      state.busy = false;
+      render();
+    }
   }
 
   function renderQuickReplies() {
@@ -131,8 +199,13 @@ export function enterRoom(room, languages, players) {
 
   /** @param {any} data */
   async function showIncomingTurn(data) {
-    renderChips(chipsEl, chipsFromFacts(data.facts, true));
+    const chips = chipsFromFacts(data.facts, true);
+    renderChips(chipsEl, chips);
+    chipsNoteEl.textContent = chips.some((chip) => chip.labelPending)
+      ? "Some labels are unreviewed machine spellings."
+      : "";
     translationEl.textContent = typeof data.translation === "string" ? data.translation : "";
+    demoBadgeEl.hidden = data.demo_clip !== true;
     setStatus(
       incomingStatusEl,
       data.verified
@@ -207,11 +280,13 @@ export function enterRoom(room, languages, players) {
   /**
    * Send a recording. It stays in `state.pending` for Try again when resending could help.
    * @param {Blob} wav
+   * @param {boolean} [demoClip] a prepared clip instead of live speech
    */
-  async function submit(wav) {
+  async function submit(wav, demoClip = false) {
     state.pending = wav;
+    state.pendingDemo = demoClip;
     setStatus(statusEl, "Sending...");
-    const result = await postTurn(room, wav);
+    const result = await postTurn(room, wav, demoClip);
     if (!result.ok) {
       if (!result.keepRecording) state.pending = null;
       setStatus(statusEl, result.message, true);
@@ -219,11 +294,13 @@ export function enterRoom(room, languages, players) {
     }
     state.pending = null;
     renderChips(sentChipsEl, chipsFromFacts(result.data.facts));
+    sentDemoBadgeEl.hidden = !demoClip;
+    const sent = demoClip ? "Sent demo clip" : "Sent";
     setStatus(
       statusEl,
       result.data.verified
-        ? `Sent. The ${peerRole} has these details.`
-        : "Sent, but check the translation.",
+        ? `${sent}. The ${peerRole} has these details.`
+        : `${sent}, but check the translation.`,
     );
   }
 
@@ -237,7 +314,7 @@ export function enterRoom(room, languages, players) {
     if (!pending || state.busy) return;
     state.busy = true;
     render();
-    void submit(pending).finally(() => {
+    void submit(pending, state.pendingDemo).finally(() => {
       state.busy = false;
       render();
     });
@@ -249,11 +326,13 @@ export function enterRoom(room, languages, players) {
   });
   repeatButton.addEventListener("click", () => void turnPlayer.replay());
   replyReplayButton.addEventListener("click", () => void replyPlayer.replay());
+  demoSendButton.addEventListener("click", () => void sendDemoClip());
 
   if (room.peer_language) showPeer(room.peer_language);
   render();
   void followRoom();
   void loadQuickReplies();
+  void setUpDemo();
 
   async function loadQuickReplies() {
     try {

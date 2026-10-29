@@ -14,6 +14,9 @@
         <h1>Customer</h1>
         <p class="sub"><a href="index.html">Back</a></p>
       </header>
+      <p id="demo-banner" class="demo-banner" hidden>
+        Demo mode: this screen can send prepared clips instead of live speech.
+      </p>
 
       <section id="setup" aria-label="Start a room">
         <label for="language">Your language</label>
@@ -48,7 +51,14 @@
           <button type="button" id="discard" class="secondary">Discard recording</button>
         </div>
 
+        <section id="demo" class="demo" hidden aria-label="Demo clip">
+          <label for="demo-clip">Demo clip in your language</label>
+          <select id="demo-clip"></select>
+          <button type="button" id="demo-send" class="secondary" disabled>Send demo clip</button>
+        </section>
+
         <h2 id="sent-heading">What the rider sees</h2>
+        <p id="sent-demo-badge" class="badge" hidden>Demo clip, not live speech</p>
         <ul id="sent-chips" class="chips" aria-labelledby="sent-heading" aria-live="polite"></ul>
         <p id="sent-empty" class="small">Nothing sent yet.</p>
 
@@ -58,7 +68,9 @@
 
         <h2 id="incoming-heading">From the rider</h2>
         <p id="incoming-status" class="status" role="status" aria-live="polite">Nothing received yet.</p>
+        <p id="demo-badge" class="badge" hidden>Demo clip, not live speech</p>
         <ul id="chips" class="chips big" aria-labelledby="incoming-heading" aria-live="polite"></ul>
+        <p id="chips-note" class="small"></p>
         <p id="translation" class="translation" lang="und"></p>
         <button type="button" id="repeat" class="secondary" disabled>Repeat</button>
 
