@@ -42,6 +42,16 @@ export class AudioPlayer {
     return this.replay();
   }
 
+  /**
+   * Load audio without starting it (catching up after a reload), taking ownership of the URL.
+   * @param {string} url
+   */
+  load(url) {
+    if (this.url) URL.revokeObjectURL(this.url);
+    this.url = url;
+    this.element.src = url;
+  }
+
   /** Replay what is loaded, locally; no network call. */
   async replay() {
     if (!this.url) return false;

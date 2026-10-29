@@ -271,3 +271,103 @@ test("the rider confirms or asks on card chips; a changed value stays marked unt
 
   expect(problems).toEqual([]);
 });
+
+/**
+ * A customer (ta) and a rider (ml) in one room; the pair is an arbitrary example.
+ * @param {import("@playwright/test").Browser} browser
+ */
+async function openRoom(browser) {
+  const customerContext = await browser.newContext();
+  const riderContext = await browser.newContext();
+  await customerContext.grantPermissions(["microphone"]);
+  const customer = await customerContext.newPage();
+  const rider = await riderContext.newPage();
+  const problems = [...watchConsole(customer), ...watchConsole(rider)];
+  await customer.goto("/customer.html");
+  await customer.locator("#language").selectOption("ta");
+  await customer.getByRole("button", { name: "Create room" }).click();
+  await expect(customer.locator("#code")).toHaveText(/^[A-Z0-9]{6}$/);
+  const code = (await customer.locator("#code").textContent()) ?? "";
+  await rider.goto(`/rider.html?code=${code}`);
+  await rider.locator("#language").selectOption("ml");
+  await rider.getByRole("button", { name: /Join/ }).click();
+  await expect(customer.locator("#talk")).toBeEnabled();
+  return { customer, rider, problems };
+}
+
+/** @param {import("@playwright/test").Page} page */
+async function speak(page) {
+  await page.locator("#talk").click();
+  await expect(page.locator("#status")).toContainText("Recording");
+  await page.waitForTimeout(1500);
+  await page.locator("#talk").click();
+}
+
+test("a reload rejoins the room and catches up the last message without playing it", async ({
+  browser,
+}) => {
+  const { customer, rider, problems } = await openRoom(browser);
+  /** @type {string[]} */
+  const played = [];
+  rider.on("request", (request) => {
+    if (/\/turns\/[^/]+\/audio$/.test(request.url())) played.push(request.url());
+  });
+
+  // The pages carry the policy and still work under it (the console watcher would catch a block).
+  const page = await rider.request.get("/rider.html");
+  expect(page.headers()["content-security-policy"]).toContain("script-src 'self'");
+  expect(page.headers()["content-security-policy"]).toContain("frame-ancestors 'none'");
+
+  await speak(customer);
+  await expect(rider.locator("#chips .chip-gate .chip-value")).toHaveText("2");
+  expect(played).toHaveLength(1);
+
+  await rider.reload();
+  await expect(rider.locator("#room")).toBeVisible();
+  await expect(rider.locator("#setup")).toBeHidden();
+  await expect(rider.locator("#peer")).toContainText("Customer joined");
+  await expect(rider.locator("#card-chips .chip-gate .chip-value")).toHaveText("2");
+  await expect(rider.locator("#chips .chip-gate .chip-value")).toHaveText("2");
+  await expect(rider.locator("#incoming-status")).toContainText("Last message");
+  await expect(rider.locator("#repeat")).toBeEnabled();
+  expect(played).toHaveLength(2); // fetched to be ready for Repeat, but not auto-played
+
+  // The customer reloads too and is still in the same room.
+  await customer.reload();
+  await expect(customer.locator("#room")).toBeVisible();
+  await expect(customer.locator("#peer")).toContainText("Rider joined");
+  await expect(customer.locator("#talk")).toBeEnabled();
+
+  expect(problems).toEqual([]);
+});
+
+test("a dropped stream shows Reconnecting and recovers by itself", async ({ browser }) => {
+  const { rider, problems } = await openRoom(browser);
+  await rider.route("**/events", (route) => route.abort());
+  await rider.reload();
+  await expect(rider.locator("#reconnecting")).toBeVisible();
+
+  await rider.unroute("**/events");
+  await expect(rider.locator("#reconnecting")).toBeHidden({ timeout: 15_000 });
+  await expect(rider.locator("#peer")).toContainText("Customer joined");
+  // Failed fetches are logged by the browser as console errors; nothing else may be.
+  expect(problems.filter((text) => !text.includes("ERR_FAILED"))).toEqual([]);
+});
+
+test("when the room ends the other side returns to the join screen with a message", async ({
+  browser,
+}) => {
+  const { customer, rider, problems } = await openRoom(browser);
+  await customer.getByRole("button", { name: /End|Close/ }).click();
+
+  await expect(rider.locator("#setup")).toBeVisible();
+  await expect(rider.locator("#join-status")).toHaveText("The room has ended.");
+  await expect(rider.locator("#room")).toBeHidden();
+  // The stored session is gone, so another reload stays on the join screen.
+  await rider.reload();
+  await expect(rider.locator("#setup")).toBeVisible();
+  await expect(rider.locator("#join-status")).toHaveText("");
+
+  await expect(customer.locator("#setup")).toBeVisible();
+  expect(problems).toEqual([]);
+});

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
     <title>Saathi rider</title>
-    <link rel="icon" href="data:," />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="app.css" />
   </head>
   <body>
@@ -29,6 +29,7 @@
       </section>
 
       <section id="room" hidden aria-label="Room">
+        <p id="reconnecting" class="status error" role="status" aria-live="polite" hidden>Reconnecting...</p>
         <p id="peer" class="small" role="status" aria-live="polite">Waiting for the customer.</p>
         <p id="incoming-status" class="status" role="status" aria-live="polite">Waiting for directions.</p>
 

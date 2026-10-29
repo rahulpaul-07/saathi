@@ -3,6 +3,7 @@ import { AudioPlayer } from "./audio-player.js";
 import { parseLanguages } from "./languages.js";
 import { getJson, joinRoom } from "./room-client.js";
 import { enterRoom } from "./room-screen.js";
+import { clearSession, loadSession, saveSession, setNotice, takeNotice } from "./session.js";
 import { byId, fillLanguageSelect, requireChoice, setStatus } from "./ui.js";
 
 const CODE_PATTERN = /^[A-Z0-9]{6}$/;
@@ -34,10 +35,29 @@ async function onJoin() {
     setStatus(joinStatusEl, result.message, true);
     return;
   }
+  saveSession(sessionStorage, result.data);
+  showRoom(result.data, players);
+  if (!unlocked) setStatus(statusEl, "Tap Repeat to hear each message.");
+}
+
+/**
+ * @param {import("./room-client.js").RoomInfo} info
+ * @param {AudioPlayer[]} players
+ */
+function showRoom(info, players) {
   setupEl.hidden = true;
   roomEl.hidden = false;
-  if (!unlocked) setStatus(statusEl, "Tap Repeat to hear each message.");
-  enterRoom(result.data, languages, players);
+  enterRoom(info, languages, players, onEnded);
+}
+
+/** @param {"closed" | "gone"} end */
+function onEnded(end) {
+  clearSession(sessionStorage);
+  setNotice(
+    sessionStorage,
+    end === "closed" ? "The room has ended." : "The room has expired. Ask for a new code.",
+  );
+  location.reload();
 }
 
 joinButton.addEventListener("click", () => void onJoin());
@@ -49,6 +69,15 @@ try {
   languages = parseLanguages(await getJson("/languages"));
   fillLanguageSelect(languageSelect, languages);
   requireChoice([languageSelect], [joinButton]);
+  const saved = loadSession(sessionStorage, "rider");
+  if (saved) {
+    // After a reload there is no tap, so audio stays locked until the person taps Repeat.
+    showRoom(saved, [new AudioPlayer(), new AudioPlayer()]);
+    setStatus(statusEl, "Tap Repeat to hear each message.");
+  } else {
+    const notice = takeNotice(sessionStorage);
+    if (notice) setStatus(joinStatusEl, notice);
+  }
 } catch {
   setStatus(joinStatusEl, "Could not load the language list. Reload the page.", true);
 }

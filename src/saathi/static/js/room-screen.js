@@ -8,6 +8,7 @@ import { cardChips, chipsFromFacts } from "./chips.js";
 import { clipsForLanguage, parseDemoClips } from "./demo-clips.js";
 import { languageLabel } from "./languages.js";
 import { parseQuickReplyTable, quickReplyOptions } from "./quick-replies.js";
+import { followStream } from "./reconnect.js";
 import { RecorderError, startRecording, toWav } from "./recorder.js";
 import {
   fetchAudioUrl,
@@ -20,8 +21,6 @@ import {
 } from "./room-client.js";
 import { byId, renderChips, renderTimings, setStatus } from "./ui.js";
 
-const RECONNECT_DELAY_MS = 2000;
-
 /** @param {string} text */
 const capitalize = (text) => text.charAt(0).toUpperCase() + text.slice(1);
 
@@ -29,13 +28,15 @@ const capitalize = (text) => text.charAt(0).toUpperCase() + text.slice(1);
  * @param {import("./room-client.js").RoomInfo} room
  * @param {import("./languages.js").Language[]} languages
  * @param {AudioPlayer[]} players unlocked by the caller inside the tap that created or joined
+ * @param {(end: "closed" | "gone") => void} onEnded the room is over for good (ended or expired)
  * @returns {{stop: () => void}} stop following the room (the caller closes it on the server)
  */
-export function enterRoom(room, languages, players) {
+export function enterRoom(room, languages, players, onEnded) {
   const [turnPlayer, replyPlayer] = players;
   const peerRole = room.role === "customer" ? "rider" : "customer";
 
   const peerEl = byId("peer", HTMLElement);
+  const reconnectingEl = byId("reconnecting", HTMLElement);
   const talkButton = byId("talk", HTMLButtonElement);
   const talkLabel = /** @type {HTMLElement} */ (talkButton.querySelector(".label"));
   const statusEl = byId("status", HTMLElement);
@@ -85,6 +86,9 @@ export function enterRoom(room, languages, players) {
   let quickReplies = null;
   let peerLanguage = room.peer_language ?? "";
   let renderedRepliesKey = "";
+  // What is already on screen, so a snapshot after a reconnect does not redo it.
+  let shownTurnId = "";
+  let shownReplyKey = "";
 
   /** @param {string} code */
   function languageName(code) {
@@ -194,18 +198,26 @@ export function enterRoom(room, languages, players) {
       showCard(data.card);
       if (data.peer_joined) showPeer(String(data.peer_language));
       else state.peerJoined = false;
+      if (data.last_turn && turnKey(data.last_turn) !== shownTurnId) {
+        void showIncomingTurn(data.last_turn, false);
+      }
+      if (data.last_reply && replyKey(data.last_reply) !== shownReplyKey) {
+        void showIncomingReply(data.last_reply, false);
+      }
     } else if (name === "peer_joined") {
       showPeer(String(data.language));
     } else if (name === "turn") {
-      void showIncomingTurn(data);
+      void showIncomingTurn(data, true);
     } else if (name === "quick_reply") {
-      void showIncomingReply(data);
-    } else if (name === "closed") {
-      setStatus(statusEl, "The room has ended.", true);
-      state.peerJoined = false;
+      void showIncomingReply(data, true);
     }
     render();
   }
+
+  /** @param {any} data */
+  const turnKey = (data) => String(data.turn_id ?? "");
+  /** @param {any} data */
+  const replyKey = (data) => String(data.audio_path ?? data.text ?? "");
 
   /**
    * The pinned card, from a "card" event or the state snapshot after a reconnect.
@@ -229,8 +241,12 @@ export function enterRoom(room, languages, players) {
   /** @param {string} kind */
   const onChipAsk = (kind) => void answerChip(kind, "ask");
 
-  /** @param {any} data */
-  async function showIncomingTurn(data) {
+  /**
+   * @param {any} data
+   * @param {boolean} live false when catching up after a reload: show it, but never play it
+   */
+  async function showIncomingTurn(data, live) {
+    shownTurnId = turnKey(data);
     const chips = chipsFromFacts(data.facts, true);
     renderChips(chipsEl, chips);
     chipsNoteEl.textContent = [
@@ -242,16 +258,25 @@ export function enterRoom(room, languages, players) {
       .join(" ");
     translationEl.textContent = typeof data.translation === "string" ? data.translation : "";
     demoBadgeEl.hidden = data.demo_clip !== true;
+    const heading = live ? "New message" : "Last message";
     setStatus(
       incomingStatusEl,
       data.verified
-        ? `New message from the ${peerRole}.`
-        : `New message from the ${peerRole}. The translation could not be fully checked; trust the facts above.`,
+        ? `${heading} from the ${peerRole}.`
+        : `${heading} from the ${peerRole}. The translation could not be fully checked; trust the facts above.`,
     );
     if (typeof data.audio_path !== "string") return;
     const url = await fetchAudioUrl(room, data.audio_path);
     if (!url) {
-      setStatus(incomingStatusEl, "Could not load the audio. The facts above are still correct.", true);
+      // Audio is kept for about a minute, so a late catch-up legitimately has none.
+      if (live) {
+        setStatus(incomingStatusEl, "Could not load the audio. The facts above are still correct.", true);
+      }
+      return;
+    }
+    if (!live) {
+      turnPlayer.load(url);
+      repeatButton.disabled = false;
       return;
     }
     const played = await turnPlayer.play(url);
@@ -259,25 +284,40 @@ export function enterRoom(room, languages, players) {
     if (!played) setStatus(incomingStatusEl, "Tap Repeat to hear it.", true);
   }
 
-  /** @param {any} data */
-  async function showIncomingReply(data) {
+  /**
+   * @param {any} data
+   * @param {boolean} live false when catching up after a reload: show it, but never play it
+   */
+  async function showIncomingReply(data, live) {
     if (typeof data.text !== "string") return;
+    shownReplyKey = replyKey(data);
     replyTextEl.textContent = data.text;
     replyNoteEl.textContent =
       data.review_status === "pending" ? "Unreviewed machine translation." : "";
     replyEl.hidden = false;
     if (typeof data.audio_path !== "string") return;
     const url = await fetchAudioUrl(room, data.audio_path);
-    if (url) await replyPlayer.play(url);
+    if (!url) return;
+    if (live) await replyPlayer.play(url);
+    else replyPlayer.load(url);
   }
 
-  /** Keep one event stream open, reconnecting after drops until the room is closed. */
+  /** Keep one event stream open, backing off after drops, until the room is over. */
   async function followRoom() {
-    while (!stream.signal.aborted) {
-      const closed = await readEvents(room, onEvent, stream.signal);
-      if (closed || stream.signal.aborted) break;
-      await new Promise((resolve) => setTimeout(resolve, RECONNECT_DELAY_MS));
-    }
+    const end = await followStream({
+      connect: (onOpen) => readEvents(room, onEvent, stream.signal, onOpen),
+      onDown: () => {
+        reconnectingEl.hidden = false;
+      },
+      onUp: () => {
+        reconnectingEl.hidden = true;
+      },
+      sleep: (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
+      random: Math.random,
+      signal: stream.signal,
+    });
+    reconnectingEl.hidden = true;
+    if (end !== "stopped") onEnded(end);
   }
 
   async function beginRecording() {

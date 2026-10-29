@@ -172,14 +172,16 @@ export async function fetchAudioUrl(room, audioPath) {
 }
 
 /**
- * Read the event stream until it ends, errors or `signal` aborts. Resolves true when the server
- * ended the room ("closed" event) so the caller does not reconnect.
+ * Read the event stream until it ends, errors or `signal` aborts. "closed" means the server ended
+ * the room, "gone" that it no longer exists (404: expired, closed or a stale token), and neither
+ * is worth reconnecting to; "dropped" is anything else.
  * @param {RoomInfo} room
  * @param {(name: string, data: any) => void} onEvent
  * @param {AbortSignal} signal
- * @returns {Promise<boolean>}
+ * @param {() => void} [onOpen] called once the server accepted the connection
+ * @returns {Promise<import("./reconnect.js").StreamEnd>}
  */
-export async function readEvents(room, onEvent, signal) {
+export async function readEvents(room, onEvent, signal, onOpen) {
   let closed = false;
   const parser = createSseParser((event) => {
     if (event.name === "closed") closed = true;
@@ -190,8 +192,9 @@ export async function readEvents(room, onEvent, signal) {
       headers: bearer(room.token),
       signal,
     });
-    if (response.status === 404) return true; // room gone: reconnecting cannot help
-    if (!response.ok || !response.body) return false;
+    if (response.status === 404) return "gone";
+    if (!response.ok || !response.body) return "dropped";
+    onOpen?.();
     const reader = response.body.pipeThrough(new TextDecoderStream()).getReader();
     for (;;) {
       const { done, value } = await reader.read();
@@ -201,7 +204,7 @@ export async function readEvents(room, onEvent, signal) {
   } catch {
     // Network drop or abort: the caller decides whether to reconnect.
   }
-  return closed;
+  return closed ? "closed" : "dropped";
 }
 
 /**

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
     <title>Saathi customer</title>
-    <link rel="icon" href="data:," />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="app.css" />
   </head>
   <body>
@@ -32,6 +32,7 @@
           <p class="small">Rider link: <span id="link" class="mono"></span></p>
         </div>
 
+        <p id="reconnecting" class="status error" role="status" aria-live="polite" hidden>Reconnecting...</p>
         <p id="peer" class="status" role="status" aria-live="polite">Waiting for the rider to join.</p>
 
         <section class="card" aria-labelledby="card-heading">
