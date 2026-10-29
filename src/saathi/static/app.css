@@ -94,6 +94,7 @@ button.secondary { min-height: 2.75rem; padding: 0 1rem; border-radius: 0.6rem; 
 }
 .chip-label { font-size: 0.9rem; font-weight: 700; text-transform: uppercase; color: var(--muted); min-width: 5.5rem; }
 .chip-value { font-size: 1.6rem; font-weight: 800; overflow-wrap: anywhere; }
+.chip-original { font-size: 1rem; font-weight: 600; color: var(--muted); }
 .chip-note { flex-basis: 100%; font-size: 0.95rem; color: var(--danger); }
 .chip-uncertain { border-style: dashed; }
 .chips.big .chip-value { font-size: 2.4rem; }

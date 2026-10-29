@@ -201,9 +201,13 @@ export function enterRoom(room, languages, players) {
   async function showIncomingTurn(data) {
     const chips = chipsFromFacts(data.facts, true);
     renderChips(chipsEl, chips);
-    chipsNoteEl.textContent = chips.some((chip) => chip.labelPending)
-      ? "Some labels are unreviewed machine spellings."
-      : "";
+    chipsNoteEl.textContent = [
+      chips.some((chip) => chip.labelPending) && "Some labels are unreviewed machine spellings.",
+      chips.some((chip) => chip.machineTranslated) &&
+        "The landmark is machine-translated; the original is in brackets.",
+    ]
+      .filter(Boolean)
+      .join(" ");
     translationEl.textContent = typeof data.translation === "string" ? data.translation : "";
     demoBadgeEl.hidden = data.demo_clip !== true;
     setStatus(

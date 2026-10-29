@@ -50,23 +50,47 @@ test("skips malformed entries and unknown kinds instead of throwing", () => {
   );
 });
 
-test("the listener sees the landmark in their language, the speaker sees what was said", () => {
-  const facts = [{ ...base, kind: "landmark", value: "ಗಣೇಶ ದೇವಸ್ಥಾನ", local: "গণেশ মন্দির" }];
-  assert.equal(chipsFromFacts(facts, true)[0].value, "গণেশ মন্দির");
-  assert.equal(chipsFromFacts(facts)[0].value, "ಗಣೇಶ ದೇವಸ್ಥಾನ");
-});
+const original = "ಗಣೇಶ ದೇವಸ್ಥಾನ";
 
-test("a landmark without a local name shows the class only to the listener", () => {
-  const facts = [{ ...base, kind: "landmark", value: "ಗಣೇಶ ದೇವಸ್ಥಾನ", local: null }];
+test("kn to hi: the listener sees the translation with the original in brackets", () => {
+  const facts = [{ ...base, kind: "landmark", value: original, local: "गणेश मंदिर" }];
   const [chip] = chipsFromFacts(facts, true);
-  assert.equal(chip.label, "Landmark");
-  assert.equal(chip.value, "");
-  assert.equal(chip.note, "name not available");
+  assert.equal(chip.value, `गणेश मंदिर (${original})`);
+  assert.equal(chip.original, original);
+  assert.equal(chip.machineTranslated, true);
 });
 
-test("numbers are the same for both sides", () => {
-  const facts = [{ ...base, kind: "gate", value: "2", local: null }];
-  assert.equal(chipsFromFacts(facts, true)[0].value, "2");
+test("the speaker sees what was said, not marked as translated", () => {
+  const facts = [{ ...base, kind: "landmark", value: original, local: "गणेश मंदिर" }];
+  const [chip] = chipsFromFacts(facts);
+  assert.equal(chip.value, original);
+  assert.equal(chip.machineTranslated, false);
+});
+
+test("same language: local equal to the original shows the original only", () => {
+  const facts = [{ ...base, kind: "landmark", value: original, local: original }];
+  const [chip] = chipsFromFacts(facts, true);
+  assert.equal(chip.value, original);
+  assert.equal(chip.machineTranslated, false);
+});
+
+test("a failed or empty translation shows the original only", () => {
+  for (const local of [null, "", "   ", undefined]) {
+    const facts = [{ ...base, kind: "landmark", value: original, local }];
+    const [chip] = chipsFromFacts(facts, true);
+    assert.equal(chip.value, original);
+    assert.equal(chip.note, null);
+    assert.equal(chip.machineTranslated, false);
+  }
+});
+
+test("numeric chips are untouched, even when the server sends a local value", () => {
+  const kinds = ["gate", "cross", "main", "floor", "block", "flat"];
+  const facts = kinds.map((kind) => ({ ...base, kind, value: "2", local: "दो" }));
+  for (const chip of chipsFromFacts(facts, true)) {
+    assert.equal(chip.value, "2");
+    assert.equal(chip.machineTranslated, false);
+  }
 });
 
 test("markup in a value stays a plain string", () => {

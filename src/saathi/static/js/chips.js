@@ -8,7 +8,9 @@
  *   ambiguous: boolean, reading: string | null, local?: string | null, label?: string,
  *   label_status?: string}} Fact
  * @typedef {{kind: string, label: string, value: string, note: string | null,
- *   labelPending: boolean}} Chip
+ *   labelPending: boolean, machineTranslated: boolean, original: string | null}} Chip
+ * `value` is the full text; `original` is the bracketed part of it, set only for a translated
+ * landmark, so the screen can show it smaller.
  */
 
 const KIND_ORDER = ["gate", "floor", "cross", "main", "block", "flat", "landmark"];
@@ -42,8 +44,9 @@ function isFact(value) {
 /**
  * Ordered chips for display. Unknown kinds and malformed entries are skipped. An ambiguous fact
  * shows what was heard with its best reading as a note; a low-confidence one asks to be checked.
- * For the listener (`forListener`) a landmark shows its name in their language, or the class
- * alone when the server found no plausible rendering: the speaker's script would be unreadable.
+ * For the listener (`forListener`) a landmark shows the machine translation in their language
+ * followed by the original in brackets (street signs are in the local script). Without a usable
+ * translation (missing, empty or identical) it shows the original alone.
  * @param {unknown} facts
  * @param {boolean} [forListener]
  * @returns {Chip[]}
@@ -59,14 +62,29 @@ export function chipsFromFacts(facts, forListener = false) {
       if (fact.ambiguous && fact.reading) note = `could be ${fact.reading}`;
       else if (fact.confidence === "low") note = "check this";
       let value = fact.value;
+      let machineTranslated = false;
+      /** @type {string | null} */
+      let original = null;
       if (forListener && fact.kind === "landmark") {
-        value = typeof fact.local === "string" ? fact.local : "";
-        if (value === "") note = "name not available";
+        const local = typeof fact.local === "string" ? fact.local.trim() : "";
+        if (local !== "" && local !== fact.value) {
+          value = `${local} (${fact.value})`;
+          original = fact.value;
+          machineTranslated = true;
+        }
       }
       // The server names the class in the reader's language; the English table is the fallback.
       const label =
         typeof fact.label === "string" && fact.label !== "" ? fact.label : KIND_LABELS[fact.kind];
-      return { kind: fact.kind, label, value, note, labelPending: fact.label_status === "pending" };
+      return {
+        kind: fact.kind,
+        label,
+        value,
+        note,
+        labelPending: fact.label_status === "pending",
+        machineTranslated,
+        original,
+      };
     })
     .sort((a, b) => KIND_ORDER.indexOf(a.kind) - KIND_ORDER.indexOf(b.kind));
 }

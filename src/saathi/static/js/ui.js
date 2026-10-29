@@ -80,6 +80,15 @@ export function renderChips(container, chips) {
       const value = document.createElement("span");
       value.className = "chip-value";
       value.textContent = chip.value;
+      if (chip.original !== null) {
+        // Keep textContent equal to the full value; only the original is restyled.
+        const bracket = ` (${chip.original})`;
+        value.textContent = chip.value.slice(0, chip.value.length - bracket.length);
+        const original = document.createElement("span");
+        original.className = "chip-original";
+        original.textContent = bracket;
+        value.append(original);
+      }
       item.append(label, value);
       if (chip.note) {
         const note = document.createElement("span");

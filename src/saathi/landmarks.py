@@ -3,8 +3,9 @@
 A landmark is open vocabulary, so it is the one fact the chips cannot take from a table. The name
 is translated on its own with the same models as the sentence (DESIGN section 8, option a). A
 short phrase is where these models misbehave, so the result must pass `plausible`; if it does not,
-the fact keeps `local = None` and the chip shows the class only (option c). A wrong landmark is
-worse than none.
+the fact keeps `local = None` and the chip shows the original alone. When it passes, the chip
+shows the translation followed by the original in brackets (street signs are in the local script).
+A wrong landmark is worse than none.
 """
 
 import dataclasses
