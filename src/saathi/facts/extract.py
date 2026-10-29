@@ -276,9 +276,9 @@ def _trim(tokens: list[Token], span: list[int], lex: Lexicon) -> list[int]:
 def extract_facts(text: str, language: str) -> list[Fact]:
     """Facts in `text`, a transcript in `language` (a code from `LANGUAGES`), ordered by position.
 
-    Every language gets the universal layer (digits, English direction words); kn, en, hi and bn
-    also get native number words and trigger words. Raises ValueError for an unsupported language
-    or text over `MAX_TEXT_CHARS`.
+    Every language gets the universal layer (digits, English direction words); kn, en, hi, bn, ta
+    and te also get native number words and trigger words. Raises ValueError for an unsupported
+    language or text over `MAX_TEXT_CHARS`.
     """
     if language not in LANGUAGES:
         raise ValueError(f"unsupported language: {language!r}")

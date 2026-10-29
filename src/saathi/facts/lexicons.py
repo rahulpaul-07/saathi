@@ -3,9 +3,11 @@
 Native number words, trigger words and spelling variants were written from the day-one probe
 (docs/DECISIONS.md, "Probe findings") and general knowledge of each language; they are NOT
 validated against real STT output of speakers. Anything not listed is simply not found.
+Tamil and Telugu live in lexicons_ta_te.py and were built from real STT output instead.
 """
 
 from saathi.facts.lexicon import Lexicon, merge, phrases, same, table, trigger_map, words
+from saathi.facts.lexicons_ta_te import TA, TE
 from saathi.facts.text import key
 
 _NONE: frozenset[tuple[str, ...]] = frozenset()
@@ -263,7 +265,7 @@ BN = _bn_lexicon()
 
 # Native layers by language code. A language missing here gets only the universal English layer
 # (digits and English direction words), which is the stated limit for the non-core languages.
-NATIVE: dict[str, Lexicon] = {"kn": KN, "hi": HI, "bn": BN}
+NATIVE: dict[str, Lexicon] = {"kn": KN, "hi": HI, "bn": BN, "ta": TA, "te": TE}
 
 
 def lexicon_for(language: str) -> Lexicon:

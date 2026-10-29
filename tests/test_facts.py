@@ -269,8 +269,8 @@ def test_bengali_landmark_and_failure() -> None:
 
 
 def test_languages_without_native_rules_get_only_the_universal_layer() -> None:
-    assert pairs("gate number 2, 3rd main", "ta") == [("gate", "2"), ("main", "3")]
-    assert pairs("கேட் நம்பர் இரண்டு", "ta") == []  # native words are a stated limit
+    assert pairs("gate number 2, 3rd main", "gu") == [("gate", "2"), ("main", "3")]
+    assert pairs("ગેટ નંબર બે", "gu") == []  # native words are a stated limit
 
 
 def test_unsupported_language_and_oversized_text_are_rejected() -> None:
