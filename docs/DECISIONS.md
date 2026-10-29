@@ -542,3 +542,12 @@ model. Choices:
 - Playwright e2e is not in CI yet; it needs browsers and the server, and is run locally.
 Verified locally in a scratch env built with the same exclusion (ruff, mypy and 578 tests pass).
 The Linux run on GitHub is the final proof and needs a push.
+
+## Per-stage latency in rooms (features branch)
+
+`POST /rooms/{code}/turn` now returns `timings` (stt, translate, tts, total in ms, the numbers
+`run_turn` already measured and logged). The speaker's screen shows them under what they sent; the
+listener's `turn` event does not carry them, since they are the speaker's wait and the listener
+gains nothing from them. Numbers only: no language, text or identifier. `TimingsOut` moved from
+`app.py` to `room_routes.py` so solo and room turns share one model. The solo screen's
+"stop tap to playback" row stays solo-only (it needs client-side playback timing).

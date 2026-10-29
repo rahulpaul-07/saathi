@@ -357,3 +357,8 @@ Plan order: CI, latency, please-repeat, pinned card, chip confirm/ask, reconnect
 Slice 1 done locally: `.github/workflows/ci.yml`, README badge, `torch` pytest marker, mypy override.
 Not verified: the real GitHub run (needs the author to push). If it fails on a missing nvidia or
 triton package name, compare the `--no-install-package` list with `uv.lock`.
+
+## Features branch, slice 2: per-stage latency (done locally)
+
+Room turn response has `timings`; customer and rider screens show a `#timings` list after a send.
+Next: feature 3 (please-repeat prompt).
