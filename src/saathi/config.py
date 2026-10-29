@@ -21,6 +21,9 @@ class Settings(BaseSettings):
     # a TTS call), so each participant is capped, not each IP: two phones can share one.
     reply_rate_limit_per_minute: int = Field(default=30, ge=1)
     max_rooms: int = Field(default=50, ge=1)
+    # One short TTS call at startup, because the first TTS after idle took 15.9 s live against
+    # 1.2-5.3 s afterwards. It spends a Gnani call each start, so it is off by default.
+    warm_tts: bool = Field(default=False, validation_alias="SAATHI_WARM_TTS")
     # Demo input lets a participant send a prepared clip instead of the microphone (off by default).
     demo_input: bool = Field(default=False, validation_alias="SAATHI_DEMO_INPUT")
     demo_clips_dir: Path = Field(
