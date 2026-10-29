@@ -47,7 +47,7 @@ for (const { mode, port, file } of SHOTS) {
     );
     const code = (await customer.locator("#code").textContent()) ?? "";
     await rider.goto(`/rider.html?code=${code}`);
-    await rider.locator("#language").selectOption("bn");
+    await rider.locator("#language").selectOption("hi");
     await rider.getByRole("button", { name: /Join/ }).click();
     await customer.locator("#talk").waitFor({ state: "visible" });
     await customer.waitForFunction(() => !document.querySelector("#talk").disabled);

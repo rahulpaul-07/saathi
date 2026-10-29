@@ -39,7 +39,7 @@ CLIP_SPECS = (
         "kn",
         "Gate 2, Ganesha temple",
         "ನಮ್ಮ ಮನೆ ಎರಡನೇ ಕ್ರಾಸ್, ಮೂರನೇ ಮೇನ್, ಗೇಟ್ ನಂಬರ್ ಎರಡು ಹತ್ತಿರ, ಆಪೋಸಿಟ್ ಗಣೇಶ ದೇವಸ್ಥಾನ",
-        "fluent but wrong translation, chips correct (kn to bn)",
+        "fluent but wrong translation, chips correct (kn to hi)",
         (
             ("cross", "2", ("2", "two", "second", "2nd")),
             ("main", "3", ("3", "three", "third", "3rd")),
@@ -52,7 +52,7 @@ CLIP_SPECS = (
         "kn",
         "Gate 4, bakery",
         "ಮೂರನೇ ಕ್ರಾಸ್, ಐದನೇ ಮೇನ್, ಗೇಟ್ ನಂಬರ್ ನಾಲ್ಕು, ಬೇಕರಿ ಪಕ್ಕ",
-        "plain turn (kn to bn)",
+        "plain turn (kn to hi)",
         (
             ("cross", "3", ("3", "three", "third", "3rd")),
             ("main", "5", ("5", "five", "fifth", "5th")),

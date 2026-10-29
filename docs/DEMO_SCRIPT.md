@@ -18,18 +18,31 @@ addresses are used. Timings are targets, not measurements; nothing has been film
 On screen, demo mode shows a "Demo mode" banner, and every clip carries a "Demo clip, not live
 speech" badge on both screens. Do not hide them.
 
-Pairs used (an example casting; roles are not tied to languages): kn to bn, ta to hi, te to en.
+Pairs used (an example casting; roles are not tied to languages): kn to hi, ta to hi, te to en.
+The rider speaks Hindi in every shot of the main flow (shots 2 to 7); there is no Bengali rider in
+the video. The wrong-translation stills in shot 7 were regenerated for a Hindi rider.
+
+## Calls and the ledger
+
+The live server uses the plain Gnani client, so its calls are not in the ledger. A full take is
+10 calls (shot 3: 2, shot 5: 1, shot 6: 1, shot 7: 2, shot 8: 4; Repeat is free), 8 when the two
+quick-reply phrases are already cached by the running server. After the session, count the calls
+and log them by hand:
+
+    uv run --no-sync python scripts/log_demo_calls.py 42 --label demo-live
+
+It refuses a count that would pass the cap.
 
 ## Shot list
 
 | # | Shot | Screen action | Caption |
 |---|---|---|---|
 | 1 | Problem, 15 s | Title card | "The rider needs gate 2, not gate 12." |
-| 2 | Join, 20 s | Customer: Kannada, Create room. Rider: Bengali, Join (code already filled) | "A short-lived room. Nothing is stored." |
+| 2 | Join, 20 s | Customer: Kannada, Create room. Rider: Hindi, Join (code already filled) | "A short-lived room. Nothing is stored." |
 | 3 | First turn, 35 s | Customer: pick "Gate 4, bakery", Send demo clip. Chips appear on the rider, then audio | "Chips come from the original transcript, not from the translation." |
 | 4 | Repeat, 10 s | Rider: Repeat | "Replays instantly from the phone." |
-| 5 | Quick reply rider to customer, 20 s | Rider taps a quick reply; the customer sees it in Kannada | "Three quick replies per role, in all 10 languages. Review status is shown." |
-| 6 | Quick reply customer to rider, 15 s | Customer taps a quick reply; the rider sees it in Bengali | "Either side can reply without speaking." |
+| 5 | Quick reply rider to customer, 20 s | Rider taps a quick reply; the customer sees it in Kannada | "Three quick replies per role, in all 10 languages. Review status is shown." Kannada phrases are machine translations, not yet reviewed: the screen says so, and the caption must not call them checked. |
+| 6 | Quick reply customer to rider, 15 s | Customer taps a quick reply; the rider sees it in Hindi (author-reviewed) | "Either side can reply without speaking." |
 | 7 | Wrong translation, 40 s | Customer: "Gate 2, Ganesha temple", Send demo clip. Insert card: `docs/media/rider-unmasked.png` next to `rider-masked.png`, then back to the live chips | "Fluent but wrong translation. The chips are still correct." |
 | 8 | Other pairs, 30 s | New rooms: ta to hi with "Gate 3, bakery"; te to en with "Gate 1, Hanuman temple" | "Any of the 10 languages can be either role." |
 | 9 | Privacy and limits, 15 s | Voiceover over the room screen | "Rooms expire. Transcripts are never stored. Beta languages are labelled." |
@@ -38,6 +51,13 @@ Pairs used (an example casting; roles are not tied to languages): kn to bn, ta t
 
 The insert card in shot 7 is a labelled still, not live output: caption it "Recorded earlier, same
 input, translation masking off and on".
+
+What the shot 7 stills show (local IndicTrans2, kn to hi, checked with `scripts/check_kn_hi.py`):
+unmasked, the Hindi reads "third main gate, number two ... opposition's Ganesha temple" (main road
+became "main gate", "opposite" became "opposition"); the numbers are still right. Masked, the
+sentence keeps "2 cross, 3 main, gate number 2, opposite Ganesha temple". The placeholder check
+passes for this clip, so the fallback fact summary does NOT fire here: do not caption it as such.
+The chips are identical in both stills.
 
 ## Credits (end card, verbatim)
 

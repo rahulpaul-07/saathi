@@ -1,7 +1,8 @@
 """Serve the real app with fakes that replay one real local translation, for README screenshots.
 
 No Gnani and no model: the replayed texts come from a local IndicTrans2 run on the synthetic gold
-utterance g02 (kn -> bn), saved as JSON by the caller. MODE picks what the rider sees:
+clip kn-wrong-translation (kn -> hi), saved as JSON by scripts/check_kn_hi.py --replay. MODE picks
+what the rider sees:
   unmasked  the toolkit's plain translation next to the chips (what a naive pipeline would speak)
   masked    the real pipeline with masking on (its placeholder check and fallback included)
 Run: uv run --no-sync python scripts/screenshot_server.py <replay.json> <unmasked|masked> <port>

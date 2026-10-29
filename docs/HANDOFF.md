@@ -295,6 +295,28 @@ that timed out and lost its transcripts (my bug, fixed), 32 on the rerun, 4 on t
   tests/test_facts.py, docs/LEXICON_EVIDENCE.md) and `feat(eval): add lexicon probe`
   (evaluation/lexprobe.py, scripts/probe_numbers.py, tests/test_lexprobe.py), then docs.
 
+## Hindi rider for the demo video (session 2026-10-29, after commit ed701c5)
+Decision: no Bengali rider in the video; the rider is Hindi in every shot. No Gnani calls.
+- `scripts/check_kn_hi.py` (local IndicTrans2): kn-wrong-translation on kn to hi. Unmasked Hindi
+  mistranslates words (main road -> "main gate", opposite -> "opposition") but keeps the numbers;
+  masked is correct and verified, so the fallback summary does NOT fire for this clip. Stills
+  `docs/media/rider-unmasked.png` and `rider-masked.png` regenerated for a Hindi rider
+  (`--replay scratch/kn_hi.json`, then `node scripts/screenshots.mjs scratch/kn_hi.json`).
+- `scripts/backtranslate_quick_replies.py kn`: rider kn phrases are all "pending"; "I am at the
+  gate" comes back as "I'm at the door", the other two are faithful. Shot 5 uses these.
+- `scripts/log_demo_calls.py N [--label]` adds live-server calls to the ledger by hand
+  (tests/test_log_demo_calls.py); noted in docs/DEMO_SCRIPT.md.
+- Tests that assert the cap text use GNANI_CALL_CAP. Clip role strings and DESIGN.md say kn to hi.
+- Left alone: docs/recording/rahul_script.md still names Bengali (a recording plan with people, which
+  the no-people decision replaced).
+- Commit groups: `docs(demo): use a Hindi rider in the demo script and stills` (docs/DEMO_SCRIPT.md,
+  docs/media/*.png, scripts/screenshots.mjs, scripts/screenshot_server.py, evaluation/democlips.py,
+  docs/DESIGN.md, docs/HANDOFF.md); `feat(scripts): add kn to hi check and quick-reply
+  back-translation` (scripts/check_kn_hi.py, scripts/backtranslate_quick_replies.py);
+  `feat(scripts): log live demo calls to the ledger` (scripts/log_demo_calls.py,
+  tests/test_log_demo_calls.py); `test: use the cap constant in cap-text assertions`
+  (tests/test_live_turn.py, tests/test_noiseeval.py).
+
 ## Roles independent of languages (session 2026-10-29, after the groups above)
 Product rule: customer and rider can each use any of the 10 languages, either can speak or send
 quick replies, no language is preselected. pytest, ruff, mypy, tsc, npm test and e2e (7) pass.

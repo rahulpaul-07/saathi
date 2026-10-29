@@ -199,7 +199,7 @@ vs beam, guard) stays as is (docs/EVAL.md).
 | Latency: 20 turns x 2 | 40 |
 | Quick-reply audio, core + te (6 phrases x 5 languages) | 30 |
 | Smoke: te + gu, ml, mr, pa, ta (TTS utterance, STT, quick-reply TTS = 3 each) | 18 |
-| Demo clips TTS (kn to bn x2, ta to hi, te to en) | 4 |
+| Demo clips TTS (kn to hi x2, ta to hi, te to en) | 4 |
 | Demo takes: about 14 calls per take, 3 takes | 42 |
 | **Expected total** | **739** |
 | Retry reserve (429s are counted) | 41 |
