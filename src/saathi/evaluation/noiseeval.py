@@ -57,9 +57,19 @@ REPORT_SETS = (
 )
 
 
+class Subject(Protocol):
+    """Anything with a stable id and a language: a gold utterance or a public-speech clip."""
+
+    @property
+    def id(self) -> str: ...
+
+    @property
+    def lang(self) -> str: ...
+
+
 @dataclass(frozen=True)
 class PlannedCall:
-    utterance: GoldUtterance
+    utterance: Subject
     condition: Condition
     path: Path
 
