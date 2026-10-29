@@ -6,6 +6,7 @@ from saathi.facts.text import key
 from saathi.languages import LANGUAGES
 from saathi.loanwords import CONCEPTS, SPOKEN_CONCEPTS, concept_of, written
 from saathi.masking import FIRST_SLOT, mask, restore, translate_masked
+from saathi.quickreplies import QUICK_REPLIES
 
 EN = "second cross third main gate number 5"  # synthetic
 
@@ -58,6 +59,22 @@ def test_round_trip_restores_digits_and_the_listeners_spelling() -> None:
 class _Carry:
     def translate(self, text: str, src: str, tgt: str) -> str:
         return carry("", text)
+
+
+@pytest.mark.parametrize("language", sorted(LANGUAGES))
+def test_restored_text_has_only_plain_digits_in_every_language(language: str) -> None:
+    masked = mask(EN, "en", extract_facts(EN, "en"))
+    slots = " ".join(f"#L{slot.number}" for slot in masked.slots)
+    native = "৫ ० ೩ ൨"  # Bengali 5, Devanagari 0, Kannada 3, Malayalam 2
+    restored = restore(f"{slots} {native}", masked, language)
+    assert restored.text.endswith("5 0 3 2")
+    assert all(ch.isascii() for ch in restored.text if ch.isdecimal())
+
+
+def test_quick_replies_use_plain_digits() -> None:
+    for phrases in QUICK_REPLIES.values():
+        for phrase in phrases.values():
+            assert all(ch.isascii() for ch in phrase.text if ch.isdecimal())
 
 
 def test_a_lost_placeholder_is_unverified() -> None:

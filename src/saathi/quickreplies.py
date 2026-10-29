@@ -60,7 +60,7 @@ QUICK_REPLIES: dict[str, dict[QuickReplyId, Phrase]] = {
     "bn": {
         "reached_gate": Phrase("আমি গেটে আছি", "reviewed"),
         "which_floor": Phrase("কত তলায়?", "reviewed"),
-        "coming_2_min": Phrase("২ মিনিটে আসছি", "reviewed"),
+        "coming_2_min": Phrase("2 মিনিটে আসছি", "reviewed"),
         "come_to_gate": Phrase("গেটে চলে আসুন", "reviewed"),
         "coming_down": Phrase("আমি নিচে আসছি", "reviewed"),
         "leave_at_security": Phrase("সিকিউরিটিতে রেখে দিন", "reviewed"),

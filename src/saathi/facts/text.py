@@ -23,11 +23,15 @@ _TOKEN = re.compile(r"[^\s,.;:!?।|\-–—\"()]+")
 _BREAK_CHARS = frozenset(",.;:!?।|()\n")
 
 
+def ascii_digits(text: str) -> str:
+    """`text` with every decimal digit of any script written as 0-9."""
+    return "".join(str(unicodedata.digit(ch)) if ch.isdecimal() else ch for ch in text)
+
+
 def key(token: str) -> str:
     """Comparison form of a token: NFC, case-folded, folded variants, ASCII digits."""
     folded = unicodedata.normalize("NFC", token).casefold().translate(_FOLD)
-    digits = "".join(str(unicodedata.digit(ch)) if ch.isdecimal() else ch for ch in folded)
-    return digits.rstrip(_TRAILING_VIRAMAS)
+    return ascii_digits(folded).rstrip(_TRAILING_VIRAMAS)
 
 
 @dataclass(frozen=True)

@@ -16,7 +16,7 @@ from dataclasses import dataclass
 from typing import Literal
 
 from saathi.facts import Fact, extract_facts
-from saathi.facts.text import tokenize
+from saathi.facts.text import ascii_digits, tokenize
 from saathi.languages import LANGUAGES
 from saathi.loanwords import concept_of, written
 from saathi.translate import Translator
@@ -103,7 +103,8 @@ def restore(
             return match.group(0)
         return written(slot.text, tgt) if slot.kind == "loanword" else slot.text
 
-    text = _pattern(template).sub(put_back, translated)
+    # The model may write a native digit of its own; the listener always sees and hears 0-9.
+    text = ascii_digits(_pattern(template).sub(put_back, translated))
     return Restored(text, verified=sorted(seen) == sorted(by_number))
 
 
