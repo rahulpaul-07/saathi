@@ -126,7 +126,8 @@ Session 2026-10-29 additions (pytest 320, ruff, mypy, tsc clean; e2e 7 passed):
    IndicTrans2 and restored after (digits as Latin digits, loanwords from the table in
    src/saathi/loanwords.py). Not yet heard on real audio.
 2. Landmark chips in the listener's language: DONE. The landmark span is translated alone and shown
-   only if it passes `plausible`; otherwise the listener sees the class only ("name not available").
+   only if it passes `plausible`. The listener sees "translation (original)", marked machine-translated;
+   without a usable translation they see the original alone (changed 2026-10-29, see DECISIONS).
 3. 3-arm text A/B: DONE, eval/results/masking_ab.json (see the summary at the top).
 4. hi and bn native numbers 51-99 and triggers: DONE, tests in tests/test_facts.py.
 5. Stale lines fixed: DONE.

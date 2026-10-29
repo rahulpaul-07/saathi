@@ -448,8 +448,18 @@ are an existence proof, not a distribution; slice 5 measures p50/p95 properly.
 - Loanword spellings (src/saathi/loanwords.py) are hand-written and unreviewed. Beta languages are
   the likeliest to be wrong. Language support stays data in one table, never per-language branches.
 - `Fact` gained `value_start`, `value_end` (spans for masking) and `local` (listener-language
-  name). `FactOut` exposes `local`. The listener chip shows `local`, or "name not available" with
-  the class only; the speaker still sees what was said.
+  name). `FactOut` exposes `local`. The speaker still sees what was said. Superseded 2026-10-29
+  (author decision): the listener chip shows `local` followed by the original in brackets, for
+  example "गणेश मंदिर (ಗಣೇಶ ದೇವಸ್ಥಾನ)", because street signs are in the local script, and a note says
+  the landmark is machine-translated. With no usable `local` (missing, empty, rejected by
+  `plausible`, or equal to the original) the chip shows the original alone, not an empty chip.
+  Numeric chips never change. A Hindi rider can no longer read the original, but can match it.
+- Quick replies 2026-10-29: the kn rider phrase now says "gate" with the loanword ಗೇಟ್ as Gnani
+  STT spells it (was "door"). All 10 languages were back-translated with local indic-en
+  (scripts/backtranslate_quick_replies.py flags phrases whose key word is lost); pending phrases
+  that said "door" or were third person ("it comes") were reworded, all still pending. The hi and
+  bn phrases are author-reviewed and were not touched (bn "leave at security" back-translates as
+  "safety", a machine artefact of the loanword).
 - Landmark localization translates the span alone (masked) and accepts it only if verified and
   `plausible` (non-empty, no "#", no repeated phrase, bounded length, at least 80% target script).
   `plausible` catches runaway output, not wrong-but-fluent output; the author should eyeball it.
