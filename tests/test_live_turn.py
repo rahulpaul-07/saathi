@@ -113,7 +113,7 @@ def test_dry_run_sends_nothing_and_needs_no_key(
     assert harness.run("--dry-run", gnani=False) == 0
     out = capsys.readouterr().out
     assert "exactly 3 Gnani calls" in out
-    assert "0 spent + 3 planned = 3 of cap 780" in out
+    assert f"0 spent + 3 planned = 3 of cap {GNANI_CALL_CAP}" in out
     assert "Dry run: nothing was sent." in out
     assert KN_TEXT not in out
     assert not harness.ledger_path.exists()
