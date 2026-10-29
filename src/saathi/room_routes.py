@@ -40,6 +40,7 @@ from saathi.rooms import (
     other,
 )
 from saathi.translate import Translator
+from saathi.unavailable import unavailable_text
 
 log = logging.getLogger(__name__)
 
@@ -141,6 +142,7 @@ def _fact_out(fact: Fact, language: str) -> FactOut:
 class CardEntryOut(BaseModel):
     fact: FactOut
     previous: str | None  # the value this one replaced; set until the listener confirms it
+    previous_local: str | None  # that old value as a landmark in the listener's language, if any
     confirmed: bool
     question: str | None  # the listener's question about this value, in the viewer's language
 
@@ -151,6 +153,7 @@ def _card_out(room: Room, language: str) -> list[dict[str, Any]]:
         CardEntryOut(
             fact=_fact_out(entry.fact, language),
             previous=entry.previous,
+            previous_local=entry.previous_local,
             confirmed=entry.confirmed,
             question=f"{chip_label(entry.fact.kind, language).text}?" if entry.asked else None,
         ).model_dump()
@@ -309,7 +312,9 @@ def room_router(
         except GnaniError as exc:
             if exc.status == 429:
                 raise HTTPException(503, "speech service busy, retry shortly") from exc
-            raise HTTPException(502, "speech service unavailable") from exc
+            raise HTTPException(
+                502, {"code": "speech_unavailable", "message": unavailable_text(src)}
+            ) from exc
 
         if not manager.is_live(room):  # closed or expired while the paid calls ran
             raise HTTPException(404, "room not found")

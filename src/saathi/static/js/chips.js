@@ -43,6 +43,17 @@ function isFact(value) {
 }
 
 /**
+ * A landmark translation worth showing: non-empty and different from the original.
+ * @param {unknown} local
+ * @param {string} original
+ * @returns {string | null}
+ */
+function usableLocal(local, original) {
+  const text = typeof local === "string" ? local.trim() : "";
+  return text !== "" && text !== original ? text : null;
+}
+
+/**
  * Ordered chips for display. Unknown kinds and malformed entries are skipped. An ambiguous fact
  * shows what was heard with its best reading as a note; a low-confidence one asks to be checked.
  * For the listener (`forListener`) a landmark shows the machine translation in their language
@@ -67,8 +78,8 @@ export function chipsFromFacts(facts, forListener = false) {
       /** @type {string | null} */
       let original = null;
       if (forListener && fact.kind === "landmark") {
-        const local = typeof fact.local === "string" ? fact.local.trim() : "";
-        if (local !== "" && local !== fact.value) {
+        const local = usableLocal(fact.local, fact.value);
+        if (local !== null) {
           value = `${local} (${fact.value})`;
           original = fact.value;
           machineTranslated = true;
@@ -117,7 +128,10 @@ export function cardChips(entries, forListener = false) {
     const confirmed = entry?.confirmed === true;
     const question = typeof entry?.question === "string" && entry.question !== "" ? entry.question : null;
     if (previous === "") return { ...chip, confirmed, question };
-    const changedNote = `changed, was ${previous}`;
+    // The old landmark reads like the current one (translation, then the original in brackets).
+    const oldLocal =
+      forListener && chip.kind === "landmark" ? usableLocal(entry.previous_local, previous) : null;
+    const changedNote = `changed, was ${oldLocal === null ? previous : `${oldLocal} (${previous})`}`;
     return {
       ...chip,
       changed: true,

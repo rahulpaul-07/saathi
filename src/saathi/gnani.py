@@ -5,6 +5,7 @@ Request shapes follow docs.gnani.ai/api/STT/speech-to-text and /api/TTS/tts-infe
 
 import asyncio
 import logging
+from collections.abc import Awaitable, Callable
 
 import httpx
 
@@ -17,6 +18,7 @@ log = logging.getLogger(__name__)
 STT_PATH = "/stt/v3"
 TTS_PATH = "/api/v1/tts/inference"
 TTS_MODEL = "timbre-v2.5"
+RETRY_WAIT_S = 1.0
 
 
 class GnaniError(Exception):
@@ -28,7 +30,16 @@ class GnaniError(Exception):
 
 
 class GnaniClient:
-    def __init__(self, settings: Settings, client: httpx.AsyncClient | None = None) -> None:
+    def __init__(
+        self,
+        settings: Settings,
+        client: httpx.AsyncClient | None = None,
+        *,
+        sleep: Callable[[float], Awaitable[None]] = asyncio.sleep,
+        retry_wait_s: float = RETRY_WAIT_S,
+    ) -> None:
+        self._sleep = sleep
+        self._retry_wait_s = retry_wait_s
         self._client = client or httpx.AsyncClient(
             base_url=settings.gnani_base_url,
             timeout=settings.gnani_timeout_s,
@@ -85,13 +96,29 @@ class GnaniClient:
         return await asyncio.to_thread(normalize_or_passthrough, wav)
 
     async def _post(self, path: str, **kwargs: object) -> httpx.Response:
-        try:
-            response = await self._client.post(path, **kwargs)  # type: ignore[arg-type]
-        except httpx.HTTPError as exc:
-            log.error("Gnani transport error on %s: %s", path, exc)
-            raise GnaniError("speech service unreachable") from exc
-        if response.status_code != 200:
-            # Body goes to the server log only; callers get a generic message.
-            log.error("Gnani %s -> %s: %s", path, response.status_code, response.text[:300])
-            raise GnaniError(f"speech service error {response.status_code}", response.status_code)
-        return response
+        """One request, retried once after a timeout or a 5xx (a gateway blip, as seen live).
+        A 429 is not retried: that is Gnani's rate limit and the caller backs off. Only the status
+        is logged; the response body may echo what was said."""
+        for attempt in range(2):
+            try:
+                response = await self._client.post(path, **kwargs)  # type: ignore[arg-type]
+            except httpx.TimeoutException as exc:
+                log.warning("Gnani timeout on %s (attempt %d)", path, attempt + 1)
+                if attempt == 0:
+                    await self._sleep(self._retry_wait_s)
+                    continue
+                raise GnaniError("speech service timed out") from exc
+            except httpx.HTTPError as exc:
+                log.error("Gnani transport error on %s: %s", path, type(exc).__name__)
+                raise GnaniError("speech service unreachable") from exc
+            if response.status_code >= 500 and attempt == 0:
+                log.warning("Gnani %s -> %s (attempt 1), retrying", path, response.status_code)
+                await self._sleep(self._retry_wait_s)
+                continue
+            if response.status_code != 200:
+                log.error("Gnani %s -> %s", path, response.status_code)
+                raise GnaniError(
+                    f"speech service error {response.status_code}", response.status_code
+                )
+            return response
+        raise AssertionError("unreachable: the loop returns or raises")  # pragma: no cover

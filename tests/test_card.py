@@ -1,3 +1,5 @@
+from dataclasses import replace
+
 from saathi.card import Card
 from saathi.facts import Fact, FactKind
 
@@ -118,3 +120,20 @@ def test_clear_drops_everything() -> None:
     card.update([fact("gate", "2")])
     card.clear()
     assert card.entries == {}
+
+
+def test_a_replaced_landmark_keeps_the_old_one_with_its_listener_language_name() -> None:
+    card = Card()
+    old = Fact(kind="landmark", value="bakery", start=0, end=1, heard="bakery", confidence="high")
+    card.update([replace(old, local="बेकरी")])
+    card.update([replace(old, value="temple", local="मंदिर")])
+    entry = card.entries["landmark"]
+    assert (entry.previous, entry.previous_local) == ("bakery", "बेकरी")
+    assert entry.fact.local == "मंदिर"
+
+
+def test_a_numeric_change_has_no_local_name_for_the_old_value() -> None:
+    card = Card()
+    card.update([fact("gate", "2")])
+    card.update([fact("gate", "4")])
+    assert card.entries["gate"].previous_local is None
