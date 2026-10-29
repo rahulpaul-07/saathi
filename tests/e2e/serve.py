@@ -81,10 +81,23 @@ def demo_clips_dir() -> Path:
 
 if __name__ == "__main__":
     demo = "--demo" in sys.argv
-    settings = Settings(gnani_api_key=SecretStr("dummy"))
+    # Every spec shares one client IP and one server, so the production per-minute limits would make
+    # a test fail depending on how fast the suite ran. The limits themselves are covered by pytest.
+    open_limit = 10_000
+    settings = Settings(
+        gnani_api_key=SecretStr("dummy"),
+        room_rate_limit_per_minute=open_limit,
+        turn_rate_limit_per_minute=open_limit,
+        reply_rate_limit_per_minute=open_limit,
+    )
     if demo:
         settings = Settings(
-            gnani_api_key=SecretStr("dummy"), demo_input=True, demo_clips_dir=demo_clips_dir()
+            gnani_api_key=SecretStr("dummy"),
+            room_rate_limit_per_minute=open_limit,
+            turn_rate_limit_per_minute=open_limit,
+            reply_rate_limit_per_minute=open_limit,
+            demo_input=True,
+            demo_clips_dir=demo_clips_dir(),
         )
     app = create_app(
         settings,
