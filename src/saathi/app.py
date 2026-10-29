@@ -116,6 +116,12 @@ def create_app(
     if settings.demo_input:
         app.include_router(demo_router(settings.demo_clips_dir))
 
+    @app.get("/healthz")
+    async def healthz() -> dict[str, str]:
+        # Liveness only: it touches no dependency (not Gnani, not the translator) so a probe
+        # cannot spend credits or fail because an upstream is down.
+        return {"status": "ok"}
+
     @app.post("/turn")
     async def turn(
         request: Request,

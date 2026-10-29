@@ -201,3 +201,12 @@ async def test_static_mount_does_not_serve_files_outside_the_static_dir(
 ) -> None:
     assert (await client.get("/js/../../app.py")).status_code == 404
     assert (await client.get("/%2e%2e/app.py")).status_code == 404
+
+
+async def test_healthz_needs_no_auth_and_no_upstream(
+    client: httpx.AsyncClient, upstream: respx.MockRouter
+) -> None:
+    response = await client.get("/healthz")
+    assert response.status_code == 200
+    assert response.json() == {"status": "ok"}
+    assert not upstream.calls  # a probe must never reach Gnani
