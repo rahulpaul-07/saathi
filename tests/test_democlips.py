@@ -71,3 +71,13 @@ def test_a_clip_too_short_to_mix_is_refused(tmp_path: Path) -> None:
     with pytest.raises(noisemix.NoiseMixError):
         asyncio.run(build_clips((spec,), TooShort(), NoLimit(), _noise(), tmp_path))
     assert not (tmp_path / "manifest.json").exists()
+
+
+def test_clip_whose_transcript_gives_no_chips_is_reported() -> None:
+    from saathi.evaluation.democlips import clips_without_chips
+
+    transcripts = {
+        "kn-bakery": "ಮೂರನೇ ಕ್ರಾಸ್, ಐದನೇ ಮೇನ್, ಗೇಟ್ ನಂಬರ್ 4, ಬೇಕರಿ ಪಕ್ಕ",
+        "ta-gate": "வணக்கம் நன்றி",  # nothing the extractor can use
+    }
+    assert clips_without_chips(transcripts) == ["ta-gate"]

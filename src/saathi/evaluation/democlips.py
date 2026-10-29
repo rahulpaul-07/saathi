@@ -12,6 +12,7 @@ from typing import Protocol
 
 from saathi.evaluation import noisemix
 from saathi.evaluation.wavtools import resample_to_16k
+from saathi.facts import extract_facts
 from saathi.languages import LANGUAGES
 
 LEDGER_LABEL = "demo-tts"
@@ -26,6 +27,9 @@ class ClipSpec:
     label: str
     text: str
     role: str  # what the clip shows in the demo video, for the shot list
+    # What the sentence is meant to carry: (kind, value, lowercase English words that would show
+    # the fact survived a back-translation). Used by scripts/backtranslate_demo.py only.
+    facts: tuple[tuple[str, str, tuple[str, ...]], ...] = ()
 
 
 # kn text for "wrong-translation" is gold utterance g02; the others are new synthetic addresses.
@@ -36,6 +40,12 @@ CLIP_SPECS = (
         "Gate 2, Ganesha temple",
         "ನಮ್ಮ ಮನೆ ಎರಡನೇ ಕ್ರಾಸ್, ಮೂರನೇ ಮೇನ್, ಗೇಟ್ ನಂಬರ್ ಎರಡು ಹತ್ತಿರ, ಆಪೋಸಿಟ್ ಗಣೇಶ ದೇವಸ್ಥಾನ",
         "fluent but wrong translation, chips correct (kn to bn)",
+        (
+            ("cross", "2", ("2", "two", "second", "2nd")),
+            ("main", "3", ("3", "three", "third", "3rd")),
+            ("gate", "2", ("2", "two", "second", "2nd")),
+            ("landmark", "Ganesha temple", ("ganesh",)),
+        ),
     ),
     ClipSpec(
         "kn-bakery",
@@ -43,6 +53,12 @@ CLIP_SPECS = (
         "Gate 4, bakery",
         "ಮೂರನೇ ಕ್ರಾಸ್, ಐದನೇ ಮೇನ್, ಗೇಟ್ ನಂಬರ್ ನಾಲ್ಕು, ಬೇಕರಿ ಪಕ್ಕ",
         "plain turn (kn to bn)",
+        (
+            ("cross", "3", ("3", "three", "third", "3rd")),
+            ("main", "5", ("5", "five", "fifth", "5th")),
+            ("gate", "4", ("4", "four", "fourth", "4th")),
+            ("landmark", "bakery", ("bakery",)),
+        ),
     ),
     ClipSpec(
         "ta-gate",
@@ -50,6 +66,12 @@ CLIP_SPECS = (
         "Gate 3, bakery",
         "இரண்டாவது கிராஸ், மூன்றாவது மெயின், கேட் நம்பர் மூன்று, பேக்கரி எதிரில்",
         "plain turn (ta to hi)",
+        (
+            ("cross", "2", ("2", "two", "second", "2nd")),
+            ("main", "3", ("3", "three", "third", "3rd")),
+            ("gate", "3", ("3", "three", "third", "3rd")),
+            ("landmark", "bakery", ("bakery",)),
+        ),
     ),
     ClipSpec(
         "te-gate",
@@ -57,6 +79,12 @@ CLIP_SPECS = (
         "Gate 1, Hanuman temple",
         "రెండో క్రాస్, నాలుగో మెయిన్, గేట్ నంబర్ ఒకటి, హనుమాన్ గుడి ఎదురుగా",
         "plain turn (te to en)",
+        (
+            ("cross", "2", ("2", "two", "second", "2nd")),
+            ("main", "4", ("4", "four", "fourth", "4th")),
+            ("gate", "1", ("1", "one", "first", "1st")),
+            ("landmark", "Hanuman temple", ("hanuman",)),
+        ),
     ),
 )
 
@@ -67,6 +95,20 @@ class Synthesizer(Protocol):
 
 class Limiter(Protocol):
     async def acquire(self, calls: int = 1) -> None: ...
+
+
+def clips_without_chips(transcripts: dict[str, str]) -> list[str]:
+    """Clip ids whose STT transcript yields no chips.
+
+    The extractor sees the recognizer's transcript, not the sentence we wrote, so this is the
+    only check that says whether a demo clip will show chips on the rider screen.
+    """
+    by_id = {spec.id: spec for spec in CLIP_SPECS}
+    return [
+        clip_id
+        for clip_id, text in transcripts.items()
+        if not extract_facts(text, by_id[clip_id].lang)
+    ]
 
 
 def planned_calls(specs: tuple[ClipSpec, ...] = CLIP_SPECS) -> int:
