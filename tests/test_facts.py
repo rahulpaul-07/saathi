@@ -194,6 +194,22 @@ def test_hindi_values(text: str, expected: tuple[str, str]) -> None:
     assert pairs(text, "hi") == [expected]
 
 
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        ("गेट नंबर इक्यावन", ("gate", "51")),
+        ("गेट नंबर उनसठ", ("gate", "59")),
+        ("गेट नंबर पचहत्तर", ("gate", "75")),
+        ("गेट नंबर नवासी", ("gate", "89")),
+        ("गेट नंबर निन्यानवे", ("gate", "99")),
+        ("इक्यावनवीं मंजिल", ("floor", "51")),
+        ("मकान नंबर पांच", ("flat", "5")),
+    ],
+)
+def test_hindi_numbers_above_fifty_and_house_word(text: str, expected: tuple[str, str]) -> None:
+    assert pairs(text, "hi") == [expected]
+
+
 def test_hindi_landmark_drops_the_genitive_particle() -> None:
     fact = one("गणेश मंदिर के सामने", "hi")
     assert fact.value == "गणेश मंदिर" and fact.confidence == "low"
@@ -223,6 +239,23 @@ def test_hindi_failure_paths() -> None:
     ],
 )
 def test_bengali_values(text: str, expected: tuple[str, str]) -> None:
+    assert pairs(text, "bn") == [expected]
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        ("গেট নম্বর একান্ন", ("gate", "51")),
+        ("গেট নম্বর ঊনষাট", ("gate", "59")),
+        ("গেট নম্বর পঁচাত্তর", ("gate", "75")),
+        ("গেট নম্বর ঊননব্বই", ("gate", "89")),
+        ("গেট নম্বর নিরানব্বই", ("gate", "99")),
+        ("২০তম তলা", ("floor", "20")),
+    ],
+)
+def test_bengali_numbers_above_fifty_and_digit_ordinal(
+    text: str, expected: tuple[str, str]
+) -> None:
     assert pairs(text, "bn") == [expected]
 
 

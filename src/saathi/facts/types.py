@@ -19,6 +19,10 @@ class Fact:
     is ambiguous (digit-by-digit speech such as "one four", which may be 14 or 1 and 4) `value`
     is the words exactly as heard, `reading` holds the best candidate ("14") and the UI should
     show `value`. A landmark's `value` is always the name as heard.
+
+    `value_start`/`value_end` cover the value alone inside the phrase ("2" in "gate number 2");
+    masking replaces exactly this span. Landmarks have none. `local` is the landmark rendered in
+    the listener's language, set by the pipeline after extraction; None means "not available".
     """
 
     kind: FactKind
@@ -29,3 +33,6 @@ class Fact:
     confidence: Confidence = "high"
     ambiguous: bool = False
     reading: str | None = None
+    value_start: int | None = None
+    value_end: int | None = None
+    local: str | None = None

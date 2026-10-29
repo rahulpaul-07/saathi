@@ -169,13 +169,17 @@ def _structured(tokens: list[Token], lex: Lexicon, text: str) -> tuple[list[Fact
 def _to_fact(candidate: _Candidate, tokens: list[Token], text: str) -> Fact:
     start, end = tokens[candidate.first].start, tokens[candidate.last].end
     heard = text[start:end]
+    value_start = tokens[candidate.number_first].start
+    value_end = tokens[candidate.number_last].end
     if candidate.reading is None:
-        return Fact(candidate.kind, candidate.number, start, end, heard, candidate.confidence)
+        return Fact(
+            candidate.kind, candidate.number, start, end, heard, candidate.confidence,
+            value_start=value_start, value_end=value_end,
+        )  # fmt: skip
     # Ambiguous: surface the number words as heard; the joined digits are only a candidate.
-    value = text[tokens[candidate.number_first].start : tokens[candidate.number_last].end]
     return Fact(
-        candidate.kind, value, start, end, heard, candidate.confidence,
-        ambiguous=True, reading=candidate.reading,
+        candidate.kind, text[value_start:value_end], start, end, heard, candidate.confidence,
+        ambiguous=True, reading=candidate.reading, value_start=value_start, value_end=value_end,
     )  # fmt: skip
 
 
