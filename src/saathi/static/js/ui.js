@@ -65,6 +65,40 @@ export function requireChoice(selects, buttons) {
 }
 
 /**
+ * Fill a description list with name/value rows.
+ * @param {HTMLElement} list
+ * @param {[string, string][]} rows
+ */
+export function renderRows(list, rows) {
+  list.replaceChildren(
+    ...rows.flatMap(([name, value]) => {
+      const dt = document.createElement("dt");
+      dt.textContent = name;
+      const dd = document.createElement("dd");
+      dd.textContent = value;
+      return [dt, dd];
+    }),
+  );
+}
+
+/**
+ * The per-stage durations of one turn, as the server measured them.
+ * @param {HTMLElement} list
+ * @param {{stt_ms: number, translate_ms: number, tts_ms: number, total_ms: number}} timings
+ * @param {[string, string][]} [extraRows]
+ */
+export function renderTimings(list, timings, extraRows = []) {
+  const ms = (/** @type {number} */ value) => `${Math.round(value)} ms`;
+  renderRows(list, [
+    ["Speech to text", ms(timings.stt_ms)],
+    ["Translation", ms(timings.translate_ms)],
+    ["Text to speech", ms(timings.tts_ms)],
+    ["Server total", ms(timings.total_ms)],
+    ...extraRows,
+  ]);
+}
+
+/**
  * Replace the chips in a live region (aria-live announces the change).
  * @param {HTMLElement} container
  * @param {import("./chips.js").Chip[]} chips

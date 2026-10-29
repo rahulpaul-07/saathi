@@ -59,6 +59,15 @@ test("both roles speak and reply in ta and ml: chips, audio, repeat, quick repli
   await expect(customer.locator("#sent-chips .chip-gate .chip-value")).toHaveText("2");
   await expect(rider.locator("#chips .chip-gate .chip-value")).toHaveText("2");
   await expect(rider.locator("#chips .chip-floor .chip-value")).toHaveText("3");
+  // Only the speaker sees the stage timings of the turn they sent.
+  await expect(customer.locator("#timings dt")).toHaveText([
+    "Speech to text",
+    "Translation",
+    "Text to speech",
+    "Server total",
+  ]);
+  await expect(customer.locator("#timings dd")).toHaveText([/^\d+ ms$/, /^\d+ ms$/, /^\d+ ms$/, /^\d+ ms$/]);
+  await expect(rider.locator("#timings")).toBeHidden();
   // Numbers match on both screens; the landmark differs on purpose. The speaker sees what was
   // said; the listener sees a translation in their script plus the original in brackets, or, as
   // with this fake translator (Latin text, not the listener's script), the original alone.

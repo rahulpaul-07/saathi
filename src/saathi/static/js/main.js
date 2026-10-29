@@ -5,7 +5,7 @@ import { RecorderError, startRecording, toWav } from "./recorder.js";
 import { parseLanguages } from "./languages.js";
 import { getJson } from "./room-client.js";
 import { sendTurn } from "./turn-client.js";
-import { fillLanguageSelect } from "./ui.js";
+import { fillLanguageSelect, renderTimings as renderStageTimings } from "./ui.js";
 
 /** @type {import("./languages.js").Language[]} */
 let languages = [];
@@ -192,26 +192,12 @@ async function playCurrent() {
  * @param {number | null} tapToPlaybackMs
  */
 function renderTimings(timings, tapToPlaybackMs) {
-  /** @type {[string, string][]} */
-  const rows = [
-    ["Speech to text", `${Math.round(timings.stt_ms)} ms`],
-    ["Translation", `${Math.round(timings.translate_ms)} ms`],
-    ["Text to speech", `${Math.round(timings.tts_ms)} ms`],
-    ["Server total", `${Math.round(timings.total_ms)} ms`],
+  renderStageTimings(timingsEl, timings, [
     [
       "Stop tap to playback",
       tapToPlaybackMs === null ? "waiting" : `${Math.round(tapToPlaybackMs)} ms`,
     ],
-  ];
-  timingsEl.replaceChildren(
-    ...rows.flatMap(([name, value]) => {
-      const dt = document.createElement("dt");
-      dt.textContent = name;
-      const dd = document.createElement("dd");
-      dd.textContent = value;
-      return [dt, dd];
-    }),
-  );
+  ]);
 }
 
 talkButtons.forEach((button, side) => {

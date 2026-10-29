@@ -17,7 +17,7 @@ import {
   readEvents,
   sendQuickReply,
 } from "./room-client.js";
-import { byId, renderChips, setStatus } from "./ui.js";
+import { byId, renderChips, renderTimings, setStatus } from "./ui.js";
 
 const RECONNECT_DELAY_MS = 2000;
 
@@ -43,6 +43,7 @@ export function enterRoom(room, languages, players) {
   const discardButton = byId("discard", HTMLButtonElement);
   const sentChipsEl = byId("sent-chips", HTMLElement);
   const sentEmptyEl = byId("sent-empty", HTMLElement);
+  const timingsEl = byId("timings", HTMLElement);
   const incomingStatusEl = byId("incoming-status", HTMLElement);
   const chipsEl = byId("chips", HTMLElement);
   const chipsNoteEl = byId("chips-note", HTMLElement);
@@ -299,6 +300,8 @@ export function enterRoom(room, languages, players) {
     state.pending = null;
     renderChips(sentChipsEl, chipsFromFacts(result.data.facts));
     sentDemoBadgeEl.hidden = !demoClip;
+    renderTimings(timingsEl, result.data.timings);
+    timingsEl.hidden = false;
     const sent = demoClip ? "Sent demo clip" : "Sent";
     setStatus(
       statusEl,
