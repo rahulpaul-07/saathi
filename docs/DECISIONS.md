@@ -430,3 +430,34 @@ are an existence proof, not a distribution; slice 5 measures p50/p95 properly.
   for a speaker to fix: some Tamil phrases look truncated or subjectless; Punjabi uses a decomposed
   nukta and an ASCII apostrophe; Hindi "I'm coming down" is gendered; Telugu rider phrases use a
   third-person verb; Marathi "gate" is an odd word; several phrases end in a danda or full stop.
+
+## Slice 5: masking, listener-language landmarks, hi/bn numbers, latency tooling (2026-10-29)
+- Toolkit finding: IndicProcessor only protects emails, URLs, multi-part numerals and
+  `[A-Za-z0-9]*[#|@]\w+` tokens. Bare digits and words like "cross" are not protected, so the
+  default path mistranslates them.
+- Placeholder choice: `#L{n}`, numbered from 51. Probe on the dev split (30 sentences, real model),
+  placeholder survived translation: `#L{n}` 29/30, `<{n}>` 24/30, `XQ{n}Z` 22/30, `<ID{n}>` 12/30,
+  `[ID{n}]` 10/30, `ID{n}` 6/30 (eval/results/placeholder_probe.json). Numbering from 51 keeps
+  the slots clear of small numbers the model might invent.
+- `verified` means every slot came back exactly once and no unknown placeholder appeared. Fallback
+  chain: verified masked text, then the fact summary in the listener's language, then the plain
+  unmasked translation with verified False. The summary uses only extracted facts and the table.
+- Restore writes Latin digits. The author's example used a Bengali digit; kept Latin for now
+  because Gnani TTS reads them reliably (see the number probe above). Open for the author.
+- Loanword spellings (src/saathi/loanwords.py) are hand-written and unreviewed. Beta languages are
+  the likeliest to be wrong. Language support stays data in one table, never per-language branches.
+- `Fact` gained `value_start`, `value_end` (spans for masking) and `local` (listener-language
+  name). `FactOut` exposes `local`. The listener chip shows `local`, or "name not available" with
+  the class only; the speaker still sees what was said.
+- Landmark localization translates the span alone (masked) and accepts it only if verified and
+  `plausible` (non-empty, no "#", no repeated phrase, bounded length, at least 80% target script).
+  `plausible` catches runaway output, not wrong-but-fluent output; the author should eyeball it.
+- hi and bn: numbers 51-99 added, hi flat trigger (फ्लैट, फ्लेट, मकान), bn digit-ordinal
+  suffixes. Not validated against real STT. "বাড়ি/বাসা" skipped on purpose (too ambiguous).
+  The gold test split stays frozen; nothing was tuned on it.
+- Latency study: 20 measured turns x 2 calls = 40 calls; the translator is warmed locally first
+  so no model load is timed; audio comes from eval/audio/latency/, so no TTS is spent making it;
+  no text is printed or saved. `live_turn.py --target X` makes each beta language one 3-call smoke.
+- Text A/B (eval/results/masking_ab.json, 90 gold turns, real models): default recall 0.674,
+  masked 0.808, masked + summary 0.851; loanwords kept 128, 162, 168 of 255. Text only: it does
+  not cover STT or TTS, and the gold text is ours, not recorded speech.

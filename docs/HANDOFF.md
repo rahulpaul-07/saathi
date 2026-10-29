@@ -1,5 +1,22 @@
 # Handoff
 
+## Overnight summary (2026-10-29, slice 5)
+Done: loanword/number masking with restore, landmark chips in the listener's language, fact-summary
+fallback, hi/bn number and trigger rules, A/B script, latency study and beta smoke scripts (dry-run
+only). Checks: pytest 404 pass, ruff, mypy, tsc clean, npm test 33, e2e 7.
+Text A/B on all 90 gold turns (30 utterances x 3 targets), real IndicTrans2, eval/results/masking_ab.json:
+| arm | fact recall | wrong extras | all facts correct | loanwords kept |
+|---|---|---|---|---|
+| A toolkit default | 0.674 | 67 | 9/90 | 128/255 |
+| B masked | 0.808 | 67 | 13/90 | 162/255 |
+| C masked + summary fallback | 0.851 | 65 | 17/90 | 168/255 |
+Masking helps (recall +13 points, summary fallback +4 more) but is not enough alone: most turns still
+lose at least one fact in text, and 4/90 masked translations failed verification. Landmark
+localization passed the plausibility rule 72/72, unreviewed by a human. Text only, no STT/TTS.
+Blockers: none hit. No Gnani calls, git, deletes or new dependencies were used. The smokes and
+latency study need you awake and audio in eval/audio/latency/.
+Pending commit groups: see "Slice 5" below (8 groups).
+
 Source of truth: docs/DESIGN.md, docs/DECISIONS.md, AGENTS.md (delivery-rider bridge, approved
 2026-10-12). Schedule from 2026-10-28: submission target Nov 7, hard deadline Nov 10. Priority order:
 P1 demo core (slices 1-4, by Oct 31), P2 noise eval, P3 README/EVAL.md/demo script, P4 extras.
@@ -104,26 +121,66 @@ Session 2026-10-29 additions (pytest 320, ruff, mypy, tsc clean; e2e 7 passed):
 - Author to record: 20 gold lines (docs/recording/rahul_script.md) and 60-90 s of street noise.
 - Quick-reply review: bn and hi done 2026-10-29; kn still needs a friend's review.
 
-## TOP of slice 5 (masking), from the author's review of the live turn
-1. Loanword preservation: cross, main, gate, floor, opposite, block, flat stay as transliterated
-   loanwords in the target script, never translated. g02 kn->bn must give
-   "সেকেন্ড ক্রস, থার্ড মেইন, গেট নম্বর ২-এর কাছে, গণেশ মন্দিরের উল্টোদিকে" in spirit; the
-   model currently mistranslates "opposite" and "main".
-2. Landmark chips render in the rider's language (landmark was shown in Kannada script to a
-   Bengali rider): translate or transliterate the landmark text into the rider's script.
+## Slice 5 (masking), from the author's review of the live turn: DONE offline
+1. Loanword preservation: DONE. Numbers and loanwords are masked as `#L51...` placeholders before
+   IndicTrans2 and restored after (digits as Latin digits, loanwords from the table in
+   src/saathi/loanwords.py). Not yet heard on real audio.
+2. Landmark chips in the listener's language: DONE. The landmark span is translated alone and shown
+   only if it passes `plausible`; otherwise the listener sees the class only ("name not available").
+3. 3-arm text A/B: DONE, eval/results/masking_ab.json (see the summary at the top).
+4. hi and bn native numbers 51-99 and triggers: DONE, tests in tests/test_facts.py.
+5. Stale lines fixed: DONE.
+6. Beta smokes and latency study prepared as --dry-run only: DONE. Nothing was sent to Gnani.
+
+Commit groups for slice 5 (all uncommitted; pytest 404, ruff, mypy, tsc, npm test 33, e2e 7 pass):
+1. `feat(masking): preserve loanwords and numbers through translation with placeholders`
+   - src/saathi/masking.py, src/saathi/loanwords.py, tests/test_masking.py, tests/placeholders.py,
+     scripts/probe_placeholders.py, eval/results/placeholder_probe.json
+2. `feat(facts): carry value spans and a listener-language name on each fact`
+   - src/saathi/facts/types.py, src/saathi/facts/extract.py, src/saathi/landmarks.py,
+     src/saathi/summary.py, tests/test_summary_landmarks.py
+3. `feat(pipeline): translate masked text, fall back to the fact summary, localize landmarks`
+   - src/saathi/pipeline.py, src/saathi/room_routes.py, tests/test_pipeline.py,
+     tests/test_integration.py, tests/test_room_api.py, tests/test_live_turn.py
+4. `feat(ui): show the listener the landmark in their language`
+   - src/saathi/static/js/chips.js, src/saathi/static/js/room-screen.js, tests/js/chips.test.js,
+     tests/e2e/rooms.spec.js
+5. `feat(facts): add hi and bn numbers 51-99, flat triggers and bn ordinal suffixes`
+   - src/saathi/facts/lexicons.py, tests/test_facts.py
+6. `feat(eval): add masking A/B script and results`
+   - scripts/eval_masking.py, eval/results/masking_ab.json
+7. `feat(eval): add latency study and a --target option for the beta smoke tests`
+   - src/saathi/evaluation/latency.py, scripts/latency_study.py, tests/test_latency.py,
+     src/saathi/evaluation/liveturn.py
+8. `docs: record slice 5 decisions and handoff`
+   - docs/DECISIONS.md, docs/HANDOFF.md (commit last)
+
+Author actions for slice 5:
+- Review the loanword table (src/saathi/loanwords.py). Spellings are hand-written and unreviewed;
+  the beta languages are the likeliest to be wrong.
+- Decide digits: restore uses Latin digits; your example used a Bengali digit.
+- Beta smokes (3 calls each, 18 for te gu ml mr pa ta):
+  `uv run --no-sync python scripts/live_turn.py --target ta --dry-run`, then `--yes --show-text`.
+  Do this awake; repeat for te, gu, ml, mr, pa.
+- Latency study (40 calls): put 16 kHz mono WAVs in eval/audio/latency/, then
+  `uv run --no-sync python scripts/latency_study.py --dry-run`, then `--yes` on AC power. The
+  dry-run currently refuses because that folder has no audio.
+- Check the landmark renderings by eye: the A/B accepted 72/72 landmark translations by the
+  `plausible` rule only, which does not prove they are good Bengali, Hindi, Kannada or English.
 
 ## Known issues / notes
 - Tokens are Bearer headers, so the UI must read SSE via fetch, not EventSource.
 - SSE events are dropped (not replayed) while a role has no open stream.
-- `verified` is only "guards passed" until masking (slice 5).
+- `verified` now means every placeholder slot came back exactly once and no unknown placeholder
+  appeared (slice 5). It says nothing about translation quality.
 - Quick-reply ids are final: rider reached_gate, which_floor, coming_2_min; customer come_to_gate,
   coming_down, leave_at_security (see "Roles independent of languages" below).
 - `gnani.py` still logs the upstream error body (DESIGN section 10 says drop); not yet fixed.
 - Oversized uploads are rejected after multipart spooling: fine on LAN only.
 
 ## Next
-Slice 4 (integration, TTS loudness normalization; needs a Gnani call, so show --dry-run first and
-ask the author; then LAN two-phone check by the author). The quick-reply table has landed.
+Author-gated work: recordings, LAN two-phone check, beta smokes, latency study, noise eval run,
+review of the loanword table and kn quick replies. Offline slices 1-5 are built.
 
 ## Roles independent of languages (session 2026-10-29, after the groups above)
 Product rule: customer and rider can each use any of the 10 languages, either can speak or send
