@@ -203,3 +203,71 @@ test("neither screen preselects a language and both offer all 10", async ({ page
   await expect(page.locator("#language option")).toHaveCount(11);
   await expect(page.getByRole("button", { name: /Join/ })).toBeDisabled();
 });
+
+// The fake STT alternates gate 2 and gate 4 for a Punjabi speaker, so the second turn changes a value.
+test("the rider confirms or asks on card chips; a changed value stays marked until confirmed", async ({
+  browser,
+}) => {
+  const customerContext = await browser.newContext();
+  const riderContext = await browser.newContext();
+  await customerContext.grantPermissions(["microphone"]);
+  const customer = await customerContext.newPage();
+  const rider = await riderContext.newPage();
+  const problems = [...watchConsole(customer), ...watchConsole(rider)];
+
+  await customer.goto("/customer.html");
+  await customer.locator("#language").selectOption("pa");
+  await customer.getByRole("button", { name: "Create room" }).click();
+  await expect(customer.locator("#code")).toHaveText(/^[A-Z0-9]{6}$/);
+  const code = (await customer.locator("#code").textContent()) ?? "";
+  await rider.goto(`/rider.html?code=${code}`);
+  await rider.locator("#language").selectOption("hi");
+  await rider.getByRole("button", { name: /Join/ }).click();
+  await expect(customer.locator("#talk")).toBeEnabled();
+
+  const speak = async () => {
+    await customer.locator("#talk").click();
+    await expect(customer.locator("#status")).toContainText("Recording");
+    await customer.waitForTimeout(1500);
+    await customer.locator("#talk").click();
+  };
+  const gate = (/** @type {import("@playwright/test").Page} */ page) =>
+    page.locator("#card-chips .chip-gate");
+
+  await speak();
+  await expect(gate(rider).locator(".chip-value")).toHaveText("2");
+  // Only the listener has controls; the customer has none.
+  await expect(customer.locator("#card-chips button")).toHaveCount(0);
+  await expect(gate(rider).locator(".chip-confirm")).toHaveCount(1);
+
+  // A changed value is marked on both screens.
+  await speak();
+  for (const page of [customer, rider]) {
+    await expect(gate(page).locator(".chip-value")).toHaveText("4");
+    await expect(gate(page).locator(".chip-note")).toHaveText("changed, was 2");
+  }
+
+  // Ask: the customer sees the question in their own language; the marker stays.
+  const askButton = gate(rider).locator(".chip-ask");
+  const riderQuestion = (await askButton.textContent()) ?? "";
+  expect(riderQuestion.endsWith("?")).toBe(true);
+  await askButton.click();
+  await expect(gate(customer).locator(".chip-question")).toHaveText(/\?$/);
+  await expect(gate(customer).locator(".chip-note")).toHaveText("changed, was 2");
+
+  // Confirm: the marker and the question go, the customer sees a check.
+  await gate(rider).locator(".chip-confirm").click();
+  await expect(gate(customer).locator(".chip-note")).toHaveCount(0);
+  await expect(gate(customer).locator(".chip-question")).toHaveCount(0);
+  await expect(gate(customer).locator(".icon-check")).toHaveCount(1);
+  await expect(gate(rider).locator(".chip-changed")).toHaveCount(0);
+
+  // A newer value after a confirmation marks the chip again and drops the check. (Reconnect state
+  // is covered by the API test: a reload leaves the room.)
+  await speak();
+  await expect(gate(customer).locator(".chip-value")).toHaveText("2");
+  await expect(gate(customer).locator(".chip-note")).toHaveText("changed, was 4");
+  await expect(gate(customer).locator(".icon-check")).toHaveCount(0);
+
+  expect(problems).toEqual([]);
+});
