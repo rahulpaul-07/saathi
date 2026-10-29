@@ -16,7 +16,7 @@ from saathi.labels import chip_label
 from saathi.languages import LANGUAGES
 from saathi.quickreplies import IDS_BY_ROLE, QUICK_REPLIES
 from saathi.repeatprompts import REPEAT_PROMPTS
-from saathi.rooms import Role, RoomManager, other
+from saathi.rooms import Event, Role, RoomManager, other
 from wavs import make_wav
 
 TRANSCRIPT = "gate number 2 near the blue temple"  # synthetic
@@ -303,6 +303,15 @@ def build_recording_client(
     return client, translator
 
 
+def drain_turns(queue: asyncio.Queue[Event | None]) -> list[Event]:
+    events = []
+    while not queue.empty():
+        event = queue.get_nowait()
+        if event is not None and event.name == "turn":
+            events.append(event)
+    return events
+
+
 @pytest.mark.parametrize(
     ("customer_lang", "rider_lang"),
     [("en", "kn"), ("ta", "ml"), ("gu", "pa"), ("hi", "bn"), ("te", "mr")],
@@ -326,13 +335,12 @@ async def test_either_role_speaks_in_their_language_to_the_other(
         (customer_lang, rider_lang),
         (rider_lang, customer_lang),
     ]
-    to_rider, to_customer = queues["rider"].get_nowait(), queues["customer"].get_nowait()
-    assert to_rider is not None and to_rider.name == "turn"
+    # The sender never receives their own turn; each gets only the other's (card events aside).
+    rider_turns, customer_turns = drain_turns(queues["rider"]), drain_turns(queues["customer"])
+    assert len(rider_turns) == len(customer_turns) == 1
+    to_rider, to_customer = rider_turns[0], customer_turns[0]
     assert (to_rider.data["src"], to_rider.data["tgt"]) == (customer_lang, rider_lang)
-    assert to_customer is not None and to_customer.name == "turn"
     assert (to_customer.data["src"], to_customer.data["tgt"]) == (rider_lang, customer_lang)
-    # The sender never receives their own turn; each gets only the other's.
-    assert queues["rider"].empty() and queues["customer"].empty()
     assert to_customer.data["translation"].startswith(f"{rider_lang}>{customer_lang}")
 
 
@@ -667,3 +675,124 @@ async def test_event_stream_delivers_state_turn_quick_reply_and_closes(
     assert "event: turn" in rider_text and TRANSLATION in rider_text
     assert "event: quick_reply" in customer_text and "coming_2_min" in customer_text
     assert "event: closed" in rider_text and "event: closed" in customer_text
+
+
+async def read_card_events(queue: asyncio.Queue[Any]) -> list[dict[str, Any]]:
+    events = []
+    while not queue.empty():
+        event = queue.get_nowait()
+        if event is not None and event.name == "card":
+            events.append(event.data)
+    return events
+
+
+async def test_customer_turns_build_the_card_and_both_sides_get_it_in_their_language(
+    gnani: FakeGnani, manager: RoomManager
+) -> None:
+    async with build_client(gnani, manager) as client:
+        room = await make_room(client)
+        live = manager.authorize(room["code"], room["customer"]).room
+        customer_queue = manager.subscribe(live, "customer")
+        rider_queue = manager.subscribe(live, "rider")
+
+        await post_turn(client, room)
+        gnani.transcript = "gate number 4 near the blue temple"
+        await post_turn(client, room)
+
+        customer_cards = await read_card_events(customer_queue)
+        rider_cards = await read_card_events(rider_queue)
+
+    assert len(customer_cards) == len(rider_cards) == 2
+    final_customer = {e["fact"]["kind"]: e for e in customer_cards[-1]["entries"]}
+    final_rider = {e["fact"]["kind"]: e for e in rider_cards[-1]["entries"]}
+    assert final_customer["gate"]["fact"]["value"] == "4"
+    assert final_customer["gate"]["previous"] == "2"
+    assert final_customer["gate"]["fact"]["label"] == chip_label("gate", "en").text
+    assert final_rider["gate"]["fact"]["label"] == chip_label("gate", "kn").text
+    assert final_rider["gate"]["previous"] == "2"
+
+
+async def test_a_rider_turn_never_changes_the_card(gnani: FakeGnani, manager: RoomManager) -> None:
+    async with build_client(gnani, manager) as client:
+        room = await make_room(client)
+        live = manager.authorize(room["code"], room["customer"]).room
+        await post_turn(client, room)
+        before = dict(live.card.entries)
+        customer_queue = manager.subscribe(live, "customer")
+
+        gnani.transcript = "gate number 9 near the red shop"
+        assert (await post_turn(client, room, who="rider")).status_code == 200
+
+        assert live.card.entries == before
+        assert await read_card_events(customer_queue) == []
+
+
+async def test_a_customer_turn_without_facts_sends_no_card_event(
+    gnani: FakeGnani, manager: RoomManager
+) -> None:
+    async with build_client(gnani, manager) as client:
+        room = await make_room(client)
+        live = manager.authorize(room["code"], room["rider"]).room
+        rider_queue = manager.subscribe(live, "rider")
+        gnani.transcript = "okay thank you"
+        await post_turn(client, room)
+        assert await read_card_events(rider_queue) == []
+        assert live.card.entries == {}
+
+
+async def test_the_state_snapshot_restores_the_card_after_a_reconnect(
+    gnani: FakeGnani, manager: RoomManager
+) -> None:
+    async with build_client(gnani, manager) as client:
+        room = await make_room(client)
+        live = manager.authorize(room["code"], room["rider"]).room
+        await post_turn(client, room)
+        stream = asyncio.create_task(
+            client.get(f"/rooms/{room['code']}/events", headers=auth(room["rider"]))
+        )
+        async with asyncio.timeout(5):
+            while not manager.is_subscribed(live, "rider"):
+                await asyncio.sleep(0)
+            await client.delete(f"/rooms/{room['code']}", headers=auth(room["customer"]))
+            response = await stream
+
+    state = response.text.split("\n\n")[0]
+    assert state.startswith("event: state")
+    assert '"card"' in state and '"value": "2"' in state
+    assert chip_label("gate", "kn").text in state
+
+
+async def test_the_card_is_wiped_when_the_room_closes(
+    gnani: FakeGnani, manager: RoomManager
+) -> None:
+    async with build_client(gnani, manager) as client:
+        room = await make_room(client)
+        live = manager.authorize(room["code"], room["customer"]).room
+        await post_turn(client, room)
+        assert live.card.entries
+        await client.delete(f"/rooms/{room['code']}", headers=auth(room["customer"]))
+    assert live.card.entries == {}
+
+
+async def test_the_card_is_wiped_when_the_room_expires(gnani: FakeGnani) -> None:
+    now = [0.0]
+    manager = RoomManager(clock=lambda: now[0], idle_ttl_s=60)
+    async with build_client(gnani, manager) as client:
+        room = await make_room(client)
+        live = manager.authorize(room["code"], room["customer"]).room
+        await post_turn(client, room)
+        assert live.card.entries
+        now[0] += 61
+        await client.get(f"/rooms/{room['code']}/events", headers=auth(room["rider"]))
+    assert live.card.entries == {}
+
+
+async def test_card_content_is_never_logged(
+    gnani: FakeGnani, manager: RoomManager, caplog: pytest.LogCaptureFixture
+) -> None:
+    gnani.transcript = "gate number 7 near the zebra statue"
+    with caplog.at_level("DEBUG"):
+        async with build_client(gnani, manager) as client:
+            room = await make_room(client)
+            await post_turn(client, room)
+    assert "zebra" not in caplog.text

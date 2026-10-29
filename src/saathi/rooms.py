@@ -1,9 +1,9 @@
 """In-memory rooms: a code, two role slots, random tokens, TTL expiry, events, short-lived audio.
 
-Nothing here touches disk or logs. A room holds no transcripts or addresses; the only personal
-data that passes through is in event payloads and turn audio, both of which are dropped on
-expiry or after a short time. State lives in one process, so there is no locking: every method is
-synchronous and runs to completion on the event loop.
+Nothing here touches disk or logs. A room holds no transcripts. The only address data it keeps is
+the delivery card (the latest value of each fact, in memory); that and turn audio are dropped when
+the room closes or expires, and event payloads are not stored. State lives in one process, so
+there is no locking: every method is synchronous and runs to completion on the event loop.
 """
 
 import asyncio
@@ -15,6 +15,8 @@ from collections import OrderedDict
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any, Literal
+
+from saathi.card import Card
 
 Role = Literal["customer", "rider"]
 
@@ -80,6 +82,7 @@ class Room:
     last_active: float
     participants: dict[Role, Participant] = field(default_factory=dict)
     audio: OrderedDict[str, StoredAudio] = field(default_factory=OrderedDict)
+    card: Card = field(default_factory=Card)
 
 
 @dataclass(frozen=True)
@@ -160,6 +163,7 @@ class RoomManager:
         """Remove the room and end every open event stream."""
         self._rooms.pop(room.code, None)
         room.audio.clear()
+        room.card.clear()
         for participant in room.participants.values():
             if participant.queue is not None:
                 _offer(participant.queue, None)

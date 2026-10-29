@@ -29,6 +29,7 @@ from saathi.rooms import (
     CODE_LENGTH,
     Event,
     Role,
+    Room,
     RoomAccessError,
     RoomFullError,
     RoomLimitError,
@@ -129,6 +130,23 @@ def _fact_out(fact: Fact, language: str) -> FactOut:
     )
 
 
+class CardEntryOut(BaseModel):
+    fact: FactOut
+    previous: str | None  # the value this one replaced; set only while the "changed" marker shows
+
+
+def _card_out(room: Room, language: str) -> list[dict[str, Any]]:
+    """The room's delivery card as one viewer reads it. Content is never logged."""
+    return [
+        CardEntryOut(fact=_fact_out(entry.fact, language), previous=entry.previous).model_dump()
+        for entry in room.card.entries.values()
+    ]
+
+
+def _card_event(room: Room, language: str) -> Event:
+    return Event("card", {"entries": _card_out(room, language)})
+
+
 def _repeat_out(verified: bool, fact_count: int, speaker: Role, language: str) -> RepeatOut | None:
     reason = repeat_reason(verified, fact_count, speaker)
     prompt = repeat_prompt(language, reason) if reason else None
@@ -214,7 +232,9 @@ def room_router(
 
         async def stream() -> AsyncIterator[str]:
             try:
-                yield _sse(manager.snapshot(room, role))
+                state = manager.snapshot(room, role)
+                card = _card_out(room, room.participants[role].language)
+                yield _sse(Event(state.name, {**state.data, "card": card}))
                 while True:
                     try:
                         item = await asyncio.wait_for(queue.get(), KEEPALIVE_S)
@@ -294,6 +314,11 @@ def room_router(
                 },
             ),
         )
+        if speaker == "customer":  # a rider's facts show for that turn only, never on the card
+            room.card.update(result.facts)
+            if result.facts:
+                for role in (speaker, listener):
+                    manager.publish(room, role, _card_event(room, room.participants[role].language))
         timings = result.timings
         log.info(
             "room turn %s->%s facts=%d stt=%.0fms translate=%.0fms tts=%.0fms total=%.0fms",
