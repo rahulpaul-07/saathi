@@ -101,8 +101,10 @@ about 30 bits); a third participant is refused.
   1. Universal: digits and English direction words (gate, floor, cross, main, block, flat, tower,
      opposite, near, and the landmark after a trigger). In Indian cities these appear in English
      whatever language is spoken, so this layer works for all 10 languages.
-  2. Native-word rules for the verified core only (kn, en, hi, bn): ordinals and number words,
-     native triggers (ಎದುರು, ಹತ್ತಿರ, सामने, ...).
+  2. Native-word rules for kn, en, hi, bn (written from the probe and general knowledge) and for ta
+     and te (built from real STT output, "machine-verified, not native-reviewed", see
+     docs/LEXICON_EVIDENCE.md): ordinals and number words, native triggers (ಎದುರು, ಹತ್ತಿರ, सामने, ...).
+     gu, ml, mr and pa still get only the universal layer.
   Chips come from these structured facts, not from the translation, so they are right even when
   translation is garbled. Tuned for precision: a missing chip beats a wrong one. Limits: only
   patterns in the lexicon are found; landmark names are open vocabulary and the weakest fact type;
@@ -204,8 +206,8 @@ vs beam, guard) stays as is (docs/EVAL.md).
 | **Proposed hard cap** | **780** |
 
 Dropping the pink condition saves 30; FLEURS at 5 clips per language saves 200 (reduced tier,
-about 509). The cap in `evaluation/calls.py` stays 290 until the author approves a number; the
-credit balance is unknown, so the cost per call is not.
+about 509). The author approved a hard cap of 780 on 2026-10-29 (`evaluation/calls.py`); the credit balance
+is unknown, so the cost per call is not.
 
 ## 12. Scope
 - Must: rooms, rider screen with chips and Repeat, universal extraction plus kn/en rules, masking

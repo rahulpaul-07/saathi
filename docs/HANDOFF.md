@@ -257,6 +257,44 @@ Commit groups (the author commits; touches files from earlier groups, so commit 
 7. `docs: no-people plan, audio sources, FLEURS and noise attribution, demo script`
    - docs/EVAL.md, DESIGN.md, DEMO_SCRIPT.md, DECISIONS.md, HANDOFF.md, docs/recording/ (commit last)
 
+## Demo clips run and STT check (session 2026-10-29, after commit 700df8c)
+Spent 8 Gnani calls with approval: 4 TTS (make_demo_clips.py) and 4 STT (transcribe_demo.py).
+Ledger 33/780 (cap raised to 780, approved). pytest 462, ruff, mypy (109 files) pass.
+- Finding (STT of the TTS clips, street noise 10 dB): kn writes number words and the existing kn
+  rules give correct chips for both kn clips. ta and te STT also write number words (Tamil
+  "மூன்று", Telugu "ఒకటి", "నాలుగు"), and ta/te have no native rules, so both clips give NO chips.
+- `scripts/transcribe_demo.py` prints transcript, chips and intended facts per clip (never saves
+  them) and exits 1 if a clip yields no chips; `clips_without_chips` has a unit test.
+  Right now it exits 1 for ta-gate and te-gate.
+- Open decision: add a small ta and te number-word lexicon (1-20 cardinals and ordinals, gate,
+  cross, main, floor as STT spells them), machine-verified by indic-en back-translation and STT,
+  labelled "machine-verified, not native-reviewed". Extractor not changed yet.
+- Back-translation of the sources (scripts/backtranslate_demo.py): all 4 faithful.
+- Extra commit group: `feat(demo): add demo clip back-translation and STT checks`
+  (scripts/backtranslate_demo.py, scripts/transcribe_demo.py, tests/test_backtranslate_demo.py,
+  democlips.py, tests/test_democlips.py), plus the cap change (calls.py, three test files, docs).
+- Not run: make_gold_tts.py (30 calls).
+
+## ta and te lexicons from real STT output (session 2026-10-29, after the demo STT check)
+Done: the open decision above. Spent 59 Gnani calls (ledger 33 -> 92 of 780): 23 on a probe run
+that timed out and lost its transcripts (my bug, fixed), 32 on the rerun, 4 on transcribe_demo.py.
+`transcribe_demo.py` now exits 0: all 4 clips give their chips.
+- `src/saathi/facts/lexicons_ta_te.py` (new): ta and te cardinals and ordinals 1-20, triggers,
+  fillers and landmark cues, only spellings the STT wrote. "machine-verified, not native-reviewed"
+  in the code, docs/LEXICON_EVIDENCE.md (word, value or role, evidence), DECISIONS.md and DESIGN.md.
+- `src/saathi/evaluation/lexprobe.py`, `scripts/probe_numbers.py` (`--table` back-translation,
+  `--dry-run`, real run; saves after each sentence, resumes, one retry after 5 s on a transport
+  error counted against its 32-call cap). Transcripts in eval/state/lexicon_probe.json (gitignored).
+- Follow-up: script-purity test added (no entry failed); Tamil ordinal 5 rechecked with 2 calls
+  (`probe_numbers.py --ordinal5`, ledger 92 -> 94), the STT wrote ஐந்தாவது, entry added.
+- Gaps: numbers above 20, letters, noisy speech beyond the demo clips. Telugu ordinals 16/17/19/20 are written as cardinals, which already work.
+- test_facts.py: the old "ta native words give nothing" assertion now uses gu.
+- Next: the same probe for gu, ml, mr, pa (about 64 calls plus spare). Not started.
+- Commit groups (after the earlier ones): `feat(facts): add machine-verified ta and te lexicons`
+  (facts/lexicons_ta_te.py, lexicons.py, extract.py docstring, tests/test_facts_ta_te.py,
+  tests/test_facts.py, docs/LEXICON_EVIDENCE.md) and `feat(eval): add lexicon probe`
+  (evaluation/lexprobe.py, scripts/probe_numbers.py, tests/test_lexprobe.py), then docs.
+
 ## Roles independent of languages (session 2026-10-29, after the groups above)
 Product rule: customer and rider can each use any of the 10 languages, either can speak or send
 quick replies, no language is preselected. pytest, ruff, mypy, tsc, npm test and e2e (7) pass.

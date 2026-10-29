@@ -490,3 +490,24 @@ Behind `SAATHI_DEMO_INPUT` (off by default). The client sends a prepared clip wi
 honoured only when the flag is on; clips are served only by id from a manifest, so a request cannot
 name a path. Both screens show a badge so a clip is never mistaken for live speech. The clips are
 generated offline (`make_demo_clips.py`), never at request time.
+
+## Gnani call cap raised to 780 (2026-10-29)
+Approved by the author for the FLEURS STT, gold TTS and STT, demo clips and demo takes (breakdown
+in DESIGN.md 11: 739 expected plus a 41-call retry reserve). The demo sentences are back-translated
+to English with the local indic-en model (`scripts/backtranslate_demo.py`, no Gnani calls) as a
+substitute for a native read-through; it checks that the meaning and the numbers survive, not that
+the Kannada, Tamil or Telugu is natural.
+
+## Tamil and Telugu number words from real STT output (2026-10-29)
+The demo clips ta-gate and te-gate gave no chips: Tamil and Telugu STT write spoken numbers as words,
+never digits, and only kn, en, hi and bn had native rules. Instead of writing the words from
+knowledge of the scripts, `scripts/probe_numbers.py` ran 16 probe sentences (numbers 1-20 as
+cardinals and ordinals, the six trigger words, four landmark cues) through Gnani TTS then STT, and
+`lexicons_ta_te.py` holds only spellings the STT wrote, including its variants (Tamil floor written
+four ways, Telugu నంబర్ and నెంబర్, పందొమ్మిది for the spoken పంతొమ్మిది). Every entry is labelled
+"machine-verified, not native-reviewed"; the evidence per entry is in docs/LEXICON_EVIDENCE.md.
+Known gaps: numbers above 20, letters, noisy-speech coverage. Tamil ordinal 5 was dropped by the
+STT in the full probe and added after a 2-call recheck in which the STT wrote it.
+A first probe run lost its transcripts to a timeout after 22 good calls; the probe now saves after
+each sentence, resumes, and retries one transport error once after 5 s, counted against its cap.
+The same job is needed for gu, ml, mr and pa before they produce chips.
