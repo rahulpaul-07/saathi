@@ -24,6 +24,9 @@ class CardEntry:
     fact: Fact
     previous: str | None = None  # the value this one replaced, until the listener confirms
     confirmed: bool = False
+    # The replaced landmark's name in the listener's language, taken from the fact it came from
+    # (translated when that turn ran), so the marker needs no second translation.
+    previous_local: str | None = None
     asked: bool = False  # the listener asked about this value and has not confirmed since
 
 
@@ -47,7 +50,9 @@ class Card:
             elif old is not None and old.fact.value == new.value:
                 merged[kind] = replace(old, fact=new)  # same value: nothing to re-confirm
             elif old is not None:
-                merged[kind] = CardEntry(new, previous=old.fact.value)
+                merged[kind] = CardEntry(
+                    new, previous=old.fact.value, previous_local=old.fact.local
+                )
             else:
                 merged[kind] = CardEntry(new)
         self.entries = merged
@@ -58,7 +63,9 @@ class Card:
         if entry is None:
             return False
         if action == "confirm":
-            self.entries[kind] = replace(entry, previous=None, confirmed=True, asked=False)
+            self.entries[kind] = replace(
+                entry, previous=None, previous_local=None, confirmed=True, asked=False
+            )
         else:
             self.entries[kind] = replace(entry, confirmed=False, asked=True)
         return True

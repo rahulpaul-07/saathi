@@ -18,6 +18,7 @@ from saathi.catalog_routes import catalog_router
 from saathi.config import Settings, get_settings
 from saathi.demo import demo_router
 from saathi.gnani import GnaniClient, GnaniError
+from saathi.languages import LANGUAGES
 from saathi.pipeline import (
     NoSpeechError,
     TurnInputError,
@@ -36,11 +37,24 @@ log = logging.getLogger(__name__)
 # One throwaway translation per model route: (text, src, tgt) for indic-indic, en-indic, indic-en.
 # The pairs are arbitrary representatives of their route; no pair is special to any role.
 WARMUPS = (("আমি যাচ্ছি।", "bn", "kn"), ("I am coming.", "en", "hi"), ("मैं आ रहा हूँ।", "hi", "en"))
+# Any language warms the same TTS service; English is just the shortest text to synthesize.
+WARM_TTS_LANGUAGE = "en"
 STATIC_DIR = Path(__file__).parent / "static"
 
 # Windows takes MIME types from the registry, where .js is sometimes text/plain, and browsers
 # refuse to run ES modules served that way.
 mimetypes.add_type("text/javascript", ".js")
+
+
+async def warm_up_tts(gnani: GnaniClient) -> None:
+    """Make one short throwaway TTS call. A failure is logged, never fatal: the app works cold."""
+    language = LANGUAGES[WARM_TTS_LANGUAGE]
+    try:
+        await gnani.synthesize("Ready.", language.gnani_code, language.tts_voice)
+    except GnaniError as exc:
+        log.warning("TTS warm-up failed (status %s); the first real call will be slow", exc.status)
+    else:
+        log.info("TTS warmed up")
 
 
 class TurnResponse(BaseModel):
@@ -76,6 +90,8 @@ def create_app(
             await asyncio.to_thread(translator.load)
             for text, src, tgt in WARMUPS:
                 await asyncio.to_thread(translator.translate, text, src, tgt)
+        if settings.warm_tts:
+            await warm_up_tts(gnani)
         yield
         await gnani.aclose()
 

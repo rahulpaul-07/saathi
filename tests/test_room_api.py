@@ -17,6 +17,7 @@ from saathi.languages import LANGUAGES
 from saathi.quickreplies import IDS_BY_ROLE, QUICK_REPLIES
 from saathi.repeatprompts import REPEAT_PROMPTS
 from saathi.rooms import Event, Role, RoomManager, other
+from saathi.unavailable import UNAVAILABLE
 from wavs import make_wav
 
 TRANSCRIPT = "gate number 2 near the blue temple"  # synthetic
@@ -433,6 +434,19 @@ async def test_upstream_errors_are_generic_and_nothing_is_published(
     assert response.status_code == 502
     assert "secret" not in response.text
     assert rider_queue.empty()
+
+
+async def test_upstream_failure_is_reported_in_the_speakers_language(
+    client: httpx.AsyncClient, gnani: FakeGnani
+) -> None:
+    room = await make_room(client, src="kn", tgt="hi")
+    gnani.error = GnaniError("down", status=504)
+
+    spoke = (await post_turn(client, room, who="customer")).json()["detail"]
+    answered = (await post_turn(client, room, who="rider")).json()["detail"]
+
+    assert spoke == {"code": "speech_unavailable", "message": UNAVAILABLE["kn"].text}
+    assert answered["message"] == UNAVAILABLE["hi"].text
 
 
 async def test_no_speech_does_not_leak_the_transcript(

@@ -6,6 +6,7 @@ only input, so the clips can be regenerated and the call count is known in advan
 """
 
 import json
+from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Protocol
@@ -59,6 +60,14 @@ CLIP_SPECS = (
             ("gate", "4", ("4", "four", "fourth", "4th")),
             ("landmark", "bakery", ("bakery",)),
         ),
+    ),
+    ClipSpec(
+        "kn-gate-correction",
+        "kn",
+        "Sorry, gate 2",
+        "ಕ್ಷಮಿಸಿ, ಗೇಟ್ ನಂಬರ್ ಎರಡು",
+        "spoken correction after kn-bakery: only the gate changes, 4 to 2 (kn to hi)",
+        (("gate", "2", ("2", "two", "second", "2nd")),),
     ),
     ClipSpec(
         "ta-gate",
@@ -115,6 +124,31 @@ def planned_calls(specs: tuple[ClipSpec, ...] = CLIP_SPECS) -> int:
     return len(specs)
 
 
+def select_specs(ids: Sequence[str] | None) -> tuple[ClipSpec, ...]:
+    """The specs to generate: all of them, or only the named ones in table order."""
+    if ids is None:
+        return CLIP_SPECS
+    unknown = sorted(set(ids) - {s.id for s in CLIP_SPECS})
+    if unknown:
+        raise ValueError(f"unknown clip id: {', '.join(unknown)}")
+    return tuple(s for s in CLIP_SPECS if s.id in ids)
+
+
+def _kept_manifest_entries(out_dir: Path, regenerated: set[str]) -> list[dict[str, str]]:
+    """Entries of an earlier manifest whose clip was not regenerated and whose wav still exists."""
+    try:
+        old = json.loads((out_dir / "manifest.json").read_text(encoding="utf-8"))["clips"]
+    except (OSError, ValueError, KeyError, TypeError):
+        return []
+    return [
+        entry
+        for entry in old
+        if isinstance(entry, dict)
+        and entry.get("id") not in regenerated
+        and (out_dir / f"{entry.get('id')}.wav").is_file()
+    ]
+
+
 def mix_clip(tts_wav: bytes, noise: noisemix.Samples, seed: int, clip_id: str) -> bytes:
     speech = noisemix.read_wav(resample_to_16k(tts_wav))
     return noisemix.mix_at_snr(
@@ -137,5 +171,10 @@ async def build_clips(
         await limiter.acquire(1)
         tts_wav = await gnani.synthesize(spec.text, voice.gnani_code, voice.tts_voice)
         (out_dir / f"{spec.id}.wav").write_bytes(mix_clip(tts_wav, noise, seed, spec.id))
-    manifest = {"clips": [{"id": s.id, "lang": s.lang, "label": s.label} for s in specs]}
+    # A partial run (--only) must not drop the clips it did not regenerate.
+    entries = _kept_manifest_entries(out_dir, {s.id for s in specs})
+    entries += [{"id": s.id, "lang": s.lang, "label": s.label} for s in specs]
+    order = {s.id: i for i, s in enumerate(CLIP_SPECS)}
+    entries.sort(key=lambda e: order.get(e["id"], len(order)))
+    manifest = {"clips": entries}
     (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")

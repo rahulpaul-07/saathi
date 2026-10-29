@@ -56,9 +56,12 @@ test("both roles speak and reply in ta and ml: chips, audio, repeat, quick repli
   await expect(customer.locator("#status")).toContainText("Recording");
   await customer.waitForTimeout(1500); // let the fake microphone produce some audio
   await customer.locator("#talk").click();
-  await expect(customer.locator("#sent-chips .chip-gate .chip-value")).toHaveText("2");
-  await expect(rider.locator("#chips .chip-gate .chip-value")).toHaveText("2");
-  await expect(rider.locator("#chips .chip-floor .chip-value")).toHaveText("3");
+  await expect(rider.locator("#translation")).toContainText("<b>ml</b>");
+  // A customer turn has no per-turn chips on either screen: the card below is the one place the
+  // facts appear, so no value shows twice.
+  await expect(customer.locator("#sent-chips .chip")).toHaveCount(0);
+  await expect(customer.locator("#sent-empty")).toHaveText("Sent. The delivery card has the details.");
+  await expect(rider.locator("#chips .chip")).toHaveCount(0);
   // The pinned card collects the customer's facts on both screens, with no "changed" marker yet.
   for (const page of [customer, rider]) {
     await expect(page.locator("#card-chips .chip-gate .chip-value")).toHaveText("2");
@@ -78,10 +81,10 @@ test("both roles speak and reply in ta and ml: chips, audio, repeat, quick repli
   // Numbers match on both screens; the landmark differs on purpose. The speaker sees what was
   // said; the listener sees a translation in their script plus the original in brackets, or, as
   // with this fake translator (Latin text, not the listener's script), the original alone.
-  await expect(customer.locator("#sent-chips .chip-landmark .chip-value")).toHaveText(
+  await expect(customer.locator("#card-chips .chip-landmark .chip-value")).toHaveText(
     "blue temple",
   );
-  await expect(rider.locator("#chips .chip-landmark .chip-value")).toHaveText("blue temple");
+  await expect(rider.locator("#card-chips .chip-landmark .chip-value")).toHaveText("blue temple");
 
   // Translation is shown as literal text (the fake translator returns markup on purpose).
   await expect(rider.locator("#translation")).toContainText("<b>ml</b>");
@@ -171,7 +174,8 @@ test("a repeat request shows in the speaker's language and clears on the next se
   await speaker.locator("#talk").click();
   await speaker.waitForTimeout(1500);
   await speaker.locator("#talk").click();
-  await expect(speaker.locator("#sent-chips .chip-gate .chip-value")).toHaveText("2");
+  await expect(speaker.locator("#status")).toContainText("Sent");
+  await expect(speaker.locator("#card-chips .chip-gate .chip-value")).toHaveText("2");
   await expect(speaker.locator("#repeat-prompt")).toBeHidden();
   expect(problems).toEqual([]);
 });
@@ -319,7 +323,8 @@ test("a reload rejoins the room and catches up the last message without playing 
   expect(page.headers()["content-security-policy"]).toContain("frame-ancestors 'none'");
 
   await speak(customer);
-  await expect(rider.locator("#chips .chip-gate .chip-value")).toHaveText("2");
+  await expect(rider.locator("#card-chips .chip-gate .chip-value")).toHaveText("2");
+  await expect(rider.locator("#translation")).not.toBeEmpty();
   expect(played).toHaveLength(1);
 
   await rider.reload();
@@ -327,7 +332,7 @@ test("a reload rejoins the room and catches up the last message without playing 
   await expect(rider.locator("#setup")).toBeHidden();
   await expect(rider.locator("#peer")).toContainText("Customer joined");
   await expect(rider.locator("#card-chips .chip-gate .chip-value")).toHaveText("2");
-  await expect(rider.locator("#chips .chip-gate .chip-value")).toHaveText("2");
+  await expect(rider.locator("#translation")).not.toBeEmpty();
   await expect(rider.locator("#incoming-status")).toContainText("Last message");
   await expect(rider.locator("#repeat")).toBeEnabled();
   expect(played).toHaveLength(2); // fetched to be ready for Repeat, but not auto-played
@@ -369,5 +374,80 @@ test("when the room ends the other side returns to the join screen with a messag
   await expect(rider.locator("#join-status")).toHaveText("");
 
   await expect(customer.locator("#setup")).toBeVisible();
+  expect(problems).toEqual([]);
+});
+
+test("on a phone, ask and confirm on different chips each send exactly one chip-reply, and a re-render keeps untouched buttons", async ({
+  browser,
+}) => {
+  const customerContext = await browser.newContext();
+  const riderContext = await browser.newContext({
+    viewport: { width: 360, height: 740 },
+    hasTouch: true,
+    isMobile: true,
+  });
+  await customerContext.grantPermissions(["microphone"]);
+  const customer = await customerContext.newPage();
+  const rider = await riderContext.newPage();
+  const problems = [...watchConsole(customer), ...watchConsole(rider)];
+  /** @type {string[]} */
+  const posts = [];
+  rider.on("request", (request) => {
+    if (request.method() === "POST") posts.push(new URL(request.url()).pathname.split("/").pop() ?? "");
+  });
+  await customer.goto("/customer.html");
+  await customer.locator("#language").selectOption("pa");
+  await customer.getByRole("button", { name: "Create room" }).click();
+  await expect(customer.locator("#code")).toHaveText(/^[A-Z0-9]{6}$/);
+  const code = (await customer.locator("#code").textContent()) ?? "";
+  await rider.goto(`/rider.html?code=${code}`);
+  await rider.locator("#language").selectOption("hi");
+  await rider.getByRole("button", { name: /Join/ }).click();
+  await expect(customer.locator("#talk")).toBeEnabled();
+  await speak(customer);
+  await expect(rider.locator("#card-chips .chip-floor")).toBeVisible();
+  posts.length = 0;
+
+  // Every card button is what a finger would hit at its centre (nothing overlaps it).
+  const covered = await rider.evaluate(() =>
+    [...document.querySelectorAll("#card-chips button")].filter((button) => {
+      button.scrollIntoView({ block: "center" });
+      const box = button.getBoundingClientRect();
+      const top = document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2);
+      return top !== button && !button.contains(top);
+    }).length,
+  );
+  expect(covered).toBe(0);
+
+  await rider.locator("#card-chips .chip-gate .chip-confirm").tap();
+  await expect(rider.locator("#card-chips .chip-gate .icon-check").first()).toBeVisible();
+  await rider.locator("#card-chips .chip-floor .chip-ask").tap();
+  await expect(customer.locator("#card-chips .chip-floor .chip-question")).toHaveText(/\?$/);
+  expect(posts).toEqual(["chip-reply", "chip-reply"]); // no quick-reply among them
+
+  // A new customer turn changes the gate only: the floor chip and its buttons are the same
+  // elements afterwards, so a tap in progress on them would not be lost.
+  await expect(rider.locator("#card-chips .chip-floor .chip-question")).toHaveText(/\?$/); // echo done
+  const floorAsk = await rider.locator("#card-chips .chip-floor .chip-ask").elementHandle();
+  await speak(customer);
+  await expect(rider.locator("#card-chips .chip-gate .chip-value")).toHaveText("4");
+  expect(await floorAsk?.evaluate((el) => el.isConnected)).toBe(true);
+  expect(problems).toEqual([]);
+});
+
+test("the customer's 'nothing received' placeholder goes away once a reply arrives", async ({
+  browser,
+}) => {
+  const { customer, rider, problems } = await openRoom(browser);
+  await expect(customer.locator("#incoming-status")).toHaveText("Nothing received yet.");
+
+  const catalog = await (await customer.request.get("/quick-replies")).json();
+  await rider.getByRole("button", { name: catalog.languages.ml.which_floor.text }).click();
+  await expect(customer.locator("#reply")).toBeVisible();
+  await expect(customer.locator("#incoming-status")).toBeHidden();
+
+  // A later spoken turn brings the status line back with its own message.
+  await speak(rider);
+  await expect(customer.locator("#incoming-status")).toContainText("New message");
   expect(problems).toEqual([]);
 });

@@ -18,16 +18,19 @@ const REQUEST_TIMEOUT_MS = 45_000;
 const bearer = (token) => ({ Authorization: `Bearer ${token}` });
 
 /**
- * Error body to machine code: FastAPI sends {detail: "text"} or {detail: {code, message}}.
+ * Error body to machine code and text: FastAPI sends {detail: "text"} or {detail: {code, message}}.
  * @param {Response} response
- * @returns {Promise<string | null>}
+ * @returns {Promise<{code: string | null, message: string | null}>}
  */
-async function errorCode(response) {
+async function errorDetail(response) {
   try {
     const detail = (await response.json())?.detail;
-    return typeof detail?.code === "string" ? detail.code : null;
+    return {
+      code: typeof detail?.code === "string" ? detail.code : null,
+      message: typeof detail?.message === "string" ? detail.message : null,
+    };
   } catch {
-    return null;
+    return { code: null, message: null };
   }
 }
 
@@ -44,8 +47,13 @@ async function request(path, init) {
       const body = response.status === 204 ? null : await response.json();
       return { ok: true, data: body };
     }
-    const verdict = classify(response.status, await errorCode(response));
-    const message = specificMessage(response.status) ?? ("message" in verdict ? verdict.message : "");
+    const { code, message: serverMessage } = await errorDetail(response);
+    const verdict = classify(response.status, code);
+    // The server words a speech-service failure in the speaker's own language.
+    const message =
+      (code === "speech_unavailable" ? serverMessage : null) ??
+      specificMessage(response.status) ??
+      ("message" in verdict ? verdict.message : "");
     return {
       ok: false,
       status: response.status,

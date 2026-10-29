@@ -144,3 +144,34 @@ test("a confirmed entry has no changed marker, an unconfirmed one keeps it", () 
   assert.equal(open.changed, true);
   assert.equal(open.confirmed, false);
 });
+
+const landmarkFact = { ...base, kind: "landmark", value: "temple", local: "मंदिर" };
+
+test("the old landmark is translated like the current one for the listener", () => {
+  const [chip] = cardChips(
+    [{ fact: landmarkFact, previous: "bakery", previous_local: "बेकरी" }],
+    true,
+  );
+  assert.equal(chip.value, "मंदिर (temple)");
+  assert.equal(chip.note, "changed, was बेकरी (bakery)");
+});
+
+test("the old landmark falls back to the original when it has no usable translation", () => {
+  for (const previous_local of [null, "", "  ", "bakery"]) {
+    const [chip] = cardChips([{ fact: landmarkFact, previous: "bakery", previous_local }], true);
+    assert.equal(chip.note, "changed, was bakery");
+  }
+});
+
+test("the speaker sees the old landmark as they said it", () => {
+  const [chip] = cardChips(
+    [{ fact: landmarkFact, previous: "bakery", previous_local: "बेकरी" }],
+    false,
+  );
+  assert.equal(chip.note, "changed, was bakery");
+});
+
+test("a numeric previous value is never replaced by a local one", () => {
+  const [chip] = cardChips([{ fact: cardFact, previous: "2", previous_local: "दो" }], true);
+  assert.equal(chip.note, "changed, was 2");
+});

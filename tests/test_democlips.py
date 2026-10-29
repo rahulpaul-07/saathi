@@ -9,7 +9,13 @@ import pytest
 
 from saathi.demo import load_demo_clips
 from saathi.evaluation import noisemix
-from saathi.evaluation.democlips import CLIP_SPECS, ClipSpec, build_clips, planned_calls
+from saathi.evaluation.democlips import (
+    CLIP_SPECS,
+    ClipSpec,
+    build_clips,
+    planned_calls,
+    select_specs,
+)
 from saathi.languages import LANGUAGES
 
 
@@ -62,6 +68,41 @@ def test_build_writes_wavs_and_a_manifest_the_server_accepts(tmp_path: Path) -> 
     assert json.loads((tmp_path / "manifest.json").read_text("utf-8"))["clips"][0]["lang"]
 
 
+def test_only_regenerates_the_named_clip_and_keeps_the_others(tmp_path: Path) -> None:
+    asyncio.run(build_clips(CLIP_SPECS, FakeGnani(), NoLimit(), _noise(), tmp_path))
+    untouched = (tmp_path / "kn-bakery.wav").read_bytes()
+
+    gnani = FakeGnani()
+    specs = select_specs(["kn-gate-correction"])
+    asyncio.run(build_clips(specs, gnani, NoLimit(), _noise(), tmp_path))
+
+    assert planned_calls(specs) == 1
+    assert len(gnani.calls) == 1
+    assert (tmp_path / "kn-bakery.wav").read_bytes() == untouched
+    ids = [c["id"] for c in json.loads((tmp_path / "manifest.json").read_text("utf-8"))["clips"]]
+    assert ids == [s.id for s in CLIP_SPECS]
+
+
+def test_only_into_an_empty_folder_lists_just_that_clip(tmp_path: Path) -> None:
+    specs = select_specs(["kn-gate-correction"])
+    asyncio.run(build_clips(specs, FakeGnani(), NoLimit(), _noise(), tmp_path))
+    assert set(load_demo_clips(tmp_path)) == {"kn-gate-correction"}
+
+
+def test_only_drops_a_manifest_entry_whose_wav_is_gone(tmp_path: Path) -> None:
+    asyncio.run(build_clips(CLIP_SPECS, FakeGnani(), NoLimit(), _noise(), tmp_path))
+    (tmp_path / "ta-gate.wav").unlink()
+    only_bakery = select_specs(["kn-bakery"])
+    asyncio.run(build_clips(only_bakery, FakeGnani(), NoLimit(), _noise(), tmp_path))
+    assert "ta-gate" not in load_demo_clips(tmp_path)
+
+
+def test_only_refuses_an_unknown_clip_id() -> None:
+    with pytest.raises(ValueError, match="nope"):
+        select_specs(["nope"])
+    assert select_specs(None) == CLIP_SPECS
+
+
 def test_a_clip_too_short_to_mix_is_refused(tmp_path: Path) -> None:
     class TooShort(FakeGnani):
         async def synthesize(self, text: str, language_code: str, voice: str) -> bytes:
@@ -81,3 +122,13 @@ def test_clip_whose_transcript_gives_no_chips_is_reported() -> None:
         "ta-gate": "வணக்கம் நன்றி",  # nothing the extractor can use
     }
     assert clips_without_chips(transcripts) == ["ta-gate"]
+
+
+def test_the_correction_clip_changes_only_the_gate_after_the_bakery_clip() -> None:
+    from saathi.facts import extract_facts
+
+    by_id = {s.id: s for s in CLIP_SPECS}
+    bakery = {f.kind: f.value for f in extract_facts(by_id["kn-bakery"].text, "kn")}
+    correction = {f.kind: f.value for f in extract_facts(by_id["kn-gate-correction"].text, "kn")}
+    assert bakery["gate"] == "4"
+    assert correction == {"gate": "2"}

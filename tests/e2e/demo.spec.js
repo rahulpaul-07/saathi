@@ -32,7 +32,7 @@ test("demo mode: a prepared clip is sent, both screens say it is a demo clip", a
   await expect(customer.locator("#demo-clip option")).toHaveText(["Sample kn"]);
   await expect(customer.locator("#sent-demo-badge")).toBeHidden();
   await customer.locator("#demo-send").click();
-  await expect(rider.locator("#chips .chip-gate .chip-value")).toHaveText("2");
+  await expect(rider.locator("#card-chips .chip-gate .chip-value")).toHaveText("2");
   await expect(rider.locator("#demo-badge")).toBeVisible();
   await expect(customer.locator("#sent-demo-badge")).toBeVisible();
   expect(problems).toEqual([]);
@@ -55,4 +55,15 @@ test("split-screen page loads both screens in one 16:9 stage", async ({ page }) 
   await page.frameLocator("#customer-frame").getByRole("button", { name: "Create room" }).click();
   const code = await page.frameLocator("#customer-frame").locator("#code").textContent();
   await expect(page.frameLocator("#rider-frame").locator("#code-input")).toHaveValue(code ?? "");
+});
+
+test("demo mode: a language with no clips gets the banner but no empty clip picker", async ({
+  page,
+}) => {
+  await page.route("**/demo/clips", (route) => route.fulfill({ json: { clips: [] } }));
+  await page.goto(`${DEMO}/customer.html`);
+  await page.locator("#language").selectOption("kn");
+  await page.getByRole("button", { name: "Create room" }).click();
+  await expect(page.locator("#demo-banner")).toBeVisible();
+  await expect(page.locator("#demo")).toBeHidden();
 });

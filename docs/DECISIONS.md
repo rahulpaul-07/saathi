@@ -645,3 +645,36 @@ the customer said it, in their script.
   on, because /demo.html frames the customer and rider pages. The FastAPI `/docs` Swagger page
   loads a CDN script and inline code, so it does not render under this policy; the API is not
   meant to be browsed.
+
+## Rehearsal 1 fixes (live, kn customer to hi rider)
+
+- Gnani retry: `GnaniClient._post` retries once, after a 1 s wait, on a timeout or a 5xx. Not on
+  429 (the rate-limit path has its own handling and a retry would spend the window), not on other
+  4xx (the request is wrong, a retry will not help). Only the status code is logged, never
+  Gnani's response body, which can echo the transcript. Worst case is two attempts per call, so
+  the rate limiter is charged once per call, not per attempt.
+- When STT or TTS still fails, the turn route returns 502 with `code: speech_unavailable` and a
+  message in the speaker's language (`unavailable.py`, one table). All but English are machine
+  translations marked "pending". The legacy `/turn` route keeps its generic message; it is not the
+  room flow.
+- Opt-in TTS warm-up: `SAATHI_WARM_TTS=1` makes one short English TTS call at startup (the first
+  call after idle took 15.9 s live, later ones 1.2 to 5.3 s). Off by default because it spends one
+  Gnani call per start; a failure is logged and never stops startup. It warms TTS only, not STT, so
+  the demo script still does a throwaway turn.
+- Customer turns no longer show per-turn chips on either screen. The pinned delivery card is the
+  single place the facts appear; the translated sentence stays. Rider turns keep their chips because
+  the card is only updated by customer turns. This also drops the per-turn "landmark machine
+  translated" note with those chips; the card chip keeps its own.
+- The old landmark in "changed, was X" is shown translated like the current one. `previous_local`
+  is copied from the replaced fact (translated when that turn ran), so there is no extra
+  translation call and the same fallback rules apply (missing, empty or identical: original only).
+- The demo-clip control is hidden when `/demo/clips` has no clip for the language; the demo banner
+  stays. The customer's "Nothing received yet." placeholder is hidden once any turn or reply has
+  arrived.
+- Ask button (finding 1): the cause of "tap changed nothing" was not reproduced with real taps. A
+  chip re-render replaced every chip node on each card update, and a node removed between
+  touchstart and touchend gets no click, so `renderChips` now keeps unchanged chips. The new
+  e2e test fails without that change. This is a defensive fix for the most likely cause, not a
+  proven one; the earlier e2e passed because it clicked via a handle looked up after the re-render.
+- Demo: a `kn-gate-correction` clip ("Sorry, gate 2") makes only the gate change after
+  `kn-bakery`. Clips are prepared, not generated; a full regeneration is 5 calls.
