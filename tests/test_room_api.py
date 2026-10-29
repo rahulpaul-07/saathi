@@ -767,6 +767,37 @@ async def test_the_state_snapshot_restores_the_card_after_a_reconnect(
     assert chip_label("gate", "kn").text in state
 
 
+async def test_a_reconnecting_listener_catches_up_the_last_turn_and_reply(
+    gnani: FakeGnani, manager: RoomManager
+) -> None:
+    async with build_client(gnani, manager) as client:
+        room = await make_room(client)
+        live = manager.authorize(room["code"], room["rider"]).room
+        # Sent while the rider has no stream open, as when the phone reloads.
+        await post_turn(client, room)
+        phrase = IDS_BY_ROLE["customer"][0]
+        await client.post(
+            f"/rooms/{room['code']}/quick-reply",
+            json={"phrase_id": phrase},
+            headers=auth(room["customer"]),
+        )
+        stream = asyncio.create_task(
+            client.get(f"/rooms/{room['code']}/events", headers=auth(room["rider"]))
+        )
+        async with asyncio.timeout(5):
+            while not manager.is_subscribed(live, "rider"):
+                await asyncio.sleep(0)
+            snapshot = manager.snapshot(live, "rider").data
+            await client.delete(f"/rooms/{room['code']}", headers=auth(room["customer"]))
+            await stream
+
+    assert snapshot["last_turn"]["translation"].startswith(TRANSLATION)
+    assert snapshot["last_turn"]["audio_path"].startswith(f"/rooms/{room['code']}/turns/")
+    assert snapshot["last_reply"]["phrase_id"] == phrase
+    # The sender's own screen gets nothing back.
+    assert manager.snapshot(live, "customer").data["last_turn"] is None
+
+
 async def test_the_card_is_wiped_when_the_room_closes(
     gnani: FakeGnani, manager: RoomManager
 ) -> None:

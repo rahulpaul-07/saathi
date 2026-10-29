@@ -1,9 +1,10 @@
 """In-memory rooms: a code, two role slots, random tokens, TTL expiry, events, short-lived audio.
 
 Nothing here touches disk or logs. A room holds no transcripts. The only address data it keeps is
-the delivery card (the latest value of each fact, in memory); that and turn audio are dropped when
-the room closes or expires, and event payloads are not stored. State lives in one process, so
-there is no locking: every method is synchronous and runs to completion on the event loop.
+the delivery card (the latest value of each fact, in memory) and, per recipient, the last incoming
+turn and the last incoming quick reply (so a reloaded phone can catch up). All of it and turn audio
+are dropped when the room closes or expires, and none of it is logged. State lives in one process,
+so there is no locking: every method is synchronous and runs to completion on the event loop.
 """
 
 import asyncio
@@ -31,6 +32,8 @@ HARD_TTL_S = 2 * 60 * 60
 AUDIO_TTL_S = 60.0
 MAX_AUDIO_PER_ROOM = 5
 EVENT_QUEUE_SIZE = 32
+# Events kept (the latest per recipient) for the state snapshot, and the snapshot key for each.
+CATCH_UP_KEYS = {"turn": "last_turn", "quick_reply": "last_reply"}
 TOKEN_BYTES = 16  # 128 bits
 
 
@@ -83,6 +86,8 @@ class Room:
     participants: dict[Role, Participant] = field(default_factory=dict)
     audio: OrderedDict[str, StoredAudio] = field(default_factory=OrderedDict)
     card: Card = field(default_factory=Card)
+    # (recipient, event name) -> payload of the latest such event; at most 4 entries.
+    catch_up: dict[tuple[Role, str], dict[str, Any]] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -164,6 +169,7 @@ class RoomManager:
         self._rooms.pop(room.code, None)
         room.audio.clear()
         room.card.clear()
+        room.catch_up.clear()
         for participant in room.participants.values():
             if participant.queue is not None:
                 _offer(participant.queue, None)
@@ -194,10 +200,14 @@ class RoomManager:
         return participant is not None and participant.queue is not None
 
     def publish(self, room: Room, role: Role, event: Event) -> None:
-        """Deliver to a role's stream; dropped if nobody is listening (the state snapshot sent on
-        connect covers presence, and turns are not replayed)."""
+        """Deliver to a role's stream; dropped if nobody is listening. A turn or quick reply is also
+        remembered (the latest of each per recipient) for the snapshot sent on the next connect."""
         participant = room.participants.get(role)
-        if participant is not None and participant.queue is not None:
+        if participant is None:
+            return
+        if event.name in CATCH_UP_KEYS:
+            room.catch_up[(role, event.name)] = event.data
+        if participant.queue is not None:
             _offer(participant.queue, event)
 
     def snapshot(self, room: Room, role: Role) -> Event:
@@ -209,6 +219,7 @@ class RoomManager:
                 "language": room.participants[role].language,
                 "peer_joined": peer is not None,
                 "peer_language": peer.language if peer else None,
+                **{key: room.catch_up.get((role, name)) for name, key in CATCH_UP_KEYS.items()},
             },
         )
 

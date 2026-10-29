@@ -166,6 +166,44 @@ def test_turn_audio_expires_and_is_capped(manager: RoomManager, clock: Clock) ->
     assert manager.get_audio(room, ids[-1]) == b"x"
 
 
+def test_snapshot_catches_up_the_latest_turn_and_reply_per_recipient(manager: RoomManager) -> None:
+    room, _ = manager.create("en")
+    manager.join(room.code, "kn")
+    snapshot = manager.snapshot(room, "rider").data
+    assert snapshot["last_turn"] is None and snapshot["last_reply"] is None
+
+    # Nobody is subscribed: the events are still remembered for the next connect.
+    manager.publish(room, "rider", Event("turn", {"turn_id": "t1"}))
+    manager.publish(room, "rider", Event("turn", {"turn_id": "t2"}))
+    manager.publish(room, "rider", Event("quick_reply", {"text": "ok"}))
+    manager.publish(room, "rider", Event("card", {"entries": []}))
+
+    rider = manager.snapshot(room, "rider").data
+    assert rider["last_turn"] == {"turn_id": "t2"}
+    assert rider["last_reply"] == {"text": "ok"}
+    customer = manager.snapshot(room, "customer").data
+    assert customer["last_turn"] is None and customer["last_reply"] is None
+    assert len(room.catch_up) == 2  # bounded: card and presence events are not kept
+
+
+def test_catch_up_is_dropped_when_the_room_closes_or_expires(
+    manager: RoomManager, clock: Clock
+) -> None:
+    room, _ = manager.create("en")
+    manager.join(room.code, "kn")
+    manager.publish(room, "rider", Event("turn", {"turn_id": "t1"}))
+    manager.close(room)
+    assert room.catch_up == {}
+
+    expiring, _ = manager.create("en")
+    manager.join(expiring.code, "kn")
+    manager.publish(expiring, "rider", Event("turn", {"turn_id": "t1"}))
+    clock.now += 101
+    with pytest.raises(RoomAccessError):
+        manager.authorize(expiring.code, "x")
+    assert expiring.catch_up == {}
+
+
 def test_snapshot_reports_peer_presence(manager: RoomManager) -> None:
     room, _ = manager.create("en")
     assert manager.snapshot(room, "customer").data["peer_joined"] is False
