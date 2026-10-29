@@ -551,3 +551,22 @@ listener's `turn` event does not carry them, since they are the speaker's wait a
 gains nothing from them. Numbers only: no language, text or identifier. `TimingsOut` moved from
 `app.py` to `room_routes.py` so solo and room turns share one model. The solo screen's
 "stop tap to playback" row stays solo-only (it needs client-side playback timing).
+
+## Please-repeat prompt (features branch)
+
+`POST /rooms/{code}/turn` returns `repeat` (reason, text, review_status) or null. Reasons: `no_facts`
+(verified turn, no gate/floor/cross-main/landmark found) and `unverified` (placeholder check failed;
+wins when both apply, since the listener got the fallback). The text is in the SPEAKER's language,
+shown on their screen only; the listener's event never carries it. It never blocks sending, so a
+turn with no facts (for example "okay, thank you") only costs the speaker a line they can ignore.
+No Gnani call and no audio: fixed text from `repeatprompts.py`, 2 phrases x 10 languages.
+English is the source; the other nine are unreviewed machine output from
+`scripts/gen_repeat_prompts.py` (local IndicTrans2), all "pending" and labelled so on screen.
+The first English draft named "gate" and "floor"; the model rendered them as "door" and "ground",
+and "say them again" came out as "tell them" (a person) in five languages. The shipped English
+avoids both ("No address details were found. Please repeat the address."). Known stiff outputs
+for review: bn "punorabritti", mr "patta punha kara".
+Correction: `no_facts` applies to customer turns only. A rider's "coming in 2 minutes" has no address
+to find, so a rider turn with no facts gives `repeat: null`. `unverified` applies to both roles.
+Review: the author rewrote and approved all four bn and hi prompts (both reasons); they are
+"reviewed". The other eight languages stay "pending".

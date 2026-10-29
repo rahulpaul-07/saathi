@@ -362,3 +362,8 @@ triton package name, compare the `--no-install-package` list with `uv.lock`.
 
 Room turn response has `timings`; customer and rider screens show a `#timings` list after a send.
 Next: feature 3 (please-repeat prompt).
+
+## Features branch, slice 3: please-repeat (done locally)
+
+Phrases in `src/saathi/repeatprompts.py`, all pending except en. To review them, read the table
+and edit the status to "reviewed" per phrase. Next: feature 1 (pinned card).
