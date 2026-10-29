@@ -1,0 +1,26 @@
+{
+  "<ID{n}>": {
+    "verified": 12,
+    "total": 30
+  },
+  "[ID{n}]": {
+    "verified": 10,
+    "total": 30
+  },
+  "ID{n}": {
+    "verified": 6,
+    "total": 30
+  },
+  "#L{n}": {
+    "verified": 29,
+    "total": 30
+  },
+  "<{n}>": {
+    "verified": 24,
+    "total": 30
+  },
+  "XQ{n}Z": {
+    "verified": 22,
+    "total": 30
+  }
+}
