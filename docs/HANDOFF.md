@@ -158,7 +158,6 @@ Commit groups for slice 5 (all uncommitted; pytest 404, ruff, mypy, tsc, npm tes
 Author actions for slice 5:
 - Review the loanword table (src/saathi/loanwords.py). Spellings are hand-written and unreviewed;
   the beta languages are the likeliest to be wrong.
-- Decide digits: restore uses Latin digits; your example used a Bengali digit.
 - Beta smokes (3 calls each, 18 for te gu ml mr pa ta):
   `uv run --no-sync python scripts/live_turn.py --target ta --dry-run`, then `--yes --show-text`.
   Do this awake; repeat for te, gu, ml, mr, pa.
@@ -167,6 +166,30 @@ Author actions for slice 5:
   dry-run currently refuses because that folder has no audio.
 - Check the landmark renderings by eye: the A/B accepted 72/72 landmark translations by the
   `plausible` rule only, which does not prove they are good Bengali, Hindi, Kannada or English.
+
+## Session 2026-10-29 (after 14fabbe): digits, results docs, screenshots
+Checks: pytest 415, ruff, mypy, tsc, npm test 33, e2e 7 all pass. No Gnani calls, git or new deps.
+- Digits are plain 0-9 everywhere: `restore` rewrites any native digit; bn quick reply is now
+  "2 মিনিটে আসছি" (still reviewed). Tests: tests/test_masking.py.
+- docs/EVAL.md has the masking A/B table (0.674 / 0.808 / 0.851) and the chips-as-second-layer
+  point; README says the same; the stale "latency study has no script" line is gone.
+- docs/media/rider-unmasked.png and rider-masked.png: rider screen on real local IndicTrans2 output
+  for gold g02 kn->bn (synthetic address), fake Gnani. Regenerate: capture the replay JSON (it was
+  scratch/g02.json, gitignored), then `node scripts/screenshots.mjs scratch/g02.json`.
+- Finding: with the real model, g02 kn->bn FAILS the placeholder check (the model rewrote every
+  `#L5x` as "<আই. ডি. N>"). So "masking on" shows the fact-summary fallback ("2 ক্রস, 3 মেইন, গেট
+  2, ল্যান্ডমার্ক গণেশ মন্দির"), not a fluent masked sentence, plus the "could not be fully
+  checked" note. The unmasked sentence is fluent but renders "opposite" as "বিরোধিতা"
+  (opposition) and drops "gate number" to "গেট নং দুটির কাছে". The chips are right in both.
+  Keep that wording honest in the LinkedIn post.
+
+Commit groups (after the slice 5 groups; the first two touch files from groups 1 and 5):
+1. `feat(masking): write plain 0-9 digits in restored text and the bn quick reply`
+   - src/saathi/facts/text.py, src/saathi/masking.py, src/saathi/quickreplies.py, tests/test_masking.py
+2. `feat(scripts): add rider-screen screenshot harness`
+   - scripts/screenshot_server.py, scripts/screenshots.mjs, docs/media/
+3. `docs: add masking A/B results, chips-as-safety-layer note and handoff`
+   - docs/EVAL.md, README.md, docs/DECISIONS.md, docs/HANDOFF.md (commit last)
 
 ## Known issues / notes
 - Tokens are Bearer headers, so the UI must read SSE via fetch, not EventSource.

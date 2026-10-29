@@ -442,8 +442,9 @@ are an existence proof, not a distribution; slice 5 measures p50/p95 properly.
 - `verified` means every slot came back exactly once and no unknown placeholder appeared. Fallback
   chain: verified masked text, then the fact summary in the listener's language, then the plain
   unmasked translation with verified False. The summary uses only extracted facts and the table.
-- Restore writes Latin digits. The author's example used a Bengali digit; kept Latin for now
-  because Gnani TTS reads them reliably (see the number probe above). Open for the author.
+- Digits are plain 0-9 in every language (author decision, 2026-10-29). `restore` also rewrites any
+  native digit the model wrote itself, so chips, summaries and spoken text never mix numerals; the
+  bn quick reply "coming in 2 minutes" now reads "2 মিনিটে আসছি" (still reviewed).
 - Loanword spellings (src/saathi/loanwords.py) are hand-written and unreviewed. Beta languages are
   the likeliest to be wrong. Language support stays data in one table, never per-language branches.
 - `Fact` gained `value_start`, `value_end` (spans for masking) and `local` (listener-language

@@ -96,12 +96,34 @@ but one input is luck, not evidence (see the beam bn->kn result above). Case 2 i
 error in the translator that both modes share and the guard cannot see; it is a model limitation.
 No recordings of either phone case exist, so no audio-level check was possible.
 
+## Masking A/B (slice 5, text only, `scripts/eval_masking.py`)
+
+All 90 gold turns (30 synthetic utterances x 3 target languages), real IndicTrans2, greedy,
+`eval/results/masking_ab.json`. A fact counts as recalled when its class and value appear in the
+text the listener would get. No STT or TTS is involved, and the gold text is ours, not recorded
+speech, so these numbers are optimistic about the front half of the pipeline.
+
+| arm | what it is | fact recall | wrong extras | all facts correct | loanwords kept |
+|---|---|---|---|---|---|
+| A | toolkit default: translate the raw sentence | 0.674 | 67 | 9/90 | 128/255 |
+| B | masked: numbers and address words become placeholders, restored in plain digits and the listener's script | 0.808 | 67 | 13/90 | 162/255 |
+| C | B plus the fallback: if a placeholder is lost or invented, speak the templated fact summary | 0.851 | 65 | 17/90 | 168/255 |
+
+- Masking adds 13 points of recall and the summary fallback 4 more. Most turns still lose at least
+  one fact in the translated text, and 4 of 90 masked translations failed the placeholder check.
+- Chips are a second safety layer. They are extracted from the source transcript, not from the
+  translation, so they do not depend on any arm above: a wrong translation still shows correct
+  chips next to it. Arm recall measures the sentence the listener hears, not the chips.
+- Landmark names in the listener's language passed the `plausible` rule 72 of 72 times. That rule
+  catches runaway output, not wrong-but-fluent output, and no human has reviewed the renderings.
+
 ## STT, latency, start-of-clip: pending
 
 Everything here needs Gnani calls and has not been run. The old FLORES-based plan
 (`eval_turns.py`, 155-call cap) was replaced on 2026-10-29: the call plan and hard cap of 290 now
 live in docs/DESIGN.md section 11, and the noise evaluation is `scripts/eval_noise.py` (see
-docs/DECISIONS.md "Priority 2"). The latency study has no script yet. The list below is the old
+docs/DECISIONS.md "Priority 2"). The latency study script exists (`scripts/latency_study.py`, dry-run
+only so far). The list below is the old
 plan's intent, kept until the new results replace it. Expected outputs, all labeled "clean
 synthetic audio" where TTS-made:
 

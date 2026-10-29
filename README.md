@@ -54,9 +54,15 @@ Privacy: addresses are personal data. Rooms are in memory and expire (30 min idl
 Transcripts are never logged or stored. Tests, evaluation and demos use synthetic addresses only.
 
 Honest limits: values the speech recognizer renders ambiguously (for example digit-by-digit flat
-numbers) are shown as heard, not guessed; a "1/N" floor is shown with low confidence. Number and
-landmark masking in translation is not built yet, so a translated number can still be wrong; the
-chips are extracted from the original transcript for that reason.
+numbers) are shown as heard, not guessed; a "1/N" floor is shown with low confidence.
+
+Two safety layers, independent of each other. First, numbers and address words (cross, main, gate)
+are masked as placeholders before translation and restored after, in plain digits 0-9, so the
+translation model cannot rewrite them; a translation that loses or invents a placeholder is not
+spoken, and a fact summary is spoken instead. Second, the chips are extracted from the source
+transcript, not from the translation, so even a wrong translation sits next to correct chips. On
+the 90-turn text A/B, masking raised fact recall from 0.674 to 0.808 (0.851 with the summary
+fallback), but it does not fix every turn: see `docs/EVAL.md`.
 
 ## Requirements
 
@@ -148,7 +154,8 @@ produce, not real recognizer output); the real test is the recorded-speech evalu
 
 ## Evaluation
 
-- `docs/EVAL.md`: translation quality (done) and the speech evaluation (pending real results).
+- `docs/EVAL.md`: translation quality and the masking A/B (done, text only) and the speech
+  evaluation (pending real results).
 - `scripts/eval_noise.py run --dry-run`: the noise evaluation plan. Recorded gold utterances are
   played clean and mixed with real street-traffic noise at 20, 10 and 5 dB SNR, plus a pink-noise
   stressor; critical-fact precision and recall are reported with bootstrap confidence intervals.
