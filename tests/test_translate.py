@@ -185,6 +185,7 @@ def _translator_with(
     return translator, model
 
 
+@pytest.mark.torch
 @pytest.mark.parametrize(("input_len", "cap"), [(5, 20), (20, 50), (200, 256)])
 def test_generation_is_capped_relative_to_input_length(input_len: int, cap: int) -> None:
     translator, model = _translator_with([[EOS, 7, EOS]], input_len)
@@ -193,23 +194,27 @@ def test_generation_is_capped_relative_to_input_length(input_len: int, cap: int)
     assert "max_length" not in model.kwargs
 
 
+@pytest.mark.torch
 def test_row_without_eos_raises_degenerate() -> None:
     translator, _ = _translator_with([[EOS, 7, 8, 9]], 1)
     with pytest.raises(DegenerateTranslationError):
         translator.translate("a", "bn", "kn")
 
 
+@pytest.mark.torch
 def test_one_unfinished_row_in_a_batch_raises_even_if_others_finish() -> None:
     translator, _ = _translator_with([[EOS, 7, EOS, 0], [EOS, 7, 8, 9]], 1)
     with pytest.raises(DegenerateTranslationError):
         translator.translate("a. b.", "bn", "kn")
 
 
+@pytest.mark.torch
 def test_padded_shorter_row_with_eos_is_fine() -> None:
     translator, _ = _translator_with([[EOS, 7, EOS, 0], [EOS, 7, 8, EOS]], 1)
     assert translator.translate("a. b.", "bn", "kn") == "row0 row1"
 
 
+@pytest.mark.torch
 def test_stats_report_token_counts_without_raising_when_capped() -> None:
     translator, _ = _translator_with([[EOS, 7, EOS, 0], [EOS, 7, 8, 9]], 4)
     result = translator.translate_with_stats("a. b.", "bn", "kn")
@@ -219,6 +224,7 @@ def test_stats_report_token_counts_without_raising_when_capped() -> None:
     assert result.cap == 18
 
 
+@pytest.mark.torch
 def test_stats_count_tokens_up_to_and_including_the_first_eos() -> None:
     translator, _ = _translator_with([[EOS, 7, EOS, 0], [EOS, 7, 8, EOS]], 1)
     result = translator.translate_with_stats("a. b.", "bn", "kn")

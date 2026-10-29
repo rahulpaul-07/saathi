@@ -1,5 +1,7 @@
 # Saathi
 
+[![CI](https://github.com/rahulpaul-07/saathi/actions/workflows/ci.yml/badge.svg)](https://github.com/rahulpaul-07/saathi/actions/workflows/ci.yml)
+
 A delivery-directions interpreter. A customer gives directions by voice; a rider who uses another
 Indian language gets the critical facts (gate, floor, cross/main, landmark) as big chips plus
 translated audio, in a short-lived room. A rider cannot wait for a perfect sentence, so the chips

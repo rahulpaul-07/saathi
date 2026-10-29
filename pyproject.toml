@@ -50,7 +50,10 @@ asyncio_mode = "auto"
 pythonpath = ["tests"]  # shared helpers such as wavs.py
 # Real-model tests need the GPU and the cached IndicTrans2 weights: run them with `-m model`.
 addopts = "-m 'not model'"
-markers = ["model: loads the real IndicTrans2 model (slow, needs the weights)"]
+markers = [
+    "model: loads the real IndicTrans2 model (slow, needs the weights)",
+    "torch: needs the torch package (fake model, no weights); CI runs without torch and skips these",
+]
 
 [tool.ruff]
 line-length = 100
@@ -64,6 +67,8 @@ strict = true
 mypy_path = "src:tests"
 
 [[tool.mypy.overrides]]
-# These packages ship no type stubs or py.typed marker; their objects are held as Any.
-module = ["IndicTransToolkit.*", "transformers.*"]
+# These packages ship no type stubs or py.typed marker; their objects are held as Any. torch is
+# listed so mypy also passes in CI, which installs everything except torch (a missing import is
+# then Any; with torch installed it is type-checked as before).
+module = ["IndicTransToolkit.*", "transformers.*", "torch", "torch.*"]
 ignore_missing_imports = true

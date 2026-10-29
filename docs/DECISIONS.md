@@ -521,3 +521,24 @@ STT in the full probe and added after a 2-call recheck in which the STT wrote it
 A first probe run lost its transcripts to a timeout after 22 good calls; the probe now saves after
 each sentence, resumes, and retries one transport error once after 5 s, counted against its cap.
 The same job is needed for gu, ml, mr and pa before they produce chips.
+
+## CI without torch (features branch)
+
+GitHub Actions (`.github/workflows/ci.yml`) must not install torch: the locked torch build is the
+CUDA 12.8 wheel plus about 15 nvidia-* packages and triton, several GB for a job that never runs a
+model. Choices:
+- `uv sync --locked` with `--no-install-package` for torch, triton and every nvidia-* package.
+  The small packages (transformers, IndicTransToolkit, sentencepiece) stay, because the code
+  imports them at module level. `uv.lock` is unchanged; the exclusion lives in the workflow only.
+- A `torch` pytest marker on the six tests in `tests/test_translate.py` whose fake tokenizer/model
+  imports torch. CI runs `pytest -m "not model and not torch"`; locally the default run still
+  includes them. The `model` marker still covers the real-weights tests.
+- mypy: `torch` and `torch.*` were added to the existing `ignore_missing_imports` override for
+  untyped packages (the narrowest workaround; no stub package). With torch installed it is
+  type-checked as before. One consequence: `scripts/measure_vram.py` returned an `Any`, fixed with
+  an explicit `float()`.
+- Actions are pinned to commit SHAs with the tag in a comment, `permissions: contents: read`,
+  no secrets, and no Gnani key, so CI cannot spend credits.
+- Playwright e2e is not in CI yet; it needs browsers and the server, and is run locally.
+Verified locally in a scratch env built with the same exclusion (ruff, mypy and 578 tests pass).
+The Linux run on GitHub is the final proof and needs a push.
