@@ -44,6 +44,9 @@ export function enterRoom(room, languages, players) {
   const sentChipsEl = byId("sent-chips", HTMLElement);
   const sentEmptyEl = byId("sent-empty", HTMLElement);
   const timingsEl = byId("timings", HTMLElement);
+  const repeatEl = byId("repeat-prompt", HTMLElement);
+  const repeatTextEl = byId("repeat-text", HTMLElement);
+  const repeatNoteEl = byId("repeat-note", HTMLElement);
   const incomingStatusEl = byId("incoming-status", HTMLElement);
   const chipsEl = byId("chips", HTMLElement);
   const chipsNoteEl = byId("chips-note", HTMLElement);
@@ -283,6 +286,19 @@ export function enterRoom(room, languages, players) {
   }
 
   /**
+   * Ask the speaker, in their own language, to say it again. It never blocks sending.
+   * @param {{text?: unknown, review_status?: unknown} | null | undefined} repeat
+   */
+  function showRepeatPrompt(repeat) {
+    const text = typeof repeat?.text === "string" ? repeat.text : "";
+    repeatEl.hidden = text === "";
+    repeatTextEl.textContent = text;
+    repeatTextEl.lang = room.language;
+    repeatNoteEl.textContent =
+      text !== "" && repeat?.review_status === "pending" ? "Unreviewed machine translation." : "";
+  }
+
+  /**
    * Send a recording. It stays in `state.pending` for Try again when resending could help.
    * @param {Blob} wav
    * @param {boolean} [demoClip] a prepared clip instead of live speech
@@ -291,6 +307,7 @@ export function enterRoom(room, languages, players) {
     state.pending = wav;
     state.pendingDemo = demoClip;
     setStatus(statusEl, "Sending...");
+    showRepeatPrompt(null);
     const result = await postTurn(room, wav, demoClip);
     if (!result.ok) {
       if (!result.keepRecording) state.pending = null;
@@ -302,6 +319,7 @@ export function enterRoom(room, languages, players) {
     sentDemoBadgeEl.hidden = !demoClip;
     renderTimings(timingsEl, result.data.timings);
     timingsEl.hidden = false;
+    showRepeatPrompt(result.data.repeat);
     const sent = demoClip ? "Sent demo clip" : "Sent";
     setStatus(
       statusEl,

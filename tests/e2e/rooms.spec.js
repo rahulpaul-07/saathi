@@ -96,6 +96,8 @@ test("both roles speak and reply in ta and ml: chips, audio, repeat, quick repli
   await expect(customer.locator("#chips .chip-gate .chip-value")).toHaveText("2");
   await expect(customer.locator("#translation")).toContainText("<b>ta</b>");
   await expect(customer.locator("#repeat")).toBeEnabled();
+  await expect(customer.locator("#repeat-prompt")).toBeHidden();
+  await expect(rider.locator("#repeat-prompt")).toBeHidden();
 
   // Quick replies go both ways, each in the recipient's language, with a review warning. Expected
   // texts come from the catalog so the test does not hardcode any phrase.
@@ -111,6 +113,57 @@ test("both roles speak and reply in ta and ml: chips, audio, repeat, quick repli
   await expect(rider.locator("#reply-text")).toHaveText(text("ml", "come_to_gate"));
   await expect(rider.locator("#reply-note")).toContainText("Unreviewed machine translation");
 
+  expect(problems).toEqual([]);
+});
+
+test("a repeat request shows in the speaker's language and clears on the next send", async ({
+  browser,
+}) => {
+  const speakerContext = await browser.newContext();
+  const listenerContext = await browser.newContext();
+  await speakerContext.grantPermissions(["microphone"]);
+  const speaker = await speakerContext.newPage();
+  const listener = await listenerContext.newPage();
+  const problems = watchConsole(speaker);
+
+  await speaker.goto("/customer.html");
+  await speaker.locator("#language").selectOption("hi");
+  await speaker.getByRole("button", { name: "Create room" }).click();
+  await expect(speaker.locator("#code")).toHaveText(/^[A-Z0-9]{6}$/);
+  const code = (await speaker.locator("#code").textContent()) ?? "";
+  await listener.goto(`/rider.html?code=${code}`);
+  await listener.locator("#language").selectOption("bn");
+  await listener.getByRole("button", { name: /Join/ }).click();
+  await expect(speaker.locator("#talk")).toBeEnabled();
+
+  // The server's answer is replaced by one that asks for a repeat.
+  const prompt = "SAMPLE repeat prompt";
+  await speaker.route("**/rooms/*/turn", (route) =>
+    route.fulfill({
+      json: {
+        turn_id: "t1",
+        facts: [],
+        verified: true,
+        timings: { stt_ms: 1, translate_ms: 2, tts_ms: 3, total_ms: 6 },
+        repeat: { reason: "no_facts", text: prompt, review_status: "pending" },
+      },
+    }),
+  );
+  await speaker.locator("#talk").click();
+  await speaker.waitForTimeout(1500);
+  await speaker.locator("#talk").click();
+  await expect(speaker.locator("#repeat-text")).toHaveText(prompt);
+  await expect(speaker.locator("#repeat-text")).toHaveAttribute("lang", "hi");
+  await expect(speaker.locator("#repeat-note")).toContainText("Unreviewed machine translation");
+  await expect(speaker.locator("#talk")).toBeEnabled(); // asking to repeat never blocks sending
+
+  // A normal turn goes through the real server and the prompt disappears.
+  await speaker.unroute("**/rooms/*/turn");
+  await speaker.locator("#talk").click();
+  await speaker.waitForTimeout(1500);
+  await speaker.locator("#talk").click();
+  await expect(speaker.locator("#sent-chips .chip-gate .chip-value")).toHaveText("2");
+  await expect(speaker.locator("#repeat-prompt")).toBeHidden();
   expect(problems).toEqual([]);
 });
 
