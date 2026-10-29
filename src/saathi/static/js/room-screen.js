@@ -4,7 +4,7 @@
 // page layout differs. The pages give the same element ids, so nothing here depends on the role
 // or on any language.
 import { AudioPlayer } from "./audio-player.js";
-import { chipsFromFacts } from "./chips.js";
+import { cardChips, chipsFromFacts } from "./chips.js";
 import { clipsForLanguage, parseDemoClips } from "./demo-clips.js";
 import { languageLabel } from "./languages.js";
 import { parseQuickReplyTable, quickReplyOptions } from "./quick-replies.js";
@@ -41,6 +41,8 @@ export function enterRoom(room, languages, players) {
   const actionsEl = byId("actions", HTMLElement);
   const retryButton = byId("retry", HTMLButtonElement);
   const discardButton = byId("discard", HTMLButtonElement);
+  const cardChipsEl = byId("card-chips", HTMLElement);
+  const cardEmptyEl = byId("card-empty", HTMLElement);
   const sentChipsEl = byId("sent-chips", HTMLElement);
   const sentEmptyEl = byId("sent-empty", HTMLElement);
   const timingsEl = byId("timings", HTMLElement);
@@ -185,7 +187,10 @@ export function enterRoom(room, languages, players) {
    * @param {any} data
    */
   function onEvent(name, data) {
-    if (name === "state") {
+    if (name === "card") {
+      showCard(data.entries);
+    } else if (name === "state") {
+      showCard(data.card);
       if (data.peer_joined) showPeer(String(data.peer_language));
       else state.peerJoined = false;
     } else if (name === "peer_joined") {
@@ -199,6 +204,16 @@ export function enterRoom(room, languages, players) {
       state.peerJoined = false;
     }
     render();
+  }
+
+  /**
+   * The pinned card, from a "card" event or the state snapshot after a reconnect.
+   * @param {unknown} entries
+   */
+  function showCard(entries) {
+    const chips = cardChips(entries, room.role === "rider");
+    renderChips(cardChipsEl, chips);
+    cardEmptyEl.hidden = chips.length > 0;
   }
 
   /** @param {any} data */

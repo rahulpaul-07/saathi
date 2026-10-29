@@ -2,7 +2,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { chipsFromFacts } from "../../src/saathi/static/js/chips.js";
+import { cardChips, chipsFromFacts } from "../../src/saathi/static/js/chips.js";
 
 const base = { heard: "", confidence: "high", ambiguous: false, reading: null };
 
@@ -96,4 +96,37 @@ test("numeric chips are untouched, even when the server sends a local value", ()
 test("markup in a value stays a plain string", () => {
   const [chip] = chipsFromFacts([{ ...base, kind: "landmark", value: "<img src=x onerror=1>" }]);
   assert.equal(chip.value, "<img src=x onerror=1>");
+});
+
+const cardFact = { ...base, kind: "gate", value: "4" };
+
+test("a card entry that replaced a value shows changed and the old value", () => {
+  const [chip] = cardChips([{ fact: cardFact, previous: "2" }]);
+  assert.equal(chip.changed, true);
+  assert.equal(chip.value, "4");
+  assert.equal(chip.note, "changed, was 2");
+});
+
+test("a card entry without a previous value is plain", () => {
+  const [chip] = cardChips([{ fact: cardFact, previous: null }]);
+  assert.equal(chip.changed, false);
+  assert.equal(chip.note, null);
+});
+
+test("changed joins an existing note, and the card keeps the fixed order", () => {
+  const low = { ...base, kind: "floor", value: "3", confidence: "low" };
+  const chips = cardChips([
+    { fact: low, previous: "1" },
+    { fact: cardFact, previous: null },
+  ]);
+  assert.deepEqual(
+    chips.map((chip) => chip.kind),
+    ["gate", "floor"],
+  );
+  assert.equal(chips[1].note, "check this; changed, was 1");
+});
+
+test("a malformed card is empty and never throws", () => {
+  assert.deepEqual(cardChips(undefined), []);
+  assert.deepEqual(cardChips([null, { fact: 1 }, {}]), []);
 });

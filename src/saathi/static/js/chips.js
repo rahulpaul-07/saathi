@@ -8,7 +8,8 @@
  *   ambiguous: boolean, reading: string | null, local?: string | null, label?: string,
  *   label_status?: string}} Fact
  * @typedef {{kind: string, label: string, value: string, note: string | null,
- *   labelPending: boolean, machineTranslated: boolean, original: string | null}} Chip
+ *   labelPending: boolean, machineTranslated: boolean, original: string | null,
+ *   changed: boolean}} Chip
  * `value` is the full text; `original` is the bracketed part of it, set only for a translated
  * landmark, so the screen can show it smaller.
  */
@@ -84,7 +85,36 @@ export function chipsFromFacts(facts, forListener = false) {
         labelPending: fact.label_status === "pending",
         machineTranslated,
         original,
+        changed: false,
       };
     })
     .sort((a, b) => KIND_ORDER.indexOf(a.kind) - KIND_ORDER.indexOf(b.kind));
+}
+
+/**
+ * Chips for the pinned delivery card. An entry the latest customer turn replaced gets a "changed,
+ * was X" note and `changed` set, so the old value stays visible next to the new one.
+ * @param {unknown} entries `{fact, previous}` items from the server
+ * @param {boolean} [forListener]
+ * @returns {Chip[]}
+ */
+export function cardChips(entries, forListener = false) {
+  if (!Array.isArray(entries)) return [];
+  /** @type {Map<string, string>} */
+  const previousByKind = new Map();
+  for (const entry of entries) {
+    const fact = entry?.fact;
+    if (isFact(fact) && typeof entry.previous === "string" && entry.previous !== "") {
+      previousByKind.set(fact.kind, entry.previous);
+    }
+  }
+  return chipsFromFacts(
+    entries.map((entry) => entry?.fact),
+    forListener,
+  ).map((chip) => {
+    const previous = previousByKind.get(chip.kind);
+    if (previous === undefined) return chip;
+    const changedNote = `changed, was ${previous}`;
+    return { ...chip, changed: true, note: chip.note ? `${chip.note}; ${changedNote}` : changedNote };
+  });
 }

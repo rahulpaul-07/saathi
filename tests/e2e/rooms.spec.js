@@ -59,6 +59,13 @@ test("both roles speak and reply in ta and ml: chips, audio, repeat, quick repli
   await expect(customer.locator("#sent-chips .chip-gate .chip-value")).toHaveText("2");
   await expect(rider.locator("#chips .chip-gate .chip-value")).toHaveText("2");
   await expect(rider.locator("#chips .chip-floor .chip-value")).toHaveText("3");
+  // The pinned card collects the customer's facts on both screens, with no "changed" marker yet.
+  for (const page of [customer, rider]) {
+    await expect(page.locator("#card-chips .chip-gate .chip-value")).toHaveText("2");
+    await expect(page.locator("#card-chips .chip-floor .chip-value")).toHaveText("3");
+    await expect(page.locator("#card-empty")).toBeHidden();
+    await expect(page.locator("#card-chips .chip-changed")).toHaveCount(0);
+  }
   // Only the speaker sees the stage timings of the turn they sent.
   await expect(customer.locator("#timings dt")).toHaveText([
     "Speech to text",
@@ -96,6 +103,8 @@ test("both roles speak and reply in ta and ml: chips, audio, repeat, quick repli
   await expect(customer.locator("#chips .chip-gate .chip-value")).toHaveText("2");
   await expect(customer.locator("#translation")).toContainText("<b>ta</b>");
   await expect(customer.locator("#repeat")).toBeEnabled();
+  // A rider turn does not touch the card.
+  await expect(customer.locator("#card-chips .chip")).toHaveCount(3);
   await expect(customer.locator("#repeat-prompt")).toBeHidden();
   await expect(rider.locator("#repeat-prompt")).toBeHidden();
 

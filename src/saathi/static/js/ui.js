@@ -107,7 +107,7 @@ export function renderChips(container, chips) {
   container.replaceChildren(
     ...chips.map((chip) => {
       const item = document.createElement("li");
-      item.className = `chip chip-${chip.kind}${chip.note ? " chip-uncertain" : ""}`;
+      item.className = `chip chip-${chip.kind}${chip.note ? " chip-uncertain" : ""}${chip.changed ? " chip-changed" : ""}`;
       const label = document.createElement("span");
       label.className = "chip-label";
       label.textContent = chip.label;
