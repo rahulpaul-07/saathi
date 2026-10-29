@@ -58,6 +58,7 @@ became "main gate", "opposite" became "opposition"); the numbers are still right
 sentence keeps "2 cross, 3 main, gate number 2, opposite Ganesha temple". The placeholder check
 passes for this clip, so the fallback fact summary does NOT fire here: do not caption it as such.
 The chips are identical in both stills.
+Shot 7 voiceover line: "Even the masked sentence, '3 मेन गेट नंबर 2', can be misread, which is why the chips (main 3, gate 2) are the source of truth."
 
 ## Credits (end card, verbatim)
 
