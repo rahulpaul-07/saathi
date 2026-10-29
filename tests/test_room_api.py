@@ -15,6 +15,7 @@ from saathi.gnani import GnaniClient, GnaniError
 from saathi.labels import chip_label
 from saathi.languages import LANGUAGES
 from saathi.quickreplies import IDS_BY_ROLE, QUICK_REPLIES
+from saathi.repeatprompts import REPEAT_PROMPTS
 from saathi.rooms import Role, RoomManager, other
 from wavs import make_wav
 
@@ -182,6 +183,92 @@ async def test_turn_returns_facts_and_pushes_translation_to_the_rider(
     assert audio.status_code == 200
     assert audio.headers["content-type"] == "audio/wav"
     assert audio.content == b"RIFFfake-speech"
+
+
+class LossyTranslator:
+    """Drops every placeholder, so the masked translation fails its check."""
+
+    def translate(self, text: str, src: str, tgt: str) -> str:
+        return TRANSLATION
+
+
+async def test_a_good_turn_does_not_ask_to_repeat(client: httpx.AsyncClient) -> None:
+    room = await make_room(client)
+    assert (await post_turn(client, room)).json()["repeat"] is None
+
+
+@pytest.mark.parametrize("language", list(LANGUAGES))
+async def test_no_facts_asks_the_speaker_to_repeat_in_their_own_language(
+    gnani: FakeGnani, manager: RoomManager, language: str
+) -> None:
+    gnani.transcript = "okay thank you"  # no gate, floor, cross/main or landmark
+    listener = "hi" if language != "hi" else "en"
+    client, _ = build_recording_client(gnani, manager)
+    async with client:
+        room = await make_room(client, src=language, tgt=listener)
+        live = manager.authorize(room["code"], room["rider"]).room
+        rider_queue = manager.subscribe(live, "rider")
+        response = await post_turn(client, room)
+
+    assert response.status_code == 200
+    body = response.json()
+    expected = REPEAT_PROMPTS[language]["no_facts"]
+    assert body["repeat"] == {
+        "reason": "no_facts",
+        "text": expected.text,
+        "review_status": expected.review_status,
+    }
+    event = rider_queue.get_nowait()
+    assert event is not None and "repeat" not in event.data  # the listener is never nagged
+
+
+async def test_failed_placeholder_check_asks_to_repeat_and_still_delivers_the_facts(
+    gnani: FakeGnani, manager: RoomManager
+) -> None:
+    settings = Settings(gnani_api_key=SecretStr("k"))
+    app = create_app(settings, cast(GnaniClient, gnani), LossyTranslator(), manager)
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app), base_url="http://saathi"
+    ) as client:
+        room = await make_room(client, src="en", tgt="kn")
+        response = await post_turn(client, room)
+
+    body = response.json()
+    assert response.status_code == 200 and body["verified"] is False
+    assert body["repeat"]["reason"] == "unverified"
+    assert body["repeat"]["text"] == REPEAT_PROMPTS["en"]["unverified"].text
+    assert {(f["kind"], f["value"]) for f in body["facts"]} >= {("gate", "2")}
+
+
+@pytest.mark.parametrize("language", list(LANGUAGES))
+async def test_a_rider_turn_without_facts_is_not_asked_to_repeat(
+    gnani: FakeGnani, manager: RoomManager, language: str
+) -> None:
+    gnani.transcript = "coming in 2 minutes"  # nothing an address check would find
+    customer_lang = "hi" if language != "hi" else "en"
+    client, _ = build_recording_client(gnani, manager)
+    async with client:
+        room = await make_room(client, src=customer_lang, tgt=language)
+        response = await post_turn(client, room, who="rider")
+    assert response.status_code == 200
+    assert response.json()["repeat"] is None
+
+
+async def test_a_rider_turn_that_fails_the_check_is_asked_to_repeat(
+    gnani: FakeGnani, manager: RoomManager
+) -> None:
+    settings = Settings(gnani_api_key=SecretStr("k"))
+    app = create_app(settings, cast(GnaniClient, gnani), LossyTranslator(), manager)
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app), base_url="http://saathi"
+    ) as client:
+        room = await make_room(client, src="kn", tgt="en")  # the rider speaks English
+        response = await post_turn(client, room, who="rider")
+
+    body = response.json()
+    assert response.status_code == 200 and body["verified"] is False
+    assert body["repeat"]["reason"] == "unverified"
+    assert body["repeat"]["text"] == REPEAT_PROMPTS["en"]["unverified"].text
 
 
 async def test_turn_before_rider_joins_is_refused_without_a_paid_call(

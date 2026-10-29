@@ -21,8 +21,9 @@ from saathi.gnani import GnaniClient, GnaniError
 from saathi.labels import chip_label
 from saathi.languages import LANGUAGES
 from saathi.pipeline import NoSpeechError, UnreliableTranslationError, run_turn
-from saathi.quickreplies import IDS_BY_ROLE, QuickReplyId, phrase_for
+from saathi.quickreplies import IDS_BY_ROLE, QuickReplyId, ReviewStatus, phrase_for
 from saathi.ratelimit import SlidingWindowLimiter
+from saathi.repeatprompts import RepeatReason, repeat_prompt, repeat_reason
 from saathi.rooms import (
     CODE_ALPHABET,
     CODE_LENGTH,
@@ -96,10 +97,19 @@ class TimingsOut(BaseModel):
     total_ms: float
 
 
+class RepeatOut(BaseModel):
+    """Asks the speaker to say it again, in their own language. Never blocks the turn."""
+
+    reason: RepeatReason
+    text: str
+    review_status: ReviewStatus
+
+
 class TurnOut(BaseModel):
     turn_id: str
     facts: list[FactOut]
     verified: bool
+    repeat: RepeatOut | None = None
     timings: TimingsOut  # shown to the speaker only; the listener's event does not carry it
 
 
@@ -117,6 +127,14 @@ def _fact_out(fact: Fact, language: str) -> FactOut:
         reading=fact.reading,
         local=fact.local,
     )
+
+
+def _repeat_out(verified: bool, fact_count: int, speaker: Role, language: str) -> RepeatOut | None:
+    reason = repeat_reason(verified, fact_count, speaker)
+    prompt = repeat_prompt(language, reason) if reason else None
+    if reason is None or prompt is None:
+        return None
+    return RepeatOut(reason=reason, text=prompt.text, review_status=prompt.review_status)
 
 
 def _client_ip(request: Request) -> str:
@@ -291,6 +309,7 @@ def room_router(
             turn_id=turn_id,
             facts=facts,
             verified=result.verified,
+            repeat=_repeat_out(result.verified, len(facts), speaker, src),
             timings=TimingsOut(**vars(timings)),
         )
 
