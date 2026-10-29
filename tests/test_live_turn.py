@@ -9,7 +9,7 @@ import pytest
 
 from placeholders import carry
 from saathi.evaluation import liveturn
-from saathi.evaluation.calls import CallLedger, SlidingWindowLimiter
+from saathi.evaluation.calls import GNANI_CALL_CAP, CallLedger, SlidingWindowLimiter
 from saathi.gnani import GnaniClient, GnaniError
 
 KN_TEXT = "ನಮ್ಮ ಮನೆ ಎರಡನೇ ಕ್ರಾಸ್, ಮೂರನೇ ಮೇನ್, ಗೇಟ್ ನಂಬರ್ ಎರಡು ಹತ್ತಿರ, ಆಪೋಸಿಟ್ ಗಣೇಶ ದೇವಸ್ಥಾನ"
@@ -113,7 +113,7 @@ def test_dry_run_sends_nothing_and_needs_no_key(
     assert harness.run("--dry-run", gnani=False) == 0
     out = capsys.readouterr().out
     assert "exactly 3 Gnani calls" in out
-    assert "0 spent + 3 planned = 3 of cap 290" in out
+    assert "0 spent + 3 planned = 3 of cap 780" in out
     assert "Dry run: nothing was sent." in out
     assert KN_TEXT not in out
     assert not harness.ledger_path.exists()
@@ -125,7 +125,7 @@ def test_real_mode_refuses_without_yes(harness: Harness) -> None:
 
 
 def test_budget_cap_refuses_before_any_call(harness: Harness) -> None:
-    CallLedger(harness.ledger_path).spend("other", 289)
+    CallLedger(harness.ledger_path).spend("other", GNANI_CALL_CAP - 1)
     assert harness.run("--yes", gnani=False) == 2
     assert harness.run("--dry-run", gnani=False) == 2
 

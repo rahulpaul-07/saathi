@@ -5,7 +5,7 @@ from typing import cast
 import pytest
 
 from saathi.evaluation import latency
-from saathi.evaluation.calls import CallLedger, SlidingWindowLimiter
+from saathi.evaluation.calls import GNANI_CALL_CAP, CallLedger, SlidingWindowLimiter
 from saathi.evaluation.liveturn import main as live_main
 from saathi.evaluation.power import PowerGuard, PowerState
 from saathi.gnani import GnaniClient
@@ -80,7 +80,7 @@ def test_refuses_without_audio_or_over_budget_or_bad_pair(
     (paths["audio"] / "a.wav").unlink()
     assert run(paths, tmp_path, "--dry-run") == 2
     (paths["audio"] / "a.wav").write_bytes(make_wav())
-    CallLedger(paths["ledger"]).spend("other", 251)
+    CallLedger(paths["ledger"]).spend("other", GNANI_CALL_CAP - 39)  # 40 planned calls do not fit
     assert run(paths, tmp_path, "--dry-run") == 2
     assert run(paths, tmp_path, "--dry-run", "--src", "kn", "--tgt", "kn") == 2
 

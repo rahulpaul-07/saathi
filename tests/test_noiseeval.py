@@ -91,7 +91,7 @@ def test_dry_run_with_absent_audio_lists_calls_and_sends_nothing(tmp_path: Path)
     assert "Recordings missing: 30 of 30" in out.stdout
     assert "Street noise: " in out.stdout and "[MISSING]" in out.stdout.split("Street noise:")[1]
     assert "30 clean, 30 street_20, 30 street_10, 30 street_5, 30 pink_10" in out.stdout
-    assert "0 spent + 150 planned = 150 of cap 290" in out.stdout
+    assert "0 spent + 150 planned = 150 of cap 780" in out.stdout
     assert not ledger_path.exists()  # the ledger is only written by a spend
 
 
