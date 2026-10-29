@@ -1,0 +1,173 @@
+"""Public-speech evaluation of Gnani STT on FLEURS clips (spends credits).
+
+  run --dry-run   print every planned call and the ledger total; sends nothing, needs no key
+  run             mix street noise, send each clip to Gnani STT through the ledger, save each call
+  report          mean character error rate with bootstrap CIs from the saved results (no calls)
+
+Clips: eval/audio/fleurs/<lang>/<file>.wav from scripts/fetch_fleurs.py, checked against the
+pinned manifest eval/gold/fleurs_manifest.json. Real human read speech (FLEURS, CC BY 4.0).
+Conditions: clean; street noise at 20, 10 and 5 dB SNR (speech-active RMS over noise RMS), using
+eval/audio/noise/street.wav from scripts/fetch_noise.py. Rerunning resumes. Real runs only while
+the author is awake, after reviewing --dry-run.
+"""
+
+import argparse
+import asyncio
+import logging
+import sys
+from pathlib import Path
+
+from saathi.config import get_settings
+from saathi.evaluation import noisemix
+from saathi.evaluation.calls import (
+    BudgetExceededError,
+    CallLedger,
+    MeteredGnani,
+    SlidingWindowLimiter,
+)
+from saathi.evaluation.fleurs import load_manifest
+from saathi.evaluation.noiseeval import (
+    check_budget,
+    format_plan,
+    load_results,
+    prepare_clips,
+    run_calls,
+    save_results,
+)
+from saathi.evaluation.runinfo import git_commit
+from saathi.evaluation.speecheval import (
+    BOOTSTRAP_RESAMPLES,
+    LEDGER_LABEL,
+    SPEECH_CONDITIONS,
+    format_cer,
+    plan_speech_calls,
+    summarize_cer,
+    verify_audio,
+)
+from saathi.evaluation.wavtools import RecordingError
+from saathi.gnani import GnaniError
+
+ROOT = Path(__file__).resolve().parent.parent
+MANIFEST = ROOT / "eval" / "gold" / "fleurs_manifest.json"
+AUDIO_DIR = ROOT / "eval" / "audio" / "fleurs"
+RESULTS = ROOT / "eval" / "results" / "speech_stt.json"
+SUMMARY = ROOT / "eval" / "results" / "speech_summary.md"
+LEDGER = ROOT / "eval" / "state" / "gnani_ledger.json"
+STREET = ROOT / "eval" / "audio" / "noise" / "street.wav"
+DEFAULT_SEED = 20261029
+
+
+def cmd_run(args: argparse.Namespace) -> int:
+    clips = load_manifest(args.manifest)
+    calls = plan_speech_calls(clips, args.audio_dir)
+    results = load_results(args.results)
+    ledger = CallLedger(args.ledger)
+    street_wav = args.street_file.read_bytes() if args.street_file.is_file() else None
+    street_note = (
+        f"Street noise: {args.street_file.as_posix()} [{'found' if street_wav else 'MISSING'}]"
+    )
+    problems = verify_audio(clips, args.audio_dir)
+    clip_audio, mix_problems = prepare_clips(calls, args.seed, street_wav)
+    problems.extend(mix_problems)
+    done = {c.key for c in calls if c.key in results}
+    pending = [c for c in calls if c.key not in done]
+    if args.dry_run:
+        print(format_plan(calls, done, ledger, problems, street_note))
+        try:
+            check_budget(ledger, len(pending))
+        except BudgetExceededError as exc:
+            print(f"REFUSED: {exc}")
+            return 2
+        print("Dry run: nothing was sent.")
+        return 0
+
+    if problems or any(c.key not in clip_audio for c in pending):
+        print(format_plan(calls, done, ledger, problems, street_note))
+        print("Nothing was sent: fix the problems above first.")
+        return 1
+    meta = {
+        "seed": args.seed,
+        "dataset": "google/fleurs test split, CC BY 4.0, real human read speech",
+        "noise": args.street_file.name,
+        "snr_definition": "speech-active RMS / whole-clip noise RMS",
+        "activity": {
+            "frame_s": noisemix.FRAME_S,
+            "relative_db": noisemix.ACTIVE_RELATIVE_DB,
+            "floor_dbfs": noisemix.ACTIVE_FLOOR_DBFS,
+            "percentile": noisemix.LOUD_PERCENTILE,
+        },
+        "bootstrap_resamples": BOOTSTRAP_RESAMPLES,
+        "git_commit": git_commit(),
+    }
+    gnani = MeteredGnani(get_settings(), ledger, LEDGER_LABEL)
+
+    async def go() -> None:
+        try:
+            await run_calls(
+                calls,
+                clip_audio,
+                gnani,
+                SlidingWindowLimiter(),
+                ledger,
+                results,
+                lambda rows: save_results(args.results, meta, rows),
+            )
+        finally:
+            await gnani.aclose()
+
+    try:
+        asyncio.run(go())
+    except (BudgetExceededError, RecordingError) as exc:
+        print(f"refused: {exc}", file=sys.stderr)
+        return 2
+    except GnaniError as exc:
+        print(f"stopped by Gnani error {exc.status}; finished clips are saved", file=sys.stderr)
+        return 1
+    print(f"done; ledger {ledger.total}/{ledger.cap}")
+    return cmd_report(args)
+
+
+def cmd_report(args: argparse.Namespace) -> int:
+    results = load_results(args.results)
+    if not results:
+        print("no results yet")
+        return 1
+    rows = summarize_cer(load_manifest(args.manifest), results, SPEECH_CONDITIONS, args.seed)
+    text = (
+        "# Public-speech evaluation (generated by scripts/eval_speech.py report)\n\n"
+        f"FLEURS test clips, real human read speech, seed {args.seed}.\n\n"
+        + format_cer("street noise", rows, SPEECH_CONDITIONS)
+        + "\n"
+    )
+    print(text)
+    args.summary.parent.mkdir(parents=True, exist_ok=True)
+    args.summary.write_text(text, encoding="utf-8")
+    return 0
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawTextHelpFormatter
+    )
+    parser.add_argument("command", choices=["run", "report"])
+    parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--manifest", type=Path, default=MANIFEST)
+    parser.add_argument("--audio-dir", type=Path, default=AUDIO_DIR)
+    parser.add_argument("--street-file", type=Path, default=STREET)
+    parser.add_argument("--seed", type=int, default=DEFAULT_SEED)
+    parser.add_argument("--results", type=Path, default=RESULTS)
+    parser.add_argument("--summary", type=Path, default=SUMMARY)
+    parser.add_argument("--ledger", type=Path, default=LEDGER)
+    args = parser.parse_args()
+    if args.dry_run and args.command != "run":
+        parser.error("--dry-run applies to `run`")
+    logging.basicConfig(level=logging.WARNING)
+    try:
+        return cmd_run(args) if args.command == "run" else cmd_report(args)
+    except (OSError, noisemix.NoiseMixError) as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())
