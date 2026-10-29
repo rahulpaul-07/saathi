@@ -26,8 +26,9 @@ from saathi.pipeline import (
     validate_pair,
 )
 from saathi.ratelimit import SlidingWindowLimiter
-from saathi.room_routes import room_router
+from saathi.room_routes import TimingsOut, room_router
 from saathi.rooms import RoomManager
+from saathi.security_headers import CspMiddleware, content_security_policy
 from saathi.translate import RoutingTranslator, Translator
 
 log = logging.getLogger(__name__)
@@ -40,13 +41,6 @@ STATIC_DIR = Path(__file__).parent / "static"
 # Windows takes MIME types from the registry, where .js is sometimes text/plain, and browsers
 # refuse to run ES modules served that way.
 mimetypes.add_type("text/javascript", ".js")
-
-
-class TimingsOut(BaseModel):
-    stt_ms: float
-    translate_ms: float
-    tts_ms: float
-    total_ms: float
 
 
 class TurnResponse(BaseModel):
@@ -86,6 +80,9 @@ def create_app(
         await gnani.aclose()
 
     app = FastAPI(title="Saathi", lifespan=lifespan)
+    app.add_middleware(
+        CspMiddleware, policy=content_security_policy(allow_same_origin_frames=settings.demo_input)
+    )
     rooms = rooms or RoomManager(max_rooms=settings.max_rooms)
     app.include_router(
         room_router(
@@ -94,6 +91,7 @@ def create_app(
             translator,
             settings.room_rate_limit_per_minute,
             settings.turn_rate_limit_per_minute,
+            settings.reply_rate_limit_per_minute,
             demo_input=settings.demo_input,
         )
     )

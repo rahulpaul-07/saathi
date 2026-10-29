@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
     <title>Saathi customer</title>
-    <link rel="icon" href="data:," />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="app.css" />
   </head>
   <body>
@@ -32,7 +32,14 @@
           <p class="small">Rider link: <span id="link" class="mono"></span></p>
         </div>
 
+        <p id="reconnecting" class="status error" role="status" aria-live="polite" hidden>Reconnecting...</p>
         <p id="peer" class="status" role="status" aria-live="polite">Waiting for the rider to join.</p>
+
+        <section class="card" aria-labelledby="card-heading">
+          <h2 id="card-heading">Delivery card</h2>
+          <p id="card-empty" class="small">No address details yet. They collect here as you speak.</p>
+          <ul id="card-chips" class="chips" aria-labelledby="card-heading" aria-live="polite"></ul>
+        </section>
 
         <button type="button" class="talk-btn" id="talk" aria-pressed="false" disabled>
           <svg class="icon icon-mic" viewBox="0 0 24 24" aria-hidden="true">
@@ -45,6 +52,10 @@
         </button>
 
         <p id="status" class="status" role="status" aria-live="polite">Ready.</p>
+        <div id="repeat-prompt" class="repeat-prompt" role="status" hidden>
+          <p id="repeat-text"></p>
+          <p id="repeat-note" class="small"></p>
+        </div>
 
         <div id="actions" class="actions" hidden>
           <button type="button" id="retry">Try again</button>
@@ -61,6 +72,7 @@
         <p id="sent-demo-badge" class="badge" hidden>Demo clip, not live speech</p>
         <ul id="sent-chips" class="chips" aria-labelledby="sent-heading" aria-live="polite"></ul>
         <p id="sent-empty" class="small">Nothing sent yet.</p>
+        <dl id="timings" class="timings" aria-label="Time taken by your last message" hidden></dl>
 
         <h2 id="reply-heading">Quick replies to the rider</h2>
         <div id="replies" class="replies" role="group" aria-labelledby="reply-heading"></div>

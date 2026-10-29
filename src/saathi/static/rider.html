@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
     <title>Saathi rider</title>
-    <link rel="icon" href="data:," />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="app.css" />
   </head>
   <body>
@@ -29,8 +29,15 @@
       </section>
 
       <section id="room" hidden aria-label="Room">
+        <p id="reconnecting" class="status error" role="status" aria-live="polite" hidden>Reconnecting...</p>
         <p id="peer" class="small" role="status" aria-live="polite">Waiting for the customer.</p>
         <p id="incoming-status" class="status" role="status" aria-live="polite">Waiting for directions.</p>
+
+        <section class="card" aria-labelledby="card-heading">
+          <h2 id="card-heading">Delivery card</h2>
+          <p id="card-empty" class="small">No address details yet.</p>
+          <ul id="card-chips" class="chips big" aria-labelledby="card-heading" aria-live="polite"></ul>
+        </section>
 
         <p id="demo-badge" class="badge" hidden>Demo clip, not live speech</p>
         <ul id="chips" class="chips big" aria-label="Key facts" aria-live="polite"></ul>
@@ -68,6 +75,10 @@
         </button>
 
         <p id="status" class="status" role="status" aria-live="polite"></p>
+        <div id="repeat-prompt" class="repeat-prompt" role="status" hidden>
+          <p id="repeat-text"></p>
+          <p id="repeat-note" class="small"></p>
+        </div>
 
         <div id="actions" class="actions" hidden>
           <button type="button" id="retry">Try again</button>
@@ -84,6 +95,7 @@
         <p id="sent-demo-badge" class="badge" hidden>Demo clip, not live speech</p>
         <ul id="sent-chips" class="chips" aria-labelledby="sent-heading" aria-live="polite"></ul>
         <p id="sent-empty" class="small">Nothing sent yet.</p>
+        <dl id="timings" class="timings" aria-label="Time taken by your last message" hidden></dl>
       </section>
     </main>
     <script type="module" src="js/rider.js"></script>

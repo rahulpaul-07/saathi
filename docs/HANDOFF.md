@@ -357,3 +357,56 @@ Plan order: CI, latency, please-repeat, pinned card, chip confirm/ask, reconnect
 Slice 1 done locally: `.github/workflows/ci.yml`, README badge, `torch` pytest marker, mypy override.
 Not verified: the real GitHub run (needs the author to push). If it fails on a missing nvidia or
 triton package name, compare the `--no-install-package` list with `uv.lock`.
+
+## Features branch, slice 2: per-stage latency (done locally)
+
+Room turn response has `timings`; customer and rider screens show a `#timings` list after a send.
+Next: feature 3 (please-repeat prompt).
+
+## Features branch, slice 3: please-repeat (done locally)
+
+Phrases in `src/saathi/repeatprompts.py`, all pending except en. To review them, read the table
+and edit the status to "reviewed" per phrase. Next: feature 1 (pinned card).
+
+## Features branch, slice 4: pinned delivery card (done locally)
+
+`src/saathi/card.py`, `Room.card`, `card` SSE event and `state.card` (room_routes.py), `cardChips`
+in chips.js, a "Delivery card" section on customer.html and rider.html. Tests: tests/test_card.py,
+new cases in tests/test_room_api.py, chips.test.js, one e2e addition. Not covered by e2e: a changed
+marker (the e2e fake transcript is fixed); it is covered by the API and chips tests.
+Next: feature 2 (chip confirm/ask).
+
+## Features branch, slice 5: chip confirm and ask (done locally)
+
+`POST /rooms/{code}/chip-reply` {kind, action: confirm|ask}, rider only (403 for the customer), 422 for
+a kind not on the card. State is on `CardEntry` (`confirmed`, `asked`) and is restored by the `state`
+snapshot. The "changed, was X" marker now stays until the rider confirms; a new value for a kind
+clears its confirmation and question and sets the marker. Ask does not clear the marker. Each viewer
+gets the question as the chip label in their own language plus "?" (existing label table, so some
+labels are still "pending"). No Gnani call, no audio, nothing logged. Chip-reply and quick replies
+share one limit of 30 a minute per participant (room + role), `REPLY_RATE_LIMIT_PER_MINUTE`; over
+it the route returns 429 and sends no event. Known limitation: the limiter keeps one small entry
+per room and role for the life of the process and never drops old keys, so its memory grows slowly
+(the per-IP limiters behave the same; rooms are capped at 50 live, so it is fine on a LAN).
+e2e: the fake STT alternates gate 2 and gate 4 for Punjabi (`pa-IN`) in tests/e2e/serve.py.
+Next: reconnect.
+Done locally: feature 4 (reconnect). See the "Reconnect" section of DECISIONS.md.
+
+## Features branch, slice 6: reconnect (done locally)
+
+- Reload rejoin via `sessionStorage` (`static/js/session.js`); both pages resume if the stored role
+  matches. Audio is locked after a reload until the person taps Repeat.
+- `Room.catch_up` in `rooms.py` keeps the last incoming turn and quick reply per recipient; they
+  come back as `last_turn` and `last_reply` in the `state` snapshot. Shown, never auto-played.
+- `static/js/reconnect.js`: backoff 1, 2, 4, 8 s up to 15 s plus 30 percent jitter (injected random
+  and sleep). `readEvents` now returns closed / gone / dropped; gone (404) and closed end the loop,
+  clear the session and reload to the create/join screen with a one-shot notice.
+- "Reconnecting..." indicator (`#reconnecting`) on both room pages.
+- CSP on every response (`security_headers.py`). `demo.css` and `favicon.svg` replaced inline
+  style and the `data:` favicon. `/docs` Swagger no longer renders. `media-src` has `blob:` and
+  demo mode sets `frame-ancestors 'self'`.
+- Token storage and CSP reasoning for the threat model are in DECISIONS.md.
+- Known limits: the stored token is readable by any script on the origin (CSP is the mitigation); a
+  reconnect that is accepted and then dropped immediately resets the backoff to 1 s; catch-up audio
+  is gone after about 60 s.
+Next: rider mode, /healthz, /metrics, threat model.

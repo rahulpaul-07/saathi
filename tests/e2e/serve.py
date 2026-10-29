@@ -37,8 +37,18 @@ def silent_wav() -> bytes:
     return buf.getvalue()
 
 
+CHANGING_LANGUAGE = "pa-IN"  # Punjabi speakers alternate gate 2 and gate 4 per turn
+
+
 class FakeGnani:
+    def __init__(self) -> None:
+        self.changing_calls = 0
+
     async def transcribe(self, audio: bytes, filename: str, language: str) -> str:
+        if language == CHANGING_LANGUAGE:
+            self.changing_calls += 1
+            if self.changing_calls % 2 == 0:
+                return TRANSCRIPT.replace("gate number 2", "gate number 4")
         return TRANSCRIPT
 
     async def synthesize(self, text: str, language: str, voice: str) -> bytes:

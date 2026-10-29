@@ -542,3 +542,106 @@ model. Choices:
 - Playwright e2e is not in CI yet; it needs browsers and the server, and is run locally.
 Verified locally in a scratch env built with the same exclusion (ruff, mypy and 578 tests pass).
 The Linux run on GitHub is the final proof and needs a push.
+
+## Per-stage latency in rooms (features branch)
+
+`POST /rooms/{code}/turn` now returns `timings` (stt, translate, tts, total in ms, the numbers
+`run_turn` already measured and logged). The speaker's screen shows them under what they sent; the
+listener's `turn` event does not carry them, since they are the speaker's wait and the listener
+gains nothing from them. Numbers only: no language, text or identifier. `TimingsOut` moved from
+`app.py` to `room_routes.py` so solo and room turns share one model. The solo screen's
+"stop tap to playback" row stays solo-only (it needs client-side playback timing).
+
+## Please-repeat prompt (features branch)
+
+`POST /rooms/{code}/turn` returns `repeat` (reason, text, review_status) or null. Reasons: `no_facts`
+(verified turn, no gate/floor/cross-main/landmark found) and `unverified` (placeholder check failed;
+wins when both apply, since the listener got the fallback). The text is in the SPEAKER's language,
+shown on their screen only; the listener's event never carries it. It never blocks sending, so a
+turn with no facts (for example "okay, thank you") only costs the speaker a line they can ignore.
+No Gnani call and no audio: fixed text from `repeatprompts.py`, 2 phrases x 10 languages.
+English is the source; the other nine are unreviewed machine output from
+`scripts/gen_repeat_prompts.py` (local IndicTrans2), all "pending" and labelled so on screen.
+The first English draft named "gate" and "floor"; the model rendered them as "door" and "ground",
+and "say them again" came out as "tell them" (a person) in five languages. The shipped English
+avoids both ("No address details were found. Please repeat the address."). Known stiff outputs
+for review: bn "punorabritti", mr "patta punha kara".
+Correction: `no_facts` applies to customer turns only. A rider's "coming in 2 minutes" has no address
+to find, so a rider turn with no facts gives `repeat: null`. `unverified` applies to both roles.
+Review: the author rewrote and approved all four bn and hi prompts (both reasons); they are
+"reviewed". The other eight languages stay "pending".
+
+## Pinned delivery card (features branch)
+
+Each room keeps a `Card` (`src/saathi/card.py`): the latest `Fact` per kind plus `previous`, the
+value it replaced. Why server-side: a reconnecting phone gets the card from the `state` snapshot,
+and both roles see the same thing without the client keeping history. Why that is acceptable for
+privacy: it is address data, but it lives only in the room's memory, is wiped by `close()` (also
+on TTL expiry), and is never logged or written to disk (a test asserts the transcript does not
+reach the logs). Only customer turns update it: a rider has no address to give, and a rider's
+"coming in 2 minutes" must not overwrite a gate number. Rider facts still show as chips for that
+turn. A turn with no facts changes nothing, so "okay, thank you" cannot erase or un-mark anything.
+Within one turn the last fact of a kind wins (a spoken correction comes after the mistake).
+"Changed" means the latest update with facts replaced the value; the next such update clears every
+marker. The same value repeated is not a change. Only one previous value is kept, not a history.
+Delivery: a `card` event to both roles after a customer turn with facts, and `card` inside
+`state`; each viewer's copy uses labels in their own language. The marker text ("changed, was 2")
+is English UI chrome, like "check this". Known limit: the "was" value of a landmark is shown as
+the customer said it, in their script.
+
+## Chip confirm and ask (features branch)
+
+- Confirmation lives on the card entry, in memory, with the card's limits and lifetime.
+- The changed marker clears only on the rider's confirm, not on the next customer turn, so a
+  correction cannot be missed. A new value resets confirmation and sets the marker again.
+- Ask is the chip label plus "?" in the viewer's language; no new phrase table, so it inherits the
+  label review status. Asking un-confirms a confirmed chip and keeps the marker.
+- Only the rider answers (the card is built from customer turns); the customer gets 403.
+- Reply rate limit: quick replies and chip replies share one sliding-window budget of 30 a minute
+  per participant (room + role), `REPLY_RATE_LIMIT_PER_MINUTE`. Both push an event to the other
+  screen and quick replies can spend a TTS call; neither had a limit. It is per participant, not
+  per IP (two phones can share one), and separate from the per-IP turn limiter. Over the limit the
+  route returns 429 before doing anything, so no event is sent.
+
+## Reconnect (features branch)
+
+- Rejoin after reload: the session `{code, token, role, language, peer_language}` is kept in
+  `sessionStorage` (`saathi.session`), validated strictly on load, and used only by the page whose
+  role matches. Cleared when the customer ends the room, or when the stream reports the room is
+  closed or gone.
+- Token storage reasoning (for the threat model). `sessionStorage`, not `localStorage`: it is per tab
+  and is deleted when the tab closes, so a bearer token does not outlive the person's use of the
+  room, and a second tab or a later visit never inherits it. The token is a room-scoped bearer
+  secret with a 2 hour hard lifetime. Any script on the origin can read web storage, so the real
+  protection is that no foreign or inline script can run: that is what the CSP below is for. The URL
+  and cookies never carry the token, so there is no CSRF surface and nothing leaks through logs or
+  Referer. Residual risk: an XSS would expose the token; mitigated by textContent-only rendering and
+  the CSP, not eliminated. An earlier phone left on a shared device is covered by the tab-scoped
+  lifetime. Storage can be missing or throw (private windows); every access is guarded and the
+  page then simply opens on the create/join screen.
+- Catch-up: the server keeps the latest incoming turn and the latest incoming quick reply per
+  recipient on the room (at most four entries), in memory, with the card's limits and lifetime. They
+  are stored when published even if nobody is subscribed, ride in the `state` snapshot
+  (`last_turn`, `last_reply`), are wiped on close or expiry and are never logged. The client shows
+  them as "Last message" and loads the audio for Repeat but never plays it; audio lives about 60 s
+  server-side, so a late catch-up legitimately has chips and text but no audio. A snapshot
+  after a plain network blip is ignored for a turn or reply already on screen. After a reload there
+  is no tap, so audio stays locked until the person taps Repeat.
+- The event stream stops retrying on 404 (the server answers every bad code, token and expired room
+  with the same 404) and on the `closed` event, then clears the session and reloads to the
+  create/join screen with a one-shot message ("The room has ended." / "The room has expired.").
+- Retry schedule: 1, 2, 4, 8 s doubling, capped at 15 s, plus up to 30 percent random so phones that
+  lost the network together do not return in lockstep. The attempt counter resets once a
+  connection is accepted. Time and randomness are injected, so the tests use no real sleeps. A
+  visible "Reconnecting..." line shows while the stream is down and clears when it reopens.
+- Content-Security-Policy on every response, a pure ASGI middleware (not BaseHTTPMiddleware, so
+  SSE is not wrapped): `default-src 'self'; script-src 'self'; object-src 'none'; base-uri 'none';
+  frame-ancestors 'none'; media-src 'self' blob:`. No `unsafe-inline` anywhere, scripts or styles.
+  Three things had to change rather than loosen the policy: demo.html's inline `<style>` moved to
+  `demo.css`, and the `data:,` favicon (blocked by `img-src` falling back to `default-src`) became a
+  real `favicon.svg`. Two deliberate deviations: `media-src` adds `blob:` because turn audio is
+  fetched with the bearer header and played from an object URL (an `<audio src>` cannot send the
+  header), which allows media only, not code; and `frame-ancestors` is `'self'` when demo input is
+  on, because /demo.html frames the customer and rider pages. The FastAPI `/docs` Swagger page
+  loads a CDN script and inline code, so it does not render under this policy; the API is not
+  meant to be browsed.

@@ -3,6 +3,7 @@ import { AudioPlayer } from "./audio-player.js";
 import { parseLanguages } from "./languages.js";
 import { createRoom, getJson } from "./room-client.js";
 import { enterRoom } from "./room-screen.js";
+import { clearSession, loadSession, saveSession, setNotice, takeNotice } from "./session.js";
 import { byId, fillLanguageSelect, requireChoice, setStatus } from "./ui.js";
 
 const languageSelect = byId("language", HTMLSelectElement);
@@ -21,6 +22,29 @@ let room = null;
 /** @type {{stop: () => void} | null} */
 let screen = null;
 
+/**
+ * @param {import("./room-client.js").RoomInfo} info
+ * @param {AudioPlayer[]} players
+ */
+function showRoom(info, players) {
+  room = info;
+  setupEl.hidden = true;
+  roomEl.hidden = false;
+  codeEl.textContent = info.code;
+  linkEl.textContent = `${location.origin}/rider.html?code=${info.code}`;
+  screen = enterRoom(info, languages, players, onEnded);
+}
+
+/** @param {"closed" | "gone"} end */
+function onEnded(end) {
+  clearSession(sessionStorage);
+  setNotice(
+    sessionStorage,
+    end === "closed" ? "The room has ended." : "The room has expired. Start a new one.",
+  );
+  location.reload();
+}
+
 async function onCreate() {
   createButton.disabled = true;
   // Both players are started inside this tap, which lets the other person's audio play later.
@@ -32,17 +56,14 @@ async function onCreate() {
     setStatus(setupStatusEl, result.message, true);
     return;
   }
-  room = result.data;
-  setupEl.hidden = true;
-  roomEl.hidden = false;
-  codeEl.textContent = result.data.code;
-  linkEl.textContent = `${location.origin}/rider.html?code=${result.data.code}`;
-  screen = enterRoom(result.data, languages, players);
+  saveSession(sessionStorage, result.data);
+  showRoom(result.data, players);
 }
 
 createButton.addEventListener("click", () => void onCreate());
 closeButton.addEventListener("click", () => {
   screen?.stop();
+  clearSession(sessionStorage);
   if (room) {
     void fetch(`/rooms/${room.code}`, {
       method: "DELETE",
@@ -56,6 +77,14 @@ try {
   languages = parseLanguages(await getJson("/languages"));
   fillLanguageSelect(languageSelect, languages);
   requireChoice([languageSelect], [createButton]);
+  const saved = loadSession(sessionStorage, "customer");
+  if (saved) {
+    // After a reload there is no tap, so audio stays locked until the person taps Repeat.
+    showRoom(saved, [new AudioPlayer(), new AudioPlayer()]);
+  } else {
+    const notice = takeNotice(sessionStorage);
+    if (notice) setStatus(setupStatusEl, notice);
+  }
 } catch {
   setStatus(setupStatusEl, "Could not load the language list. Reload the page.", true);
 }
