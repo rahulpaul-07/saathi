@@ -602,3 +602,46 @@ the customer said it, in their script.
   screen and quick replies can spend a TTS call; neither had a limit. It is per participant, not
   per IP (two phones can share one), and separate from the per-IP turn limiter. Over the limit the
   route returns 429 before doing anything, so no event is sent.
+
+## Reconnect (features branch)
+
+- Rejoin after reload: the session `{code, token, role, language, peer_language}` is kept in
+  `sessionStorage` (`saathi.session`), validated strictly on load, and used only by the page whose
+  role matches. Cleared when the customer ends the room, or when the stream reports the room is
+  closed or gone.
+- Token storage reasoning (for the threat model). `sessionStorage`, not `localStorage`: it is per tab
+  and is deleted when the tab closes, so a bearer token does not outlive the person's use of the
+  room, and a second tab or a later visit never inherits it. The token is a room-scoped bearer
+  secret with a 2 hour hard lifetime. Any script on the origin can read web storage, so the real
+  protection is that no foreign or inline script can run: that is what the CSP below is for. The URL
+  and cookies never carry the token, so there is no CSRF surface and nothing leaks through logs or
+  Referer. Residual risk: an XSS would expose the token; mitigated by textContent-only rendering and
+  the CSP, not eliminated. An earlier phone left on a shared device is covered by the tab-scoped
+  lifetime. Storage can be missing or throw (private windows); every access is guarded and the
+  page then simply opens on the create/join screen.
+- Catch-up: the server keeps the latest incoming turn and the latest incoming quick reply per
+  recipient on the room (at most four entries), in memory, with the card's limits and lifetime. They
+  are stored when published even if nobody is subscribed, ride in the `state` snapshot
+  (`last_turn`, `last_reply`), are wiped on close or expiry and are never logged. The client shows
+  them as "Last message" and loads the audio for Repeat but never plays it; audio lives about 60 s
+  server-side, so a late catch-up legitimately has chips and text but no audio. A snapshot
+  after a plain network blip is ignored for a turn or reply already on screen. After a reload there
+  is no tap, so audio stays locked until the person taps Repeat.
+- The event stream stops retrying on 404 (the server answers every bad code, token and expired room
+  with the same 404) and on the `closed` event, then clears the session and reloads to the
+  create/join screen with a one-shot message ("The room has ended." / "The room has expired.").
+- Retry schedule: 1, 2, 4, 8 s doubling, capped at 15 s, plus up to 30 percent random so phones that
+  lost the network together do not return in lockstep. The attempt counter resets once a
+  connection is accepted. Time and randomness are injected, so the tests use no real sleeps. A
+  visible "Reconnecting..." line shows while the stream is down and clears when it reopens.
+- Content-Security-Policy on every response, a pure ASGI middleware (not BaseHTTPMiddleware, so
+  SSE is not wrapped): `default-src 'self'; script-src 'self'; object-src 'none'; base-uri 'none';
+  frame-ancestors 'none'; media-src 'self' blob:`. No `unsafe-inline` anywhere, scripts or styles.
+  Three things had to change rather than loosen the policy: demo.html's inline `<style>` moved to
+  `demo.css`, and the `data:,` favicon (blocked by `img-src` falling back to `default-src`) became a
+  real `favicon.svg`. Two deliberate deviations: `media-src` adds `blob:` because turn audio is
+  fetched with the bearer header and played from an object URL (an `<audio src>` cannot send the
+  header), which allows media only, not code; and `frame-ancestors` is `'self'` when demo input is
+  on, because /demo.html frames the customer and rider pages. The FastAPI `/docs` Swagger page
+  loads a CDN script and inline code, so it does not render under this policy; the API is not
+  meant to be browsed.

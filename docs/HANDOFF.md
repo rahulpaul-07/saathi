@@ -390,3 +390,23 @@ per room and role for the life of the process and never drops old keys, so its m
 (the per-IP limiters behave the same; rooms are capped at 50 live, so it is fine on a LAN).
 e2e: the fake STT alternates gate 2 and gate 4 for Punjabi (`pa-IN`) in tests/e2e/serve.py.
 Next: reconnect.
+Done locally: feature 4 (reconnect). See the "Reconnect" section of DECISIONS.md.
+
+## Features branch, slice 6: reconnect (done locally)
+
+- Reload rejoin via `sessionStorage` (`static/js/session.js`); both pages resume if the stored role
+  matches. Audio is locked after a reload until the person taps Repeat.
+- `Room.catch_up` in `rooms.py` keeps the last incoming turn and quick reply per recipient; they
+  come back as `last_turn` and `last_reply` in the `state` snapshot. Shown, never auto-played.
+- `static/js/reconnect.js`: backoff 1, 2, 4, 8 s up to 15 s plus 30 percent jitter (injected random
+  and sleep). `readEvents` now returns closed / gone / dropped; gone (404) and closed end the loop,
+  clear the session and reload to the create/join screen with a one-shot notice.
+- "Reconnecting..." indicator (`#reconnecting`) on both room pages.
+- CSP on every response (`security_headers.py`). `demo.css` and `favicon.svg` replaced inline
+  style and the `data:` favicon. `/docs` Swagger no longer renders. `media-src` has `blob:` and
+  demo mode sets `frame-ancestors 'self'`.
+- Token storage and CSP reasoning for the threat model are in DECISIONS.md.
+- Known limits: the stored token is readable by any script on the origin (CSP is the mitigation); a
+  reconnect that is accepted and then dropped immediately resets the backoff to 1 s; catch-up audio
+  is gone after about 60 s.
+Next: rider mode, /healthz, /metrics, threat model.
