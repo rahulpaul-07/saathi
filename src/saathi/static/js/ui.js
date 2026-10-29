@@ -129,60 +129,84 @@ function checkIcon(name) {
  * @param {{confirm: (kind: string) => void, ask: (kind: string) => void}} [actions]
  */
 export function renderChips(container, chips, actions) {
-  container.replaceChildren(
-    ...chips.map((chip) => {
-      const item = document.createElement("li");
-      item.className = `chip chip-${chip.kind}${chip.note ? " chip-uncertain" : ""}${chip.changed ? " chip-changed" : ""}`;
-      const label = document.createElement("span");
-      label.className = "chip-label";
-      label.textContent = chip.label;
-      const value = document.createElement("span");
-      value.className = "chip-value";
-      value.textContent = chip.value;
-      if (chip.original !== null) {
-        // Keep textContent equal to the full value; only the original is restyled.
-        const bracket = ` (${chip.original})`;
-        value.textContent = chip.value.slice(0, chip.value.length - bracket.length);
-        const original = document.createElement("span");
-        original.className = "chip-original";
-        original.textContent = bracket;
-        value.append(original);
-      }
-      item.append(label, value);
-      if (chip.note) {
-        const note = document.createElement("span");
-        note.className = "chip-note";
-        note.textContent = chip.note;
-        item.append(note);
-      }
-      if (chip.confirmed) {
-        item.classList.add("chip-confirmed");
-        item.append(checkIcon(`${chip.label} confirmed`));
-      }
-      if (chip.question) {
-        const question = document.createElement("span");
-        question.className = "chip-question";
-        question.textContent = chip.question;
-        item.append(question);
-      }
-      if (actions) {
-        const bar = document.createElement("span");
-        bar.className = "chip-actions";
-        const confirm = document.createElement("button");
-        confirm.type = "button";
-        confirm.className = "chip-confirm";
-        confirm.setAttribute("aria-label", `Confirm ${chip.label}`);
-        confirm.append(checkIcon(`Confirm ${chip.label}`));
-        confirm.addEventListener("click", () => actions.confirm(chip.kind));
-        const ask = document.createElement("button");
-        ask.type = "button";
-        ask.className = "chip-ask secondary";
-        ask.textContent = `${chip.label}?`;
-        ask.addEventListener("click", () => actions.ask(chip.kind));
-        bar.append(confirm, ask);
-        item.append(bar);
-      }
-      return item;
-    }),
-  );
+  // A chip that did not change keeps its element. Rebuilding every chip on each event destroys a
+  // button the person is pressing (a tap whose target is removed before the finger lifts sends no
+  // click), and the card is rebuilt by every card event, including the echo of the rider's own tap.
+  const previous = rendered.get(container) ?? new Map();
+  const next = new Map();
+  const items = chips.map((chip) => {
+    const signature = JSON.stringify([chip, actions !== undefined]);
+    const kept = previous.get(chip.kind);
+    const item = kept?.signature === signature ? kept.item : buildChip(chip, actions);
+    next.set(chip.kind, { signature, item });
+    return item;
+  });
+  rendered.set(container, next);
+  const unchanged =
+    container.childElementCount === items.length &&
+    items.every((item, index) => container.children[index] === item);
+  if (!unchanged) container.replaceChildren(...items);
+}
+
+/** @type {WeakMap<HTMLElement, Map<string, {signature: string, item: HTMLElement}>>} */
+const rendered = new WeakMap();
+
+/**
+ * @param {import("./chips.js").Chip} chip
+ * @param {{confirm: (kind: string) => void, ask: (kind: string) => void}} [actions]
+ * @returns {HTMLElement}
+ */
+function buildChip(chip, actions) {
+  const item = document.createElement("li");
+  item.className = `chip chip-${chip.kind}${chip.note ? " chip-uncertain" : ""}${chip.changed ? " chip-changed" : ""}`;
+  const label = document.createElement("span");
+  label.className = "chip-label";
+  label.textContent = chip.label;
+  const value = document.createElement("span");
+  value.className = "chip-value";
+  value.textContent = chip.value;
+  if (chip.original !== null) {
+    // Keep textContent equal to the full value; only the original is restyled.
+    const bracket = ` (${chip.original})`;
+    value.textContent = chip.value.slice(0, chip.value.length - bracket.length);
+    const original = document.createElement("span");
+    original.className = "chip-original";
+    original.textContent = bracket;
+    value.append(original);
+  }
+  item.append(label, value);
+  if (chip.note) {
+    const note = document.createElement("span");
+    note.className = "chip-note";
+    note.textContent = chip.note;
+    item.append(note);
+  }
+  if (chip.confirmed) {
+    item.classList.add("chip-confirmed");
+    item.append(checkIcon(`${chip.label} confirmed`));
+  }
+  if (chip.question) {
+    const question = document.createElement("span");
+    question.className = "chip-question";
+    question.textContent = chip.question;
+    item.append(question);
+  }
+  if (actions) {
+    const bar = document.createElement("span");
+    bar.className = "chip-actions";
+    const confirm = document.createElement("button");
+    confirm.type = "button";
+    confirm.className = "chip-confirm";
+    confirm.setAttribute("aria-label", `Confirm ${chip.label}`);
+    confirm.append(checkIcon(`Confirm ${chip.label}`));
+    confirm.addEventListener("click", () => actions.confirm(chip.kind));
+    const ask = document.createElement("button");
+    ask.type = "button";
+    ask.className = "chip-ask secondary";
+    ask.textContent = `${chip.label}?`;
+    ask.addEventListener("click", () => actions.ask(chip.kind));
+    bar.append(confirm, ask);
+    item.append(bar);
+  }
+  return item;
 }

@@ -117,6 +117,8 @@ export function enterRoom(room, languages, players, onEnded) {
     } catch {
       return;
     }
+    demoBannerEl.hidden = false; // demo mode is on for the room even if this person has no clips
+    if (demoClips.length === 0) return; // an empty picker would only be noise
     demoSelect.replaceChildren(
       ...demoClips.map((clip) => {
         const option = document.createElement("option");
@@ -125,13 +127,6 @@ export function enterRoom(room, languages, players, onEnded) {
         return option;
       }),
     );
-    if (demoClips.length === 0) {
-      const none = document.createElement("option");
-      none.textContent = "No demo clips in this language";
-      demoSelect.replaceChildren(none);
-      demoSelect.disabled = true;
-    }
-    demoBannerEl.hidden = false;
     demoEl.hidden = false;
     render();
   }
@@ -247,7 +242,9 @@ export function enterRoom(room, languages, players, onEnded) {
    */
   async function showIncomingTurn(data, live) {
     shownTurnId = turnKey(data);
-    const chips = chipsFromFacts(data.facts, true);
+    incomingStatusEl.hidden = false;
+    // The customer's facts live on the delivery card; repeating them per turn showed every value twice.
+    const chips = peerRole === "customer" ? [] : chipsFromFacts(data.facts, true);
     renderChips(chipsEl, chips);
     chipsNoteEl.textContent = [
       chips.some((chip) => chip.labelPending) && "Some labels are unreviewed machine spellings.",
@@ -291,6 +288,9 @@ export function enterRoom(room, languages, players, onEnded) {
   async function showIncomingReply(data, live) {
     if (typeof data.text !== "string") return;
     shownReplyKey = replyKey(data);
+    // Before any turn, the status line still holds its "nothing yet" placeholder, which would
+    // contradict the reply shown below it.
+    if (shownTurnId === "") incomingStatusEl.hidden = true;
     replyTextEl.textContent = data.text;
     replyNoteEl.textContent =
       data.review_status === "pending" ? "Unreviewed machine translation." : "";
@@ -383,7 +383,10 @@ export function enterRoom(room, languages, players, onEnded) {
       return;
     }
     state.pending = null;
-    renderChips(sentChipsEl, chipsFromFacts(result.data.facts));
+    const customerSpoke = room.role === "customer"; // see showIncomingTurn: the card has the facts
+    renderChips(sentChipsEl, customerSpoke ? [] : chipsFromFacts(result.data.facts));
+    sentEmptyEl.textContent = customerSpoke ? "Sent. The delivery card has the details." : "Nothing sent yet.";
+    sentEmptyEl.hidden = sentChipsEl.childElementCount > 0;
     sentDemoBadgeEl.hidden = !demoClip;
     renderTimings(timingsEl, result.data.timings);
     timingsEl.hidden = false;
