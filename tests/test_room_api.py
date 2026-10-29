@@ -58,12 +58,17 @@ def manager() -> RoomManager:
 
 
 def build_client(
-    gnani: FakeGnani, manager: RoomManager, room_limit: int = 100, turn_limit: int = 100
+    gnani: FakeGnani,
+    manager: RoomManager,
+    room_limit: int = 100,
+    turn_limit: int = 100,
+    reply_limit: int = 100,
 ) -> httpx.AsyncClient:
     settings = Settings(
         gnani_api_key=SecretStr("k"),
         room_rate_limit_per_minute=room_limit,
         turn_rate_limit_per_minute=turn_limit,
+        reply_rate_limit_per_minute=reply_limit,
     )
     app = create_app(settings, cast(GnaniClient, gnani), FakeTranslator(), manager)
     return httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://saathi")
@@ -796,3 +801,228 @@ async def test_card_content_is_never_logged(
             room = await make_room(client)
             await post_turn(client, room)
     assert "zebra" not in caplog.text
+
+
+async def chip_reply(
+    client: httpx.AsyncClient, room: dict[str, Any], body: dict[str, Any], who: str = "rider"
+) -> httpx.Response:
+    return await client.post(
+        f"/rooms/{room['code']}/chip-reply", json=body, headers=auth(room[who])
+    )
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        {"kind": "mystery", "action": "confirm"},
+        {"kind": "gate", "action": "delete"},
+        {"kind": "gate"},
+        {"action": "ask"},
+        {"kind": "gate", "action": "ask", "text": "free text"},
+    ],
+)
+async def test_chip_reply_schema_rejects_unknown_kinds_actions_and_extras(
+    client: httpx.AsyncClient, body: dict[str, Any]
+) -> None:
+    room = await make_room(client)
+    await post_turn(client, room)
+    assert (await chip_reply(client, room, body)).status_code == 422
+
+
+async def test_only_the_rider_can_answer_the_card(
+    client: httpx.AsyncClient, manager: RoomManager
+) -> None:
+    room = await make_room(client)
+    live = manager.authorize(room["code"], room["customer"]).room
+    await post_turn(client, room)
+    response = await chip_reply(client, room, {"kind": "gate", "action": "confirm"}, who="customer")
+    assert response.status_code == 403
+    assert not live.card.entries["gate"].confirmed
+
+
+async def test_a_reply_for_a_kind_not_on_the_card_is_rejected(client: httpx.AsyncClient) -> None:
+    room = await make_room(client)
+    await post_turn(client, room)  # gate, landmark; no floor
+    response = await chip_reply(client, room, {"kind": "floor", "action": "confirm"})
+    assert response.status_code == 422
+
+
+async def test_chip_reply_needs_a_valid_token(client: httpx.AsyncClient) -> None:
+    room = await make_room(client)
+    await post_turn(client, room)
+    response = await client.post(
+        f"/rooms/{room['code']}/chip-reply",
+        json={"kind": "gate", "action": "confirm"},
+        headers=auth("wrong"),
+    )
+    assert response.status_code == 404
+
+
+async def test_confirm_clears_the_changed_marker_and_both_sides_see_it(
+    gnani: FakeGnani, manager: RoomManager
+) -> None:
+    async with build_client(gnani, manager) as client:
+        room = await make_room(client)
+        live = manager.authorize(room["code"], room["customer"]).room
+        await post_turn(client, room)
+        gnani.transcript = "gate number 4 near the blue temple"
+        await post_turn(client, room)
+        assert live.card.entries["gate"].previous == "2"
+        customer_queue = manager.subscribe(live, "customer")
+        rider_queue = manager.subscribe(live, "rider")
+
+        response = await chip_reply(client, room, {"kind": "gate", "action": "confirm"})
+
+        assert response.status_code == 204
+        for queue in (customer_queue, rider_queue):
+            entry = {e["fact"]["kind"]: e for e in (await read_card_events(queue))[-1]["entries"]}
+            assert entry["gate"]["confirmed"] is True and entry["gate"]["previous"] is None
+
+
+async def test_ask_shows_the_question_in_each_viewers_language(
+    gnani: FakeGnani, manager: RoomManager
+) -> None:
+    async with build_client(gnani, manager) as client:
+        room = await make_room(client)
+        live = manager.authorize(room["code"], room["customer"]).room
+        await post_turn(client, room)
+        customer_queue = manager.subscribe(live, "customer")
+        rider_queue = manager.subscribe(live, "rider")
+
+        await chip_reply(client, room, {"kind": "gate", "action": "ask"})
+
+        customer = (await read_card_events(customer_queue))[-1]["entries"][0]
+        rider = (await read_card_events(rider_queue))[-1]["entries"][0]
+    assert customer["question"] == f"{chip_label('gate', 'en').text}?"
+    assert rider["question"] == f"{chip_label('gate', 'kn').text}?"
+    assert customer["confirmed"] is False
+
+
+async def test_a_new_value_clears_the_confirmation(gnani: FakeGnani, manager: RoomManager) -> None:
+    async with build_client(gnani, manager) as client:
+        room = await make_room(client)
+        live = manager.authorize(room["code"], room["customer"]).room
+        await post_turn(client, room)
+        await chip_reply(client, room, {"kind": "gate", "action": "confirm"})
+        assert live.card.entries["gate"].confirmed
+        gnani.transcript = "gate number 4 near the blue temple"
+        await post_turn(client, room)
+    gate = live.card.entries["gate"]
+    assert (gate.confirmed, gate.previous) == (False, "2")
+
+
+async def test_confirmation_state_survives_a_reconnect(
+    gnani: FakeGnani, manager: RoomManager
+) -> None:
+    async with build_client(gnani, manager) as client:
+        room = await make_room(client)
+        live = manager.authorize(room["code"], room["rider"]).room
+        await post_turn(client, room)
+        await chip_reply(client, room, {"kind": "gate", "action": "confirm"})
+        await chip_reply(client, room, {"kind": "landmark", "action": "ask"})
+        stream = asyncio.create_task(
+            client.get(f"/rooms/{room['code']}/events", headers=auth(room["customer"]))
+        )
+        async with asyncio.timeout(5):
+            while not manager.is_subscribed(live, "customer"):
+                await asyncio.sleep(0)
+            await client.delete(f"/rooms/{room['code']}", headers=auth(room["customer"]))
+            response = await stream
+
+    state = response.text.split("\n\n")[0]
+    assert '"confirmed": true' in state
+    assert f'"question": "{chip_label("landmark", "en").text}?"' in state
+
+
+async def test_chip_replies_are_never_logged(
+    gnani: FakeGnani, manager: RoomManager, caplog: pytest.LogCaptureFixture
+) -> None:
+    gnani.transcript = "gate number 7 near the zebra statue"
+    with caplog.at_level("DEBUG"):
+        async with build_client(gnani, manager) as client:
+            room = await make_room(client)
+            await post_turn(client, room)
+            await chip_reply(client, room, {"kind": "gate", "action": "ask"})
+            await chip_reply(client, room, {"kind": "gate", "action": "confirm"})
+    app_logs = [r.getMessage() for r in caplog.records if r.name.startswith("saathi")]
+    assert not any("zebra" in m or "confirm" in m or "ask" in m.split() for m in app_logs)
+    assert "zebra" not in caplog.text
+
+
+def test_the_reply_limit_defaults_to_30_per_minute() -> None:
+    assert Settings(gnani_api_key=SecretStr("k")).reply_rate_limit_per_minute == 30
+
+
+async def test_the_31st_chip_reply_gets_429_and_publishes_no_event(
+    gnani: FakeGnani, manager: RoomManager
+) -> None:
+    async with build_client(gnani, manager, reply_limit=30) as client:
+        room = await make_room(client)
+        live = manager.authorize(room["code"], room["customer"]).room
+        await post_turn(client, room)
+        body = {"kind": "gate", "action": "ask"}
+        statuses = [(await chip_reply(client, room, body)).status_code for _ in range(30)]
+        assert statuses == [204] * 30
+        queue = manager.subscribe(live, "customer")
+
+        over = await chip_reply(client, room, body)
+
+        assert over.status_code == 429
+        assert queue.empty()
+
+
+async def test_the_chip_reply_limit_is_per_participant(
+    gnani: FakeGnani, manager: RoomManager
+) -> None:
+    async with build_client(gnani, manager, reply_limit=2) as client:
+        first, second = await make_room(client), await make_room(client)
+        for room in (first, second):
+            await post_turn(client, room)
+        body = {"kind": "gate", "action": "ask"}
+        for _ in range(2):
+            await chip_reply(client, first, body)
+        assert (await chip_reply(client, first, body)).status_code == 429
+        assert (await chip_reply(client, second, body)).status_code == 204
+
+
+async def test_the_reply_limit_is_separate_from_the_turn_limit(
+    gnani: FakeGnani, manager: RoomManager
+) -> None:
+    async with build_client(gnani, manager, turn_limit=1, reply_limit=3) as client:
+        room = await make_room(client)
+        assert (await post_turn(client, room)).status_code == 200
+        body = {"kind": "gate", "action": "ask"}
+        # Replies do not spend the turn budget, and the spent turn budget does not block replies.
+        assert [(await chip_reply(client, room, body)).status_code for _ in range(3)] == [204] * 3
+        assert (await chip_reply(client, room, body)).status_code == 429
+        # An exhausted reply budget does not block turns beyond their own limit.
+        assert (await post_turn(client, room)).status_code == 429
+    assert gnani.stt_calls == 1
+
+
+async def test_quick_replies_are_limited_too_and_share_the_budget_with_chip_replies(
+    gnani: FakeGnani, manager: RoomManager
+) -> None:
+    async with build_client(gnani, manager, reply_limit=3) as client:
+        room = await make_room(client)
+        live = manager.authorize(room["code"], room["customer"]).room
+        await post_turn(client, room)
+        phrase = {"phrase_id": "coming_2_min"}
+        quick = [
+            await client.post(
+                f"/rooms/{room['code']}/quick-reply", json=phrase, headers=auth(room["rider"])
+            )
+            for _ in range(2)
+        ]
+        assert [r.status_code for r in quick] == [204, 204]
+        assert (
+            await chip_reply(client, room, {"kind": "gate", "action": "ask"})
+        ).status_code == 204
+        queue = manager.subscribe(live, "customer")
+
+        over = await client.post(
+            f"/rooms/{room['code']}/quick-reply", json=phrase, headers=auth(room["rider"])
+        )
+
+        assert over.status_code == 429
+        assert queue.empty()

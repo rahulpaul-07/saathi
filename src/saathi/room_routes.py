@@ -16,7 +16,8 @@ from fastapi.responses import Response, StreamingResponse
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from saathi.audio import MAX_AUDIO_BYTES, AudioError, AudioTooLargeError, wav_duration_s
-from saathi.facts import Fact
+from saathi.card import ChipAction
+from saathi.facts import Fact, FactKind
 from saathi.gnani import GnaniClient, GnaniError
 from saathi.labels import chip_label
 from saathi.languages import LANGUAGES
@@ -67,6 +68,13 @@ class QuickReplyIn(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     phrase_id: QuickReplyId
+
+
+class ChipReplyIn(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    kind: FactKind
+    action: ChipAction
 
 
 class RoomOut(BaseModel):
@@ -132,13 +140,20 @@ def _fact_out(fact: Fact, language: str) -> FactOut:
 
 class CardEntryOut(BaseModel):
     fact: FactOut
-    previous: str | None  # the value this one replaced; set only while the "changed" marker shows
+    previous: str | None  # the value this one replaced; set until the listener confirms it
+    confirmed: bool
+    question: str | None  # the listener's question about this value, in the viewer's language
 
 
 def _card_out(room: Room, language: str) -> list[dict[str, Any]]:
     """The room's delivery card as one viewer reads it. Content is never logged."""
     return [
-        CardEntryOut(fact=_fact_out(entry.fact, language), previous=entry.previous).model_dump()
+        CardEntryOut(
+            fact=_fact_out(entry.fact, language),
+            previous=entry.previous,
+            confirmed=entry.confirmed,
+            question=f"{chip_label(entry.fact.kind, language).text}?" if entry.asked else None,
+        ).model_dump()
         for entry in room.card.entries.values()
     ]
 
@@ -169,12 +184,14 @@ def room_router(
     translator: Translator,
     room_limit_per_minute: int,
     turn_limit_per_minute: int,
+    reply_limit_per_minute: int,
     demo_input: bool = False,
 ) -> APIRouter:
     router = APIRouter()
     create_limiter = SlidingWindowLimiter(room_limit_per_minute)
     join_limiter = SlidingWindowLimiter(room_limit_per_minute)
     turn_limiter = SlidingWindowLimiter(turn_limit_per_minute)
+    reply_limiter = SlidingWindowLimiter(reply_limit_per_minute)
     phrase_audio: dict[tuple[str, str], bytes] = {}
 
     def authenticate(
@@ -189,6 +206,11 @@ def room_router(
             raise HTTPException(404, "room not found") from exc
 
     Authed = Annotated[Session, Depends(authenticate)]
+
+    def check_reply_limit(session: Session) -> None:
+        """Quick replies and chip replies share one budget per participant."""
+        if not reply_limiter.allow(f"{session.room.code}:{session.role}"):
+            raise HTTPException(429, "too many requests")
 
     @router.post("/rooms", status_code=201)
     async def create_room(body: LanguageIn, request: Request) -> RoomOut:
@@ -347,6 +369,7 @@ def room_router(
 
     @router.post("/rooms/{code}/quick-reply", status_code=204)
     async def quick_reply(session: Authed, body: QuickReplyIn) -> None:
+        check_reply_limit(session)
         if body.phrase_id not in IDS_BY_ROLE[session.role]:
             raise HTTPException(422, "phrase not available to this role")
         room, recipient = session.room, other(session.role)
@@ -376,6 +399,19 @@ def room_router(
         except GnaniError:
             log.warning("quick reply audio unavailable lang=%s", peer.language)  # text still sent
         manager.publish(room, recipient, Event("quick_reply", data))
+
+    @router.post("/rooms/{code}/chip-reply", status_code=204)
+    async def chip_reply(session: Authed, body: ChipReplyIn) -> None:
+        check_reply_limit(session)
+        # The card is built from the customer's turns, so the rider is the one who answers it.
+        if session.role != "rider":
+            raise HTTPException(403, "only the rider can answer the card")
+        room = session.room
+        if not room.card.respond(body.kind, body.action):
+            raise HTTPException(422, "that detail is not on the card")
+        manager.touch(room)
+        for role in room.participants:
+            manager.publish(room, role, _card_event(room, room.participants[role].language))
 
     return router
 

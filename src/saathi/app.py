@@ -87,6 +87,7 @@ def create_app(
             translator,
             settings.room_rate_limit_per_minute,
             settings.turn_rate_limit_per_minute,
+            settings.reply_rate_limit_per_minute,
             demo_input=settings.demo_input,
         )
     )
