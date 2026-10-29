@@ -410,3 +410,17 @@ Done locally: feature 4 (reconnect). See the "Reconnect" section of DECISIONS.md
   reconnect that is accepted and then dropped immediately resets the backoff to 1 s; catch-up audio
   is gone after about 60 s.
 Next: rider mode, /healthz, /metrics, threat model.
+
+## Rehearsal 1 fixes (done locally, on `features`)
+
+Nine fixes from the live kn to hi rehearsal; reasons in the "Rehearsal 1 fixes" section of
+DECISIONS.md. Gnani STT/TTS retry once on timeout or 5xx with a localized failure message;
+opt-in `SAATHI_WARM_TTS`; no per-turn chips for customer turns; demo-clip control hidden when
+empty; old landmark translated in "changed, was"; "Nothing received yet." hidden after the first
+receive; `kn-gate-correction` clip added; DEMO_SCRIPT.md rewritten around warm-up, bakery,
+correction, confirm, ask, quick reply.
+- Waiting on the author: approve the real `make_demo_clips.py` run (dry run: 5 calls, ledger
+  108/780 to 113). No Gnani call was made in this session.
+- Open: the cause of the dead ask button is unproven (see DECISIONS.md); recheck on a real phone.
+- `make_demo_clips.py --only kn-gate-correction` is 1 call (dry run: ledger 108/780 to 109) and
+  merges into the existing manifest, so the other clips are kept.
