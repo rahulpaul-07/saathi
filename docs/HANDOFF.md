@@ -349,3 +349,11 @@ making duplicates; if the earlier groups are already committed, use the groups b
 
 Review needs: all quick-reply phrases except the rider's bn and hi are machine output (pending).
 Known odd outputs (ta, pa, te, mr, hi "coming down" gender) are listed in DECISIONS.md.
+
+## Features branch, slice 1: CI (branch `features`)
+
+Plan order: CI, latency, please-repeat, pinned card, chip confirm/ask, reconnect, rider mode,
+/healthz, /metrics, threat model. Cut order if short: /metrics, rider mode, reconnect.
+Slice 1 done locally: `.github/workflows/ci.yml`, README badge, `torch` pytest marker, mypy override.
+Not verified: the real GitHub run (needs the author to push). If it fails on a missing nvidia or
+triton package name, compare the `--no-install-package` list with `uv.lock`.
