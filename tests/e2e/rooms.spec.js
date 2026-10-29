@@ -59,9 +59,14 @@ test("both roles speak and reply in ta and ml: chips, audio, repeat, quick repli
   await expect(customer.locator("#sent-chips .chip-gate .chip-value")).toHaveText("2");
   await expect(rider.locator("#chips .chip-gate .chip-value")).toHaveText("2");
   await expect(rider.locator("#chips .chip-floor .chip-value")).toHaveText("3");
-  expect(await rider.locator("#chips").innerText()).toBe(
-    await customer.locator("#sent-chips").innerText(),
+  // Numbers match on both screens; the landmark differs on purpose. The speaker sees what was
+  // said, and the listener sees its name in their language or, as with this fake translator
+  // (which returns Latin text, not the listener's script), the class only.
+  await expect(customer.locator("#sent-chips .chip-landmark .chip-value")).toHaveText(
+    "blue temple",
   );
+  await expect(rider.locator("#chips .chip-landmark")).toContainText("name not available");
+  await expect(rider.locator("#chips .chip-landmark .chip-value")).toHaveText("");
 
   // Translation is shown as literal text (the fake translator returns markup on purpose).
   await expect(rider.locator("#translation")).toContainText("<b>ml</b>");

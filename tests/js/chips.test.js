@@ -39,6 +39,25 @@ test("skips malformed entries and unknown kinds instead of throwing", () => {
   );
 });
 
+test("the listener sees the landmark in their language, the speaker sees what was said", () => {
+  const facts = [{ ...base, kind: "landmark", value: "ಗಣೇಶ ದೇವಸ್ಥಾನ", local: "গণেশ মন্দির" }];
+  assert.equal(chipsFromFacts(facts, true)[0].value, "গণেশ মন্দির");
+  assert.equal(chipsFromFacts(facts)[0].value, "ಗಣೇಶ ದೇವಸ್ಥಾನ");
+});
+
+test("a landmark without a local name shows the class only to the listener", () => {
+  const facts = [{ ...base, kind: "landmark", value: "ಗಣೇಶ ದೇವಸ್ಥಾನ", local: null }];
+  const [chip] = chipsFromFacts(facts, true);
+  assert.equal(chip.label, "Landmark");
+  assert.equal(chip.value, "");
+  assert.equal(chip.note, "name not available");
+});
+
+test("numbers are the same for both sides", () => {
+  const facts = [{ ...base, kind: "gate", value: "2", local: null }];
+  assert.equal(chipsFromFacts(facts, true)[0].value, "2");
+});
+
 test("markup in a value stays a plain string", () => {
   const [chip] = chipsFromFacts([{ ...base, kind: "landmark", value: "<img src=x onerror=1>" }]);
   assert.equal(chip.value, "<img src=x onerror=1>");

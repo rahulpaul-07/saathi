@@ -131,7 +131,7 @@ export function enterRoom(room, languages, players) {
 
   /** @param {any} data */
   async function showIncomingTurn(data) {
-    renderChips(chipsEl, chipsFromFacts(data.facts));
+    renderChips(chipsEl, chipsFromFacts(data.facts, true));
     translationEl.textContent = typeof data.translation === "string" ? data.translation : "";
     setStatus(
       incomingStatusEl,

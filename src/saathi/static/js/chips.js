@@ -5,7 +5,7 @@
 
 /**
  * @typedef {{kind: string, value: string, heard: string, confidence: string,
- *   ambiguous: boolean, reading: string | null}} Fact
+ *   ambiguous: boolean, reading: string | null, local?: string | null}} Fact
  * @typedef {{kind: string, label: string, value: string, note: string | null}} Chip
  */
 
@@ -40,10 +40,13 @@ function isFact(value) {
 /**
  * Ordered chips for display. Unknown kinds and malformed entries are skipped. An ambiguous fact
  * shows what was heard with its best reading as a note; a low-confidence one asks to be checked.
+ * For the listener (`forListener`) a landmark shows its name in their language, or the class
+ * alone when the server found no plausible rendering: the speaker's script would be unreadable.
  * @param {unknown} facts
+ * @param {boolean} [forListener]
  * @returns {Chip[]}
  */
-export function chipsFromFacts(facts) {
+export function chipsFromFacts(facts, forListener = false) {
   if (!Array.isArray(facts)) return [];
   return facts
     .filter(isFact)
@@ -53,7 +56,12 @@ export function chipsFromFacts(facts) {
       let note = null;
       if (fact.ambiguous && fact.reading) note = `could be ${fact.reading}`;
       else if (fact.confidence === "low") note = "check this";
-      return { kind: fact.kind, label: KIND_LABELS[fact.kind], value: fact.value, note };
+      let value = fact.value;
+      if (forListener && fact.kind === "landmark") {
+        value = typeof fact.local === "string" ? fact.local : "";
+        if (value === "") note = "name not available";
+      }
+      return { kind: fact.kind, label: KIND_LABELS[fact.kind], value, note };
     })
     .sort((a, b) => KIND_ORDER.indexOf(a.kind) - KIND_ORDER.indexOf(b.kind));
 }
