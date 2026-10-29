@@ -1,3 +1,5 @@
+> Optional and not needed: see README.md in this folder. No one is being recorded.
+
 # Kannada recording script (for the Saathi evaluation)
 
 Thank you for helping. Saathi is a student portfolio project: a customer gives directions by voice

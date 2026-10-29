@@ -1,58 +1,55 @@
-# Demo script (draft, about 3 minutes)
+# Demo script (about 3 minutes, no people on screen)
 
-Recorded on the LAN setup in `docs/LAN_CHECK.md`: two Android phones, laptop running the server,
-street noise in the background if filming outdoors. Only synthetic addresses are spoken. Nothing
-below is rehearsed yet; timings are targets, not measurements.
+No person speaks or appears. Every voice is Gnani TTS or FLEURS public speech data, sent as
+prepared clips in demo input mode, with licensed street noise mixed in at 10 dB. Only invented
+addresses are used. Timings are targets, not measurements; nothing has been filmed yet.
 
-## Before filming
-- Server running with models warm (one throwaway turn first).
-- Customer phone on `/customer.html`, rider phone on `/rider.html`, flags set, volume at a normal
-  level (not maxed).
-- Screen recording on the rider phone; a second camera or the laptop on the customer.
-- Languages and casting are TBD: roles are not tied to languages, so the customer and the rider can
-  each use any of the 10. Pick the pair from who is available to speak on the day and from what
-  `docs/EVAL.md` supports. Below, "the customer's language" and "the rider's language" stand for
-  whichever pair is chosen; have a second pair ready for another take.
+## Setup (once)
 
-## Script
+1. `uv run --no-sync python scripts/fetch_noise.py` (street noise, pinned).
+2. After the author approves the Gnani budget: `scripts/make_demo_clips.py --dry-run`, then the real
+   run. It writes `demo/clips/` (gitignored): `kn-wrong-translation`, `kn-bakery`, `ta-gate`,
+   `te-gate`.
+3. Start the server with `SAATHI_DEMO_INPUT=1` and open `http://127.0.0.1:8000/demo.html` in a
+   1920x1080 window (the stage keeps 16:9). Customer is on the left, rider on the right; the room
+   code is copied across for you. Record the window.
+4. Warm up with one throwaway turn so models are loaded.
 
-1. Problem (15 s, voiceover, no demo). A delivery rider is on a bike, the customer is explaining the
-   gate and floor in a language the rider does not speak, and every second of misunderstanding costs
-   a call back. The numbers matter most: gate 2 versus gate 12.
+On screen, demo mode shows a "Demo mode" banner, and every clip carries a "Demo clip, not live
+speech" badge on both screens. Do not hide them.
 
-2. Join (20 s). Customer phone: pick the customer's language, Create room, show the 6-character
-   code. Rider phone: pick the rider's language, type the code, tap Join. Say: "Joining needs a tap because phones block autoplay
-   until you touch the page."
+Pairs used (an example casting; roles are not tied to languages): kn to bn, ta to hi, te to en.
 
-3. First turn (40 s). Customer taps talk and says the synthetic address: second cross, third main,
-   gate number two, opposite the Ganesha temple. Show the rider phone: chips appear first (cross 2,
-   main 3, gate 2, landmark), then the translated audio plays on its own. Point at the chips: "The
-   chips come from the original transcript, so the numbers do not depend on the translation."
+## Shot list
 
-4. Repeat (10 s). Tap Repeat: it replays instantly. Say: "No network call, the audio is already
-   on the phone."
+| # | Shot | Screen action | Caption |
+|---|---|---|---|
+| 1 | Problem, 15 s | Title card | "The rider needs gate 2, not gate 12." |
+| 2 | Join, 20 s | Customer: Kannada, Create room. Rider: Bengali, Join (code already filled) | "A short-lived room. Nothing is stored." |
+| 3 | First turn, 35 s | Customer: pick "Gate 4, bakery", Send demo clip. Chips appear on the rider, then audio | "Chips come from the original transcript, not from the translation." |
+| 4 | Repeat, 10 s | Rider: Repeat | "Replays instantly from the phone." |
+| 5 | Quick reply rider to customer, 20 s | Rider taps a quick reply; the customer sees it in Kannada | "Three quick replies per role, in all 10 languages. Review status is shown." |
+| 6 | Quick reply customer to rider, 15 s | Customer taps a quick reply; the rider sees it in Bengali | "Either side can reply without speaking." |
+| 7 | Wrong translation, 40 s | Customer: "Gate 2, Ganesha temple", Send demo clip. Insert card: `docs/media/rider-unmasked.png` next to `rider-masked.png`, then back to the live chips | "Fluent but wrong translation. The chips are still correct." |
+| 8 | Other pairs, 30 s | New rooms: ta to hi with "Gate 3, bakery"; te to en with "Gate 1, Hanuman temple" | "Any of the 10 languages can be either role." |
+| 9 | Privacy and limits, 15 s | Voiceover over the room screen | "Rooms expire. Transcripts are never stored. Beta languages are labelled." |
+| 10 | Evaluation, 15 s | ONLY after results exist: table from `docs/EVAL.md` | Numbers with their confidence intervals, and the audio-source label next to each |
+| 11 | End card | Credits | "Voices: Gnani TTS and FLEURS public speech data, mixed with a licensed street-noise recording." |
 
-5. Quick reply (30 s). Rider taps "Which floor?". The customer phone shows it and plays it in the
-   customer's language. Customer answers by voice: third floor, flat 304. New chips appear. Say:
-   "The rider never has to speak or type; the three quick replies cover what they actually need.
-   The customer has three too, for example 'Come to the gate'." Mention they are
-   machine-translated and marked unreviewed (except the phrases the author reviewed). If the rider
-   is stopped, they can also answer by voice with the secondary talk button.
+The insert card in shot 7 is a labelled still, not live output: caption it "Recorded earlier, same
+input, translation masking off and on".
 
-6. Hard case (30 s, optional, only if it really works on the day). Customer says a digit-by-digit
-   flat number. Show the chip displaying the value as heard with a low-confidence marker. Say:
-   "When the recognizer's output is ambiguous, the app shows what it heard instead of guessing."
+## Credits (end card, verbatim)
 
-7. Privacy and limits (20 s, voiceover). Rooms expire and live in memory, transcripts are never
-   stored, addresses in this demo are invented. Beta languages are labelled. This is a LAN prototype,
-   not a deployed service.
+Voices: Gnani TTS and FLEURS public speech data, mixed with a licensed street-noise recording.
 
-8. Evaluation (15 s, voiceover, ONLY after results exist). State the critical-fact precision and
-   recall with their confidence intervals from `docs/EVAL.md`, on clean speech and at 20/10/5 dB
-   street noise. Do not say anything about accuracy before those numbers exist.
+Add below it, in small type: FLEURS: Google, CC BY 4.0. Street noise: "College Street" by
+Calcuttan, Freesound 181026, CC BY 4.0.
 
 ## Do not claim
-- Any accuracy number not in `docs/EVAL.md`.
+- Any accuracy number not in `docs/EVAL.md`, or any figure without its audio-source label
+  (clean synthetic, or real human speech from FLEURS).
+- That the demo clips are live speech or real speakers.
 - That Odia, Assamese or Urdu work, or that beta languages are verified.
 - That iPhone riders work (untested).
 - Safety while riding: the product is meant for a stop or when pulled over.

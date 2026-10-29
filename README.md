@@ -156,10 +156,16 @@ produce, not real recognizer output); the real test is the recorded-speech evalu
 
 - `docs/EVAL.md`: translation quality and the masking A/B (done, text only) and the speech
   evaluation (pending real results).
-- `scripts/eval_noise.py run --dry-run`: the noise evaluation plan. Recorded gold utterances are
-  played clean and mixed with real street-traffic noise at 20, 10 and 5 dB SNR, plus a pink-noise
-  stressor; critical-fact precision and recall are reported with bootstrap confidence intervals.
-  Recording instructions: `docs/recording/`.
+- `scripts/eval_noise.py run --dry-run`: the noise evaluation plan. The 30 gold sentences (Gnani TTS,
+  "clean synthetic", made by `scripts/make_gold_tts.py`) are played clean and mixed with licensed
+  street-traffic noise at 20, 10 and 5 dB SNR, plus a pink-noise stressor; critical-fact precision
+  and recall are reported with bootstrap confidence intervals.
+- `scripts/eval_speech.py run --dry-run`: character error rate on real human speech, FLEURS
+  (CC BY 4.0), 10 clips for each of the 10 languages, same noise conditions.
+- Demo: `SAATHI_DEMO_INPUT=1` enables prepared clips (`scripts/make_demo_clips.py`) and the
+  split-screen page `/demo.html`. No people appear in the demo; see `docs/DEMO_SCRIPT.md`.
 - `docs/DESIGN.md` (architecture and plan) and `docs/DECISIONS.md` (why things are the way they are).
-- Recordings of people stay in `eval/audio/` (gitignored) and are reported as consented human
-  speech.
+- Nobody is recorded for this project. If someone's recording is ever added it stays in
+  `eval/audio/` (gitignored) and is reported as consented human speech.
+- Attribution: FLEURS (Google, CC BY 4.0) and "College Street" by Calcuttan (Freesound 181026,
+  CC BY 4.0); details in `docs/EVAL.md`.

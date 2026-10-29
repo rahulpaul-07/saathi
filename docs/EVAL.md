@@ -24,6 +24,33 @@ latency, real-voice STT) have code and tests but have NOT been run; their sectio
 - The "clean synthetic audio" label: Gnani TTS audio fed to Gnani STT is Gnani's voice into
   Gnani's ears. It is an optimistic best case, not a measure of real users.
 
+## Audio sources and labels
+
+State this plainly wherever a number is quoted.
+
+- **Address facts (gate, floor, cross/main, landmark): clean synthetic.** The 30 gold sentences,
+  including every Kannada one, are spoken by Gnani TTS (`scripts/make_gold_tts.py`). No person
+  was recorded for them. They measure the fact pipeline end to end on clean machine voices, with
+  noise added by the harness; they say nothing about real speakers.
+- **Real human speech: FLEURS.** 10 read-speech clips for each of bn, en, gu, hi, kn, ml, mr, pa,
+  ta, te (100 clips), scored by character error rate, clean and with street noise at 20/10/5 dB.
+  The clips are the first eligible ones (3 to 30 s, one per sentence id) in the dataset's archive
+  order, not hand-picked; each converted WAV is pinned by SHA-256 in `eval/gold/fleurs_manifest.json`.
+  The audio itself is gitignored. FLEURS sentences are Wikipedia-style text, not addresses.
+- **Noise: one licensed street recording.** "College Street" by Calcuttan, Freesound sound 181026,
+  CC BY 4.0, https://freesound.org/people/Calcuttan/sounds/181026/. Only the public lossy preview
+  is used (originals need a login), pinned by SHA-256 in `scripts/fetch_noise.py`; it contains
+  distant hawker voices. Seeded pink noise is a secondary condition, reported separately.
+- **Demo clips:** Gnani TTS plus that street noise at 10 dB, so no person appears in the demo.
+
+Attribution. FLEURS: Google, CC BY 4.0, https://huggingface.co/datasets/google/fleurs. Conneau,
+A., Ma, M., Khanuja, S., Zhang, Y., Axelrod, V., Dalmia, S., Riesa, J., Rivera, C., Bapna, A.
+(2022). FLEURS: Few-shot Learning Evaluation of Universal Representations of Speech.
+arXiv:2205.12446. Clips were converted from 32-bit float to 16-bit PCM; nothing else was changed.
+
+Status of the new runs: the scripts and their dry-runs exist; the Gnani calls have NOT been made,
+so there are no FLEURS or noise results yet.
+
 ## Translation: greedy vs beam5 (AC power, 50 sentences per pair)
 
 | | greedy | beam5 |
@@ -140,5 +167,6 @@ set; the reader may deviate from the printed text, which counts as an STT error.
 
 ## How to record the real-speech set
 
-Superseded by the gold-set recordings: see docs/recording/rahul_script.md (the old
-`eval_turns.py sentences` / `stt-real` steps no longer exist).
+Superseded: no one is recorded for this project (see "Audio sources and labels" below). The
+scripts in `docs/recording/` are optional leftovers; nothing in the evaluation or the demo
+depends on them. The old `eval_turns.py sentences` / `stt-real` steps no longer exist.

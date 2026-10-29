@@ -118,8 +118,8 @@ Session 2026-10-29 additions (pytest 320, ruff, mypy, tsc clean; e2e 7 passed):
 - New: `feat(quickreplies): use author-reviewed bn and hi phrases`
   - src/saathi/quickreplies.py (new status "reviewed"; kn stays pending), tests/test_room_api.py
   (commit with or after slice 3 group 1, which creates quickreplies.py)
-- Author to record: 20 gold lines (docs/recording/rahul_script.md) and 60-90 s of street noise.
-- Quick-reply review: bn and hi done 2026-10-29; kn still needs a friend's review.
+- (Superseded 2026-10-29: nobody is recorded; see the no-people session below.)
+- Quick-reply review: bn and hi done 2026-10-29; kn is still pending review.
 
 ## Slice 5 (masking), from the author's review of the live turn: DONE offline
 1. Loanword preservation: DONE. Numbers and loanwords are masked as `#L51...` placeholders before
@@ -202,8 +202,60 @@ Commit groups (after the slice 5 groups; the first two touch files from groups 1
 - Oversized uploads are rejected after multipart spooling: fine on LAN only.
 
 ## Next
-Author-gated work: recordings, LAN two-phone check, beta smokes, latency study, noise eval run,
-review of the loanword table and kn quick replies. Offline slices 1-5 are built.
+Author-gated work: approve the Gnani budget below, then run the generators and evals; LAN
+two-phone check, beta smokes, latency study, review of the loanword table, kn quick replies and
+the pending chip labels. Offline slices 1-5 are built. No recordings are needed (see below).
+
+## Session 2026-10-29 (late): no-people plan, FLEURS, noise, labels, demo mode
+Checks: pytest 458, ruff, mypy (106 files), tsc, npm test 37, e2e 10 all pass. No Gnani calls, git
+or new dependencies. Nothing was spent: ledger is still 25/290.
+- Plan change: no people in the demo or the evaluation. Address-fact audio is Gnani TTS ("clean
+  synthetic"), real human speech is FLEURS (CC BY 4.0), noise is "College Street" (Freesound
+  181026, CC BY 4.0). `docs/recording/` is optional (README there); EVAL.md "Audio sources and
+  labels" says so plainly.
+- FLEURS: `scripts/fetch_fleurs.py` fetched 100 clips (10 x 10 languages, archive order) into
+  eval/audio/fleurs/, pinned in eval/gold/fleurs_manifest.json. Noise: `scripts/fetch_noise.py`
+  (pinned preview mp3 converted to 16 kHz WAV). Both re-run reproduce the pins.
+- Localized chip labels (bn and hi use the reviewed forms, others pending): src/saathi/labels.py.
+  Please review: bn floor "তলা", hi floor "फ्लोर" (confirmed by you); the other eight are
+  machine-chosen loanwords marked "pending" in the UI via `#chips-note`.
+- Demo input mode (off by default, `SAATHI_DEMO_INPUT=1`, clips in `SAATHI_DEMO_CLIPS_DIR`):
+  a participant sends a prepared clip; both screens show "Demo clip, not live speech" badges and a
+  banner. Split-screen page: `/demo.html` (16:9 stage, room code copied across).
+- Demo clips: `scripts/make_demo_clips.py` (4 TTS calls: kn-wrong-translation, kn-bakery, ta-gate,
+  te-gate; street noise at 10 dB). Ta and te texts were written by Claude and need a native
+  read-through before filming. Dry-run works; the real run is NOT done.
+- Gold audio: `scripts/make_gold_tts.py` (30 TTS calls into eval/audio/gold_tts/). Then
+  `eval_noise.py run --audio-dir eval/audio/gold_tts`. FLEURS STT: `scripts/eval_speech.py`.
+- `docs/DEMO_SCRIPT.md` rewritten (shot list, captions, final caption verbatim).
+
+Dry-runs (nothing sent): make_gold_tts 30, make_demo_clips 4, eval_noise 150, eval_speech 400.
+Expected total 739 including the 25 spent; proposed cap 780 (table in DESIGN section 11). The
+cap in calls.py is still 290, so eval_speech and eval_noise are refused until you approve a cap;
+I then change `GNANI_CALL_CAP` and tests/test_eval_calls.py. Credit balance is unknown.
+
+Commit groups (the author commits; touches files from earlier groups, so commit after them):
+1. `feat(labels): show chip labels in the listener's language with a review status`
+   - src/saathi/labels.py, src/saathi/room_routes.py, src/saathi/static/js/chips.js,
+     src/saathi/static/js/room-screen.js, src/saathi/static/customer.html, rider.html,
+     tests/test_labels.py, tests/test_room_api.py, tests/js/chips.test.js
+2. `feat(eval): add pinned FLEURS fetch and speech evaluation`
+   - src/saathi/evaluation/fleurs.py, speecheval.py, wavtools.py, noiseeval.py,
+     scripts/fetch_fleurs.py, scripts/eval_speech.py, eval/gold/fleurs_manifest.json,
+     tests/test_fleurs.py, tests/test_float_wav.py, tests/test_speecheval.py
+3. `feat(eval): add pinned licensed street-noise fetch`
+   - scripts/fetch_noise.py
+4. `feat(demo): add demo input mode, split-screen page and clip generator`
+   - src/saathi/demo.py, config.py, catalog_routes.py, app.py, room_routes.py, .env.example,
+     .gitignore, src/saathi/static/{demo.html,app.css,js/demo-clips.js,js/demo-split.js,
+     js/room-client.js,js/room-screen.js}, src/saathi/evaluation/democlips.py,
+     scripts/make_demo_clips.py, tests/{test_demo.py,test_democlips.py,js/demo-clips.test.js}
+5. `test(e2e): cover demo mode, the flag-off case and the split page`
+   - tests/e2e/demo.spec.js, tests/e2e/serve.py, playwright.config.js
+6. `feat(eval): add gold sentence TTS generator`
+   - scripts/make_gold_tts.py
+7. `docs: no-people plan, audio sources, FLEURS and noise attribution, demo script`
+   - docs/EVAL.md, DESIGN.md, DEMO_SCRIPT.md, DECISIONS.md, HANDOFF.md, docs/recording/ (commit last)
 
 ## Roles independent of languages (session 2026-10-29, after the groups above)
 Product rule: customer and rider can each use any of the 10 languages, either can speak or send

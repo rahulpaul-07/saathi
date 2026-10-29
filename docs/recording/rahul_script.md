@@ -1,3 +1,5 @@
+> Optional and not needed: see README.md in this folder. No one is being recorded.
+
 # Recording script: Rahul (en, hi, bn) and street noise
 
 20 utterances (12 en, 4 hi, 4 bn), numbered to match `eval/gold/directions.json`. The Kannada ones

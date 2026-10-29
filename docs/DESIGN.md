@@ -87,7 +87,8 @@ Nothing is stored. A room exists only in memory and expires (30 min idle, 2 h ha
 audio is kept in memory for about 60 s so the other phone can fetch it. Transcripts, addresses and
 translations are never logged and never written to disk. The quick-reply audio cache on disk holds
 only fixed phrases (no personal data) and is gitignored. Addresses are personal data: tests, eval
-and demos use only synthetic addresses; consented recordings of friends stay local and out of git.
+and demos use only synthetic addresses. No recordings of people are made for this project: voices
+are public datasets (FLEURS) or Gnani TTS.
 
 ## 7. Interfaces (planned, finalized in slice 2)
 Create/join room, push events (SSE), upload a turn (multipart WAV, 16 kHz mono, max 2.5 MB), fetch
@@ -126,8 +127,9 @@ about 30 bits); a third participant is refused.
 - Noise: the STT API has no denoise option. Ship browser `noiseSuppression` and
   `autoGainControl`. Loudness-normalize TTS output for the rider (audibility in wind is checked
   by hand outdoors, not by SNR). RNNoise and a local LLM are out; revisit after Oct 19 only with
-  spare time. Noise sources, in order: the author's own street recording, DEMAND "STRAFFIC" (CC BY
-  4.0), generated noise as a fallback. SNR is computed against speech-active RMS, seeded.
+  spare time. Noise: one licensed street recording ("College Street", Freesound 181026, CC BY 4.0,
+  fetched and SHA-256 pinned by `scripts/fetch_noise.py`); seeded pink noise is a secondary
+  stressor. SNR is computed against speech-active RMS, seeded.
 - Transport: upload with POST, push to the other phone with Server-Sent Events. Rejected:
   WebSocket (more machinery for one-way pushes), polling.
 - Network: LAN only, no public tunnel. Mic needs a secure context, so any phone that
@@ -155,26 +157,31 @@ about 30 bits); a third participant is refused.
 - Secrets stay on the server (`GNANI_API_KEY`).
 - Addresses are personal data: no transcript logging (existing logs carry timings and character
   counts only; the Gnani error body log at `gnani.py` is to be dropped), in-memory rooms that
-  expire, synthetic addresses only in tests, eval and demos, consented recordings gitignored.
+  expire, synthetic addresses only in tests, eval and demos, downloaded audio gitignored.
 - Not hardened for the public internet (no auth beyond room tokens); LAN use only.
 
 ## 11. Evaluation
 Replaces the Gnani parts of old slice 5. The translation evaluation already run (FLORES, greedy
 vs beam, guard) stays as is (docs/EVAL.md).
 
-- Set: 30 synthetic direction utterances with gold critical facts: 12 en and 4 hi, 4 bn (the
-  author's voice, Audacity), 10 kn and code-mixed (a consenting friend's voice, "consented human
-  speech"). Split 10 dev / 20 test; the test split is frozen before extractor tuning on it, and
-  only test numbers are reported. The Kannada texts are written by Claude from a script; the
-  friend may change words, and the gold is corrected to what was actually said.
-- Separate labelled condition: the same Kannada texts through Gnani TTS ("clean synthetic").
+- Address-fact set: 30 synthetic direction utterances with gold critical facts (en, hi, bn, kn).
+  Split 10 dev / 20 test; the test split is frozen before extractor tuning on it, and only test
+  numbers are reported. Their audio is Gnani TTS (`scripts/make_gold_tts.py`), labelled "clean
+  synthetic", then clean and street noise at 20/10/5 dB. No person is recorded; Kannada address
+  audio is synthetic. Recording scripts in `docs/recording/` are optional and nothing depends on
+  them (`eval_noise.py --audio-dir` still accepts consented recordings).
+- Real human speech: FLEURS test split (CC BY 4.0), 10 clips for each of the 10 languages, first
+  eligible clips in archive order, pinned by SHA-256. Scored by character error rate on clean and
+  street noise at 20/10/5 dB (`scripts/eval_speech.py`). This is read speech, not addresses.
+- Demo: no people appear in the demo video; voices are Gnani TTS or FLEURS, mixed with the
+  licensed street noise at 10 dB (`scripts/make_demo_clips.py`, demo input mode).
 - Main metric: critical-fact accuracy (exact gate, floor, cross/main, block/flat, landmark with
   accepted spellings), as precision, recall and share of utterances with all facts right; clean
   vs 20, 10 and 5 dB. Stage split: extractor on gold text, on STT transcript.
 - Translation survival: arms A (toolkit default), B (masked), C (masked plus fallback), judged on
   whether each gold number and landmark appears in the target text (bn and hi reviewed by the author).
-- Smoke tests, not quality claims: te human clips (5), and one TTS-generated utterance per
-  beta language through STT, translation and quick-reply TTS.
+- Smoke tests, not quality claims: one TTS-generated utterance per beta language through STT,
+  translation and quick-reply TTS.
 - Statistics: about 20 test utterances, so confidence intervals (bootstrap over utterances) are
   wide; the write-up says what cannot be detected.
 - Gnani budget (hard cap 290, enforced by the ledger, `--dry-run` first, runs only while the
@@ -183,18 +190,22 @@ vs beam, guard) stays as is (docs/EVAL.md).
 | Step | Calls |
 |---|---|
 | Day-one probe (8 TTS + 14 STT), spent | 22 |
-| Main STT: 30 utterances x 4 conditions (clean, 20, 10, 5 dB) | 120 |
-| Kannada clean synthetic: 10 TTS + 10 STT | 20 |
+| Live-turn probe, spent | 3 |
+| Gold sentences TTS (clean synthetic audio) | 30 |
+| Gold STT: 30 x 5 conditions (clean, street 20/10/5 dB, pink 10 dB) | 150 |
+| FLEURS STT: 100 clips x 4 conditions (clean, street 20/10/5 dB) | 400 |
 | Latency: 20 turns x 2 | 40 |
 | Quick-reply audio, core + te (6 phrases x 5 languages) | 30 |
 | Smoke: te + gu, ml, mr, pa, ta (TTS utterance, STT, quick-reply TTS = 3 each) | 18 |
-| Telugu human clips STT | 5 |
-| **Expected total** | **255** |
-| Retry reserve (429s are counted) | 35 |
-| **Hard cap** | **290** |
+| Demo clips TTS (kn to bn x2, ta to hi, te to en) | 4 |
+| Demo takes: about 14 calls per take, 3 takes | 42 |
+| **Expected total** | **739** |
+| Retry reserve (429s are counted) | 41 |
+| **Proposed hard cap** | **780** |
 
-The old cap of 155 and the FLORES-based `eval_turns.py` plan are replaced (script replaced in
-slice 6). The 290 cap is NOT approved until the author reports the credit balance after the probe, so the cost per call is known.
+Dropping the pink condition saves 30; FLEURS at 5 clips per language saves 200 (reduced tier,
+about 509). The cap in `evaluation/calls.py` stays 290 until the author approves a number; the
+credit balance is unknown, so the cost per call is not.
 
 ## 12. Scope
 - Must: rooms, rider screen with chips and Repeat, universal extraction plus kn/en rules, masking

@@ -462,3 +462,31 @@ are an existence proof, not a distribution; slice 5 measures p50/p95 properly.
 - Text A/B (eval/results/masking_ab.json, 90 gold turns, real models): default recall 0.674,
   masked 0.808, masked + summary 0.851; loanwords kept 128, 162, 168 of 255. Text only: it does
   not cover STT or TTS, and the gold text is ours, not recorded speech.
+
+## No people in the evaluation or the demo (2026-10-29)
+Nobody is recorded. Address-fact audio is Gnani TTS, labelled "clean synthetic"; real human speech
+is FLEURS (CC BY 4.0), 10 clips per language. Rejected: friend recordings (consent, scheduling,
+and the Kannada set would depend on one voice) and author recordings. Cost: no real-speaker
+address result exists, and EVAL.md says so beside every number.
+
+## FLEURS clip selection
+First eligible clips in archive order (3 to 30 s, one per sentence id), streamed with early stop so
+the 4.8 GB archives are not downloaded. No listening, so no cherry-picking. Pinned by SHA-256 of the
+converted 16-bit WAV in a committed manifest (trust on first use, then enforced). FLEURS WAVs are
+32-bit float; `float_wav_to_pcm16` converts before pinning so the pin matches what is scored.
+
+## Street noise
+One licensed recording ("College Street", Freesound 181026, CC BY 4.0). The public preview is a
+lossy mp3 (originals need a login) with distant hawker voices; both limits are stated in EVAL.md.
+Pink noise stays a secondary condition.
+
+## Chip labels in the listener's language
+`labels.py`: English is the source, bn and hi use the author-reviewed forms, other languages use the
+loanword table and are marked "pending" in the UI. Chips themselves still come from the source
+transcript, so a wrong label cannot change a value.
+
+## Demo input mode
+Behind `SAATHI_DEMO_INPUT` (off by default). The client sends a prepared clip with `X-Demo-Clip: 1`,
+honoured only when the flag is on; clips are served only by id from a manifest, so a request cannot
+name a path. Both screens show a badge so a clip is never mistaken for live speech. The clips are
+generated offline (`make_demo_clips.py`), never at request time.
