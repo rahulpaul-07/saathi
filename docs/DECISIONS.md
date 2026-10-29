@@ -570,3 +570,21 @@ Correction: `no_facts` applies to customer turns only. A rider's "coming in 2 mi
 to find, so a rider turn with no facts gives `repeat: null`. `unverified` applies to both roles.
 Review: the author rewrote and approved all four bn and hi prompts (both reasons); they are
 "reviewed". The other eight languages stay "pending".
+
+## Pinned delivery card (features branch)
+
+Each room keeps a `Card` (`src/saathi/card.py`): the latest `Fact` per kind plus `previous`, the
+value it replaced. Why server-side: a reconnecting phone gets the card from the `state` snapshot,
+and both roles see the same thing without the client keeping history. Why that is acceptable for
+privacy: it is address data, but it lives only in the room's memory, is wiped by `close()` (also
+on TTL expiry), and is never logged or written to disk (a test asserts the transcript does not
+reach the logs). Only customer turns update it: a rider has no address to give, and a rider's
+"coming in 2 minutes" must not overwrite a gate number. Rider facts still show as chips for that
+turn. A turn with no facts changes nothing, so "okay, thank you" cannot erase or un-mark anything.
+Within one turn the last fact of a kind wins (a spoken correction comes after the mistake).
+"Changed" means the latest update with facts replaced the value; the next such update clears every
+marker. The same value repeated is not a change. Only one previous value is kept, not a history.
+Delivery: a `card` event to both roles after a customer turn with facts, and `card` inside
+`state`; each viewer's copy uses labels in their own language. The marker text ("changed, was 2")
+is English UI chrome, like "check this". Known limit: the "was" value of a landmark is shown as
+the customer said it, in their script.

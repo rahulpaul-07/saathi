@@ -90,6 +90,16 @@ only fixed phrases (no personal data) and is gitignored. Addresses are personal 
 and demos use only synthetic addresses. No recordings of people are made for this project: voices
 are public datasets (FLEURS) or Gnani TTS.
 
+The one exception is the delivery card: each room keeps the latest value of every fact (gate,
+floor, cross, main, block, flat, landmark) the customer gave, so both screens can pin them. It is
+an in-memory dict on the room, dropped when the room closes or expires (the same `close()` that
+wipes turn audio), never logged and never written to disk. Only customer turns update it; a
+rider's facts show for that turn only. A value the latest update replaced carries `previous`, shown
+as "changed, was X" until the next customer turn that has facts. The server sends it as a `card`
+event after such a turn and inside the `state` snapshot, with labels in each viewer's language.
+Limits: it holds address data for up to the room TTL (30 min idle, 2 h hard); there is no history,
+so only the one previous value is visible; a changed landmark's "was" value is in the source script.
+
 ## 7. Interfaces (planned, finalized in slice 2)
 Create/join room, push events (SSE), upload a turn (multipart WAV, 16 kHz mono, max 2.5 MB), fetch
 turn audio, send a quick reply. Every call after join carries the participant's random 128-bit
@@ -159,7 +169,8 @@ about 30 bits); a third participant is refused.
 - Secrets stay on the server (`GNANI_API_KEY`).
 - Addresses are personal data: no transcript logging (existing logs carry timings and character
   counts only; the Gnani error body log at `gnani.py` is to be dropped), in-memory rooms that
-  expire, synthetic addresses only in tests, eval and demos, downloaded audio gitignored.
+  expire, synthetic addresses only in tests, eval and demos, downloaded audio gitignored. The
+  delivery card (section 6) is the only address data a room keeps, in memory with the room TTL.
 - Not hardened for the public internet (no auth beyond room tokens); LAN use only.
 
 ## 11. Evaluation

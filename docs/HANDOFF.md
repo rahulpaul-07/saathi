@@ -367,3 +367,11 @@ Next: feature 3 (please-repeat prompt).
 
 Phrases in `src/saathi/repeatprompts.py`, all pending except en. To review them, read the table
 and edit the status to "reviewed" per phrase. Next: feature 1 (pinned card).
+
+## Features branch, slice 4: pinned delivery card (done locally)
+
+`src/saathi/card.py`, `Room.card`, `card` SSE event and `state.card` (room_routes.py), `cardChips`
+in chips.js, a "Delivery card" section on customer.html and rider.html. Tests: tests/test_card.py,
+new cases in tests/test_room_api.py, chips.test.js, one e2e addition. Not covered by e2e: a changed
+marker (the e2e fake transcript is fixed); it is covered by the API and chips tests.
+Next: feature 2 (chip confirm/ask).
