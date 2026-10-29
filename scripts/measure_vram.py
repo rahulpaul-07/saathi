@@ -27,7 +27,7 @@ SAMPLES: dict[str, tuple[str, str, str]] = {
 
 def device_used_mib() -> float:
     free, total = torch.cuda.mem_get_info()
-    return (total - free) / MIB
+    return float((total - free) / MIB)  # float() keeps this typed when torch is absent (CI)
 
 
 def report(label: str) -> None:
