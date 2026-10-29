@@ -1,0 +1,542 @@
+{
+  "split": "all",
+  "targets": [
+    "bn",
+    "hi",
+    "kn",
+    "en"
+  ],
+  "pairs": 90,
+  "unverified_masked": "4/90",
+  "seconds_per_pair": {
+    "plain": 1.9,
+    "masked": 2.66
+  },
+  "arms": {
+    "A_default": {
+      "recall": 0.674,
+      "wrong_extras": 67,
+      "all_correct": "9/90",
+      "loanword_kept": "128/255"
+    },
+    "B_masked": {
+      "recall": 0.808,
+      "wrong_extras": 67,
+      "all_correct": "13/90",
+      "loanword_kept": "162/255"
+    },
+    "C_masked_summary": {
+      "recall": 0.851,
+      "wrong_extras": 65,
+      "all_correct": "17/90",
+      "loanword_kept": "168/255"
+    }
+  },
+  "landmarks_localized": "72/72",
+  "landmarks": [
+    {
+      "id": "g01",
+      "src": "en",
+      "tgt": "bn",
+      "value": "Ganesha temple",
+      "local": "গণেশ মন্দির"
+    },
+    {
+      "id": "g01",
+      "src": "en",
+      "tgt": "hi",
+      "value": "Ganesha temple",
+      "local": "गणेश मंदिर"
+    },
+    {
+      "id": "g01",
+      "src": "en",
+      "tgt": "kn",
+      "value": "Ganesha temple",
+      "local": "ಗಣೇಶ ದೇವಾಲಯ"
+    },
+    {
+      "id": "g02",
+      "src": "kn",
+      "tgt": "bn",
+      "value": "ಗಣೇಶ ದೇವಸ್ಥಾನ",
+      "local": "গণেশ মন্দির"
+    },
+    {
+      "id": "g02",
+      "src": "kn",
+      "tgt": "hi",
+      "value": "ಗಣೇಶ ದೇವಸ್ಥಾನ",
+      "local": "गणेश मंदिर"
+    },
+    {
+      "id": "g02",
+      "src": "kn",
+      "tgt": "en",
+      "value": "ಗಣೇಶ ದೇವಸ್ಥಾನ",
+      "local": "Ganesh Temple"
+    },
+    {
+      "id": "g03",
+      "src": "en",
+      "tgt": "bn",
+      "value": "blue building",
+      "local": "নীল বিল্ডিং"
+    },
+    {
+      "id": "g03",
+      "src": "en",
+      "tgt": "hi",
+      "value": "blue building",
+      "local": "नीली इमारत"
+    },
+    {
+      "id": "g03",
+      "src": "en",
+      "tgt": "kn",
+      "value": "blue building",
+      "local": "ನೀಲಿ ಕಟ್ಟಡ"
+    },
+    {
+      "id": "g04",
+      "src": "hi",
+      "tgt": "bn",
+      "value": "गणेश मंदिर",
+      "local": "গণেশ মন্দির"
+    },
+    {
+      "id": "g04",
+      "src": "hi",
+      "tgt": "kn",
+      "value": "गणेश मंदिर",
+      "local": "ಗಣೇಶ ದೇವಾಲಯ"
+    },
+    {
+      "id": "g04",
+      "src": "hi",
+      "tgt": "en",
+      "value": "गणेश मंदिर",
+      "local": "Ganesh Temple"
+    },
+    {
+      "id": "g05",
+      "src": "en",
+      "tgt": "bn",
+      "value": "bakery",
+      "local": "বেকারি"
+    },
+    {
+      "id": "g05",
+      "src": "en",
+      "tgt": "hi",
+      "value": "bakery",
+      "local": "बेकरी"
+    },
+    {
+      "id": "g05",
+      "src": "en",
+      "tgt": "kn",
+      "value": "bakery",
+      "local": "ಬೇಕರಿ"
+    },
+    {
+      "id": "g07",
+      "src": "bn",
+      "tgt": "hi",
+      "value": "গণেশ মন্দিরের",
+      "local": "गणेश मंदिर"
+    },
+    {
+      "id": "g07",
+      "src": "bn",
+      "tgt": "kn",
+      "value": "গণেশ মন্দিরের",
+      "local": "ಗಣೇಶ ದೇವಾಲಯ"
+    },
+    {
+      "id": "g07",
+      "src": "bn",
+      "tgt": "en",
+      "value": "গণেশ মন্দিরের",
+      "local": "The Ganesha Temple"
+    },
+    {
+      "id": "g08",
+      "src": "en",
+      "tgt": "bn",
+      "value": "water tank",
+      "local": "জলের ট্যাঙ্ক"
+    },
+    {
+      "id": "g08",
+      "src": "en",
+      "tgt": "hi",
+      "value": "water tank",
+      "local": "पानी की टंकी"
+    },
+    {
+      "id": "g08",
+      "src": "en",
+      "tgt": "kn",
+      "value": "water tank",
+      "local": "ನೀರಿನ ಟ್ಯಾಂಕ್"
+    },
+    {
+      "id": "g09",
+      "src": "en",
+      "tgt": "bn",
+      "value": "petrol bunk",
+      "local": "পেট্রোলের বঙ্ক"
+    },
+    {
+      "id": "g09",
+      "src": "en",
+      "tgt": "hi",
+      "value": "petrol bunk",
+      "local": "पेट्रोल बंक"
+    },
+    {
+      "id": "g09",
+      "src": "en",
+      "tgt": "kn",
+      "value": "petrol bunk",
+      "local": "ಪೆಟ್ರೋಲ್ ಬಂಕ್"
+    },
+    {
+      "id": "g11",
+      "src": "hi",
+      "tgt": "bn",
+      "value": "नीली बिल्डिंग",
+      "local": "নীল ভবন"
+    },
+    {
+      "id": "g11",
+      "src": "hi",
+      "tgt": "kn",
+      "value": "नीली बिल्डिंग",
+      "local": "ನೀಲಿ ಕಟ್ಟಡ"
+    },
+    {
+      "id": "g11",
+      "src": "hi",
+      "tgt": "en",
+      "value": "नीली बिल्डिंग",
+      "local": "The Blue Building"
+    },
+    {
+      "id": "g12",
+      "src": "kn",
+      "tgt": "bn",
+      "value": "ಸೈಕಲ್ ಅಂಗಡಿ",
+      "local": "সাইকেলের দোকান"
+    },
+    {
+      "id": "g12",
+      "src": "kn",
+      "tgt": "hi",
+      "value": "ಸೈಕಲ್ ಅಂಗಡಿ",
+      "local": "साइकिल की दुकान"
+    },
+    {
+      "id": "g12",
+      "src": "kn",
+      "tgt": "en",
+      "value": "ಸೈಕಲ್ ಅಂಗಡಿ",
+      "local": "Bicycle Shop"
+    },
+    {
+      "id": "g13",
+      "src": "en",
+      "tgt": "bn",
+      "value": "school",
+      "local": "বিদ্যালয়"
+    },
+    {
+      "id": "g13",
+      "src": "en",
+      "tgt": "hi",
+      "value": "school",
+      "local": "स्कूल"
+    },
+    {
+      "id": "g13",
+      "src": "en",
+      "tgt": "kn",
+      "value": "school",
+      "local": "ಶಾಲೆ"
+    },
+    {
+      "id": "g14",
+      "src": "bn",
+      "tgt": "hi",
+      "value": "নীল বিল্ডিংয়ের",
+      "local": "नीली इमारत"
+    },
+    {
+      "id": "g14",
+      "src": "bn",
+      "tgt": "kn",
+      "value": "নীল বিল্ডিংয়ের",
+      "local": "ನೀಲಿ ಕಟ್ಟಡದ"
+    },
+    {
+      "id": "g14",
+      "src": "bn",
+      "tgt": "en",
+      "value": "নীল বিল্ডিংয়ের",
+      "local": "The Blue Building"
+    },
+    {
+      "id": "g15",
+      "src": "hi",
+      "tgt": "bn",
+      "value": "पेट्रोल पंप",
+      "local": "পেট্রোল পাম্প"
+    },
+    {
+      "id": "g15",
+      "src": "hi",
+      "tgt": "kn",
+      "value": "पेट्रोल पंप",
+      "local": "ಪೆಟ್ರೋಲ್ ಪಂಪ್"
+    },
+    {
+      "id": "g15",
+      "src": "hi",
+      "tgt": "en",
+      "value": "पेट्रोल पंप",
+      "local": "Petrol pumps"
+    },
+    {
+      "id": "g17",
+      "src": "en",
+      "tgt": "bn",
+      "value": "green gate",
+      "local": "সবুজ গেট"
+    },
+    {
+      "id": "g17",
+      "src": "en",
+      "tgt": "hi",
+      "value": "green gate",
+      "local": "हरा गेट"
+    },
+    {
+      "id": "g17",
+      "src": "en",
+      "tgt": "kn",
+      "value": "green gate",
+      "local": "ಹಸಿರು ಗೇಟ್"
+    },
+    {
+      "id": "g18",
+      "src": "bn",
+      "tgt": "hi",
+      "value": "স্কুলের",
+      "local": "स्कूल"
+    },
+    {
+      "id": "g18",
+      "src": "bn",
+      "tgt": "kn",
+      "value": "স্কুলের",
+      "local": "ಶಾಲೆಯ"
+    },
+    {
+      "id": "g18",
+      "src": "bn",
+      "tgt": "en",
+      "value": "স্কুলের",
+      "local": "School"
+    },
+    {
+      "id": "g19",
+      "src": "kn",
+      "tgt": "bn",
+      "value": "ಮೆಡಿಕಲ್ ಶಾಪ್",
+      "local": "মেডিকেল শপ"
+    },
+    {
+      "id": "g19",
+      "src": "kn",
+      "tgt": "hi",
+      "value": "ಮೆಡಿಕಲ್ ಶಾಪ್",
+      "local": "मेडिकल दुकान"
+    },
+    {
+      "id": "g19",
+      "src": "kn",
+      "tgt": "en",
+      "value": "ಮೆಡಿಕಲ್ ಶಾಪ್",
+      "local": "Medical Shop"
+    },
+    {
+      "id": "g20",
+      "src": "en",
+      "tgt": "bn",
+      "value": "cycle shop",
+      "local": "সাইকেলের দোকান"
+    },
+    {
+      "id": "g20",
+      "src": "en",
+      "tgt": "hi",
+      "value": "cycle shop",
+      "local": "साइकिल की दुकान"
+    },
+    {
+      "id": "g20",
+      "src": "en",
+      "tgt": "kn",
+      "value": "cycle shop",
+      "local": "ಸೈಕಲ್ ಅಂಗಡಿ"
+    },
+    {
+      "id": "g22",
+      "src": "kn",
+      "tgt": "bn",
+      "value": "ಶಾಲೆ",
+      "local": "স্কুল"
+    },
+    {
+      "id": "g22",
+      "src": "kn",
+      "tgt": "hi",
+      "value": "ಶಾಲೆ",
+      "local": "स्कूल"
+    },
+    {
+      "id": "g22",
+      "src": "kn",
+      "tgt": "en",
+      "value": "ಶಾಲೆ",
+      "local": "School"
+    },
+    {
+      "id": "g23",
+      "src": "hi",
+      "tgt": "bn",
+      "value": "स्कूल",
+      "local": "স্কুল"
+    },
+    {
+      "id": "g23",
+      "src": "hi",
+      "tgt": "kn",
+      "value": "स्कूल",
+      "local": "ಶಾಲೆಗಳು"
+    },
+    {
+      "id": "g23",
+      "src": "hi",
+      "tgt": "en",
+      "value": "स्कूल",
+      "local": "School"
+    },
+    {
+      "id": "g25",
+      "src": "en",
+      "tgt": "bn",
+      "value": "mango tree",
+      "local": "আম গাছ।"
+    },
+    {
+      "id": "g25",
+      "src": "en",
+      "tgt": "hi",
+      "value": "mango tree",
+      "local": "आम का पेड़"
+    },
+    {
+      "id": "g25",
+      "src": "en",
+      "tgt": "kn",
+      "value": "mango tree",
+      "local": "ಮಾವಿನ ಮರ"
+    },
+    {
+      "id": "g26",
+      "src": "bn",
+      "tgt": "hi",
+      "value": "মন্দিরের",
+      "local": "मंदिर का"
+    },
+    {
+      "id": "g26",
+      "src": "bn",
+      "tgt": "kn",
+      "value": "মন্দিরের",
+      "local": "ದೇವಾಲಯ"
+    },
+    {
+      "id": "g26",
+      "src": "bn",
+      "tgt": "en",
+      "value": "মন্দিরের",
+      "local": "The temple"
+    },
+    {
+      "id": "g27",
+      "src": "en",
+      "tgt": "bn",
+      "value": "pharmacy",
+      "local": "ওষুধের দোকান"
+    },
+    {
+      "id": "g27",
+      "src": "en",
+      "tgt": "hi",
+      "value": "pharmacy",
+      "local": "फार्मेसी"
+    },
+    {
+      "id": "g27",
+      "src": "en",
+      "tgt": "kn",
+      "value": "pharmacy",
+      "local": "ಔಷಧಾಲಯ"
+    },
+    {
+      "id": "g28",
+      "src": "kn",
+      "tgt": "bn",
+      "value": "ಬೇಕರಿ",
+      "local": "বেকারি"
+    },
+    {
+      "id": "g28",
+      "src": "kn",
+      "tgt": "hi",
+      "value": "ಬೇಕರಿ",
+      "local": "बेकरी"
+    },
+    {
+      "id": "g28",
+      "src": "kn",
+      "tgt": "en",
+      "value": "ಬೇಕರಿ",
+      "local": "Bakery"
+    },
+    {
+      "id": "g29",
+      "src": "en",
+      "tgt": "bn",
+      "value": "temple road",
+      "local": "মন্দিরের রাস্তা"
+    },
+    {
+      "id": "g29",
+      "src": "en",
+      "tgt": "hi",
+      "value": "temple road",
+      "local": "मंदिर सड़क"
+    },
+    {
+      "id": "g29",
+      "src": "en",
+      "tgt": "kn",
+      "value": "temple road",
+      "local": "ದೇವಾಲಯದ ರಸ್ತೆ"
+    }
+  ]
+}
