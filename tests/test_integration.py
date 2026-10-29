@@ -10,6 +10,7 @@ import pytest
 import respx
 from pydantic import SecretStr
 
+from placeholders import carry
 from saathi.app import create_app
 from saathi.config import Settings
 from saathi.gnani import STT_PATH, TTS_PATH, GnaniClient
@@ -22,7 +23,7 @@ BASE = "https://api.test"
 
 class FakeTranslator:
     def translate(self, text: str, src: str, tgt: str) -> str:
-        return "kannada text"
+        return carry("kannada text", text)
 
 
 def auth(token: str) -> dict[str, str]:
@@ -64,7 +65,8 @@ async def test_turn_reaches_the_rider_with_normalized_audio() -> None:
         assert turn.status_code == 200
         event = rider_queue.get_nowait()
         assert event is not None and event.name == "turn"
-        assert event.data["translation"] == "kannada text"
+        assert event.data["translation"].startswith("kannada text ")
+        assert event.data["verified"] is True
         assert event.data["facts"][0]["kind"] == "gate"
 
         audio = await client.get(event.data["audio_path"], headers=auth(joined["token"]))

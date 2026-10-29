@@ -7,6 +7,7 @@ import httpx
 import pytest
 from pydantic import SecretStr
 
+from placeholders import carry
 from saathi.app import create_app
 from saathi.audio import MAX_AUDIO_BYTES
 from saathi.config import Settings
@@ -41,7 +42,7 @@ class FakeGnani:
 
 class FakeTranslator:
     def translate(self, text: str, src: str, tgt: str) -> str:
-        return TRANSLATION
+        return carry(TRANSLATION, text)
 
 
 @pytest.fixture
@@ -166,7 +167,7 @@ async def test_turn_returns_facts_and_pushes_translation_to_the_rider(
 
     event = rider_queue.get_nowait()
     assert event is not None and event.name == "turn"
-    assert event.data["translation"] == TRANSLATION
+    assert event.data["translation"].startswith(TRANSLATION)
     assert event.data["facts"] == body["facts"]
     assert event.data["src"] == "en" and event.data["tgt"] == "kn"
 
@@ -191,7 +192,7 @@ class RecordingTranslator:
 
     def translate(self, text: str, src: str, tgt: str) -> str:
         self.calls.append((src, tgt))
-        return f"{src}>{tgt}"
+        return carry(f"{src}>{tgt}", text)
 
 
 def build_recording_client(
@@ -225,7 +226,12 @@ async def test_either_role_speaks_in_their_language_to_the_other(
         by_rider = await post_turn(client, room, who="rider")
 
     assert by_customer.status_code == by_rider.status_code == 200
-    assert translator.calls == [(customer_lang, rider_lang), (rider_lang, customer_lang)]
+    # Landmark localization adds calls in the same direction as its turn, so compare distinct
+    # directions in order of first use.
+    assert list(dict.fromkeys(translator.calls)) == [
+        (customer_lang, rider_lang),
+        (rider_lang, customer_lang),
+    ]
     to_rider, to_customer = queues["rider"].get_nowait(), queues["customer"].get_nowait()
     assert to_rider is not None and to_rider.name == "turn"
     assert (to_rider.data["src"], to_rider.data["tgt"]) == (customer_lang, rider_lang)
@@ -233,7 +239,7 @@ async def test_either_role_speaks_in_their_language_to_the_other(
     assert (to_customer.data["src"], to_customer.data["tgt"]) == (rider_lang, customer_lang)
     # The sender never receives their own turn; each gets only the other's.
     assert queues["rider"].empty() and queues["customer"].empty()
-    assert to_customer.data["translation"] == f"{rider_lang}>{customer_lang}"
+    assert to_customer.data["translation"].startswith(f"{rider_lang}>{customer_lang}")
 
 
 @pytest.mark.parametrize(
@@ -273,7 +279,9 @@ async def test_every_ordered_language_pair_works_for_both_speakers(
             assert (await post_turn(client, room, who="customer")).status_code == 200
             assert (await post_turn(client, room, who="rider")).status_code == 200
             manager.close(manager.authorize(room["code"], room["customer"]).room)
-    assert translator.calls == [call for a, b in pairs for call in ((a, b), (b, a))]
+    # Landmark localization repeats a turn's direction, so collapse consecutive duplicates.
+    directions = [call for call, _ in itertools.groupby(translator.calls)]
+    assert directions == [call for a, b in pairs for call in ((a, b), (b, a))]
 
 
 @pytest.mark.parametrize(

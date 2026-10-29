@@ -81,6 +81,7 @@ class FactOut(BaseModel):
     confidence: str
     ambiguous: bool
     reading: str | None
+    local: str | None  # a landmark in the listener's language; None when no plausible rendering
 
 
 class TurnOut(BaseModel):
@@ -98,6 +99,7 @@ def _fact_out(fact: Fact) -> FactOut:
         confidence=fact.confidence,
         ambiguous=fact.ambiguous,
         reading=fact.reading,
+        local=fact.local,
     )
 
 

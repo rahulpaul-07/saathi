@@ -8,7 +8,10 @@ from dataclasses import dataclass
 from saathi.facts import Fact, extract_facts
 from saathi.gnani import GnaniClient
 from saathi.guard import has_repeated_phrase
+from saathi.landmarks import localize_landmarks
 from saathi.languages import LANGUAGES
+from saathi.masking import MaskedTranslation, translate_masked
+from saathi.summary import fact_summary
 from saathi.translate import DegenerateTranslationError, Translator
 
 log = logging.getLogger(__name__)
@@ -50,8 +53,9 @@ class TurnResult:
     timings: Timings
     # Facts come from the source transcript, not the translation, so they survive a bad translation.
     facts: tuple[Fact, ...] = ()
-    # True when the output passed the runaway guards. Number masking (slice 5) tightens this to
-    # "every number placeholder came back once"; until then it is the only check there is.
+    # True when every number and loanword placeholder came back exactly once and the output passed
+    # the runaway guards. False means `translation` is the fact summary (or, with no facts, the
+    # unmasked translation); the chips are right either way.
     verified: bool = True
 
 
@@ -76,28 +80,24 @@ async def run_turn(
     if not transcript:
         raise NoSpeechError
 
-    # The model is blocking and GPU-bound; keep it off the event loop.
-    try:
-        translation = await asyncio.to_thread(translator.translate, transcript, src, tgt)
-    except DegenerateTranslationError as exc:
-        log.warning(
-            "degenerate translation %s->%s: %s (transcript %d chars)",
-            src,
-            tgt,
-            "output cap hit",
-            len(transcript),
-        )
-        raise UnreliableTranslationError(transcript) from exc
-    if has_repeated_phrase(translation):
-        log.warning(
-            "degenerate translation %s->%s: %s (output %d chars, transcript %d chars)",
-            src,
-            tgt,
-            "repeated phrase",
-            len(translation),
-            len(transcript),
-        )
-        raise UnreliableTranslationError(transcript)
+    # Facts come from the source text, so they survive whatever the translation does. The model is
+    # blocking and GPU-bound; keep it off the event loop.
+    facts = tuple(extract_facts(transcript, src))
+    translated = await asyncio.to_thread(
+        _translate_checked, translator, transcript, src, tgt, facts, True
+    )
+    facts = await asyncio.to_thread(localize_landmarks, facts, src, tgt, translator)
+    translation, verified = translated.text, translated.verified
+    if not verified:
+        # A number or loanword placeholder was lost: do not speak a sentence that may carry a
+        # wrong number. The facts alone, spelled from tables, are safe; with no facts, plain text.
+        log.warning("masked translation %s->%s lost a placeholder; speaking the fallback", src, tgt)
+        translation = fact_summary(facts, tgt)
+        if not translation:
+            plain = await asyncio.to_thread(
+                _translate_checked, translator, transcript, src, tgt, facts, False
+            )
+            translation = plain.text
     t2 = time.perf_counter()
 
     speech = await gnani.synthesize(translation, tgt_lang.gnani_code, tgt_lang.tts_voice)
@@ -108,5 +108,44 @@ async def run_turn(
         translation,
         speech,
         Timings(_ms(t0, t1), _ms(t1, t2), _ms(t2, t3), _ms(t0, t3)),
-        facts=tuple(extract_facts(transcript, src)),
+        facts=facts,
+        verified=verified,
     )
+
+
+def _translate_checked(
+    translator: Translator,
+    transcript: str,
+    src: str,
+    tgt: str,
+    facts: tuple[Fact, ...],
+    use_mask: bool,
+) -> MaskedTranslation:
+    """Blocking. Translate (masked or plain) and refuse a runaway loop."""
+    try:
+        if use_mask:
+            result = translate_masked(translator, transcript, src, tgt, facts)
+        else:
+            text = translator.translate(transcript, src, tgt)
+            result = MaskedTranslation(text, verified=False, raw=text)
+    except DegenerateTranslationError as exc:
+        log.warning(
+            "degenerate translation %s->%s: %s (transcript %d chars)",
+            src,
+            tgt,
+            "output cap hit",
+            len(transcript),
+        )
+        raise UnreliableTranslationError(transcript) from exc
+    # The raw output is checked, not the restored text: restoring repeats words like "cross".
+    if has_repeated_phrase(result.raw):
+        log.warning(
+            "degenerate translation %s->%s: %s (output %d chars, transcript %d chars)",
+            src,
+            tgt,
+            "repeated phrase",
+            len(result.raw),
+            len(transcript),
+        )
+        raise UnreliableTranslationError(transcript)
+    return result
