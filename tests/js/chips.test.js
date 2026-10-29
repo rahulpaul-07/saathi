@@ -18,6 +18,17 @@ test("orders chips by kind and labels them", () => {
   );
 });
 
+test("the label comes from the server in the reader's language and flags unreviewed ones", () => {
+  const chips = chipsFromFacts([
+    { ...base, kind: "gate", value: "2", label: "গেট", label_status: "reviewed" },
+    { ...base, kind: "cross", value: "2", label: "ক্রস", label_status: "pending" },
+  ]);
+  assert.deepEqual(
+    chips.map((c) => [c.label, c.labelPending]),
+    [["গেট", false], ["ক্রস", true]],
+  );
+});
+
 test("ambiguous facts show the heard words with the reading as a note", () => {
   const [chip] = chipsFromFacts([
     { ...base, kind: "flat", value: "one four", ambiguous: true, reading: "14" },

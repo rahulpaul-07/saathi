@@ -1,12 +1,14 @@
 // @ts-check
 // Turns the server's structured facts into chip view models. Pure. Chips come from the facts the
 // extractor found in the source transcript, not from the translation, so they stay right when the
-// translation is poor. English labels only; localized labels are an optional later step.
+// translation is poor. Labels arrive in the reader's language from the server.
 
 /**
  * @typedef {{kind: string, value: string, heard: string, confidence: string,
- *   ambiguous: boolean, reading: string | null, local?: string | null}} Fact
- * @typedef {{kind: string, label: string, value: string, note: string | null}} Chip
+ *   ambiguous: boolean, reading: string | null, local?: string | null, label?: string,
+ *   label_status?: string}} Fact
+ * @typedef {{kind: string, label: string, value: string, note: string | null,
+ *   labelPending: boolean}} Chip
  */
 
 const KIND_ORDER = ["gate", "floor", "cross", "main", "block", "flat", "landmark"];
@@ -61,7 +63,10 @@ export function chipsFromFacts(facts, forListener = false) {
         value = typeof fact.local === "string" ? fact.local : "";
         if (value === "") note = "name not available";
       }
-      return { kind: fact.kind, label: KIND_LABELS[fact.kind], value, note };
+      // The server names the class in the reader's language; the English table is the fallback.
+      const label =
+        typeof fact.label === "string" && fact.label !== "" ? fact.label : KIND_LABELS[fact.kind];
+      return { kind: fact.kind, label, value, note, labelPending: fact.label_status === "pending" };
     })
     .sort((a, b) => KIND_ORDER.indexOf(a.kind) - KIND_ORDER.indexOf(b.kind));
 }

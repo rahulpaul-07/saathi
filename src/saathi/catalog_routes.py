@@ -1,4 +1,4 @@
-"""Read-only public data the UI needs: the language table and the quick-reply table."""
+"""Read-only public data the UI needs: the language table, the quick-reply table, feature flags."""
 
 from collections.abc import Mapping
 
@@ -26,8 +26,16 @@ class QuickReplyTableOut(BaseModel):
     languages: dict[str, Mapping[str, PhraseOut]]  # language -> phrase id -> phrase
 
 
-def catalog_router() -> APIRouter:
+class FeaturesOut(BaseModel):
+    demo_input: bool  # prepared clips may be sent instead of the microphone
+
+
+def catalog_router(demo_input: bool = False) -> APIRouter:
     router = APIRouter()
+
+    @router.get("/features")
+    async def features() -> FeaturesOut:
+        return FeaturesOut(demo_input=demo_input)
 
     @router.get("/languages")
     async def languages() -> list[LanguageOut]:
