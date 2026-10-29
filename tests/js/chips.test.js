@@ -130,3 +130,17 @@ test("a malformed card is empty and never throws", () => {
   assert.deepEqual(cardChips(undefined), []);
   assert.deepEqual(cardChips([null, { fact: 1 }, {}]), []);
 });
+
+test("a card entry carries the confirmation and the listener's question", () => {
+  const [chip] = cardChips([{ fact: cardFact, previous: null, confirmed: true, question: "Gate?" }]);
+  assert.equal(chip.confirmed, true);
+  assert.equal(chip.question, "Gate?");
+});
+
+test("a confirmed entry has no changed marker, an unconfirmed one keeps it", () => {
+  const confirmed = cardChips([{ fact: cardFact, previous: null, confirmed: true }])[0];
+  const open = cardChips([{ fact: cardFact, previous: "2", confirmed: false }])[0];
+  assert.equal(confirmed.changed, false);
+  assert.equal(open.changed, true);
+  assert.equal(open.confirmed, false);
+});

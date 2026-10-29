@@ -105,6 +105,20 @@ export function sendQuickReply(room, phraseId) {
 }
 
 /**
+ * The rider answers one delivery-card chip.
+ * @param {RoomInfo} room
+ * @param {string} kind
+ * @param {"confirm" | "ask"} action
+ * @returns {Promise<Result>}
+ */
+export function sendChipReply(room, kind, action) {
+  return request(`/rooms/${room.code}/chip-reply`, {
+    ...jsonPost({ kind, action }),
+    headers: { ...bearer(room.token), "Content-Type": "application/json" },
+  });
+}
+
+/**
  * @param {RoomInfo} room
  * @param {Blob} wav
  * @param {boolean} [demoClip] a prepared demo clip, not live speech; the listener is told

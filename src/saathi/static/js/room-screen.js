@@ -15,6 +15,7 @@ import {
   getJson,
   postTurn,
   readEvents,
+  sendChipReply,
   sendQuickReply,
 } from "./room-client.js";
 import { byId, renderChips, renderTimings, setStatus } from "./ui.js";
@@ -211,10 +212,22 @@ export function enterRoom(room, languages, players) {
    * @param {unknown} entries
    */
   function showCard(entries) {
-    const chips = cardChips(entries, room.role === "rider");
-    renderChips(cardChipsEl, chips);
+    const listener = room.role === "rider";
+    const chips = cardChips(entries, listener);
+    renderChips(cardChipsEl, chips, listener ? { confirm: onChipConfirm, ask: onChipAsk } : undefined);
     cardEmptyEl.hidden = chips.length > 0;
   }
+
+  /** @param {string} kind @param {"confirm" | "ask"} action */
+  async function answerChip(kind, action) {
+    const result = await sendChipReply(room, kind, action);
+    if (!result.ok) setStatus(statusEl, result.message, true);
+  }
+
+  /** @param {string} kind */
+  const onChipConfirm = (kind) => void answerChip(kind, "confirm");
+  /** @param {string} kind */
+  const onChipAsk = (kind) => void answerChip(kind, "ask");
 
   /** @param {any} data */
   async function showIncomingTurn(data) {

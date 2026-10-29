@@ -99,11 +99,36 @@ export function renderTimings(list, timings, extraRows = []) {
 }
 
 /**
+ * A check mark icon; the text alternative is the accessible name.
+ * @param {string} name
+ */
+function checkIcon(name) {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", "0 0 24 24");
+  svg.setAttribute("class", "icon-check");
+  svg.setAttribute("role", "img");
+  svg.setAttribute("aria-label", name);
+  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path.setAttribute("d", "M5 13l4 4L19 7");
+  path.setAttribute("fill", "none");
+  path.setAttribute("stroke", "currentColor");
+  path.setAttribute("stroke-width", "3");
+  path.setAttribute("stroke-linecap", "round");
+  path.setAttribute("stroke-linejoin", "round");
+  svg.append(path);
+  return svg;
+}
+
+/**
  * Replace the chips in a live region (aria-live announces the change).
+ * With `actions` (the listener's card) each chip gets a confirm icon button and an ask button that
+ * reads the chip label plus "?"; without it a confirmed chip shows a check and an asked chip its
+ * question.
  * @param {HTMLElement} container
  * @param {import("./chips.js").Chip[]} chips
+ * @param {{confirm: (kind: string) => void, ask: (kind: string) => void}} [actions]
  */
-export function renderChips(container, chips) {
+export function renderChips(container, chips, actions) {
   container.replaceChildren(
     ...chips.map((chip) => {
       const item = document.createElement("li");
@@ -129,6 +154,33 @@ export function renderChips(container, chips) {
         note.className = "chip-note";
         note.textContent = chip.note;
         item.append(note);
+      }
+      if (chip.confirmed) {
+        item.classList.add("chip-confirmed");
+        item.append(checkIcon(`${chip.label} confirmed`));
+      }
+      if (chip.question) {
+        const question = document.createElement("span");
+        question.className = "chip-question";
+        question.textContent = chip.question;
+        item.append(question);
+      }
+      if (actions) {
+        const bar = document.createElement("span");
+        bar.className = "chip-actions";
+        const confirm = document.createElement("button");
+        confirm.type = "button";
+        confirm.className = "chip-confirm";
+        confirm.setAttribute("aria-label", `Confirm ${chip.label}`);
+        confirm.append(checkIcon(`Confirm ${chip.label}`));
+        confirm.addEventListener("click", () => actions.confirm(chip.kind));
+        const ask = document.createElement("button");
+        ask.type = "button";
+        ask.className = "chip-ask secondary";
+        ask.textContent = `${chip.label}?`;
+        ask.addEventListener("click", () => actions.ask(chip.kind));
+        bar.append(confirm, ask);
+        item.append(bar);
       }
       return item;
     }),

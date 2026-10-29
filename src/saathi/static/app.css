@@ -101,6 +101,13 @@ button.secondary { min-height: 2.75rem; padding: 0 1rem; border-radius: 0.6rem; 
 .chip-note { flex-basis: 100%; font-size: 0.95rem; color: var(--danger); }
 .chip-uncertain { border-style: dashed; }
 .chip-changed { border-width: 3px; }
+.icon-check { width: 1.4rem; height: 1.4rem; flex: none; align-self: center; }
+.chip-confirmed .icon-check { color: var(--text); margin-left: auto; }
+.chip-question { flex-basis: 100%; font-size: 1.1rem; font-weight: 700; }
+.chip-actions { flex-basis: 100%; display: flex; gap: 0.5rem; margin-top: 0.25rem; }
+.chip-actions button { min-height: 2.75rem; min-width: 2.75rem; }
+.chip-confirm .icon-check { width: 1.6rem; height: 1.6rem; }
+.chip-actions:focus-within, .chip-actions button:focus-visible { outline-offset: 2px; }
 .card { margin: 1rem 0; }
 .card h2 { margin: 0 0 0.25rem; }
 .chips.big .chip-value { font-size: 2.4rem; }

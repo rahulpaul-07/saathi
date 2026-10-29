@@ -9,7 +9,7 @@
  *   label_status?: string}} Fact
  * @typedef {{kind: string, label: string, value: string, note: string | null,
  *   labelPending: boolean, machineTranslated: boolean, original: string | null,
- *   changed: boolean}} Chip
+ *   changed: boolean, confirmed: boolean, question: string | null}} Chip
  * `value` is the full text; `original` is the bracketed part of it, set only for a translated
  * landmark, so the screen can show it smaller.
  */
@@ -86,35 +86,44 @@ export function chipsFromFacts(facts, forListener = false) {
         machineTranslated,
         original,
         changed: false,
+        confirmed: false,
+        question: null,
       };
     })
     .sort((a, b) => KIND_ORDER.indexOf(a.kind) - KIND_ORDER.indexOf(b.kind));
 }
 
 /**
- * Chips for the pinned delivery card. An entry the latest customer turn replaced gets a "changed,
- * was X" note and `changed` set, so the old value stays visible next to the new one.
- * @param {unknown} entries `{fact, previous}` items from the server
+ * Chips for the pinned delivery card. An entry whose value was replaced gets a "changed, was X"
+ * note and `changed` set, so the old value stays visible next to the new one, until the listener
+ * confirms it. `confirmed` and the listener's `question` come from the server.
+ * @param {unknown} entries `{fact, previous, confirmed, question}` items from the server
  * @param {boolean} [forListener]
  * @returns {Chip[]}
  */
 export function cardChips(entries, forListener = false) {
   if (!Array.isArray(entries)) return [];
-  /** @type {Map<string, string>} */
-  const previousByKind = new Map();
+  /** @type {Map<string, any>} */
+  const entryByKind = new Map();
   for (const entry of entries) {
-    const fact = entry?.fact;
-    if (isFact(fact) && typeof entry.previous === "string" && entry.previous !== "") {
-      previousByKind.set(fact.kind, entry.previous);
-    }
+    if (isFact(entry?.fact)) entryByKind.set(entry.fact.kind, entry);
   }
   return chipsFromFacts(
     entries.map((entry) => entry?.fact),
     forListener,
   ).map((chip) => {
-    const previous = previousByKind.get(chip.kind);
-    if (previous === undefined) return chip;
+    const entry = entryByKind.get(chip.kind);
+    const previous = typeof entry?.previous === "string" ? entry.previous : "";
+    const confirmed = entry?.confirmed === true;
+    const question = typeof entry?.question === "string" && entry.question !== "" ? entry.question : null;
+    if (previous === "") return { ...chip, confirmed, question };
     const changedNote = `changed, was ${previous}`;
-    return { ...chip, changed: true, note: chip.note ? `${chip.note}; ${changedNote}` : changedNote };
+    return {
+      ...chip,
+      changed: true,
+      confirmed,
+      question,
+      note: chip.note ? `${chip.note}; ${changedNote}` : changedNote,
+    };
   });
 }
