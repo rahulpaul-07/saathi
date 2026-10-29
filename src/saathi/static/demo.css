@@ -1,0 +1,16 @@
+:root { --bg: #f6f7f9; --text: #1a1d23; --muted: #5a6270; --border: #d5d9e0; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #12151a; --text: #eef0f4; --muted: #a3abb8; --border: #343a45; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text);
+  font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+/* One 16:9 stage that scales to the window, for a screen recording. */
+.stage { width: min(100vw, 100vh * 16 / 9); aspect-ratio: 16 / 9; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; padding: 0.5rem; }
+.pane { display: flex; flex-direction: column; min-height: 0; border: 1px solid var(--border);
+  border-radius: 0.5rem; overflow: hidden; }
+.pane h1 { margin: 0; padding: 0.25rem 0.75rem; font-size: 0.95rem; color: var(--muted);
+  border-bottom: 1px solid var(--border); }
+iframe { flex: 1; width: 100%; border: 0; min-height: 0; }
+@media (max-width: 700px) { .stage { aspect-ratio: auto; grid-template-columns: 1fr; } iframe { height: 80vh; } }

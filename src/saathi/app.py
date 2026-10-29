@@ -28,6 +28,7 @@ from saathi.pipeline import (
 from saathi.ratelimit import SlidingWindowLimiter
 from saathi.room_routes import TimingsOut, room_router
 from saathi.rooms import RoomManager
+from saathi.security_headers import CspMiddleware, content_security_policy
 from saathi.translate import RoutingTranslator, Translator
 
 log = logging.getLogger(__name__)
@@ -79,6 +80,9 @@ def create_app(
         await gnani.aclose()
 
     app = FastAPI(title="Saathi", lifespan=lifespan)
+    app.add_middleware(
+        CspMiddleware, policy=content_security_policy(allow_same_origin_frames=settings.demo_input)
+    )
     rooms = rooms or RoomManager(max_rooms=settings.max_rooms)
     app.include_router(
         room_router(
