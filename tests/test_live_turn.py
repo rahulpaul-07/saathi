@@ -7,6 +7,7 @@ from typing import cast
 import numpy as np
 import pytest
 
+from placeholders import carry
 from saathi.evaluation import liveturn
 from saathi.evaluation.calls import CallLedger, SlidingWindowLimiter
 from saathi.gnani import GnaniClient, GnaniError
@@ -52,7 +53,7 @@ class FakeGnani:
 
 class FakeTranslator:
     def translate(self, text: str, src: str, tgt: str) -> str:
-        return SECRET_TRANSLATION
+        return carry(SECRET_TRANSLATION, text)
 
 
 class Harness:

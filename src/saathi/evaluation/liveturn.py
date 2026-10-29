@@ -89,15 +89,15 @@ def check_budget(ledger: CallLedger) -> None:
         )
 
 
-def format_plan(utterance: GoldUtterance, ledger: CallLedger) -> str:
-    kn, bn = LANGUAGES[SOURCE_LANG], LANGUAGES[TARGET_LANG]
+def format_plan(utterance: GoldUtterance, ledger: CallLedger, target: str = TARGET_LANG) -> str:
+    kn, bn = LANGUAGES[SOURCE_LANG], LANGUAGES[target]
     return "\n".join(
         [
-            f"Live turn {SOURCE_LANG} -> {TARGET_LANG}: exactly {CALLS_PLANNED} Gnani calls",
+            f"Live turn {SOURCE_LANG} -> {target}: exactly {CALLS_PLANNED} Gnani calls",
             f"  1. TTS  {kn.gnani_code} voice {kn.tts_voice}: speak the synthetic sentence "
             f"{utterance.id} (invented, not a real address; {len(utterance.text)} chars)",
             f"  2. STT  {kn.gnani_code}: transcribe that audio (run_turn)",
-            f"     local: fact extraction, IndicTrans2 {SOURCE_LANG}->{TARGET_LANG}",
+            f"     local: fact extraction, IndicTrans2 {SOURCE_LANG}->{target}",
             f"  3. TTS  {bn.gnani_code} voice {bn.tts_voice}: speak the translation, loudness "
             "normalized (run_turn)",
             f"Ledger '{LEDGER_LABEL}': {ledger.spent(LEDGER_LABEL)} spent so far; total "
@@ -175,6 +175,11 @@ def main(
         action="store_true",
         help="also print the transcript, translation and facts (synthetic sentence only)",
     )
+    parser.add_argument(
+        "--target",
+        default=TARGET_LANG,
+        help="listener language; each beta language is one 3-call smoke test (te gu ml mr pa ta)",
+    )
     parser.add_argument("--gold-id", default=DEFAULT_GOLD_ID)
     parser.add_argument("--gold", type=Path, default=root / "eval" / "gold" / "directions.json")
     parser.add_argument(
@@ -184,9 +189,11 @@ def main(
     args = parser.parse_args(argv)
 
     try:
+        if args.target not in LANGUAGES or args.target == SOURCE_LANG:
+            raise LiveTurnError("unsupported target language")
         utterance = pick_sentence(args.gold, args.gold_id)
         ledger = CallLedger(args.ledger)
-        print(format_plan(utterance, ledger))
+        print(format_plan(utterance, ledger, args.target))
         check_budget(ledger)
     except (LiveTurnError, OSError, ValueError, KeyError) as exc:
         print(f"refused: {exc}", file=sys.stderr)
@@ -211,6 +218,7 @@ def main(
                 limiter or SlidingWindowLimiter(),
                 ledger,
                 args.out_dir,
+                args.target,
             )
         finally:
             await gnani.aclose()
@@ -233,7 +241,7 @@ def main(
     if args.show_text:
         print(f"source sentence: {utterance.text}")
         print(f"kn transcript: {report.transcript}")
-        print(f"bn translation: {report.translation}")
+        print(f"{args.target} translation: {report.translation}")
         print("facts: " + ("; ".join(report.fact_lines) or "none"))
     print(f"ledger {ledger.total}/{ledger.cap}")
     return 0
@@ -246,17 +254,18 @@ async def run_live_turn(
     limiter: SlidingWindowLimiter,
     ledger: CallLedger,
     out_dir: Path,
+    target: str = TARGET_LANG,
 ) -> LiveReport:
-    """Make the Kannada audio, run the turn, save the Bengali audio. The ledger is checked first."""
+    """Make the Kannada audio, run the turn, save the target audio. The ledger is checked first."""
     check_budget(ledger)
     kn = LANGUAGES[SOURCE_LANG]
     await limiter.acquire(1)
     source_audio = await gnani.synthesize(utterance.text, kn.gnani_code, kn.tts_voice)
     await limiter.acquire(_TURN_CALLS)
-    result = await run_turn(source_audio, SOURCE_LANG, TARGET_LANG, gnani, translator)
+    result = await run_turn(source_audio, SOURCE_LANG, target, gnani, translator)
 
     out_dir.mkdir(parents=True, exist_ok=True)
-    output_path = out_dir / f"{utterance.id}_{SOURCE_LANG}_{TARGET_LANG}.wav"
+    output_path = out_dir / f"{utterance.id}_{SOURCE_LANG}_{target}.wav"
     output_path.write_bytes(result.audio)
     return LiveReport(
         fact_counts=dict(Counter(fact.kind for fact in result.facts if not fact.ambiguous)),
