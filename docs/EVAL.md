@@ -170,3 +170,38 @@ set; the reader may deviate from the printed text, which counts as an STT error.
 Superseded: no one is recorded for this project (see "Audio sources and labels" below). The
 scripts in `docs/recording/` are optional leftovers; nothing in the evaluation or the demo
 depends on them. The old `eval_turns.py sentences` / `stt-real` steps no longer exist.
+
+## Load test (fake Gnani)
+
+`uv run --no-sync python scripts/load_rooms.py [--rooms N] [--turns N] [--gnani-ms MS]`. The app runs
+in one process behind httpx's ASGI transport, with a fake Gnani client (40 ms per call, two calls
+per turn) and a fake translator. No credits, no network, no GPU. Every room is a customer (en) and
+a rider (kn) taking turns, two thirds spoken by the customer, with both event queues drained after
+each turn. Per-IP rate limits are raised because one client drives all rooms.
+
+| Run | Requests | Errors | Server time p50 | p95 | max | Wall |
+|---|---|---|---|---|---|---|
+| 1 room, 6 turns | 6 | 0 | 4.5 ms | 30.5 ms | 30.5 ms | 0.6 s |
+| 50 rooms, 6 turns each | 300 | 0 | 57 ms | 140 ms | 206 ms | 1.3 s |
+| 50 rooms, 60 turns each | 3000 | 0 | 96 ms | 192 ms | 260 ms | 16.1 s |
+
+Process memory (working set): 69 MB before; 81 MB with 50 rooms of 6 turns alive; 84 MB with 50
+rooms of 60 turns alive; unchanged after the rooms were closed.
+
+How to read this:
+
+- "Server time" is the turn request's wall time minus the time spent in the fake Gnani calls. At 50
+  rooms it is mostly queueing: all turns share one event loop and one core, so a turn waits for the
+  others' CPU work (about 4 to 5 ms each, matching the single-room figure). It is the app's own
+  overhead under 50-way concurrency, not a latency a user would see; a real turn is dominated by
+  Gnani and the translation model (see the latency tables above).
+- Not measured: the translation model, real Gnani latency and its rate limits, TLS, the network,
+  SSE delivery to real browsers (the queues are drained in process), and more than one process.
+- Memory did not grow with turns per room (81 MB at 6 turns, 84 MB at 60), consistent with the
+  cap of 5 stored audio clips per room and a card that holds one entry per kind. It also did not
+  fall after the rooms were closed, which is the Python allocator keeping freed memory, not
+  evidence of a leak or of its absence; a long soak test would be needed to say more.
+- Machine: Intel Core i7-13650HX (20 logical processors), Windows 11, **on battery** (Windows
+  reported the battery as discharging when the numbers were taken), other applications open. Run
+  once per row, no warm-up, no repeats: treat the figures as rough. Do not compare them with the
+  AC-power tables above.

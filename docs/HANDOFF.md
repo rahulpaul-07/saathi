@@ -424,3 +424,21 @@ correction, confirm, ask, quick reply.
 - Open: the cause of the dead ask button is unproven (see DECISIONS.md); recheck on a real phone.
 - `make_demo_clips.py --only kn-gate-correction` is 1 call (dry run: ledger 108/780 to 109) and
   merges into the existing manifest, so the other clips are kept.
+
+## Overnight batch (done locally, on `features`; nothing committed)
+
+- Step 1 (approved, awake): `make_demo_clips.py --only kn-gate-correction` (1 TTS), then
+  `transcribe_demo.py --only kn-gate-correction` (1 STT). Transcript was the intended one and the
+  chips were exactly "gate 2". Ledger now 110/780. No Gnani call after that.
+- Added: `/healthz`, `tests/test_failure_injection.py`, `scripts/load_rooms.py` plus the "Load test
+  (fake Gnani)" section in EVAL.md, `tests/e2e/a11y.spec.js`, the API-key log test in
+  `tests/test_gnani.py`, `docs/THREAT_MODEL.md`, `docs/PATH_TO_PRODUCTION.md` (design, not built).
+- No UI visual or demo-flow change.
+- For the author:
+  - Visual issue left as is: the "Back" link in the header of the room pages is 33x21 px, under
+    the 44 px target. The a11y test skips `.sub` for the size check only.
+  - Translator exception returns a generic 500 (room untouched). Possible follow-up: map it to
+    the localized 502.
+  - Limiter key tables never shrink (THREAT_MODEL.md). Unfixed and untested.
+  - Load numbers were taken on battery, single runs.
+  - See "Not production-ready" in PATH_TO_PRODUCTION.md.
