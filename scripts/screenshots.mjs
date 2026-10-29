@@ -57,7 +57,7 @@ for (const { mode, port, file } of SHOTS) {
     await customer.locator("#talk").click();
     await rider.locator("#chips .chip-landmark").waitFor();
     await rider.locator("#repeat:not([disabled])").waitFor();
-    await rider.screenshot({ path: file });
+    await rider.screenshot({ path: file, fullPage: true });
     await customerContext.close();
     await riderContext.close();
   } finally {
