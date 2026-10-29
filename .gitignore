@@ -21,6 +21,8 @@ wheels/
 eval/data/
 eval/audio/
 eval/state/
+# Generated demo clips (Gnani TTS mixed with street noise) and their manifest.
+demo/clips/
 node_modules/
 test-results/
 playwright-report/

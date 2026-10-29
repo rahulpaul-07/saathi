@@ -1,11 +1,12 @@
 from functools import lru_cache
+from pathlib import Path
 
 from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore", populate_by_name=True)
 
     gnani_api_key: SecretStr
     gnani_base_url: str = "https://api.vachana.ai"
@@ -17,6 +18,11 @@ class Settings(BaseSettings):
     # Room codes carry about 30 bits, so create and join attempts are capped per client IP.
     room_rate_limit_per_minute: int = Field(default=10, ge=1)
     max_rooms: int = Field(default=50, ge=1)
+    # Demo input lets a participant send a prepared clip instead of the microphone (off by default).
+    demo_input: bool = Field(default=False, validation_alias="SAATHI_DEMO_INPUT")
+    demo_clips_dir: Path = Field(
+        default=Path("demo/clips"), validation_alias="SAATHI_DEMO_CLIPS_DIR"
+    )
 
 
 @lru_cache

@@ -12,6 +12,7 @@ from saathi.app import create_app
 from saathi.audio import MAX_AUDIO_BYTES
 from saathi.config import Settings
 from saathi.gnani import GnaniClient, GnaniError
+from saathi.labels import chip_label
 from saathi.languages import LANGUAGES
 from saathi.quickreplies import IDS_BY_ROLE, QUICK_REPLIES
 from saathi.rooms import Role, RoomManager, other
@@ -168,7 +169,10 @@ async def test_turn_returns_facts_and_pushes_translation_to_the_rider(
     event = rider_queue.get_nowait()
     assert event is not None and event.name == "turn"
     assert event.data["translation"].startswith(TRANSLATION)
-    assert event.data["facts"] == body["facts"]
+    heard = event.data["facts"][0]
+    assert {"kind": "gate", "value": "2"}.items() <= heard.items()
+    assert (body["facts"][0]["label"], body["facts"][0]["label_status"]) == ("Gate", "source")
+    assert (heard["label"], heard["label_status"]) == (chip_label("gate", "kn").text, "pending")
     assert event.data["src"] == "en" and event.data["tgt"] == "kn"
 
     audio = await client.get(event.data["audio_path"], headers=auth(room["rider"]))

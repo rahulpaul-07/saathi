@@ -16,6 +16,7 @@ from pydantic import BaseModel
 from saathi.audio import MAX_AUDIO_BYTES, AudioError, AudioTooLargeError, wav_duration_s
 from saathi.catalog_routes import catalog_router
 from saathi.config import Settings, get_settings
+from saathi.demo import demo_router
 from saathi.gnani import GnaniClient, GnaniError
 from saathi.pipeline import (
     NoSpeechError,
@@ -93,10 +94,13 @@ def create_app(
             translator,
             settings.room_rate_limit_per_minute,
             settings.turn_rate_limit_per_minute,
+            demo_input=settings.demo_input,
         )
     )
 
-    app.include_router(catalog_router())
+    app.include_router(catalog_router(settings.demo_input))
+    if settings.demo_input:
+        app.include_router(demo_router(settings.demo_clips_dir))
 
     @app.post("/turn")
     async def turn(

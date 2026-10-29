@@ -18,6 +18,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from saathi.audio import MAX_AUDIO_BYTES, AudioError, AudioTooLargeError, wav_duration_s
 from saathi.facts import Fact
 from saathi.gnani import GnaniClient, GnaniError
+from saathi.labels import chip_label
 from saathi.languages import LANGUAGES
 from saathi.pipeline import NoSpeechError, UnreliableTranslationError, run_turn
 from saathi.quickreplies import IDS_BY_ROLE, QuickReplyId, phrase_for
@@ -82,6 +83,8 @@ class FactOut(BaseModel):
     ambiguous: bool
     reading: str | None
     local: str | None  # a landmark in the listener's language; None when no plausible rendering
+    label: str  # the class name (gate, floor, ...) in the language of whoever reads the chip
+    label_status: str  # source, reviewed or pending (unreviewed spelling)
 
 
 class TurnOut(BaseModel):
@@ -90,9 +93,12 @@ class TurnOut(BaseModel):
     verified: bool
 
 
-def _fact_out(fact: Fact) -> FactOut:
+def _fact_out(fact: Fact, language: str) -> FactOut:
     # Spans are offsets into a transcript the client never receives, so they are left out.
+    label = chip_label(fact.kind, language)
     return FactOut(
+        label=label.text,
+        label_status=label.status,
         kind=fact.kind,
         value=fact.value,
         heard=fact.heard,
@@ -117,6 +123,7 @@ def room_router(
     translator: Translator,
     room_limit_per_minute: int,
     turn_limit_per_minute: int,
+    demo_input: bool = False,
 ) -> APIRouter:
     router = APIRouter()
     create_limiter = SlidingWindowLimiter(room_limit_per_minute)
@@ -203,7 +210,10 @@ def room_router(
 
     @router.post("/rooms/{code}/turn")
     async def turn(
-        session: Authed, request: Request, audio: Annotated[UploadFile, File()]
+        session: Authed,
+        request: Request,
+        audio: Annotated[UploadFile, File()],
+        x_demo_clip: Annotated[str | None, Header()] = None,
     ) -> TurnOut:
         # Either person may speak: they translate from their own language into the other's.
         room, speaker, listener = session.room, session.role, other(session.role)
@@ -235,7 +245,9 @@ def room_router(
             raise HTTPException(404, "room not found")
         manager.touch(room)
         turn_id = manager.store_audio(room, result.audio)
-        facts = [_fact_out(fact) for fact in result.facts]
+        # Each side reads the labels in its own language; the facts themselves are the same.
+        facts = [_fact_out(fact, src) for fact in result.facts]
+        heard_facts = [_fact_out(fact, tgt) for fact in result.facts]
         manager.publish(
             room,
             listener,
@@ -246,8 +258,10 @@ def room_router(
                     "src": src,
                     "tgt": tgt,
                     "translation": result.translation,
-                    "facts": [fact.model_dump() for fact in facts],
+                    "facts": [fact.model_dump() for fact in heard_facts],
                     "verified": result.verified,
+                    # Lets the listener's screen say this was a prepared clip, not live speech.
+                    "demo_clip": demo_input and x_demo_clip == "1",
                     "audio_path": f"/rooms/{room.code}/turns/{turn_id}/audio",
                 },
             ),
