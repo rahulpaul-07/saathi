@@ -375,3 +375,18 @@ in chips.js, a "Delivery card" section on customer.html and rider.html. Tests: t
 new cases in tests/test_room_api.py, chips.test.js, one e2e addition. Not covered by e2e: a changed
 marker (the e2e fake transcript is fixed); it is covered by the API and chips tests.
 Next: feature 2 (chip confirm/ask).
+
+## Features branch, slice 5: chip confirm and ask (done locally)
+
+`POST /rooms/{code}/chip-reply` {kind, action: confirm|ask}, rider only (403 for the customer), 422 for
+a kind not on the card. State is on `CardEntry` (`confirmed`, `asked`) and is restored by the `state`
+snapshot. The "changed, was X" marker now stays until the rider confirms; a new value for a kind
+clears its confirmation and question and sets the marker. Ask does not clear the marker. Each viewer
+gets the question as the chip label in their own language plus "?" (existing label table, so some
+labels are still "pending"). No Gnani call, no audio, nothing logged. Chip-reply and quick replies
+share one limit of 30 a minute per participant (room + role), `REPLY_RATE_LIMIT_PER_MINUTE`; over
+it the route returns 429 and sends no event. Known limitation: the limiter keeps one small entry
+per room and role for the life of the process and never drops old keys, so its memory grows slowly
+(the per-IP limiters behave the same; rooms are capped at 50 live, so it is fine on a LAN).
+e2e: the fake STT alternates gate 2 and gate 4 for Punjabi (`pa-IN`) in tests/e2e/serve.py.
+Next: reconnect.

@@ -588,3 +588,17 @@ Delivery: a `card` event to both roles after a customer turn with facts, and `ca
 `state`; each viewer's copy uses labels in their own language. The marker text ("changed, was 2")
 is English UI chrome, like "check this". Known limit: the "was" value of a landmark is shown as
 the customer said it, in their script.
+
+## Chip confirm and ask (features branch)
+
+- Confirmation lives on the card entry, in memory, with the card's limits and lifetime.
+- The changed marker clears only on the rider's confirm, not on the next customer turn, so a
+  correction cannot be missed. A new value resets confirmation and sets the marker again.
+- Ask is the chip label plus "?" in the viewer's language; no new phrase table, so it inherits the
+  label review status. Asking un-confirms a confirmed chip and keeps the marker.
+- Only the rider answers (the card is built from customer turns); the customer gets 403.
+- Reply rate limit: quick replies and chip replies share one sliding-window budget of 30 a minute
+  per participant (room + role), `REPLY_RATE_LIMIT_PER_MINUTE`. Both push an event to the other
+  screen and quick replies can spend a TTS call; neither had a limit. It is per participant, not
+  per IP (two phones can share one), and separate from the per-IP turn limiter. Over the limit the
+  route returns 429 before doing anything, so no event is sent.
