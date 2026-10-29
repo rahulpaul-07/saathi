@@ -26,7 +26,7 @@ from saathi.pipeline import (
     validate_pair,
 )
 from saathi.ratelimit import SlidingWindowLimiter
-from saathi.room_routes import room_router
+from saathi.room_routes import TimingsOut, room_router
 from saathi.rooms import RoomManager
 from saathi.translate import RoutingTranslator, Translator
 
@@ -40,13 +40,6 @@ STATIC_DIR = Path(__file__).parent / "static"
 # Windows takes MIME types from the registry, where .js is sometimes text/plain, and browsers
 # refuse to run ES modules served that way.
 mimetypes.add_type("text/javascript", ".js")
-
-
-class TimingsOut(BaseModel):
-    stt_ms: float
-    translate_ms: float
-    tts_ms: float
-    total_ms: float
 
 
 class TurnResponse(BaseModel):

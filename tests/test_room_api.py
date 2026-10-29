@@ -165,9 +165,12 @@ async def test_turn_returns_facts_and_pushes_translation_to_the_rider(
     assert {"kind": "gate", "value": "2"}.items() <= body["facts"][0].items()
     assert "start" not in body["facts"][0]
     assert "transcript" not in body and "translation" not in body
+    assert set(body["timings"]) == {"stt_ms", "translate_ms", "tts_ms", "total_ms"}
+    assert all(isinstance(value, float) and value >= 0 for value in body["timings"].values())
 
     event = rider_queue.get_nowait()
     assert event is not None and event.name == "turn"
+    assert "timings" not in event.data  # the speaker's numbers are not the listener's business
     assert event.data["translation"].startswith(TRANSLATION)
     heard = event.data["facts"][0]
     assert {"kind": "gate", "value": "2"}.items() <= heard.items()

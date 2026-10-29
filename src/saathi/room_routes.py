@@ -87,10 +87,20 @@ class FactOut(BaseModel):
     label_status: str  # source, reviewed or pending (unreviewed spelling)
 
 
+class TimingsOut(BaseModel):
+    """Server-side stage durations of one turn; numbers only, no content."""
+
+    stt_ms: float
+    translate_ms: float
+    tts_ms: float
+    total_ms: float
+
+
 class TurnOut(BaseModel):
     turn_id: str
     facts: list[FactOut]
     verified: bool
+    timings: TimingsOut  # shown to the speaker only; the listener's event does not carry it
 
 
 def _fact_out(fact: Fact, language: str) -> FactOut:
@@ -277,7 +287,12 @@ def room_router(
             timings.tts_ms,
             timings.total_ms,
         )
-        return TurnOut(turn_id=turn_id, facts=facts, verified=result.verified)
+        return TurnOut(
+            turn_id=turn_id,
+            facts=facts,
+            verified=result.verified,
+            timings=TimingsOut(**vars(timings)),
+        )
 
     @router.get("/rooms/{code}/turns/{turn_id}/audio")
     async def turn_audio(session: Authed, turn_id: AudioIdPath) -> Response:
