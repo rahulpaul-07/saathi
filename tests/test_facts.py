@@ -268,9 +268,11 @@ def test_bengali_landmark_and_failure() -> None:
 # --- Other languages and the boundary ----------------------------------------------------------
 
 
-def test_languages_without_native_rules_get_only_the_universal_layer() -> None:
+def test_every_language_keeps_the_universal_english_layer_beside_its_native_one() -> None:
+    # Gujarati used to have no native layer (this test then asserted the native words were a
+    # stated limit); all ten languages have one now, so the check is that both layers apply.
     assert pairs("gate number 2, 3rd main", "gu") == [("gate", "2"), ("main", "3")]
-    assert pairs("ગેટ નંબર બે", "gu") == []  # native words are a stated limit
+    assert pairs("ગેટ નંબર બે", "gu") == [("gate", "2")]
 
 
 def test_unsupported_language_and_oversized_text_are_rejected() -> None:
