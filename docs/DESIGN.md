@@ -20,7 +20,8 @@ pair named in this document, in tests or in demos is an example only; demo casti
   1. The critical facts of an address (gate, floor, cross/main, block, flat, landmark) are
      extracted locally and shown as big chips on the rider screen, as well as spoken in the
      rider's language. Getting these facts right matters more than a fluent sentence.
-  2. Numbers and landmarks survive translation (masking plus a check), and this is measured.
+  2. Numbers and landmarks are protected in translation (masking plus a check and a fact-summary
+     fallback), and the improvement is measured and modest; the chips are the safety layer.
   3. It works in traffic noise, measured at 20, 10 and 5 dB SNR.
   4. Rider safety: audio first, readable at a glance, the rider never types, one tap for Repeat
      and for quick replies. Intended for use at a stop or pulled over; no claim of safety while

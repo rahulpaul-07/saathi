@@ -281,11 +281,18 @@ speech, so these numbers are optimistic about the front half of the pipeline.
 | arm | what it is | fact recall | wrong extras | all facts correct | loanwords kept |
 |---|---|---|---|---|---|
 | A | toolkit default: translate the raw sentence | 0.674 | 67 | 9/90 | 128/255 |
-| B | masked: numbers and address words become placeholders, restored in plain digits and the listener's script | 0.808 | 67 | 13/90 | 162/255 |
-| C | B plus the fallback: if a placeholder is lost or invented, speak the templated fact summary | 0.851 | 65 | 17/90 | 168/255 |
+| B | masked: numbers and address words become placeholders, restored in plain digits and the listener's script | 0.747 | 65 | 12/90 | 153/255 |
+| C | B plus the fallback: if a placeholder is lost or invented, speak the templated fact summary | 0.843 | 60 | 20/90 | 166/255 |
 
-- Masking adds 13 points of recall and the summary fallback 4 more. Most turns still lose at least
-  one fact in the translated text, and 4 of 90 masked translations failed the placeholder check.
+- Correction, 2026-10-31: this table was regenerated from a rerun of the script on current code
+  (`eval/results/masking_ab.json`). The first recorded run, in commit 8e2d64d, showed B 0.808 with
+  4/90 failed checks and C 0.851. It did not reproduce on current code or on the 8e2d64d sources
+  (B 0.747, 9 to 10 of 90 failed; C 0.843 current, 0.851 on 8e2d64d). Cause unknown. A is
+  unchanged at 0.674. The old file is in git history at 8e2d64d.
+- Masking adds about 7 points of recall and the summary fallback about 10 more. Most turns still
+  lose at least one fact in the translated text, and 9 of 90 masked translations failed the
+  placeholder check. Masking is a modest improvement on this speech-style text, not a fix; the
+  fallback and the chips are what keep the rider from acting on a wrong number.
 - Chips are a second safety layer. They are extracted from the source transcript, not from the
   translation, so they do not depend on any arm above: a wrong translation still shows correct
   chips next to it. Arm recall measures the sentence the listener hears, not the chips.
@@ -416,8 +423,8 @@ ranges 0.68 (mr) to 0.80 (en), masked 0.58 (bn) to 0.79 (en). Masked fallback ra
 
 What this says, and does not:
 - On this test masking did NOT help: masked recall is below plain in most cells, the opposite of
-  the text-only masking A/B above (0.674 to 0.808). I have not found the cause. Candidates, not
-  tested: (1) the matrix back-translates the masked output, so placeholder or restored-slot
+  the text-only masking A/B above (0.674 to 0.747 after the correction). See the diagnosis below; the candidates I
+  listed before diagnosing were: (1) the matrix back-translates the masked output, so placeholder or restored-slot
   wording may be hurt by the second translation, while the A/B scored the first translation;
   (2) the source here is machine-translated text where extraction for the source language finds
   fewer slots to mask (masking then only adds risk); (3) hi to bn (0.32 masked, 0.75 plain) and
@@ -426,3 +433,89 @@ What this says, and does not:
 - The chips never depend on this path (they come from the speaker's own transcript), so these
   numbers bound the audio only.
 - Marathi is the weakest target for plain translation and Bengali the weakest source.
+
+### Why masking lost in the matrix: diagnosis (text only, no Gnani, 2026-10-31)
+
+`scripts/analyze_masking_reversal.py` (`collect`, `report`, `examples`), summary in
+`eval/results/masking_reversal.json`, per-sentence checkpoint in `eval/state/` (gitignored).
+Coverage is partial: 46 of the 90 pairs (sources bn, en, gu, hi, kn and most of ml) because the
+power guard stopped the run on battery; mr, pa, ta, te sources were not collected. Nothing below
+was changed in the app. Synthetic addresses only.
+
+Hypothesis tested first: the matrix source is machine-translated, so numbers are digits, unlike the
+number words STT returns, and masking only helps number words. Not supported:
+
+| source | clear numbers | ascii digits | words | loanwords per sentence |
+|---|---|---|---|---|
+| bn | 29 | 0.52 | 0.48 | 1.0 |
+| en | 57 | 0.46 | 0.54 | 3.1 |
+| gu | 13 | 0.46 | 0.54 | 1.3 |
+| hi | 40 | 0.35 | 0.65 | 1.6 |
+| kn | 25 | 0.48 | 0.52 | 1.1 |
+| ml | 17 | 0.65 | 0.35 | 1.4 |
+
+The sources are about half digits and half words, and no source writes native-script digits. Recall
+by how the sentence writes its numbers (non-en targets, "back" = the matrix score, "direct" = the
+target-language extractor on the translated text, the A/B style of scoring):
+
+| class | back plain | back masked | direct plain | direct masked |
+|---|---|---|---|---|
+| digits | 0.86 | 0.76 | 0.53 | 0.63 |
+| words | 0.64 | 0.46 | 0.27 | 0.46 |
+| mixed | 0.89 | 0.81 | 0.48 | 0.68 |
+| no numbers | 0.63 | 0.65 | 0.22 | 0.23 |
+
+Masking hurts the back-translated score in every class, and hurts word sentences most (so the
+hypothesis points the wrong way). On the direct score masking helps in every class. Target en has
+no back-translation and is neutral (plain 0.81, masked 0.80). Over all collected pairs: back
+plain 0.76 vs masked 0.67; direct plain 0.37 vs masked 0.51. So the reversal is mostly a
+difference between two scoring routes, not between two kinds of source text.
+
+Where the masked loss comes from (facts masked lost beyond plain: 342; facts masked found that
+plain missed: 100; net -242), by the first cause that applies:
+- 164: the masked text itself lacks the fact by the target-language extractor.
+- 122: the masked text is fine, but the back-translation lost it.
+- 38: fallback, a placeholder was dropped (verified false; the app would speak the summary).
+- 11: verified true, but placeholder residue (`<ID4]`, "I. D. 3") is left in the text.
+- 7: verified true, but the source digit is absent.
+
+Fallback rate per source: bn 0.03, en 0.01, gu 0.02, hi 0.03, kn 0.07, ml 0.01. So fallbacks and
+corrupted placeholders explain about 49 of 342 lost facts; most of the loss is verified,
+well-formed output.
+
+By fact kind (masked lost while plain found / the reverse): floor 134 / 17, gate 88 / 39,
+cross 86 / 11, main 55 / 11, flat 11 / 52, block 5 / 7. Flat numbers are the only kind where
+masking is net positive. The ordinal kinds lose most. In the examples the restore writes a bare
+digit, so "fourth floor" becomes "4 floors" (bn "4 মেঝে", gu "2 ફ્લોર"), "second cross" becomes
+"2 crosses", and the back-translation reads a quantity, not an ordinal.
+
+Scoring fairness (5 sentences read by hand): in 3 of 5 the masked translation held every gold fact
+and the loss was in the back-translation plus a strict scorer; in the other 2 the masked text
+really lost the fact (a bare "2 crosses", and placeholder residue). The English extractor does not read
+"Gate No. 2", "Cross No. 2" or "4 Floors" as the gold facts, while the plain back-translation
+happened to write "second", "4th". So part of the matrix gap is the English extractor's coverage,
+not translation quality. That is a limit of the metric, not proof that masked output is fine.
+Concrete examples (source, plain, masked, lost fact) are in the tool output of `examples`.
+
+The earlier gold-turn A/B does not reproduce. Re-run unchanged on the current code and on the
+8e2d64d sources (the A/B-time code): A 0.674 (same), B 0.747 (not 0.808), C 0.851 / 0.843
+(first recorded 0.851), masked verification failures 10 of 90 (9 on current code), not 4 of 90. The
+masking code, loanword table and translator are unchanged between those revisions apart from the
+digit fold, and the slot counts probed are identical. The cause of the 0.808 / 4 of 90 figures is
+unknown (an earlier file state or nondeterminism are the candidates). The rerun makes the A/B
+gain 7 points (0.674 to 0.747), not 13. `eval/results/masking_ab.json`, the README and the table
+above now carry the current-code rerun; the first recorded file is in commit 8e2d64d.
+
+Cause, as far as the evidence goes: masking replaces ordinal words and numbers with a bare digit,
+which the second translation reads as a quantity; the strict English extractor then misses it; a
+smaller share is placeholder corruption by the toolkit's entity wrapper (verified can still be true
+with residue left). Still unknown: the 0.808 figure; mr, pa, ta, te sources; whether a listener
+would understand "2 crosses" in context; and how real STT number words behave (no recorded speech
+in this test).
+
+Proposal, not built: conditional masking. Mask cardinal values (flat, gate, block numbers) and
+loanwords, where masking is net positive. Leave ordinal-bearing kinds (floor, cross, main) as the
+translator writes them, or restore them with an ordinal marker in the target language. Also give
+the English extractor "No. 2" and "4 Floors" forms so the metric stops penalising them. Digits
+need not be treated differently from words: the digit/word split showed no effect. Any change
+should be re-measured on the full 90 pairs and on the gold-turn A/B before it ships.

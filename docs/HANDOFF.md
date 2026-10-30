@@ -8,10 +8,11 @@ Text A/B on all 90 gold turns (30 utterances x 3 targets), real IndicTrans2, eva
 | arm | fact recall | wrong extras | all facts correct | loanwords kept |
 |---|---|---|---|---|
 | A toolkit default | 0.674 | 67 | 9/90 | 128/255 |
-| B masked | 0.808 | 67 | 13/90 | 162/255 |
-| C masked + summary fallback | 0.851 | 65 | 17/90 | 168/255 |
-Masking helps (recall +13 points, summary fallback +4 more) but is not enough alone: most turns still
-lose at least one fact in text, and 4/90 masked translations failed verification. Landmark
+| B masked | 0.747 | 65 | 12/90 | 153/255 |
+| C masked + summary fallback | 0.843 | 60 | 20/90 | 166/255 |
+Masking is a modest help (recall +7 points, summary fallback +10 more) but is not enough alone: most turns still
+lose at least one fact in text, and 9/90 masked translations failed verification. (Corrected 2026-10-31;
+the first run showed 0.808 / 0.851 / 4 of 90 and did not reproduce, see docs/EVAL.md.) Landmark
 localization passed the plausibility rule 72/72, unreviewed by a human. Text only, no STT/TTS.
 Blockers: none hit. No Gnani calls, git, deletes or new dependencies were used. The smokes and
 latency study need you awake and audio in eval/audio/latency/.
@@ -172,7 +173,7 @@ Author actions for slice 5:
 Checks: pytest 415, ruff, mypy, tsc, npm test 33, e2e 7 all pass. No Gnani calls, git or new deps.
 - Digits are plain 0-9 everywhere: `restore` rewrites any native digit; bn quick reply is now
   "2 মিনিটে আসছি" (still reviewed). Tests: tests/test_masking.py.
-- docs/EVAL.md has the masking A/B table (0.674 / 0.808 / 0.851) and the chips-as-second-layer
+- docs/EVAL.md has the masking A/B table (0.674 / 0.747 / 0.843 after the 2026-10-31 correction) and the chips-as-second-layer
   point; README says the same; the stale "latency study has no script" line is gone.
 - docs/media/rider-unmasked.png and rider-masked.png: rider screen on real local IndicTrans2 output
   for gold g02 kn->bn (synthetic address), fake Gnani. Regenerate: capture the replay JSON (it was
@@ -539,7 +540,7 @@ Log, newest last. Checks = pytest, ruff, mypy, typecheck, npm test, e2e.
 
 ### Item 6: translation-safety matrix - done (local model, 0 Gnani calls)
 - 90 pairs x 20 scorable sentences, about 50 min on AC. Mean recall 0.75 plain, 0.68 masked.
-  Masking did NOT help in this test, contradicting the text-only A/B (0.674 to 0.808); cause not
+  Masking did NOT help in this test, contradicting the first text-only A/B (0.674 to 0.808, later corrected to 0.747); cause not
   found (candidates listed in docs/EVAL.md). Look at this before claiming masking helps the audio.
   Tables and caveats are in docs/EVAL.md.
 
@@ -561,3 +562,18 @@ Log, newest last. Checks = pytest, ruff, mypy, typecheck, npm test, e2e.
   (138 files). `npm run typecheck`: clean. `npm test`: 61 pass. `npm run e2e`: 22 pass.
 - Not run: `pytest -m model` (the matrix exercised the real models instead), the CI e2e job on
   GitHub, any real-phone or real-human-speech test.
+
+## Cap raise and masking reversal diagnosis (2026-10-31, no Gnani calls)
+- Task A: `GNANI_CALL_CAP` 900 to 1500 (`evaluation/calls.py`, tests use the constant); cost section of
+  docs/PATH_TO_PRODUCTION.md filled with the measured rate (92 credits / 867 calls); the rupee price
+  stays a placeholder. Reason in docs/DECISIONS.md.
+- Task B: diagnosis only, nothing in the app or UI changed. `scripts/analyze_masking_reversal.py`
+  (`collect`, `report`, `examples`); findings in docs/EVAL.md under the matrix section. The collect
+  covers 46 of 90 pairs (power guard stopped on battery); rerun `collect` on AC power to finish,
+  then `report` and `examples`, and regenerate `eval/results/masking_reversal.json`.
+- Result: the digits-vs-words hypothesis is not supported. Ordinal kinds (floor, cross, main) lose
+  their meaning when restored as a bare digit; flat numbers gain. Conditional masking is proposed in
+  EVAL.md, not built.
+- The gold-turn A/B did not reproduce (B 0.747, not 0.808). README, docs/EVAL.md, DECISIONS.md and
+  `eval/results/masking_ab.json` now carry the current-code rerun (B 0.747, C 0.843, 9/90 failed);
+  the first file is in commit 8e2d64d.

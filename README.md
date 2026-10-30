@@ -21,8 +21,9 @@ Saathi's answer is two independent channels:
 - **Chips** are extracted from what the customer said (the speech transcript), in the speaker's own
   language, and never from the translation. A wrong translation still sits next to correct chips.
 - **Audio** is the translation, spoken, as the backup. Numbers and address words are masked before
-  translation and restored after, so the model cannot rewrite them; a translation that loses a slot
-  is not spoken and a fact summary is spoken instead.
+  translation and restored after, a modest improvement on speech-style input (not a guarantee);
+  a translation that loses a slot is not spoken and a fact summary is spoken instead. The chips
+  and that fallback are the safety layer.
 
 Roles are independent of languages: the customer and the rider can each use any of the 10 languages,
 in either direction, and either can answer by voice or with a quick reply. Any language pair shown in
@@ -88,14 +89,14 @@ All numbers are from `docs/EVAL.md`, with their caveats there. "Synthetic" means
 
 | What | Result | Data |
 |---|---|---|
-| Masking A/B, text only | fact recall 0.674 plain, 0.808 masked, 0.851 masked with summary fallback (90 turns) | synthetic gold text |
+| Masking A/B, text only | fact recall 0.674 plain, 0.747 masked, 0.843 masked with summary fallback (90 turns; 9 of 90 masked translations failed the placeholder check). An earlier run showed 0.808 masked; it did not reproduce on current code or on 8e2d64d, cause unknown (2026-10-31) | synthetic gold text |
 | Facts under street noise, test split n=20 | recall 0.84 clean, 0.64 at 5 dB; drop 0.20, 95% CI 0.09 to 0.31; no measurable cost at 20 dB | synthetic speech, one real street recording mixed in |
 | STT on real speech, all 10 languages | pooled CER 0.067 clean, 0.101 at 5 dB (n=100 clips; en and te are noisy at n=10) | FLEURS, real read speech |
 | Fact extraction, ta te gu ml mr pa | 19 of 24 sentences fully right on the first run (recall 0.93, precision 1.00); the 5 misses were spelling variants, since added | small held-out synthetic set, 4 per language |
 | Turn latency bn to kn | p50 4.2 s, p95 11.3 s (n=19) during a stretch of Gnani 504s | synthetic clips, one machine |
 | Translation, app pairs, full devtest | chrF++ 41 to 48 (greedy); bn to kn has 15 runaways in 1012 sentences, which the runaway guard catches | FLORES-200 |
 | Load, fake Gnani, 50 rooms | 3000 turns, 0 errors, server time p50 39 ms | in-process, no model |
-| Translation-safety matrix, 10x10 | mean fact recall after translate and back-translate: 0.75 plain, 0.68 masked (20 sentences per pair). Masking did not help here, unlike the text A/B above; cause not found | machine-generated source text, local model |
+| Translation-safety matrix, 10x10 | back-translation score (translate, back-translate to English, English extractor): 0.75 plain, 0.68 masked over the 90 pairs (20 sentences per pair). Target-language score (extractor on the translated text, as in the A/B): masking helps, 0.37 plain to 0.51 masked (collected pairs only). Masking scores lower on the back-translation route mainly because the restore writes a bare digit, so "fourth floor" reads back as "4 floors", and the English extractor is strict ("Gate No. 2" is missed). Diagnosis covers 46 of 90 pairs until the collection is finished on AC power; no fix built | machine-generated source text, local model |
 
 Not measured: real phone audio, real delivery customers, a native-speaker review of any lexicon or
 quick reply, the start-of-clip effect, more than one process, a long soak, and anything in

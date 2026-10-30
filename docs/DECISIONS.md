@@ -470,8 +470,10 @@ are an existence proof, not a distribution; slice 5 measures p50/p95 properly.
   so no model load is timed; audio comes from eval/audio/latency/, so no TTS is spent making it;
   no text is printed or saved. `live_turn.py --target X` makes each beta language one 3-call smoke.
 - Text A/B (eval/results/masking_ab.json, 90 gold turns, real models): default recall 0.674,
-  masked 0.808, masked + summary 0.851; loanwords kept 128, 162, 168 of 255. Text only: it does
-  not cover STT or TTS, and the gold text is ours, not recorded speech.
+  masked 0.747, masked + summary 0.843; loanwords kept 128, 153, 166 of 255. Text only: it does
+  not cover STT or TTS, and the gold text is ours, not recorded speech. Corrected 2026-10-31: the
+  first run (commit 8e2d64d) showed 0.808 and 0.851 and did not reproduce, cause unknown. Masking
+  is a modest improvement; the chips and the summary fallback are the safety layer.
 
 ## No people in the evaluation or the demo (2026-10-29)
 Nobody is recorded. Address-fact audio is Gnani TTS, labelled "clean synthetic"; real human speech
@@ -732,3 +734,11 @@ retries once; three consecutive failures stop that run.
   A sentence is scorable if its machine-made English text still scores full recall on the
   non-landmark gold facts; otherwise a low cell would blame the translator for a gold mismatch.
   Digits that come back as words count as lost, because the chips show digits.
+
+## Gnani call cap raised to 1500 (2026-10-31)
+The Gnani dashboard on 31 Oct showed 92 credits spent across 867 ledger calls (about 0.106 credits
+per call) and 4,907 left, so credits are not the constraint; the cap exists to stop a runaway
+script, not to ration money. Raised from 900 to 1500 in `evaluation/calls.py`; tests use the
+constant. The stop rules (401/402/403 stop, 429 backs off, 5xx retries once, three consecutive
+failures stop the run) and the `--dry-run` first rule are unchanged. The measured rate is in
+docs/PATH_TO_PRODUCTION.md section 3.

@@ -65,9 +65,25 @@ text-to-speech), by design (docs/DESIGN.md). Quick replies make a text-to-speech
 first time a phrase is needed in a language (cached after that). Chip replies make none. The
 translation model is local, so its cost is the GPU instance, not a per-call price.
 
-MEASURED: the project ledger (docs/HANDOFF.md) counts calls, not seconds or characters. It stands
-at 110 of 780 calls after all development, eval and rehearsal, which is the only real spend so
-far and is a count of calls, not money.
+MEASURED (Gnani dashboard, 31 Oct 2026): 92 credits were spent across 867 ledger calls (all
+development, evaluation and rehearsal), which is about 0.106 credits per call, and 4,907 credits
+were left. The dashboard states that 4,907 credits is about 10.9k STT minutes or about 18.2 lakh
+TTS characters. The ledger (docs/HANDOFF.md) counts calls, not seconds or characters, and the
+calls were a mix of short STT clips and short TTS sentences, so 0.106 is a blended rate for this
+project's mix, not a price. It is not a rupee cost: no rupee price per credit is recorded here.
+Credits are therefore not the constraint on evaluation; the call cap (1500) and the rate limiter
+are.
+
+Implied unit rates from the dashboard figures: 4,907 / 10,900 is about 0.45 credits per STT
+minute, and 4,907 / 1,820,000 is about 0.0027 credits per TTS character (0.27 per 100). Both
+are derived from the dashboard's rounded "about" figures and assume the two are alternatives for
+the same balance, not a combined budget.
+
+With the assumptions below (0.8 STT minutes and 420 TTS characters per conversation) that gives
+about 0.36 + 1.13 = 1.5 credits per conversation, against 12 calls x 0.106 = 1.3 by the blended
+call rate. The two agree to within the rounding of the dashboard figures.
+
+Rupee price per credit: PLACEHOLDER `<INR_PER_CREDIT>`, take it from the contract.
 
 The model, with every assumption stated so it can be changed:
 
