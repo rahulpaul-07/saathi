@@ -1,9 +1,10 @@
 # Evaluation (slice 5)
 
-Status: the translation evaluation is done. The Gnani-backed parts (clean synthetic audio, turn
-latency, real-voice STT) have code and tests but have NOT been run; their sections below say
-"pending". Raw numbers are in `eval/results/`; the generated tables are in
-`eval/results/translation_summary.md` (and `stt_summary.md` once the Gnani steps run).
+Status (2026-10-30): the translation evaluation, the noise evaluation on synthetic gold audio, STT
+on real public speech (FLEURS), the fact extractor on all ten languages and the turn latency study
+(bn to kn) are done. The start-of-clip split is still pending. Raw numbers
+are in `eval/results/`; the generated tables are in `eval/results/translation_summary.md`,
+`noise_summary_synth.md` and `speech_summary.md`.
 
 ## Method
 
@@ -48,8 +49,155 @@ A., Ma, M., Khanuja, S., Zhang, Y., Axelrod, V., Dalmia, S., Riesa, J., Rivera, 
 (2022). FLEURS: Few-shot Learning Evaluation of Universal Representations of Speech.
 arXiv:2205.12446. Clips were converted from 32-bit float to 16-bit PCM; nothing else was changed.
 
-Status of the new runs: the scripts and their dry-runs exist; the Gnani calls have NOT been made,
-so there are no FLEURS or noise results yet.
+## Noise: address facts on synthetic gold audio (run 2026-10-30)
+
+**Audio: synthetic. Gnani TTS speech (30 gold sentences, `scripts/make_gold_tts.py`, 30 calls) fed
+to Gnani STT. No person was recorded.** This is Gnani's voice into Gnani's ears, an optimistic
+best case, so the "clean" row is a ceiling and says nothing about real speakers.
+
+Method (`scripts/eval_noise.py`, 150 calls, seed 20261029): each clip is scored clean and with the
+Calcuttan street recording mixed in at 20, 10 and 5 dB SNR (pink noise at 10 dB as a secondary
+condition). The STT transcript goes through the fact extractor and is compared with the gold facts.
+Precision is the share of chips shown that are right; recall is the share of gold facts found; "all
+facts right" is the share of utterances where every gold fact was found and none was wrong. Intervals
+are 95% bootstrap CIs over utterances. Results: `eval/results/noise_stt_synth.json`, tables in
+`eval/results/noise_summary_synth.md`. Test split n=20 (the headline), dev split n=10.
+
+Test split, street noise (n=20):
+
+| condition | precision | recall | all facts right | recall drop vs clean |
+|---|---|---|---|---|
+| clean | 0.91 [0.85, 0.97] | 0.84 [0.76, 0.92] | 0.55 [0.30, 0.75] | - |
+| street 20 dB | 0.93 [0.87, 0.97] | 0.86 [0.77, 0.93] | 0.60 [0.40, 0.80] | -0.01 [-0.04, 0.00] |
+| street 10 dB | 0.89 [0.82, 0.96] | 0.78 [0.68, 0.88] | 0.45 [0.25, 0.65] | 0.07 [-0.01, 0.15] |
+| street 5 dB | 0.84 [0.74, 0.93] | 0.64 [0.51, 0.78] | 0.30 [0.10, 0.50] | 0.20 [0.09, 0.31] |
+| pink 10 dB | 0.89 [0.82, 0.95] | 0.76 [0.65, 0.86] | 0.40 [0.20, 0.60] | 0.08 [0.00, 0.17] |
+
+What it shows, and what it does not:
+
+- Noise at 20 dB costs nothing measurable; at 10 dB the recall drop is small and its interval
+  includes zero; at 5 dB (loud street) recall falls by 0.20 (CI 0.09 to 0.31).
+- Even clean, only 55% of utterances have every fact right (CI 0.30 to 0.75). The misses are
+  more often missing chips than wrong ones (precision, 0.84 or above, is higher than recall); this
+  is read from the two aggregates, not from a per-fact error analysis. A missing chip is the safer
+  failure (the card shows what it has and the rider asks).
+- With n=20 the intervals are wide; differences of a few points between conditions are not
+  resolved. The dev split (n=10) gives the same picture and is in the summary file.
+- One street recording and one seeded pink noise; nothing about phone microphones, 8 kHz audio or
+  wind.
+- Gold sentences were written by the author, and "all facts right" depends on the extractor's rules
+  per language (see docs/LEXICON_EVIDENCE.md). The pooled numbers are not broken down by language
+  here.
+
+## STT on real speech: FLEURS (run 2026-10-30)
+
+**Audio: real human read speech (FLEURS test clips, CC BY 4.0).** 10 clips per language, 10
+languages, 100 clips. These are Wikipedia-style sentences, not addresses, so this measures how well
+Gnani STT hears these languages and these conditions, not the fact pipeline. Metric: character error
+rate on normalized text (lower is better). `scripts/eval_speech.py`, 404 calls (400 planned plus 4
+retries after 504 responses); resumed over several runs because Gnani returned 504 on some calls,
+finished clips were kept. Results: `eval/results/speech_stt.json`, `eval/results/speech_summary.md`.
+
+Mean CER by language, 95% bootstrap CI over clips (n=10 each):
+
+| language | clean | street 20 dB | street 10 dB | street 5 dB |
+|---|---|---|---|---|
+| bn | 0.023 [0.011, 0.038] | 0.026 | 0.028 | 0.037 |
+| en | 0.182 [0.043, 0.399] | 0.157 | 0.058 | 0.427 [0.196, 0.670] |
+| gu | 0.068 [0.027, 0.118] | 0.069 | 0.071 | 0.075 |
+| hi | 0.033 [0.018, 0.049] | 0.032 | 0.041 | 0.038 |
+| kn | 0.044 [0.014, 0.084] | 0.045 | 0.049 | 0.051 |
+| ml | 0.074 [0.045, 0.105] | 0.069 | 0.079 | 0.087 |
+| mr | 0.032 [0.016, 0.055] | 0.034 | 0.033 | 0.033 |
+| pa | 0.031 [0.025, 0.036] | 0.029 | 0.032 | 0.043 |
+| ta | 0.055 [0.036, 0.076] | 0.056 | 0.065 | 0.088 |
+| te | 0.125 [0.013, 0.332] | 0.129 | 0.129 | 0.130 |
+| all (n=100) | 0.067 [0.043, 0.097] | 0.065 | 0.058 | 0.101 [0.064, 0.141] |
+
+Paired CER increase over clean, pooled over all 100 clips: street 20 dB -0.002 [-0.009, 0.002];
+street 10 dB -0.008 [-0.035, 0.006]; street 5 dB +0.034 [0.010, 0.062]. Only the 5 dB condition is
+distinguishable from clean.
+
+Caveats:
+
+- n=10 per language: the per-language intervals are wide and a single clip can move a mean. The
+  English row (CER 0.18 clean, 0.43 at 5 dB, CI up to 0.67) and Telugu (0.125 with a CI from 0.01 to
+  0.33) are each driven by one or two clips, so they are not evidence that those languages are
+  worse than the rest. They are the rows to re-run with more clips before drawing a conclusion.
+- The clips are the first eligible ones in archive order, one per sentence id, read by a small number
+  of speakers. Not a sample of delivery customers.
+- The mixed-in street noise is the same recording for every clip.
+- "All" is a pooled mean over clips; languages are weighted equally only because n is equal.
+- The street 10 dB mean being below clean is noise in the estimate (the paired interval includes
+  zero), not an improvement.
+
+## Fact extraction on ta, te, gu, ml, mr, pa (held-out synthetic speech, run 2026-10-30)
+
+The main gold set has only en, kn, hi and bn. For the other six a separate set of 24 sentences
+(4 per language, `saathi.evaluation.extragold`) was spoken with Gnani TTS and read back with Gnani
+STT (48 calls, plus retries after 504s), then scored with the same extractor
+(`scripts/eval_facts_extra.py`, `eval/results/facts_extra.json`).
+
+| Lang | n | all facts right | recall | precision |
+|---|---|---|---|---|
+| ta | 4 | 3 | 0.92 | 1.00 |
+| te | 4 | 2 | 0.83 | 1.00 |
+| gu | 4 | 4 | 1.00 | 1.00 |
+| ml | 4 | 3 | 0.92 | 1.00 |
+| mr | 4 | 4 | 1.00 | 1.00 |
+| pa | 4 | 3 | 0.92 | 1.00 |
+| all six | 24 | 19 | 0.93 (67 of 72 facts) | 1.00 |
+
+These are the scores of the first run, before any lexicon change. All five misses were spelling
+gaps: the STT wrote a valid variant the probe had not produced (ta ordinal 13, te ordinals 7 and 9,
+ml ordinal 9, pa cardinal 12; see docs/LEXICON_EVIDENCE.md). Those spellings were then added, one
+test each, and the same transcripts now score 24 of 24 with recall 1.00. That second number is NOT
+a held-out result: the set was used to fix the lexicons, so it only shows the fixes work. A new
+held-out set would be needed to measure the next round.
+
+Caveats:
+
+- 4 sentences per language is a very small n; 0.92 versus 1.00 is one fact. Read it as "no
+  language is broken", not as a ranking.
+- The sentences recombine words the lexicon probe already spoke (new orders and number-trigger
+  pairings). It tests composition and spelling variants, not unseen vocabulary.
+- Synthetic Gnani TTS, one voice per language, clean audio, no noise. No landmark facts (the
+  gold string for a free-text span needs a native reader), so landmarks are not scored here;
+  Marathi has no landmark cues at all (docs/LEXICON_EVIDENCE.md).
+- Precision of 1.00 means nothing wrong was asserted on these sentences, not that the extractor
+  never asserts a wrong chip.
+- All lexicons for these six languages are machine-verified, not native-reviewed.
+
+## Turn latency, bn to kn (AC power, run 2026-10-30)
+
+`scripts/latency_study.py --yes`: 20 turns of STT (Gnani), local IndicTrans2 translation and TTS
+(Gnani), 40 calls, `eval/results/latency.json`. Source audio: 4 synthetic Gnani TTS clips of
+Bengali gold sentences cycled over the turns. 19 of 20 turns completed cleanly; one failed with a
+Gnani 504 and is excluded.
+
+| Stage | p50 | p95 | max |
+|---|---|---|---|
+| STT (Gnani) | 1.4 s | 8.2 s | 8.5 s |
+| Translate (local) | 0.6 s | 0.8 s | 0.8 s |
+| TTS (Gnani) | 1.8 s | 5.5 s | 8.9 s |
+| Total | 4.2 s | 11.3 s | 18.1 s |
+
+Caveats:
+
+- n=19: the p95 is close to the maximum, so quote the p50 and say the tail is long.
+- The run happened while Gnani returned intermittent 504s on /stt/v3 (the client retried each
+  once, and the log shows about a dozen retries). Retry time is inside the stage times, so the
+  tail mostly measures that bad stretch of service, not typical use. The p50 is the more stable
+  figure; a rerun at another time of day would show whether the tail moves.
+- Synthetic, clean, short clips from one voice: real phone audio is longer and noisier, and
+  longer clips take longer to transcribe.
+- One pair, one machine (the author's laptop), the translator already loaded. A cold start adds
+  the model load time, which is not measured here.
+- The pair is an example; roles are independent of languages and other pairs were not measured.
+
+## Not run tonight
+
+- Start-of-clip split (first-2-word miss rate): needs the real-speech set; not run.
 
 ## Translation: greedy vs beam5 (AC power, 50 sentences per pair)
 
@@ -144,9 +292,11 @@ speech, so these numbers are optimistic about the front half of the pipeline.
 - Landmark names in the listener's language passed the `plausible` rule 72 of 72 times. That rule
   catches runaway output, not wrong-but-fluent output, and no human has reviewed the renderings.
 
-## STT, latency, start-of-clip: pending
+## Start-of-clip: pending
 
-Everything here needs Gnani calls and has not been run. The old FLORES-based plan
+The noise evaluation, FLEURS CER, held-out facts and latency runs above replaced most of this plan.
+Only the start-of-clip split has not been run. The old
+FLORES-based plan
 (`eval_turns.py`, 155-call cap) was replaced on 2026-10-29: the call plan and hard cap of 290 now
 live in docs/DESIGN.md section 11, and the noise evaluation is `scripts/eval_noise.py` (see
 docs/DECISIONS.md "Priority 2"). The latency study script exists (`scripts/latency_study.py`, dry-run
@@ -181,12 +331,17 @@ each turn. Per-IP rate limits are raised because one client drives all rooms.
 
 | Run | Requests | Errors | Server time p50 | p95 | max | Wall |
 |---|---|---|---|---|---|---|
-| 1 room, 6 turns | 6 | 0 | 4.5 ms | 30.5 ms | 30.5 ms | 0.6 s |
-| 50 rooms, 6 turns each | 300 | 0 | 57 ms | 140 ms | 206 ms | 1.3 s |
-| 50 rooms, 60 turns each | 3000 | 0 | 96 ms | 192 ms | 260 ms | 16.1 s |
+| 1 room, 6 turns | 6 | 0 | 5.2 ms | 19.3 ms | 19.3 ms | 0.6 s |
+| 50 rooms, 6 turns each | 300 | 0 | 41 ms | 75 ms | 127 ms | 1.1 s |
+| 50 rooms, 60 turns each | 3000 | 0 | 39 ms | 85 ms | 129 ms | 11.1 s |
 
-Process memory (working set): 69 MB before; 81 MB with 50 rooms of 6 turns alive; 84 MB with 50
+Process memory (working set): 69 MB before; 82 MB with 50 rooms of 6 turns alive; 84 MB with 50
 rooms of 60 turns alive; unchanged after the rooms were closed.
+
+Rerun on 2026-10-30 on AC power, after the rate-limiter sweep change. The earlier run (on
+battery) gave p50 57 ms and 96 ms for the two 50-room rows and 16.1 s wall for 3000 turns; the
+difference is mostly power state and background load, so do not read it as a speed-up from the
+code change.
 
 How to read this:
 
@@ -201,7 +356,73 @@ How to read this:
   cap of 5 stored audio clips per room and a card that holds one entry per kind. It also did not
   fall after the rooms were closed, which is the Python allocator keeping freed memory, not
   evidence of a leak or of its absence; a long soak test would be needed to say more.
-- Machine: Intel Core i7-13650HX (20 logical processors), Windows 11, **on battery** (Windows
-  reported the battery as discharging when the numbers were taken), other applications open. Run
-  once per row, no warm-up, no repeats: treat the figures as rough. Do not compare them with the
-  AC-power tables above.
+- Machine: Intel Core i7-13650HX (20 logical processors), Windows 11, **on AC power**
+  (`read_power_state` reported `ac` just before the runs), other applications open. Run once per
+  row, no warm-up, no repeats: treat the figures as rough.
+
+## Translation-safety matrix, 10 x 10 (local model, no Gnani, run 2026-10-30 to 31)
+
+`scripts/eval_translation_matrix.py`, results in `eval/results/translation_matrix.json`. For each of
+the 90 ordered pairs X to Y: the gold sentence in English is machine-translated to X (the source
+text), translated X to Y two ways (plain, and masked as the app does), back-translated Y to English,
+and the English extractor is scored against the gold facts. Recall only, landmarks excluded.
+
+Caveats, all of which matter:
+- The source text is machine-generated, not what a person would say. 12 of the 30 gold sentences are
+  English as written; the other 18 were machine-translated to English first.
+- Only the 20 "scorable" sentences are used (English text still scores full recall), 19 facts per
+  sentence at most; each cell is 20 sentences, so one cell moves by about 0.03 per fact. Read the
+  row and column averages, not single cells.
+- The score includes the back-translation's own errors, so it is a floor on the X to Y quality. The
+  en target has no back-translation step, which is why en columns tend to be higher.
+- A digit written as a word counts as lost for the digit-survival figures in the JSON.
+- Fallback rate is the share of masked translations where a slot was lost; the app would then speak
+  the fact summary, which this matrix does not score.
+
+Fact recall, plain (rows = source, columns = target):
+
+| src \ tgt | bn | en | gu | hi | kn | ml | mr | pa | ta | te |
+|---|---|---|---|---|---|---|---|---|---|---|
+| bn | - | 0.72 | 0.65 | 0.63 | 0.63 | 0.68 | 0.58 | 0.67 | 0.61 | 0.65 |
+| en | 0.72 | - | 0.82 | 0.84 | 0.86 | 0.79 | 0.65 | 0.89 | 0.77 | 0.82 |
+| gu | 0.74 | 0.82 | - | 0.79 | 0.79 | 0.74 | 0.68 | 0.79 | 0.79 | 0.77 |
+| hi | 0.75 | 0.84 | 0.86 | - | 0.88 | 0.86 | 0.77 | 0.89 | 0.72 | 0.77 |
+| kn | 0.75 | 0.86 | 0.77 | 0.81 | - | 0.75 | 0.68 | 0.81 | 0.75 | 0.79 |
+| ml | 0.68 | 0.79 | 0.67 | 0.72 | 0.68 | - | 0.61 | 0.75 | 0.67 | 0.74 |
+| mr | 0.65 | 0.65 | 0.70 | 0.70 | 0.72 | 0.70 | - | 0.72 | 0.68 | 0.67 |
+| pa | 0.63 | 0.89 | 0.84 | 0.84 | 0.86 | 0.81 | 0.77 | - | 0.72 | 0.77 |
+| ta | 0.68 | 0.77 | 0.74 | 0.70 | 0.79 | 0.67 | 0.70 | 0.72 | - | 0.82 |
+| te | 0.77 | 0.82 | 0.72 | 0.74 | 0.81 | 0.75 | 0.70 | 0.81 | 0.74 | - |
+
+Fact recall, masked:
+
+| src \ tgt | bn | en | gu | hi | kn | ml | mr | pa | ta | te |
+|---|---|---|---|---|---|---|---|---|---|---|
+| bn | - | 0.70 | 0.58 | 0.47 | 0.58 | 0.58 | 0.46 | 0.56 | 0.60 | 0.61 |
+| en | 0.60 | - | 0.63 | 0.63 | 0.70 | 0.77 | 0.67 | 0.63 | 0.72 | 0.77 |
+| gu | 0.61 | 0.84 | - | 0.58 | 0.68 | 0.67 | 0.65 | 0.72 | 0.70 | 0.70 |
+| hi | 0.32 | 0.86 | 0.58 | - | 0.70 | 0.56 | 0.58 | 0.67 | 0.68 | 0.70 |
+| kn | 0.49 | 0.82 | 0.75 | 0.63 | - | 0.77 | 0.68 | 0.70 | 0.77 | 0.75 |
+| ml | 0.70 | 0.77 | 0.67 | 0.65 | 0.70 | - | 0.63 | 0.67 | 0.70 | 0.74 |
+| mr | 0.56 | 0.65 | 0.68 | 0.65 | 0.70 | 0.58 | - | 0.67 | 0.67 | 0.60 |
+| pa | 0.61 | 0.82 | 0.72 | 0.68 | 0.75 | 0.72 | 0.65 | - | 0.67 | 0.72 |
+| ta | 0.77 | 0.82 | 0.79 | 0.70 | 0.82 | 0.74 | 0.74 | 0.79 | - | 0.79 |
+| te | 0.60 | 0.79 | 0.68 | 0.61 | 0.68 | 0.65 | 0.60 | 0.67 | 0.68 | - |
+
+Averages over the 90 pairs (mean of the ten per-source figures): plain 0.75, masked 0.68. By
+source, plain ranges 0.65 (bn) to 0.82 (hi), masked 0.57 (bn) to 0.77 (ta). By target, plain
+ranges 0.68 (mr) to 0.80 (en), masked 0.58 (bn) to 0.79 (en). Masked fallback rate per source is
+0.01 to 0.09 (highest kn 0.09, hi 0.08); per target 0.01 to 0.11 (highest bn 0.11, ml 0.08).
+
+What this says, and does not:
+- On this test masking did NOT help: masked recall is below plain in most cells, the opposite of
+  the text-only masking A/B above (0.674 to 0.808). I have not found the cause. Candidates, not
+  tested: (1) the matrix back-translates the masked output, so placeholder or restored-slot
+  wording may be hurt by the second translation, while the A/B scored the first translation;
+  (2) the source here is machine-translated text where extraction for the source language finds
+  fewer slots to mask (masking then only adds risk); (3) hi to bn (0.32 masked, 0.75 plain) and
+  kn to bn (0.49) point at one bad pair rather than a general effect. Do not quote either arm as
+  the app's real accuracy; the two experiments measure different things.
+- The chips never depend on this path (they come from the speaker's own transcript), so these
+  numbers bound the audio only.
+- Marathi is the weakest target for plain translation and Bengali the weakest source.

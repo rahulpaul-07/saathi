@@ -162,16 +162,22 @@ script in `scripts/load_rooms.py` drains events in process and does not open rea
 
 ### Limiter memory growth
 
-`SlidingWindowLimiter` keeps one deque per key and removes expired hits only when the same key
-comes back. Keys are IP addresses and `room code:role` strings, so a key that is never seen again
-stays in memory for the life of the process. Growth is slow (well under a kilobyte per key) and
-is bounded by how many distinct IPs and rooms arrive, but it is not bounded by design.
+`SlidingWindowLimiter` keeps one deque per key. Keys are IP addresses and `room code:role`
+strings, so a key that is never seen again used to stay in memory for the life of the process (a
+sustained stream of distinct IPs grew the table without bound).
 
-Mitigations and tests: none beyond the per-key window itself
-(`test_ratelimit.py::test_blocks_over_limit_then_allows_after_window`,
-`test_keys_are_independent`). **This is a known gap.** The fix is to sweep idle keys, or to move
-limiting to Redis with TTLs (see PATH_TO_PRODUCTION.md). There is no test that the key table
-shrinks, because it does not.
+Mitigation: once per window, `allow` sweeps every key whose newest hit is outside the window. Such a
+key cannot affect any future decision, so dropping it changes no limit. The sweep is amortised over
+the calls and needs no timer. Tests, with an injected clock:
+`test_ratelimit.py::test_idle_keys_are_swept_after_the_window` (1000 keys shrink to 1),
+`test_a_key_with_a_recent_hit_survives_the_sweep_and_keeps_its_count`,
+`test_sweeping_never_lets_a_blocked_key_through_early`, plus the original window tests
+(`test_blocks_over_limit_then_allows_after_window`, `test_keys_are_independent`).
+
+Residual: between sweeps the table holds every key seen in the last one to two windows, so a flood
+of distinct IPs within a minute still costs memory for that minute (bounded by request rate, and
+the room cap and per-IP limits apply first). Per-process, so a multi-process deployment needs the
+shared store in PATH_TO_PRODUCTION.md.
 
 ### Gnani key handling
 

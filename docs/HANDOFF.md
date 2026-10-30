@@ -442,3 +442,122 @@ correction, confirm, ask, quick reply.
   - Limiter key tables never shrink (THREAT_MODEL.md). Unfixed and untested.
   - Load numbers were taken on battery, single runs.
   - See "Not production-ready" in PATH_TO_PRODUCTION.md.
+
+## Overnight run 30 Oct
+
+### Summary (read this first)
+
+- Gnani calls spent tonight: 757 (ledger 110 -> 867 of 900; 33 left). By run: lexicon round 2 = 70,
+  gold-tts = 30, noise-stt = 150, speech-stt = 404, facts-extra = 64, latency = 39. Failed and
+  retried calls count; Gnani's /stt/v3 returned intermittent 504s all night, so every STT script
+  was rerun (they resume) until it finished. Items 1-3, 5 (code), 6, 7-10 spent nothing.
+- All items 1-10 done except 4e (skipped: `gen_quick_replies.py` makes no Gnani calls, nothing to
+  run). Item 6 (translation matrix) is local-only; see its entry.
+- Checks at the end: see "Final checks" at the bottom of this section.
+- Commit groups (no file is in two groups; the docs are one group because each doc mixes items):
+  1. `fix(pipeline): turn translator crashes into a localized 502`: src/saathi/pipeline.py,
+     src/saathi/room_routes.py, src/saathi/unavailable.py, src/saathi/app.py,
+     src/saathi/static/js/room-client.js, tests/test_failure_injection.py, tests/test_unavailable.py
+  2. `fix(ui): 44px tap target for the Back link`: src/saathi/static/app.css,
+     tests/e2e/a11y.spec.js
+  3. `fix(ratelimit): sweep idle keys from the sliding-window limiter`: src/saathi/ratelimit.py,
+     tests/test_ratelimit.py
+  4. `feat(facts): chip lexicons for gu, ml, mr, pa and a held-out set`:
+     src/saathi/facts/lexicons.py, src/saathi/facts/lexicons_ta_te.py,
+     src/saathi/facts/lexicons_gu_ml_mr_pa.py, src/saathi/evaluation/lexprobe.py,
+     src/saathi/evaluation/extragold.py, scripts/probe_numbers.py, scripts/eval_facts_extra.py,
+     tests/test_facts.py, tests/test_facts_gu_ml_mr_pa.py, tests/test_lexprobe.py,
+     tests/test_extragold.py, eval/results/facts_extra.json
+  5. `feat(eval): raise the call cap and add the noise, speech and latency results`:
+     src/saathi/evaluation/calls.py, eval/results/noise_stt_synth.json,
+     eval/results/noise_summary_synth.md, eval/results/speech_stt.json,
+     eval/results/speech_summary.md, eval/results/latency.json
+  6. `feat(eval): offline translation-safety matrix`: src/saathi/evaluation/transmatrix.py,
+     scripts/eval_translation_matrix.py, tests/test_transmatrix.py,
+     eval/results/translation_matrix.json
+  7. `ci: optional Playwright e2e job`: .github/workflows/ci.yml
+  8. `docs: overnight results, README rebuild, design proposal`: README.md, docs/EVAL.md,
+     docs/DECISIONS.md, docs/HANDOFF.md, docs/LEXICON_EVIDENCE.md, docs/PATH_TO_PRODUCTION.md,
+     docs/THREAT_MODEL.md, docs/DESIGN_PROPOSAL.md
+- Decisions waiting for you:
+  1. The repo has no LICENSE file for its own code (README says so). Pick one or none.
+  2. All lexicons for ta, te, gu, ml, mr, pa are machine-verified (spellings the STT wrote), not
+     native-reviewed; tiers stay as in AGENTS.md. Marathi has no landmark chips.
+  3. The 502 message for a translator crash is machine-written in 9 languages, unreviewed.
+  4. The CI e2e job has never run on GitHub; it is optional on purpose.
+  5. Latency p95 11.3 s was measured during a spell of 504 retries; re-measure on a quiet day
+     before quoting it.
+  6. Whether to spend the remaining 33 calls on anything (the start-of-clip split needs real
+     recordings and was not run).
+
+Log, newest last. Checks = pytest, ruff, mypy, typecheck, npm test, e2e.
+
+### Item 1: translator failure handling - done
+- A translator crash (any exception that is not the existing runaway guard) becomes
+  `TranslationUnavailableError` in `pipeline.py`; the room route answers 502 with
+  `{"code": "translation_unavailable", "message": <speaker's language>}`, the solo `/turn` answers
+  a plain 502. Only the exception type is logged. Messages are a new pending table in
+  `unavailable.py`; `room-client.js` shows the server message for the new code (error text only).
+- Tests: failure injection (both roles, room untouched, no event, no TTS call), table tests.
+- Checks: all pass (pytest 749 at the time). Gnani calls: 0. Ledger 110/780.
+- Decision for you: the message text is machine-written and unreviewed in 9 languages.
+
+### Item 2: Back link tap target - done
+- `.sub a` in `app.css`: padding 12px 6px with the same negative margin. Measured at 360 px: the
+  text and the paragraph box are unchanged (text at 16,57, 32.7x21; paragraph 24 high); the link's
+  hit box is 44.7x48. The a11y exemption is removed and the spec passes.
+- Checks: all pass. Gnani calls: 0.
+
+### Item 3: limiter pruning - done
+- `SlidingWindowLimiter` sweeps keys whose newest hit is outside the window once per window.
+  Three new tests with an injected clock. THREAT_MODEL.md and PATH_TO_PRODUCTION.md updated.
+- Checks: all pass (pytest 752, e2e 22). Gnani calls: 0.
+
+### Item 4: Gnani evaluation runs - done (4e skipped)
+- Cap raised 780 -> 900 in `evaluation/calls.py`. Every run: `--dry-run` first, then the real run,
+  rerun on the 504s (all resumable). Results are checked in under `eval/results/`.
+- 4a gold TTS: 30 calls (ledger 110 -> 140 at that point in the night, order of runs varied).
+- 4b noise: 150 STT calls. Test split n=20: recall 0.84 clean, 0.64 at 5 dB, drop 0.20
+  [0.09, 0.31]. Files are named `*_synth` because the speech is synthetic.
+- 4c FLEURS: 404 calls. Pooled CER 0.067 clean, 0.101 at 5 dB.
+- 4d latency (AC power): 39 calls, 19 clean turns bn to kn: total p50 4.2 s, p95 11.3 s, max 18.1 s;
+  one turn failed with a 504. Many retries inflate the tail.
+- 4e quick-reply audio: skipped, `gen_quick_replies.py` makes no Gnani calls.
+- All numbers and caveats are in docs/EVAL.md.
+
+### Item 5: lexicons for gu, ml, mr, pa and a fact eval for all 10 - done
+- `facts/lexicons_gu_ml_mr_pa.py` (probe round 2: 70 calls, limit raised to 72), spellings are the
+  ones the STT wrote for TTS speech. Evidence in docs/LEXICON_EVIDENCE.md ("Round 2").
+- Held-out set (`evaluation/extragold.py`, 24 synthetic sentences for ta te gu ml mr pa, 64 calls
+  including retries). First run: 19 of 24 fully right, recall 0.93 (67/72), precision 1.00. The 5
+  misses were spelling variants; I added them, and the same transcripts now score 24/24. That second
+  number is NOT held-out and is labelled so. `eval/results/facts_extra.json` is the post-fix report.
+- `test_facts.py`: the old "languages without native rules get the universal layer only" test had a
+  premise that is no longer true (all 10 now have native layers); replaced by a test that the
+  universal English layer still works beside each native one. Not a weakened test.
+- Known gaps: Marathi landmarks (cue glued to the name), no Punjabi ordinal 17.
+
+### Item 6: translation-safety matrix - done (local model, 0 Gnani calls)
+- 90 pairs x 20 scorable sentences, about 50 min on AC. Mean recall 0.75 plain, 0.68 masked.
+  Masking did NOT help in this test, contradicting the text-only A/B (0.674 to 0.808); cause not
+  found (candidates listed in docs/EVAL.md). Look at this before claiming masking helps the audio.
+  Tables and caveats are in docs/EVAL.md.
+
+### Item 7: load test rerun - done (AC power)
+- 50 rooms x 6 turns: 41/75/127 ms (p50/p95/max), 1.1 s wall; 50 x 60: 39/85/129 ms, 11.1 s; memory
+  69 -> 82 -> 84 MB; 0 errors. Not a speed-up over the battery numbers; different power state.
+
+### Item 8: README rebuild - done (text only)
+- Pitch, mermaid flow, features, tiers, evaluation table with measured vs not measured, security,
+  path to production, limits, setup kept, credits and licences. The code licence is missing: see
+  the decision list.
+
+### Item 9: docs/DESIGN_PROPOSAL.md - done
+### Item 10: optional Playwright e2e job in CI - done
+- A separate job so a flaky browser cannot block the main one. Not run on GitHub yet.
+
+### Final checks (after item 6 finished)
+- pytest: 981 passed, 10 deselected (model tests). ruff: clean. mypy src tests scripts: clean
+  (138 files). `npm run typecheck`: clean. `npm test`: 61 pass. `npm run e2e`: 22 pass.
+- Not run: `pytest -m model` (the matrix exercised the real models instead), the CI e2e job on
+  GitHub, any real-phone or real-human-speech test.

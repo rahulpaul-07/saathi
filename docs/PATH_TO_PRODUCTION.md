@@ -42,7 +42,7 @@ the translator in the web process on one GPU. Design for horizontal scale:
 | Event fan-out | in-process queues | Redis pub/sub or streams per room; the SSE endpoint on whichever server holds the connection subscribes; the "newer subscription replaces older" rule moves to a per-role connection id in Redis |
 | Translation | in the web process, GPU | a worker pool (GPU) behind a queue; the app enqueues text and awaits the result with a timeout; the measured model time is small (below) so queue wait is the thing to watch |
 | Gnani calls | per-process, no shared limit | one shared rate limiter (Redis token bucket) in front of all Gnani calls, sized from the plan's contractual limit; calls over the limit wait briefly, then fail with the existing 503 |
-| Rate limits | per process, per IP | Redis counters with TTL, which also fixes the unbounded key growth in THREAT_MODEL.md; keyed by partner and order as well as IP |
+| Rate limits | per process, per IP | Redis counters with TTL, shared across processes (the in-process limiter already sweeps idle keys, see THREAT_MODEL.md); keyed by partner and order as well as IP |
 | Audio | in memory, 60 s, 5 clips per room | object store with a short lifecycle rule (delete after minutes), or keep in Redis with a TTL; never long-term |
 
 MEASURED, for sizing the translation tier (docs/DECISIONS.md "Translator latency"; one pair,
@@ -156,11 +156,11 @@ An honest list of what is missing or unproven today:
 - State is in one process; a restart ends every room.
 - Rate limiters are per process and per client IP as the server sees it; behind a proxy all users
   would share one IP bucket unless forwarded addresses are handled.
-- The limiter key tables never shrink (THREAT_MODEL.md, "Limiter memory growth"). Known, unfixed,
-  untested.
-- A translation exception returns a generic 500, not a localized message like the Gnani
-  failures do (`tests/test_failure_injection.py`). The room is left untouched, but the speaker
-  sees a less helpful error.
+- The limiter sweeps idle keys once per window (THREAT_MODEL.md, "Limiter memory growth"), but it
+  is still per process.
+- A translator failure returns a 502 with a localized message (pending, machine-written, not
+  native-reviewed) and leaves the room untouched (`tests/test_failure_injection.py`). There is no
+  automatic retry or fallback translator.
 - No request body size limit before the framework reads an upload; needs a proxy limit.
 - The SSE endpoint has no limiter of its own.
 - There is no authentication of the partner, signed links, webhooks or idempotency: all of section
@@ -173,8 +173,8 @@ An honest list of what is missing or unproven today:
   phrases per language.
 - Facts come from rule-based extraction, so a direction that does not fit the rules gives no chip
   and a please-repeat prompt, never a guess. Coverage on real, unscripted speech is unknown.
-- Accessibility is checked only for tap targets, names and contrast on the room pages. One known
-  small target (the "Back" link) is listed in docs/HANDOFF.md.
+- Accessibility is checked only for tap targets, names and contrast on the room pages at 360 px;
+  no screen reader or keyboard-only pass has been done.
 - Load testing used a fake Gnani and a fake translator, on one laptop, in one process
   (docs/EVAL.md). It is not a capacity plan.
 - No monitoring, alerting or metrics endpoint; `/healthz` is liveness only. No automated

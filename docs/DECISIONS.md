@@ -704,3 +704,31 @@ the customer said it, in their script.
   one client IP, so adding the a11y spec pushed the suite over the default 10 turns per minute
   and made an unrelated spec fail in full runs (it passed alone). The limits are covered by
   pytest; the one e2e spec about our 429 stubs the response.
+
+## Gnani call cap raised to 900 (2026-10-30)
+Approved by the author for the overnight run of 30 Oct: gold TTS (30), noise eval (150), FLEURS
+STT (400), latency study (about 40, only on AC power), quick-reply audio (about 30, only if a
+script exists) and the gu/ml/mr/pa lexicon probes (at most 64 plus retries), on top of 110 already
+spent. Stop rules for a run: 401/402/403 stop at once; 429 backs off and continues; timeout or 5xx
+retries once; three consecutive failures stop that run.
+
+## Overnight 30 Oct: evaluation choices
+
+- **Synthetic results are named `*_synth`.** Noise results from TTS speech sit in
+  `noise_stt_synth.json` and `noise_summary_synth.md`, so a file name can never be quoted as
+  human-speech evidence. FLEURS (real read speech) keeps plain names.
+- **Marathi has no landmark chips.** The STT glues the cue to the name, and the extractor matches
+  whole tokens only. Splitting inside tokens would add false positives for every language; left
+  as a known gap.
+- **Lexicon probe round 2 raised the limit to 72 calls.** Round 1 left four languages without a
+  single observed spelling; 70 calls were spent, and the unused two stay in the budget.
+- **Held-out set for ta te gu ml mr pa, and the pre-fix score is the one reported.** The pinned
+  gold file is untouched. After adding the five spellings the same transcripts score 24/24, which
+  is labelled as not held-out, because it is the test set the fixes were tuned on.
+- **The old "universal layer only" test was replaced, not weakened.** Its premise (a language with
+  no native rules) stopped being true when gu ml mr pa got lexicons.
+- **Translation matrix uses recall only, on the "scorable" utterances.** The English extractor also
+  reports landmarks, which are open vocabulary and not in the gold, so precision is meaningless.
+  A sentence is scorable if its machine-made English text still scores full recall on the
+  non-landmark gold facts; otherwise a low cell would blame the translator for a gold mismatch.
+  Digits that come back as words count as lost, because the chips show digits.
