@@ -15,7 +15,7 @@ import httpx
 from saathi.config import Settings
 from saathi.gnani import GnaniClient
 
-GNANI_CALL_CAP = 780 # across every eval command, persisted in the ledger (see docs/DESIGN.md 11)
+GNANI_CALL_CAP = 900 # across every eval command, persisted in the ledger (see docs/DESIGN.md 11)
 
 # A latency turn is one STT and one TTS call.
 CALLS_PER_TURN = 2

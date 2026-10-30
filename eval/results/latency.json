@@ -1,0 +1,41 @@
+{
+  "pair": "bn->kn",
+  "power": "ac",
+  "turns": 20,
+  "clean_samples": 19,
+  "retried_or_failed": 1,
+  "failures": [
+    "gnani status 504"
+  ],
+  "stages": {
+    "stt_ms": {
+      "n": 19,
+      "p50": 1409.0,
+      "p95": 8183.630000000001,
+      "mean": 3289.2315789473687,
+      "max": 8543.9
+    },
+    "translate_ms": {
+      "n": 19,
+      "p50": 622.7,
+      "p95": 757.36,
+      "mean": 631.7263157894737,
+      "max": 782.2
+    },
+    "tts_ms": {
+      "n": 19,
+      "p50": 1774.1,
+      "p95": 5508.480000000005,
+      "mean": 2305.8684210526317,
+      "max": 8888.7
+    },
+    "total_ms": {
+      "n": 19,
+      "p50": 4167.4,
+      "p95": 11301.960000000012,
+      "mean": 6226.821052631579,
+      "max": 18139.8
+    }
+  },
+  "note": "clean synthetic or consented audio; p95 is close to the maximum at this n"
+}

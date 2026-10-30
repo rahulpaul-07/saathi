@@ -1,0 +1,3218 @@
+{
+ "meta": {
+  "seed": 20261029,
+  "dataset": "google/fleurs test split, CC BY 4.0, real human read speech",
+  "noise": "street.wav",
+  "snr_definition": "speech-active RMS / whole-clip noise RMS",
+  "activity": {
+   "frame_s": 0.02,
+   "relative_db": -20.0,
+   "floor_dbfs": -60.0,
+   "percentile": 95.0
+  },
+  "bootstrap_resamples": 2000,
+  "git_commit": "933992b"
+ },
+ "rows": {
+  "bn-10012315972427481934|clean": {
+   "id": "bn-10012315972427481934",
+   "condition": "clean",
+   "transcript": "জার্মানির অনেক বেক করা খাবারগুলিতে বাদাম হ্যাজনট এবং অন্যান্য বাদামের উপাদান পাওয়া যায় পছন্দের কেকগুলি প্রায়শই একটি কাপ ভরা কফির সাথে ভালো মানায়",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "bn-10025278611427771211|clean": {
+   "id": "bn-10025278611427771211",
+   "condition": "clean",
+   "transcript": "একজন শুধুমাত্র আশ্চর্য হতে পারে এই ভেবে যে যখন নতুন কিছু আসে তখন কিবোর্ড কী রকম হবে",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "bn-10059008353469041076|clean": {
+   "id": "bn-10059008353469041076",
+   "condition": "clean",
+   "transcript": "হাইতিয়ান ইনস্টিটিউট ফর জাস্টিস অ্যান্ড ডেমোক্রেসি এর স্বতন্ত্র সমীক্ষাতে উল্লেখ করা হয়েছে যে নেপালি জাতিসংঘের শান্তিরক্ষা বাহিনী অজান্তেই হাইতিতে এই রোগটি নিয়ে এসেছিল",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "bn-10112260419298134236|clean": {
+   "id": "bn-10112260419298134236",
+   "condition": "clean",
+   "transcript": "জাপানের পারমাণবিক সংস্থার সূত্রে জানা গিয়েছে প্ল্যান্টটিতে তেজস্ক্রিয় সিজিয়াম এবং আয়োডিন চিহ্নিত করা হয়েছে",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "bn-10133515389098801664|clean": {
+   "id": "bn-10133515389098801664",
+   "condition": "clean",
+   "transcript": "আনুষ্ঠানিকভাবে ফোকল্যান্ডস এর মুদ্রা হল ফোকল্যান্ড পাউন্ড এফকেপি যার মান এক ব্রিটিশ পাউন্ড জিবিপি এর সমান",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "bn-10160569019855782399|clean": {
+   "id": "bn-10160569019855782399",
+   "condition": "clean",
+   "transcript": "তিনি আরও যোগ করেন যা তাদের উন্নয়নের স্তর দায়িত্ব এবং সক্ষমতার সীমা ছাড়িয়ে যায় সেই সব বিষয়ে তাদের বাধ্য করা উচিত না",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "bn-10173214416112429222|clean": {
+   "id": "bn-10173214416112429222",
+   "condition": "clean",
+   "transcript": "যদিও এখনও পর্যন্ত পরীক্ষামূলকভাবে একটি ভ্যাকসিন ইবোলা মৃত্যুর হার হ্রাস করতে সক্ষম হয়েছে তবে উপস্থিত সংক্রমণের চিকিৎসার জন্য উপযুক্ত কোনো ঔষুধ ভালোভাবে প্রকাশ হয়নি",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "bn-10178783284625915846|clean": {
+   "id": "bn-10178783284625915846",
+   "condition": "clean",
+   "transcript": "সুন্দরবনকে ইউনেস্কোর ওয়ার্ল্ড হেরিটেজ সাইট হিসেবে ঘোষণা করা হয়েছে ভারতীয় ভূখণ্ডের মধ্যে থাকা বনের অংশটিকে সুন্দরবন জাতীয় উদ্যান বলা হয়",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "bn-10218413643679736372|clean": {
+   "id": "bn-10218413643679736372",
+   "condition": "clean",
+   "transcript": "এই স্ফটিকগুলি গঠন আক্রান্ত পালিত পশুগুলোর মূত্র থেকে পাওয়াগুলির সাথে মিলে যায় যখন অবলোহিত বর্ণালীবীক্ষণ যন্ত্রের এফটিআইআর দ্বারা তুলনা করা হয়",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "bn-10263418355661224659|clean": {
+   "id": "bn-10263418355661224659",
+   "condition": "clean",
+   "transcript": "ঐতিহ্যগতভাবে নৌবাহিনীর কাজ এটা নিশ্চিত করা ছিল যে আপনার দেশ যেন আপনার মানুষ এবং পণ্য স্থানান্তরের ক্ষমতা বজায় রাখে এবং একই সাথে আপনার শত্রু যেন তার লোক ও পণ্য স্থানান্তরের ক্ষমতায় হস্তক্ষেপের সম্মুখীন হয়",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "en-1003119935936341070|clean": {
+   "id": "en-1003119935936341070",
+   "condition": "clean",
+   "transcript": "however due to the slow communication channels styles in the west could lag behind by 08:05 to 30 years",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "en-10197164397713068203|clean": {
+   "id": "en-10197164397713068203",
+   "condition": "clean",
+   "transcript": "the cabbage juice changes color depending on how acidic basic alkaline the chemical is",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "en-10235738076911595987|clean": {
+   "id": "en-10235738076911595987",
+   "condition": "clean",
+   "transcript": "the hospital has followed protocol for infection control including separating the patient from others to prevent possible infection of others",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "en-10323357556845456822|clean": {
+   "id": "en-10323357556845456822",
+   "condition": "clean",
+   "transcript": "the northern marianas emergency management office said there were no damages reported in the nation",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "en-1036771894648013441|clean": {
+   "id": "en-1036771894648013441",
+   "condition": "clean",
+   "transcript": "",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "en-1038214857203833067|clean": {
+   "id": "en-1038214857203833067",
+   "condition": "clean",
+   "transcript": "the night between 15,200 copies were made now known as dunlap",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "en-10411016628242228511|clean": {
+   "id": "en-10411016628242228511",
+   "condition": "clean",
+   "transcript": "the city is also the base to climb the niraigango volcano along with some of the cheapest",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "en-1042003289011443756|clean": {
+   "id": "en-1042003289011443756",
+   "condition": "clean",
+   "transcript": "the internet combines elements of both mass and interpersonal communication",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "en-1043394666292127188|clean": {
+   "id": "en-1043394666292127188",
+   "condition": "clean",
+   "transcript": "these things look at what it is about certain people that make them want the things that they do and what things in their environment will make them do or not do certain things",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "en-1045619486290403122|clean": {
+   "id": "en-1045619486290403122",
+   "condition": "clean",
+   "transcript": "for example the most common still image photography format in the world is 35 millimeter which was the dominant film size at the close of the analog film era",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "gu-10051332836083130420|clean": {
+   "id": "gu-10051332836083130420",
+   "condition": "clean",
+   "transcript": "આ પોપડો નજીકની બાજુએ લગભગ સિત્તેર કિલોમીટર જાડો અને દૂરની બાજુએ સો કિલોમીટર જાડો છે",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "gu-10054314118491272104|clean": {
+   "id": "gu-10054314118491272104",
+   "condition": "clean",
+   "transcript": "ઉત્તરમાં આ વિસ્તાર સાહેલ અને એટલાન્ટિક મહાસાગરની દક્ષિણે અને પશ્ચિમમાં બંધાયેલો",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "gu-1008765602519405220|clean": {
+   "id": "gu-1008765602519405220",
+   "condition": "clean",
+   "transcript": "ફિલિપિનો ફોટોગ્રાફરો અને બાળકો તેમજ વૃદ્ધો સહિત છ બંધકોને પહેલા છોડી દેવામાં આવ્યા હતા",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "gu-10164951352830139261|clean": {
+   "id": "gu-10164951352830139261",
+   "condition": "clean",
+   "transcript": "ખાસ કરીને ઉનાળામાં સાદું લોકપ્રિય લા રાત્રિ ભોજન છે પા એમ્બ ઓલી ઓલિવ ઓઈલ ટામેટા અને અન્ય ચીઝ ટુના ફિશ વગેરે જેવા ઉપલબ્ધ વ્યંજનો સાથે બ્રેડ",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "gu-10282288803999807308|clean": {
+   "id": "gu-10282288803999807308",
+   "condition": "clean",
+   "transcript": "રદ કરવાની નીતિઓ બદલાઈ છે પરંતુ માર્ચના અંતથી મોટાભાગની કોરોના વાયરસ આધારિત રદ કરવાની નીતિઓ જુલાઈ બે હજાર વીસ સુધી લંબાતી નથી જ્યારે ઓલિમ્પિક્સ સુનિશ્ચિત કરવામાં આવી હતી",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "gu-10344165401321702763|clean": {
+   "id": "gu-10344165401321702763",
+   "condition": "clean",
+   "transcript": "પંદરસોની સાડત્રીસમાં અસુની સિયોનની સ્થાપના થઈ ત્યારથી પેરાગ્વે તેના ઘણા પ્ર સ્વદેશી ચરિત્ર અને ઓળખને જાળવી રાખવામાં સફળ રહ્યો",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "gu-10347511448765778840|clean": {
+   "id": "gu-10347511448765778840",
+   "condition": "clean",
+   "transcript": "તેમણે આ કાપ માટે કોઈ આંકડો નક્કી કર્યો ન હતો અને કહ્યું હતું કે તેઓ ચીનના આર્થિક ઉત્પાદનથી નક્કી થશે",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "gu-10386183340427464557|clean": {
+   "id": "gu-10386183340427464557",
+   "condition": "clean",
+   "transcript": "તે જ રીતે સ્કેન જેનના વિઝા હોય તો તમારે સ્કેન જેનનો સભ્ય હોય તે દરેક દેશ માટે અલગથી વિઝા મેળવવાની અરજી કરવી જરૂરી નથી જેથી સમય નાણાં અને પેપરવર્કની બચત થાય છે",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "gu-10416436950497082489|clean": {
+   "id": "gu-10416436950497082489",
+   "condition": "clean",
+   "transcript": "બ્લોગિંગ એ એવું સાધન છે જે સહયોગ કરવાની પ્રેરણા આપે છે અને વિદ્યાર્થીઓને શાળાના પારંપરિક શિક્ષણથી વધીને શીખવા માટે પ્રોત્સાહન આપે છે",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "gu-10445911236372744046|clean": {
+   "id": "gu-10445911236372744046",
+   "condition": "clean",
+   "transcript": "ડનલેપ બ્રોડસાઇડના પચ્ચીસ દસ્તાવેજો હજુ પણ અસ્તિત્વ ધરાવતા હતા તે સૌથી જૂની વર્તમાન નકલો છે મૂળ હસ્તલિખિત નકલ બચી નથી",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "hi-10014385262415025488|clean": {
+   "id": "hi-10014385262415025488",
+   "condition": "clean",
+   "transcript": "ग्रीनलैंड को बहुत कम जगह बसाया गया था नोर्स सगास में वे कहते हैं कि एरिक रेड हत्या के लिए आइसलैंड से निर्वासित किया गया था और आगे पश्चिम की यात्रा करते समय ग्रीनलैंड मिला जिसे ग्रीनलैंड नाम दिया गया",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "hi-10069289676238419279|clean": {
+   "id": "hi-10069289676238419279",
+   "condition": "clean",
+   "transcript": "इंटरनेट पर ये खोज शत्रुतापूर्ण पर्यावरण पाठ्यक्रम के लिए अक्सर आपको एक स्थानीय कंपनी का पता प्रदान करेगी",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "hi-10107687492910459268|clean": {
+   "id": "hi-10107687492910459268",
+   "condition": "clean",
+   "transcript": "अपनी सरकार के अलावा आप अन्य देशों की सरकारों की सलाह ले सकते हैं हालांकि उनकी सलाह उनके नागरिकों को ध्यान में रख कर दी जाती है",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "hi-10128382631186456345|clean": {
+   "id": "hi-10128382631186456345",
+   "condition": "clean",
+   "transcript": "प्राचीन काल से ही लोग सोने चांदी और तांबे जैसे रासायनिक तत्वों के बारे में ही जानकारी रखते हैं क्योंकि इन्हें प्रकृति में मूल स्वरूप में ढूंढा जा सकता है और इन्हें प्राथमिक उपकरणों के जरिए ढूंढना अपेक्षाकृत आसान है",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "hi-10135688561274120767|clean": {
+   "id": "hi-10135688561274120767",
+   "condition": "clean",
+   "transcript": "इसे केमिकल का पीएच कहा जाता है आप लाल गोभी के जूस को इस्तेमाल करके एक संकेतक बना सकते हैं",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "hi-10200643191519059428|clean": {
+   "id": "hi-10200643191519059428",
+   "condition": "clean",
+   "transcript": "सबसे नज़दीकी सिरे पर कृष्ठ की मोटाई करीब 70 किलोमीटर है और सबसे दूर के सिरे पर यह 100 किलोमीटर है",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "hi-10286778291956788434|clean": {
+   "id": "hi-10286778291956788434",
+   "condition": "clean",
+   "transcript": "पुरुषों के स्टैंडिंग सुपर जी में ऑस्ट्रेलिया के मिशेल गोर्ले 11वें स्थान पर रहे चेक प्रतियोगी ओल्ड्रिज जेलिनेक पुरुषों के सिटिंग सुपर जी में 16वें स्थान पर रहे",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "hi-10359991159058879218|clean": {
+   "id": "hi-10359991159058879218",
+   "condition": "clean",
+   "transcript": "एम एस बीमारी केंद्रीय तंत्रिका तंत्र पर असर करती है जिसमें दिमाग स्पाइनल कॉर्ड और ऑप्टिक नर्व शामिल हैं",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "hi-10550791631951016124|clean": {
+   "id": "hi-10550791631951016124",
+   "condition": "clean",
+   "transcript": "हर कोई समाज से जुड़ा होता है और ट्रांसपोर्ट सिस्टम का उपयोग करता है लगभग सभी लोग ट्रांसपोर्ट सिस्टम के बारे में शिकायत करते हैं",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "hi-10582204498174558997|clean": {
+   "id": "hi-10582204498174558997",
+   "condition": "clean",
+   "transcript": "एक पूरी तरह से विकसित एथलीट की तरह बाघ चढ़ाई कर सकता है हालांकि अच्छी तरह से नहीं तैर सकता है बड़ी दूरी तक छलांग लगा सकता है और एक शक्तिशाली मनुष्य के 5 गुणा बल के साथ खींच सकता है",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "kn-10010482195448774909|clean": {
+   "id": "kn-10010482195448774909",
+   "condition": "clean",
+   "transcript": "ಆದರೆ ನಾಯಕನ ವಿಕೆಟ್ ಕಳೆದುಕೊಂಡ ನಂತರ ಭಾರತ ಏಳು ವಿಕೆಟ್ ಕಳೆದುಕೊಂಡು ಕೇವಲ ಮೂವತ್ತ ಆರು ರನ್ ಗಳಿಗೆ ತನ್ನ ಇನ್ನಿಂಗ್ಸ್ ಮುಗಿಸಿತು",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "kn-10019512818416747761|clean": {
+   "id": "kn-10019512818416747761",
+   "condition": "clean",
+   "transcript": "ಪಿರಮಿಡ್ ಧ್ವನಿ ಮತ್ತು ಬೆಳಕಿನ ಪ್ರದರ್ಶನವು ಈ ಭಾಗದ ಮಕ್ಕಳಿಗೆ ಅತ್ಯಂತ ಆಸಕ್ತಿದಾಯಕ ವಿಷಯವಾಗಿದೆ",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "kn-10092474821709819618|clean": {
+   "id": "kn-10092474821709819618",
+   "condition": "clean",
+   "transcript": "ಅದೇ ರೀತಿ ಶೆಂಗೆನ್ ವೀಸಾ ಹೊಂದಿದ್ದರೆ ನೀವು ಶೆಂಗೆನ್ ಸದಸ್ಯ ರಾಷ್ಟ್ರಗಳಲ್ಲಿ ಪ್ರತ್ಯೇಕವಾಗಿ ವೀಸಾಗಾಗಿ ಅರ್ಜಿ ಸಲ್ಲಿಸಬೇಕಾಗಿಲ್ಲ ಇದರಿಂದಾಗಿ ನಿಮ್ಮ ಸಮಯ ಹಣ ಮತ್ತು ಕಾಗದಪತ್ರಗಳ ಸಲ್ಲಿಕೆ ಇತ್ಯಾದಿಯ ಉಳಿತಾಯವಾಗುತ್ತದೆ",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "kn-10103823447819430366|clean": {
+   "id": "kn-10103823447819430366",
+   "condition": "clean",
+   "transcript": "ಹಾಲಿ ಸೆನೆಟರ್ ಮತ್ತು ಅರ್ಜೆಂಟೀನಾದ ಪ್ರಥಮ ಮಹಿಳೆ ಕ್ರಿಸ್ಟೀನಾ ಫರ್ನಾಂಡಿಸ್ ಡಿ ಕಿಚ್ನರ್ ಕ್ರಿಸ್ಟೀನಾ ಫರ್ನಾಂಡಿಸ್ ಡಿ ಕಿಚ್ನರ್ ಕಳೆದ ರಾತ್ರಿ ಲಾ ಪ್ಲಾಟಾದಲ್ಲಿರುವ ಅಧ್ಯಕ್ಷೀಯ ಉಮೇದುವಾರಿಕೆಯನ್ನು ಘೋಷಿಸಿದರು ಎಲ್ಲಿಸ್ ಐವತ್ತು ಕಿಲೋಮೀಟರ್ ಅಂದರೆ ಮೂವತ್ತೊಂದು ಮೈಲಿ",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "kn-10122168936396301938|clean": {
+   "id": "kn-10122168936396301938",
+   "condition": "clean",
+   "transcript": "ಹಾಂಕಾಂಗ್ ಸ್ಕೈಲೈನ್ ಅನ್ನು ನಿರ್ಮಿಸುವ ಕಟ್ಟಡಗಳ ಮೆರವಣಿಗೆಯನ್ನು ಮಿನುಗುವ ಬಾರ್ ಗ್ರಾಫ್ ಗೆ ಹೋಲಿಸಲಾಗುತ್ತದೆ ಮತ್ತು ವಿಕ್ಟೋರಿಯಾ ಬಂದರಿನ ನೀರು ಅದನ್ನು ಸ್ಪಷ್ಟಪಡಿಸುತ್ತದೆ",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "kn-10129714409926666294|clean": {
+   "id": "kn-10129714409926666294",
+   "condition": "clean",
+   "transcript": "ಪ್ರಮುಖ ಮಿಲಿಟರಿ ಮತ್ತು ನಾಗರಿಕ ಸರಬರಾಜುಗಳನ್ನು ಕಡಿತಗೊಳಿಸುವ ಈ ತಂತ್ರವು ಪರಿಣಾಮಕಾರಿಯಾಗಿ ಸಾಬೀತಾಯಿತು ಆದರೆ ಕಳೆದ ಎರಡು ಶತಮಾನಗಳ ಹಲವಾರು ಅಂತಾರಾಷ್ಟ್ರೀಯ ಒಪ್ಪಂದಗಳಿಂದ ಒಟ್ಟುಗೂಡಿಸುವ ಎಲ್ಲರೂ ಒಪ್ಪಿಕೊಂಡಿರುವ ಅಂತಾರಾಷ್ಟ್ರೀಯ ಕಾನೂನನ್ನು ಈ ದಿಗ್ಬಂಧನ ಉಲ್ಲಂಘಿಸಿದೆ",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "kn-10171759063486736869|clean": {
+   "id": "kn-10171759063486736869",
+   "condition": "clean",
+   "transcript": "ಪ್ಯಾರಿಸ್ ಜನರು ಉದ್ರೇಕಕಾರಿ ಅಸಭ್ಯ ಮತ್ತು ಸೊಕ್ಕಿನಿಂದ ಕೂಡಿದವರು ಎಂಬ ಕುಖ್ಯಾತಿಯನ್ನು ಹೊಂದಿದ್ದಾರೆ",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "kn-10193060423779665461|clean": {
+   "id": "kn-10193060423779665461",
+   "condition": "clean",
+   "transcript": "ಆ ಬೇರೆ ನಾಮಾಂಕನಗಳಲ್ಲಿ ಕೆಲವು ಅತ್ಯುತ್ತಮ ಸಿನಿಮಾ ನಿರ್ದೇಶಕ ಸಿನಿಮಾಟೋಗ್ರಫಿ ವಸ್ತ್ರ ವಿನ್ಯಾಸ ಸಿನಿಮಾ ಸಂಕಲನ ಮೂಲ ಸಂಗೀತ ಪ್ರೊಡಕ್ಷನ್ ಡಿಸೈನ್ ಧ್ವನಿ ಸಂಕಿಲನ ಧ್ವನಿ ಮಿಶ್ರಣ ಮತ್ತು ಮೂಲ ಸ್ಕ್ರೀನ್ ಪ್ಲೇ",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "kn-10248142223167904254|clean": {
+   "id": "kn-10248142223167904254",
+   "condition": "clean",
+   "transcript": "ಎಲ್ಲಾ ವಿಷಯಗಳನ್ನು ಪರಿಗಣಿಸಿದ ನಂತರ ನಮ್ಮ ಪೂರ್ವಜರು ತಮ್ಮ ಪ್ರೋಟೀನ್ ಸಮಸ್ಯೆಯನ್ನು ಸ್ವಲ್ಪ ಮಟ್ಟಿಗೆ ಸವನ್ನಾದಲ್ಲಿ ಚಿಂಪಾಂಜಿಗಳು ಮಾಡುವ ರೀತಿಯಲ್ಲಿ ಪರಿಹರಿಸಿದ್ದಲ್ಲಿ ನಾವು ಆಶ್ಚರ್ಯಪಡಬೇಕಿಲ್ಲ",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "kn-10332300909659383666|clean": {
+   "id": "kn-10332300909659383666",
+   "condition": "clean",
+   "transcript": "ಸಿಂಗಾಪುರದ ಉಪಪ್ರಧಾನಿ ವಾಂಗ್ ಕಾನ್ ಸೆಂಗ್ ಅವರನ್ನು ಬರಮಾಡಿಕೊಂಡರು ಮತ್ತು ವ್ಯಾಪಾರ ಹಾಗೂ ಭಯೋತ್ಪಾದನೆ ವಿಷಯಗಳ ಬಗ್ಗೆ ಸಿಂಗಾಪುರ ಪ್ರಧಾನಿ ಲೀ ಹೀನ್ ಲುಂಗ್ ಜತೆಗೆ ಚರ್ಚಿಸಿದರು",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "ml-10013487754489332324|clean": {
+   "id": "ml-10013487754489332324",
+   "condition": "clean",
+   "transcript": "ഈ നഗരം രാജ്യത്തെ മറ്റു നഗരങ്ങളിൽ നിന്ന് പൂർണ്ണമായും വ്യത്യസ്തമാണ് കാരണം ഇതിന് ആഫ്രിക്കൻ വാസനയേക്കാൾ അറബി വാസനയാണ് കൂടുതൽ",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "ml-10078044035084322628|clean": {
+   "id": "ml-10078044035084322628",
+   "condition": "clean",
+   "transcript": "ഇത് ബന്ധപ്പെട്ടിരിക്കുന്നു എന്നാൽ സാധാരണയായി ആൽപ്പൈൻ ശൈലിയിലുള്ള സ്കീ ടൂറിംഗോ പർവതാരോഹണമോ ഉൾപ്പെടുന്നില്ല ഇതിൽ രണ്ടാമത്തേത് കുത്തനെയുള്ള ഭൂപ്രദേശങ്ങളിൽ ചെയ്യുന്നതും കൂടുതൽ കട്ടിയുള്ള സ്കീകളും ബൂട്ടുകളും ആവശ്യമായതും",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "ml-10134676116368565149|clean": {
+   "id": "ml-10134676116368565149",
+   "condition": "clean",
+   "transcript": "മുറിവുകൾക്കായി അദ്ദേഹം ഒരു ചിത്രം സജ്ജമാക്കിയിട്ടില്ല ചൈനയുടെ സാമ്പത്തിക ഉൽപാദനത്തെ അടിസ്ഥാനമാക്കിയാണ് അവ നിർമ്മിക്കുക എന്ന് പറഞ്ഞു",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "ml-10277507420082337141|clean": {
+   "id": "ml-10277507420082337141",
+   "condition": "clean",
+   "transcript": "ബെൽജിയൻ മാനദണ്ഡങ്ങൾ അനുസരിച്ചാണ് ഹോട്ട് ചോക്ലേറ്റ് ഉണ്ടാക്കിയിരിക്കുന്നത് ഫ്രൂട്ട് ജ്യൂസുകൾ വില കൂടിയതാണെങ്കിലും രുചികരമാണ്",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "ml-10286327547505797785|clean": {
+   "id": "ml-10286327547505797785",
+   "condition": "clean",
+   "transcript": "പുരുഷ സ്റ്റാൻഡിങ് സൂപ്പർ ജിയിൽ ഓസ്ട്രേലിയയുടെ മിച്ചൽ ഗോർലി പതിനൊന്നാം സ്ഥാനത്തെത്തി പുരുഷന്മാരുടെ സിറ്റിംഗ് സൂപ്പർ ജിയിൽ ചെക്ക് എതിരാളിയായ ഓൾഡ്രിക് ജെനലെക് പതിനാറാം സ്ഥാനത്തെത്തി",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "ml-10332530728981827248|clean": {
+   "id": "ml-10332530728981827248",
+   "condition": "clean",
+   "transcript": "കഴിഞ്ഞ ആഴ്ച അമിതമായി ചൂടാകുന്ന മുപ്പത്തി നാല് സംഭവങ്ങളെക്കുറിച്ച് ആപ്പിൾ അറിയിച്ചതായി എംഇടിഐ അറിയിച്ചിരുന്നു അതിനെ കമ്പനി ഗുരുതരമല്ലാത്തത് എന്ന് വിളിച്ചു",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "ml-10438874059424936747|clean": {
+   "id": "ml-10438874059424936747",
+   "condition": "clean",
+   "transcript": "ഓർഗനൈസേഷനുകളെ ഉയർന്ന പ്രകടനത്തിലെത്താൻ സഹായിക്കുന്നതിന് ഉപയോഗിക്കുന്ന ഒരു രീതിയായി കോൺടിനം സമീപനത്തെ ഏയ്ഞ്ചൽ രണ്ടായിരത്തി ആറ് വിശദീകരിക്കുന്നു",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "ml-10439860146800584845|clean": {
+   "id": "ml-10439860146800584845",
+   "condition": "clean",
+   "transcript": "മുതിര്ന്നവരും കുട്ടികളും ഉള്പ്പെടെ ബന്ദിയാക്കപ്പെട്ട ആറ് പേരെ ആദ്യം മോചിപ്പിച്ചു ഫിലിപ്പിനോ ഫോട്ടോഗ്രാഫര്മാരും",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "ml-10514694764352729740|clean": {
+   "id": "ml-10514694764352729740",
+   "condition": "clean",
+   "transcript": "അലോയ് എന്നത് അടിസ്ഥാനപരമായി രണ്ട് അല്ലെങ്കിൽ അതിലധികം ലോഹങ്ങളുടെ സങ്കരമാണ് മൂലകങ്ങളുടെ പട്ടികയിൽ ഒരുപാട് മൂലകങ്ങളുണ്ട് എന്ന കാര്യം മറക്കരുത്",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "ml-10657006548453620506|clean": {
+   "id": "ml-10657006548453620506",
+   "condition": "clean",
+   "transcript": "അന്തർജില്ല ബസ് സ്റ്റേഷനിൽ നിന്ന് നദിക്ക് കുറുകെ ദിവസത്തിലുടനീളം ബസ്സുകൾ പുറപ്പെടുന്നു എന്നിരുന്നാലും മിക്കതും പ്രത്യേകിച്ച് കിഴക്കോട്ടും ജാക്കറിലേക്ക് ബുംതാങ്ങിലേക്ക് പോകുന്നവ ആറ് മുപ്പതിനും ഏഴ് മുപ്പതിനും ഇടയിൽ പുറപ്പെടുന്നു",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "mr-10201098310487173927|clean": {
+   "id": "mr-10201098310487173927",
+   "condition": "clean",
+   "transcript": "सिंट्राचे रोमँटिक आणि मोहक शहर हे उत्तरेकडे व सहज पोहोचता येऊ शकणारे आहे तसेच लॉर्ड बायरनने रेकॉर्ड केलेल्या त्यांच्या वैभवाच्या भव्यतेच्या वर्तनानंतर हे परदेशी लोकांमध्ये देखील प्रसिद्ध झाले आहे",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "mr-10209762496868095317|clean": {
+   "id": "mr-10209762496868095317",
+   "condition": "clean",
+   "transcript": "वनस्पती ऑक्सिजनची निर्मिती करतात ज्याचा उपयोग मनुष्य श्वास घेताना करतो आणि ते कार्बन डायऑक्साईड घेतात जो मनुष्य उच्छवासाद्वारे बाहेर सोडतो म्हणजेच श्वास सोडणे",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "mr-10218825816989175821|clean": {
+   "id": "mr-10218825816989175821",
+   "condition": "clean",
+   "transcript": "माथलीने काल नऊ सदस्यांच्या नवीन प्रोव्हिजनल इलेक्टोरल कौन्सिलमध्ये सीईपी शपथ घेतली",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "mr-10257470372493232363|clean": {
+   "id": "mr-10257470372493232363",
+   "condition": "clean",
+   "transcript": "शेनजेन झोन असला तरी या बाबतीत काही प्रमाणात एखाद्या देशासारखा कार्य करतो",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "mr-10291151742776340106|clean": {
+   "id": "mr-10291151742776340106",
+   "condition": "clean",
+   "transcript": "रिपरक्षी प्रवाह हे किनाऱ्यापासून वेगळ्या झालेल्या लाटांपासून परतणारा प्रवाह असतात सह प्रवाली किंवा तत्सम ठिकाणी",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "mr-10329146223209027475|clean": {
+   "id": "mr-10329146223209027475",
+   "condition": "clean",
+   "transcript": "जितका तणाव कमी तितकी सकारात्मक जीवन ऊर्जा अस्तित्वात असते प्रत्येक व्यक्तीकडे संपूर्ण शांती आणि समाधान मिळवण्याची क्षमता असते",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "mr-10357069420670487676|clean": {
+   "id": "mr-10357069420670487676",
+   "condition": "clean",
+   "transcript": "त्याला सुरुवातीला ग्रेट यारमाऊथ येथील जेम्स पॅगेट रुग्णालयात दाखल केले होते",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "mr-10362338566354994001|clean": {
+   "id": "mr-10362338566354994001",
+   "condition": "clean",
+   "transcript": "तथापि रीगा शांतता करार सोव्हिएत पॉलिश नॉन इग्रेशन करार तसेच अन्य आंतरराष्ट्रीय करार द्विपक्षीय आणि बहुपक्षीय दोन्हीच्या उल्लंघनामुळे पोलंडच्या पूर्व प्रदेशावर आक्रमण केल्यानंतर सोव्हिएतच्या युनियन रेड आर्मीच्या आठ लक्ष सैनिकांनी प्रवेश केला आणि बेलारूस आणि युक्रेनियन फ्रंट तयार केला  तेव्हा या योजना जवळपास रातोरात अप्रचलितपणे प्रस्तुत केल्या गेल्या",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "mr-10369140904526923849|clean": {
+   "id": "mr-10369140904526923849",
+   "condition": "clean",
+   "transcript": "त्याच धर्तीवर पुरुषांना गुडघे झाकणारे ट्राऊझर घालणे आवश्यक आहे",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "mr-10392451913859275620|clean": {
+   "id": "mr-10392451913859275620",
+   "condition": "clean",
+   "transcript": "उदाहरणार्थ प्रत्येक वर्षी उत्तर कॅलोरिनातील बेनेट शाळेचे विद्यार्थी त्यांच्या राज्याच्या राजधानीला भेट देण्याच्या सहलीसंबंधी वेबसाईट तयार करतात प्रत्येक वर्षी वेबसाईट पुन्हा तयार केली जाते पण तिच्या जुन्या आवृत्त्या स्क्रॅपबुकप्रमाणे ऑनलाईन ठेवल्या जातात",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "pa-10019901230699518471|clean": {
+   "id": "pa-10019901230699518471",
+   "condition": "clean",
+   "transcript": "ਅਲਹੀਦਾ ਕਰਨਾ ਅਤੇ ਮੁੜ ਸੁਮੇਲ ਕਰਨਾ ਹਰੇਕ ਪੀੜ੍ਹੀ ਦੇ ਦੋ ਪੁਲਾਂ ਵਿਚਕਾਰ ਪਰਿਵਰਤਿਤ ਰੂਪ ਨੂੰ ਅੱਗੇ ਪਿੱਛੇ ਪੂਰੀ ਤਰ੍ਹਾਂ ਬਿਰਤੇਬ ਕਰ ਦਿੰਦਾ ਹੈ",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "pa-10033020277327712096|clean": {
+   "id": "pa-10033020277327712096",
+   "condition": "clean",
+   "transcript": "ਇੰਟਰਨੈੱਟ ਬਹੁਗਿਣਤੀ ਅਤੇ ਅੰਤਰ ਵਿਅਕਤੀ ਸੰਚਾਰ ਦੋਵਾਂ ਤੱਤਾਂ ਦਾ ਸੁਮੇਲ ਕਰਦਾ ਹੈ",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "pa-10045745942478893252|clean": {
+   "id": "pa-10045745942478893252",
+   "condition": "clean",
+   "transcript": "ਬਿੱਲੀਆਂ ਵੀ ਸਭ ਤੋਂ ਵੱਧ ਸਮਾਜਿਕ ਸ਼ੇਅਰ ਹਨ ਜਿਹੜੇ ਵੱਡੇ ਸਮੂਹਾਂ ਵਿੱਚ ਰਹਿੰਦੇ ਹਨ ਜਿਨ੍ਹਾਂ ਨੂੰ ਪ੍ਰਾਈਡ ਕਿਹਾ ਜਾਂਦਾ ਹੈ",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "pa-10114801816081710422|clean": {
+   "id": "pa-10114801816081710422",
+   "condition": "clean",
+   "transcript": "ਕੋਕੈਮੋ ਘਾਟੀ ਚਿੱਲੀ ਦਾ ਪ੍ਰਮੁੱਖ ਚੜ੍ਹਾਈ ਵਾਲਾ ਭਾਗ ਜੋ ਦੱਖਣੀ ਅਮਰੀਕਾ ਦੀਆਂ ਸਖਤ ਵੱਡੀਆਂ ਦੀਵਾਰਾਂ ਦੀਆਂ ਕਿਸਮਾਂ ਅਤੇ ਕਰੇਗ ਨਾਲ ਯੋਸੇਮਾਈਟ ਦੇ ਰੂਪ ਵਿੱਚ ਜਾਣਿਆ ਜਾਂਦਾ ਹੈ",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "pa-10152662544244172537|clean": {
+   "id": "pa-10152662544244172537",
+   "condition": "clean",
+   "transcript": "ਕੁਦਰਤੀ ਵਾਤਾਵਰਨ ਵਿੱਚ ਹੋਣ ਅਤੇ ਪੌਦੇ ਖੂਬਸੂਰਤ ਦਿਖਾਈ ਦਿੰਦੇ ਹਨ ਇਸ ਲਈ ਕੇਵਲ ਇੱਕ ਨਮੂਨੇ ਨੂੰ ਵੀ ਹਟਾਉਣ ਦੇ ਲੋਭ ਦਾ ਵਿਰੋਧ ਕਰੋ",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "pa-1016397316453669617|clean": {
+   "id": "pa-1016397316453669617",
+   "condition": "clean",
+   "transcript": "ਉਹਨਾਂ ਦੇ ਪੈਰ ਚੰਮ ਜਾਂ ਖੱਲੜੀ ਦੀ ਤਹਿ ਅਤੇ ਪੰਜੇ ਵਾਲੇ ਹੁੰਦੇ ਹਨ ਉਹ ਅੰਡੇ ਦਿੰਦੇ ਹਨ ਅਤੇ ਉਹ ਆਪਣੀਆਂ ਦੋਵੇਂ ਪਿਛਲੀਆਂ ਲੱਤਾਂ ਤੇ ਟੀ ਰੈਕਸ ਵਾਂਗ ਚੱਲਦੇ ਹਨ",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "pa-1017212797150914463|clean": {
+   "id": "pa-1017212797150914463",
+   "condition": "clean",
+   "transcript": "ਇੱਕ ਪਰਮਾਣੂ ਬੰਬ ਇਸ ਸਿਧਾਂਤ ਤੇ ਕੰਮ ਕਰਦਾ ਹੈ ਕਿ ਇਹ ਕਈ ਪ੍ਰੋਟੋਨ ਅਤੇ ਨਿਊਟਰੋਨ ਨੂੰ ਇੱਕ ਕੇਂਦਰ ਬਿੰਦੂ ਵਿੱਚ ਇਕੱਠੇ ਰੱਖਣ ਲਈ ਊਰਜਾ ਲੈਂਦਾ ਹੈ",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "pa-10190844180610990943|clean": {
+   "id": "pa-10190844180610990943",
+   "condition": "clean",
+   "transcript": "ਥ੍ਰੀ ਕਿੰਗਡਮਸ ਪ੍ਰਾਚੀਨ ਚੀਨ ਦੇ ਇਤਿਹਾਸ ਦੇ ਸਭ ਤੋਂ ਖੂਨੀ ਯੁੱਗਾਂ ਵਿੱਚੋਂ ਇੱਕ ਸੀ ਹਜ਼ਾਰਾਂ ਲੋਕ ਸ਼ੀਆਨ ਦੇ ਸ਼ਾਨਦਾਰ ਮਹਿਲ ਦੀ ਸਭ ਤੋਂ ਉੱਚੇ ਤਖ਼ਤੇ ਬੈਠਣ ਲਈ ਲੜਦੇ ਹੋਏ ਮਾਰੇ ਗਏ",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "pa-10217761447980730728|clean": {
+   "id": "pa-10217761447980730728",
+   "condition": "clean",
+   "transcript": "ਇਹ ਖਤਮ ਹੋਣ ਨਹੀਂ ਜਾ ਰਿਹਾ ਇਹ ਇੱਕ ਅਧਿਆਏ ਦਾ ਅੰਤ ਅਤੇ ਇੱਕ ਨਵਾਂ ਅਧਿਆਇ ਹੈ",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "pa-10250259946645700913|clean": {
+   "id": "pa-10250259946645700913",
+   "condition": "clean",
+   "transcript": "ਹੋਰ ਨੌਮੀਨੇਸ਼ਨਾਂ ਵਿੱਚ ਸਰਬੋਤਮ ਚਿੱਤਰ ਡਾਇਰੈਕਟਰ ਸਿਨੇਮਾਟੋਗ੍ਰਾਫੀ ਕਾਸਟਿਊਮ ਡਿਜ਼ਾਇਨ ਫਿਲਮ ਸੰਪਾਦਨ ਓਰੀਜਨਲ ਸਕੋਰ ਉਤਪਾਦਨ ਡਿਜ਼ਾਈਨ ਸਾਊਂਡ ਸੰਪਾਦਨ ਸਾਊਂਡ ਮਿਕਸਿੰਗ ਅਤੇ ਓਰੀਜਨਲ ਸਕ੍ਰੀਨਪਲੇਅ ਸ਼ਾਮਿਲ ਹਨ",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "ta-10072217146537983584|clean": {
+   "id": "ta-10072217146537983584",
+   "condition": "clean",
+   "transcript": "லக்காசிங் பஜனையை வழங்கினார் பாடகர் ராஜு கண்டல்வாலும் அவருடன் வந்திருந்தார்",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "ta-10151944176129497809|clean": {
+   "id": "ta-10151944176129497809",
+   "condition": "clean",
+   "transcript": "முக்கியமான மேடைகளில் இசை நிகழ்ச்சி முடிந்திருந்தாலும் விழாவின் சில பிரிவுகள் இரவு இசைப்பதை தொடரும்",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "ta-10222238337252024030|clean": {
+   "id": "ta-10222238337252024030",
+   "condition": "clean",
+   "transcript": "பேருந்துகள் நாள் முழுவதும் மாவட்டங்களுக்கு இடையிலான பேருந்து நிலையத்திலிருந்து ஆற்றின் குறுக்கே புறப்படுகின்றன இருப்பினும் பெரும்பாலானவை குறிப்பாக கிழக்கு நோக்கி செல்லும் பேருந்துகள் மற்றும் ஜாகர் பும்தாங் ஆறரை முதல் ஏழரை மணிக்கு இடையே புறப்படச் செல்லுகின்றன",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "ta-10265284731185110799|clean": {
+   "id": "ta-10265284731185110799",
+   "condition": "clean",
+   "transcript": "துணி மிகவும் வெப்பமடைந்ததலை அனுமதிக்கப்படுபடி கவனமாக இருக்கவும் அதனால் துணி சுருங்கலாம் அல்லது தீவிர நிகழ்வுகளில் துணி தீயால் வாடப்படலாம்",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "ta-10278812186982315493|clean": {
+   "id": "ta-10278812186982315493",
+   "condition": "clean",
+   "transcript": "இதன் விளைவாக இரண்டு மீன் வகைகள் அழிந்துவிட்டன மேலும் ஹம்பேக்சப் உட்பட மற்ற இரண்டு அழியும் நிலையில் உள்ளன",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "ta-10367238297771483490|clean": {
+   "id": "ta-10367238297771483490",
+   "condition": "clean",
+   "transcript": "வலைப்பதிவுகளின் சரியான பயன்பாடு மாணவர்களை மேலும் விமர்சகர்களாகவும் பகுத்தாய்பவர்களாகவும் ஆக்கும் இணைய கேள்விகளுக்கு பதிலளிக்கும்போது அவர்கள் அடுத்தவர்களுடைய கருத்திற்கு தங்கள் பதிலை சொல்வதுடன் தங்களுக்கே உரிய ஓர் நிலையை எடுக்கவும் உதவுகிறது ஒராவேக் இரண்டாயிரத்தி இரண்டு",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "ta-10394228005554884342|clean": {
+   "id": "ta-10394228005554884342",
+   "condition": "clean",
+   "transcript": "சிங்கத்தை போன்றே ஓநாய்கள் அல்லது நாய்கள் ஆகிய விலங்குகள் வியக்கத்தை வகையில் செயல்படுகின்றன ஆனால் மற்ற பூனை இனங்கள் இல்லை நடவடிக்கையிலும் ஒது ஒத்துப்போகின்றன மிகவும் ஆபத்தானவையும் கூட",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "ta-1039497074136799281|clean": {
+   "id": "ta-1039497074136799281",
+   "condition": "clean",
+   "transcript": "பெர்ரி இன்றிரவு காகஸின் முடிவுகளை மதிப்பிடுவதற்காக டெக்சாஸுக்கு திரும்புவேன் இந்த பந்தயத்தில் எனக்கு ஒரு பாதை இருக்கிறதா என்பதை இது தீர்மானிக்கும் என்று கூறினார் ஆனால் பின்பு அவர் பந்தயத்திலேயே இருந்து ஜனவரி இருபத்தொன்றில் தென் கரோலினா முதன்மை போட்டியில் போட்டியிடுவார் என்று தெரிவித்தார்",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "ta-10406373928837348332|clean": {
+   "id": "ta-10406373928837348332",
+   "condition": "clean",
+   "transcript": "பிரமிட் ஒலி மற்றும் ஒலி நிகழ்ச்சிகள் ஆகியவை இந்தப் பகுதியில் குழந்தைகளுக்கு மிக சுவாரஸ்யமான விஷயங்களில் ஒன்றாகும்",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "ta-10431271162503376039|clean": {
+   "id": "ta-10431271162503376039",
+   "condition": "clean",
+   "transcript": "அதன் பலனாக நடிகர்களும் கூட மேடையின் மீது கஞ்சாவை புகைக்கிறார்கள் மற்றும் தியேட்டரும் கூட பார்வையாளர்களை அதில் இணைய உற்சாகப்படுத்துகிறது",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "te-10054709042905280078|clean": {
+   "id": "te-10054709042905280078",
+   "condition": "clean",
+   "transcript": "చిన్న ద్వీపాలలో చాలా వరకు స్వతంత్ర దేశాలు లేదా ఫ్రాన్స్ తో సంబంధం కలిగి ఉన్నాయి ఇంకా వీటిని లగ్జరీ బీచ్ రిసార్ట్స్ అని పిలుస్తారు",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "te-10085601229183142282|clean": {
+   "id": "te-10085601229183142282",
+   "condition": "clean",
+   "transcript": "కొన్ని క్రియలు ఆబ్జెక్టుల మధ్య తేడాను గుర్తించడానికి ఇది ఒక ముఖ్యమైన మార్గం",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "te-10145424547032356574|clean": {
+   "id": "te-10145424547032356574",
+   "condition": "clean",
+   "transcript": "ఈ దృశ్యాలు పిరమిడ్లపై ప్రదర్శించబడతాయి మరియు వేరే పిరమిడ్లను వెలిగించబడ్డాయి",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "te-1018616296093099687|clean": {
+   "id": "te-1018616296093099687",
+   "condition": "clean",
+   "transcript": "కాల్షియం పొటాషియం వంటి మూలకాలను లోహాలుగా పరిగణిస్తారు వెండి బంగారం వంటి లోహాలు కూడా ఉన్నాయి",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "te-10252770362041562600|clean": {
+   "id": "te-10252770362041562600",
+   "condition": "clean",
+   "transcript": "అతని పని అటువంటి గుర్తింపు పొందిన నాణ్యత మరియు వివరాలతో కూడినది అతడు ఫిలా టెస్టులలో చాలా తక్కువ కుటుంబ సభ్యునిలాంటి వాళ్ళలో ఒకడు అతని పనులను సేకరించడంలో మాత్రమే కొందరు ప్రత్యేకత కలిగి ఉన్నారు",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "te-10291149870624674262|clean": {
+   "id": "te-10291149870624674262",
+   "condition": "clean",
+   "transcript": "ఐరోపా సాపేక్షంగా చిన్నదే కానీ అనేక స్వతంత్ర దేశాలతో కూడిన ఖండం సాధారణ పరిస్థితుల్లో అనేక దేశాల్లో ప్రయాణించడం అంటే వీసా అప్లికేషన్లు మరియు పాస్పోర్ట్ నియంత్రణ ద్వారా అనేక సార్లు వెళ్ళాల్సి ఉంటుంది",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "te-10373756234313480430|clean": {
+   "id": "te-10373756234313480430",
+   "condition": "clean",
+   "transcript": "దాని డెబ్బై ఎనిమిది సిఫార్సులలో మొదటిది శత్రుదేశాల జోక్యానికి వ్యతిరేకంగా ఇరాక్ సరిహద్దులను సురక్షితం చేయడానికి మరియు దాని పొరుగు దేశాలతో దౌత్య సంబంధాలను తిరిగి నెలకొల్పడానికి ఈ ఏడాది చివరిలోగా ఒక కొత్త దౌత్యపరమైన చొరవ తీసుకోవాలి",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "te-10421077295670162774|clean": {
+   "id": "te-10421077295670162774",
+   "condition": "clean",
+   "transcript": "పట్టాలను నిలబెట్టడానికి క్రాస్టీలు చాలా ముందుగానే ప్రవేశపెట్టబడ్డాయి అయితే పైభాగంలో ఇనుప ఖనిజం ఉంటే ట్రాకులు మరింత సమర్థవంతంగా ఉంటాయని క్రమంగా గ్రహించారు",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "te-10495283664299809767|clean": {
+   "id": "te-10495283664299809767",
+   "condition": "clean",
+   "transcript": "ఇది బేస్ స్టేషన్ లో డ్యూయల్ రేడియోలు ఉంటే ఎనిమిది వందల రెండు పాయింట్ పదకొండు ఏ ఎనిమిది వందల రెండు పాయింట్ పదకొండు బి మరియు ఎనిమిది వందల రెండు పాయింట్ పదకొండు జీ తో అనుకూలంగా వెనుకకు అనుమతిస్తుంది",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "te-10529075416468337996|clean": {
+   "id": "te-10529075416468337996",
+   "condition": "clean",
+   "transcript": "గ్రీన్ ల్యాండ్ తక్కువ జనాభాతో ఉండేది నోర్స్ సకాస్లో రిక్ ది రెడ్ హత్య చేసినందువల్ల ఐస్లాండ్ నుండి బహిష్కరించబడినట్లు చెబుతారు ఇంకా తరువాత పశ్చిమంగా ప్రయాణిస్తున్నప్పుడు గ్రీన్ ల్యాండ్ ను కనుగొని దాన్ని గ్రీన్ ల్యాండ్ అని పేరు పెట్టాడు",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "bn-10012315972427481934|street_20": {
+   "id": "bn-10012315972427481934",
+   "condition": "street_20",
+   "transcript": "জার্মানির অনেক বেক করা খাবারগুলিতে বাদাম হ্যাজনেট এবং অন্যান্য বাদামের উপাদান পাওয়া যায় পছন্দের কেকগুলি প্রায়শই একটি কাপ ভরা কফির সাথে ভালো মানায়",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.7098765432098766
+  },
+  "bn-10025278611427771211|street_20": {
+   "id": "bn-10025278611427771211",
+   "condition": "street_20",
+   "transcript": "একজন শুধুমাত্র আশ্চর্য হতে পারে এই ভেবে যে যখন নতুন কিছু আসে তখন কিবোর্ড কীরকম হবে",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.9521072796934866
+  },
+  "bn-10059008353469041076|street_20": {
+   "id": "bn-10059008353469041076",
+   "condition": "street_20",
+   "transcript": "হাইতিয়ান ইনস্টিটিউট ফর জাস্টিস অ্যান্ড ডেমোক্রেসির স্বতন্ত্র সমীক্ষাতে উল্লেখ করা হয়েছে যে নেপালি জাতিসংঘের শান্তিরক্ষা বাহিনী অজান্তেই হাইতিতে এই রোগটি নিয়ে এসেছিল",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.6529492455418381
+  },
+  "bn-10112260419298134236|street_20": {
+   "id": "bn-10112260419298134236",
+   "condition": "street_20",
+   "transcript": "জাপানের পারমাণবিক সংস্থার সূত্রে জানা গিয়েছে প্ল্যান্টটিতে তেজস্ক্রিয় সিজিয়াম এবং আয়োডিন চিহ্নিত করা হয়েছে",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.9922928709055877
+  },
+  "bn-10133515389098801664|street_20": {
+   "id": "bn-10133515389098801664",
+   "condition": "street_20",
+   "transcript": "আনুষ্ঠানিকভাবে ফোকল্যান্ডস এর মুদ্রা হল ফোকল্যান্ড পাউন্ড এফকেপি যার মান এক ব্রিটিশ পাউন্ড জিডিপির সমান",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.4837758112094395
+  },
+  "bn-10160569019855782399|street_20": {
+   "id": "bn-10160569019855782399",
+   "condition": "street_20",
+   "transcript": "তিনি আরও যোগ করেন যা তাদের উন্নয়নের স্তর দায়িত্ব এবং সক্ষমতার সীমা ছাড়িয়ে যায় সেই সব বিষয়ে তাদের বাধ্য করা উচিত না",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.618840579710145
+  },
+  "bn-10173214416112429222|street_20": {
+   "id": "bn-10173214416112429222",
+   "condition": "street_20",
+   "transcript": "যদিও এখনও পর্যন্ত পরীক্ষামূলকভাবে একটি ভ্যাকসিন ইবোলা মৃত্যুর হার হ্রাস করতে সক্ষম হয়েছে তবে উপস্থিত সংক্রমণের চিকিৎসার জন্য উপযুক্ত কোনো ঔষুধ ভালোভাবে প্রকাশ হয়নি",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.674217907227616
+  },
+  "bn-10178783284625915846|street_20": {
+   "id": "bn-10178783284625915846",
+   "condition": "street_20",
+   "transcript": "সুন্দরবনকে ইউনেস্কোর ওয়ার্ল্ড হেরিটেজ সাইট হিসেবে ঘোষণা করা হয়েছে ভারতীয় ভূখণ্ডের মধ্যে থাকা বনের অংশটিকে সুন্দরবন জাতীয় উদ্যান বলা হয়",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.6803418803418804
+  },
+  "bn-10218413643679736372|street_20": {
+   "id": "bn-10218413643679736372",
+   "condition": "street_20",
+   "transcript": "এই স্পটিকগুলি গঠন আক্রান্ত পালিত পশুগুলোর মূত্র থেকে পাওয়াগুলির সাথে মিলে যায় যখন অবলোহিত বর্ণালীবীক্ষণ যন্ত্রের এফটিআইআর দ্বারা তুলনা করা হয়",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.5811965811965812
+  },
+  "bn-10263418355661224659|street_20": {
+   "id": "bn-10263418355661224659",
+   "condition": "street_20",
+   "transcript": "ঐতিহ্যগতভাবে নৌবাহিনীর কাজ এটা নিশ্চিত করা ছিল যে আপনার দেশ যেন আপনার মানুষ এবং পণ্য স্থানান্তরের ক্ষমতা বজায় রাখে এবং একই সাথে আপনার শত্রু যেন তার লোক ও পণ্য স্থানান্তরের ক্ষমতায় হস্তক্ষেপের সম্মুখীন হয়",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.7144120247568524
+  },
+  "en-1003119935936341070|street_20": {
+   "id": "en-1003119935936341070",
+   "condition": "street_20",
+   "transcript": "however due to the slow communication channels styles in the west could lag behind by 08:05 to 30 years",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.5397727272727273
+  },
+  "en-10197164397713068203|street_20": {
+   "id": "en-10197164397713068203",
+   "condition": "street_20",
+   "transcript": "the cabbage juice changes color depending on how acidic basic alkaline the chemical is",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.13194444444444445
+  },
+  "en-10235738076911595987|street_20": {
+   "id": "en-10235738076911595987",
+   "condition": "street_20",
+   "transcript": "the hospital has followed protocol for infection control including separating the patient from others to prevent possible infection of others",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.7057793345008757
+  },
+  "en-10323357556845456822|street_20": {
+   "id": "en-10323357556845456822",
+   "condition": "street_20",
+   "transcript": "the northern mariana's emergency management office said that there were no damages reported in the nation",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.37962962962962965
+  },
+  "en-1036771894648013441|street_20": {
+   "id": "en-1036771894648013441",
+   "condition": "street_20",
+   "transcript": "",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.2767676767676768
+  },
+  "en-1038214857203833067|street_20": {
+   "id": "en-1038214857203833067",
+   "condition": "street_20",
+   "transcript": "the night between 15,200 copies were made now known as the",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.075
+  },
+  "en-10411016628242228511|street_20": {
+   "id": "en-10411016628242228511",
+   "condition": "street_20",
+   "transcript": "the city is also the base to climb the niraigango volcano along with some of the cheapest mountain gorilla trafficking in africa",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.4521276595744681
+  },
+  "en-1042003289011443756|street_20": {
+   "id": "en-1042003289011443756",
+   "condition": "street_20",
+   "transcript": "the internet combines elements of both mass and interpersonal communication",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.6118881118881119
+  },
+  "en-1043394666292127188|street_20": {
+   "id": "en-1043394666292127188",
+   "condition": "street_20",
+   "transcript": "these things look at what it is about certain people that make them want the things that they do and what things in their environment will make them do or not do certain things",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.7133676092544987
+  },
+  "en-1045619486290403122|street_20": {
+   "id": "en-1045619486290403122",
+   "condition": "street_20",
+   "transcript": "for example the most common still image photography format in the world is 35 millimeter which was the dominant film size at the close of the analog film era",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.35919540229885055
+  },
+  "gu-10051332836083130420|street_20": {
+   "id": "gu-10051332836083130420",
+   "condition": "street_20",
+   "transcript": "આ પોપડો નજીકની બાજુએ લગભગ સિત્તેર કિલોમીટર જાડો અને દૂરની બાજુએ સો કિલોમીટર જાડો છે",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.6717948717948717
+  },
+  "gu-10054314118491272104|street_20": {
+   "id": "gu-10054314118491272104",
+   "condition": "street_20",
+   "transcript": "ઉત્તરમાં આ વિસ્તાર સાહેલ અને એટલાન્ટિક મહાસાગરની દક્ષિણે અને પશ્ચિમમાં બંધાયેલો",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.735897435897436
+  },
+  "gu-1008765602519405220|street_20": {
+   "id": "gu-1008765602519405220",
+   "condition": "street_20",
+   "transcript": "ફિલિપિનો ફોટોગ્રાફરો અને બાળકો તેમજ વૃદ્ધો સહિત છ બંધકોને પહેલા છોડી દેવામાં આવ્યા હતા",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.7651515151515151
+  },
+  "gu-10164951352830139261|street_20": {
+   "id": "gu-10164951352830139261",
+   "condition": "street_20",
+   "transcript": "ખાસ કરીને ઉનાળામાં સાદું લોકપ્રિય લા રાત્રિભોજન છે પા એમ ઓલી ઓલિવ ઓઈલ ટામેટા અને અન્ય ચીઝ ટુના ફિશ વગેરે જેવા ઉપલબ્ધ વ્યંજનો સાથે બ્રેડ",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.7027777777777777
+  },
+  "gu-10282288803999807308|street_20": {
+   "id": "gu-10282288803999807308",
+   "condition": "street_20",
+   "transcript": "રદ કરવાની નીતિઓ બદલાઈ છે પરંતુ માર્ચના અંતથી મોટાભાગની કોરોના વાયરસ આધારિત રદ કરવાની નીતિઓ જુલાઈ બે હજાર વીસ સુધી લંબાતી નથી જ્યારે ઓલિમ્પિક સુનિશ્ચિત કરવામાં આવી હતી",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.7155797101449275
+  },
+  "gu-10344165401321702763|street_20": {
+   "id": "gu-10344165401321702763",
+   "condition": "street_20",
+   "transcript": "પંદરસોની સાડત્રીસમાં અસોની સિયોનની સ્થાપના થઈ ત્યારથી પેરાગ્વે તેના ઘણા પ્ર સ્વદેશી ચરિત્ર અને ઓળખને જાળવી રાખવામાં સફળ રહ્યો",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.7567140600315956
+  },
+  "gu-10347511448765778840|street_20": {
+   "id": "gu-10347511448765778840",
+   "condition": "street_20",
+   "transcript": "તેમણે આ કાપ માટે કોઈ આંકડો નક્કી કર્યો ન હતો અને કહ્યું હતું કે તેઓ ચીનના આર્થિક ઉત્પાદનથી નક્કી થશે",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.8091787439613527
+  },
+  "gu-10386183340427464557|street_20": {
+   "id": "gu-10386183340427464557",
+   "condition": "street_20",
+   "transcript": "તે જ રીતે સ્કેન જેનના વિઝા હોય તો તમારે સ્કેન જેનનો સભ્ય હોય તે દરેક દેશ માટે અલગથી વિઝા મેળવવાની અરજી કરવી જરૂરી નથી જેથી સમય નાણાં અને પેપરવર્કની બચત થાય છે",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.7889784946236559
+  },
+  "gu-10416436950497082489|street_20": {
+   "id": "gu-10416436950497082489",
+   "condition": "street_20",
+   "transcript": "બ્લોગિંગ એ એવું સાધન છે જે સહયોગ કરવાની પ્રેરણા આપે છે અને વિદ્યાર્થીઓને શાળાના પારંપરિક શિક્ષણથી વધીને શીખવા માટે પ્રોત્સાહન આપે છે",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.8112449799196787
+  },
+  "gu-10445911236372744046|street_20": {
+   "id": "gu-10445911236372744046",
+   "condition": "street_20",
+   "transcript": "ડનલેપ બ્રોડસાઇડના પચ્ચીસ દસ્તાવેજો હજુ પણ અસ્તિત્વ ધરાવતા હતા તે સૌથી જૂની વર્તમાન નકલો છે મૂળ હસ્તલિખિત નકલ બચી નથી",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.6773049645390071
+  },
+  "hi-10014385262415025488|street_20": {
+   "id": "hi-10014385262415025488",
+   "condition": "street_20",
+   "transcript": "ग्रीनलैंड को बहुत कम जगह बसाया गया था नोर्स सगास में वे कहते हैं कि एरिक रेड हत्या के लिए आइसलैंड से निर्वासित किया गया था और आगे पश्चिम की यात्रा करते समय ग्रीनलैंड मिला जिसे ग्रीनलैंड नाम दिया गया",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.7304347826086957
+  },
+  "hi-10069289676238419279|street_20": {
+   "id": "hi-10069289676238419279",
+   "condition": "street_20",
+   "transcript": "इंटरनेट पर ये खोज शत्रुतापूर्ण पर्यावरण पाठ्यक्रम के लिए अक्सर आपको एक स्थानीय कंपनी का पता प्रदान करेगी",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.4863636363636364
+  },
+  "hi-10107687492910459268|street_20": {
+   "id": "hi-10107687492910459268",
+   "condition": "street_20",
+   "transcript": "अपनी सरकार के अलावा आप अन्य देशों की सरकारों की सलाह ले सकते हैं हालांकि उनकी सलाह उनके नागरिकों को ध्यान में रख कर दी जाती है",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.9548022598870056
+  },
+  "hi-10128382631186456345|street_20": {
+   "id": "hi-10128382631186456345",
+   "condition": "street_20",
+   "transcript": "प्राचीन काल से ही लोग सोने चांदी और तांबे जैसे रासायनिक तत्वों के बारे में ही जानकारी रखते हैं क्योंकि इन्हें प्रकृति में मूल स्वरूप में ढूंढा जा सकता है और इन्हें प्राथमिक उपकरणों के जरिए ढूंढना अपेक्षाकृत आसान है",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.7964912280701755
+  },
+  "hi-10135688561274120767|street_20": {
+   "id": "hi-10135688561274120767",
+   "condition": "street_20",
+   "transcript": "इसे केमिकल का पीएच कहा जाता है आप लाल गोभी के जूस को इस्तेमाल करके एक संकेतक बना सकते हैं",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.5863746958637469
+  },
+  "hi-10200643191519059428|street_20": {
+   "id": "hi-10200643191519059428",
+   "condition": "street_20",
+   "transcript": "सबसे नज़दीकी सिरे पर कृष्ठ की मोटाई करीब 70 किलोमीटर है और सबसे दूर के सिरे पर यह 100 किलोमीटर है",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.6102564102564103
+  },
+  "hi-10286778291956788434|street_20": {
+   "id": "hi-10286778291956788434",
+   "condition": "street_20",
+   "transcript": "पुरुषों के स्टैंडिंग सुपर जी में ऑस्ट्रेलिया के मिशेल गोर्ले 11वें स्थान पर रहे चेक प्रतियोगी ओल्ड्रिज जेलीनेक पुरुषों के सिटिंग सुपर जी में सोलवें स्थान पर रहे",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.6526610644257703
+  },
+  "hi-10359991159058879218|street_20": {
+   "id": "hi-10359991159058879218",
+   "condition": "street_20",
+   "transcript": "एम एस बीमारी केंद्रीय तंत्रिका तंत्र पर असर करती है जिसमें दिमाग स्पाइनल कॉर्ड और ऑप्टिक नर्व शामिल हैं",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.6044444444444445
+  },
+  "hi-10550791631951016124|street_20": {
+   "id": "hi-10550791631951016124",
+   "condition": "street_20",
+   "transcript": "हर कोई समाज से जुड़ा होता है और ट्रांसपोर्ट सिस्टम का उपयोग करता है लगभग सभी लोग ट्रांसपोर्ट सिस्टम के बारे में शिकायत करते हैं",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.6257309941520468
+  },
+  "hi-10582204498174558997|street_20": {
+   "id": "hi-10582204498174558997",
+   "condition": "street_20",
+   "transcript": "एक पूरी तरह से विकसित एथलीट की तरह बाग चढ़ाई कर सकता है हालांकि अच्छी तरह से नहीं तैर सकता है बड़ी दूरी तक छलांग लगा सकता है और एक शक्तिशाली मनुष्य के 5 गुणा बल के साथ खींच सकता है",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.7193486590038314
+  },
+  "kn-10010482195448774909|street_20": {
+   "id": "kn-10010482195448774909",
+   "condition": "street_20",
+   "transcript": "ಆದರೆ ನಾಯಕನ ವಿಕೆಟ್ ಕಳೆದುಕೊಂಡ ನಂತರ ಭಾರತ ಏಳು ವಿಕೆಟ್ ಕಳೆದುಕೊಂಡು ಕೇವಲ ಮೂವತ್ತ ಆರು ರನ್ ಗಳಿಗೆ ತನ್ನ ಇನ್ನಿಂಗ್ಸ್ ಮುಗಿಸಿತು",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.6313932980599647
+  },
+  "kn-10019512818416747761|street_20": {
+   "id": "kn-10019512818416747761",
+   "condition": "street_20",
+   "transcript": "ಪಿರಮಿಡ್ ಧ್ವನಿ ಮತ್ತು ಬೆಳಕಿನ ಪ್ರದರ್ಶನವು ಈ ಭಾಗದ ಮಕ್ಕಳಿಗೆ ಅತ್ಯಂತ ಆಸಕ್ತಿದಾಯಕ ವಿಷಯವಾಗಿದೆ",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.6881720430107527
+  },
+  "kn-10092474821709819618|street_20": {
+   "id": "kn-10092474821709819618",
+   "condition": "street_20",
+   "transcript": "ಅದೇ ರೀತಿ ಶೆಂಗೆನ್ ವೀಸಾ ಹೊಂದಿದ್ದರೆ ನೀವು ಶೆಂಗೆನ್ ಸದಸ್ಯ ರಾಷ್ಟ್ರಗಳಲ್ಲಿ ಪ್ರತ್ಯೇಕವಾಗಿ ವೀಸಾಗಾಗಿ ಅರ್ಜಿ ಸಲ್ಲಿಸಬೇಕಾಗಿಲ್ಲ ಇದರಿಂದಾಗಿ ನಿಮ್ಮ ಸಮಯ ಹಣ ಮತ್ತು ಕಾಗದಪತ್ರಗಳ ಸಲ್ಲಿಕೆ ಇತ್ಯಾದಿಯ ಉಳಿತಾಯವಾಗುತ್ತದೆ",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.7023060796645703
+  },
+  "kn-10103823447819430366|street_20": {
+   "id": "kn-10103823447819430366",
+   "condition": "street_20",
+   "transcript": "ಹಾಲಿ ಸೆನೆಟರ್ ಮತ್ತು ಅರ್ಜೆಂಟೀನಾದ ಪ್ರಥಮ ಮಹಿಳೆ ಕ್ರಿಸ್ಟೀನಾ ಫರ್ನಾಂಡಿಸ್ ಡಿ ಕಿಚ್ನರ್ ಕ್ರಿಸ್ಟೀನಾ ಫರ್ನಾಂಡಿಸ್ ಡಿ ಕಿಚ್ನರ್ ಕಳೆದ ರಾತ್ರಿ ಲಾ ಪ್ಲಾಟಾದಲ್ಲಿರುವ ಅಧ್ಯಕ್ಷೀಯ ಉಮೇದುವಾರಿಕೆಯನ್ನು ಘೋಷಿಸಿದರು ಎಲ್ಲಿಸ್ ಐವತ್ತು ಕಿಲೋಮೀಟರ್ ಅಂದರೆ ಮೂವತ್ತೊಂದು ಮೈಲಿ",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.7572916666666667
+  },
+  "kn-10122168936396301938|street_20": {
+   "id": "kn-10122168936396301938",
+   "condition": "street_20",
+   "transcript": "ಹಾಂಕಾಂಗ್ ಸ್ಕೈಲೈನ್ ಅನ್ನು ನಿರ್ಮಿಸುವ ಕಟ್ಟಡಗಳ ಮೆರವಣಿಗೆಯನ್ನು ಮಿನುಗುವ ಬಾರ್ ಗ್ರಾಫ್ ಗೆ ಹೋಲಿಸಲಾಗುತ್ತದೆ ಮತ್ತು ವಿಕ್ಟೋರಿಯಾ ಬಂದರಿನ ನೀರು ಅದನ್ನು ಸ್ಪಷ್ಟಪಡಿಸುತ್ತದೆ",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.7811447811447811
+  },
+  "kn-10129714409926666294|street_20": {
+   "id": "kn-10129714409926666294",
+   "condition": "street_20",
+   "transcript": "ಪ್ರಮುಖ ಮಿಲಿಟರಿ ಮತ್ತು ನಾಗರಿಕ ಸರಬರಾಜುಗಳನ್ನು ಕಡಿತಗೊಳಿಸುವ ಈ ತಂತ್ರವು ಪರಿಣಾಮಕಾರಿಯಾಗಿ ಸಾಬೀತಾಯಿತು ಆದರೆ ಕಳೆದ ಎರಡು ಶತಮಾನಗಳ ಹಲವಾರು ಅಂತಾರಾಷ್ಟ್ರೀಯ ಒಪ್ಪಂದಗಳಿಂದ ಒಟ್ಟುಗೂಡಿಸುವ ಎಲ್ಲರೂ ಒಪ್ಪಿಕೊಂಡಿರುವ ಅಂತಾರಾಷ್ಟ್ರೀಯ ಕಾನೂನನ್ನು ಈ ದಿಗ್ಬಂಧನ ಉಲ್ಲಂಘಿಸಿದೆ",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.6903460837887068
+  },
+  "kn-10171759063486736869|street_20": {
+   "id": "kn-10171759063486736869",
+   "condition": "street_20",
+   "transcript": "ಪ್ಯಾರಿಸ್ ಜನರು ಉದ್ರೇಕಕಾರಿ ಅಸಭ್ಯ ಮತ್ತು ಸೊಕ್ಕಿನಿಂದ ಕೂಡಿದವರು ಎಂಬ ಕುಖ್ಯಾತಿಯನ್ನು ಹೊಂದಿದ್ದಾರೆ",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.7470238095238095
+  },
+  "kn-10193060423779665461|street_20": {
+   "id": "kn-10193060423779665461",
+   "condition": "street_20",
+   "transcript": "ಆ ಬೇರೆ ನಾಮಾಂಕನಗಳಲ್ಲಿ ಕೆಲವು ಅತ್ಯುತ್ತಮ ಸಿನಿಮಾ ನಿರ್ದೇಶಕ ಸಿನಿಮಾಟೋಗ್ರಫಿ ವಸ್ತ್ರ ವಿನ್ಯಾಸ ಸಿನಿಮಾ ಸಂಕಲನ ಮೂಲ ಸಂಗೀತ ಪ್ರೊಡಕ್ಷನ್ ಡಿಸೈನ್ ಧ್ವನಿ ಸಂಕಿಲನ ಧ್ವನಿ ಮಿಶ್ರಣ ಮತ್ತು ಮೂಲ ಸ್ಕ್ರೀನ್ ಪ್ಲೇ",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.7759009009009009
+  },
+  "kn-10248142223167904254|street_20": {
+   "id": "kn-10248142223167904254",
+   "condition": "street_20",
+   "transcript": "ಎಲ್ಲಾ ವಿಷಯಗಳನ್ನು ಪರಿಗಣಿಸಿದ ನಂತರ ನಮ್ಮ ಪೂರ್ವಜರು ತಮ್ಮ ಪ್ರೋಟೀನ್ ಸಮಸ್ಯೆಯನ್ನು ಸ್ವಲ್ಪ ಮಟ್ಟಿಗೆ ಸವನ್ನಾದಲ್ಲಿ ಚಿಂಪಾಂಜಿಗಳು ಮಾಡುವ ರೀತಿಯಲ್ಲಿ ಪರಿಹರಿಸಿದಲ್ಲಿ ನಾವು ಆಶ್ಚರ್ಯಪಡಬೇಕಿಲ್ಲ",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.7168141592920354
+  },
+  "kn-10332300909659383666|street_20": {
+   "id": "kn-10332300909659383666",
+   "condition": "street_20",
+   "transcript": "ಸಿಂಗಾಪುರದ ಉಪಪ್ರಧಾನಿ ವಾಂಗ್ ಕಾನ್ ಸೆಂಗ್ ಅವರನ್ನು ಬರಮಾಡಿಕೊಂಡರು ಮತ್ತು ವ್ಯಾಪಾರ ಹಾಗೂ ಭಯೋತ್ಪಾದನೆ ವಿಷಯಗಳ ಬಗ್ಗೆ ಸಿಂಗಾಪುರ ಪ್ರಧಾನಿ ಲೀ ಹೀನ್ ಲುಂಗ್ ಜೊತೆಗೆ ಚರ್ಚಿಸಿದರು",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.6440677966101694
+  },
+  "ml-10013487754489332324|street_20": {
+   "id": "ml-10013487754489332324",
+   "condition": "street_20",
+   "transcript": "ഈ നഗരം രാജ്യത്തെ മറ്റു നഗരങ്ങളിൽ നിന്ന് പൂർണ്ണമായും വ്യത്യസ്തമാണ് കാരണം ഇതിന് ആഫ്രിക്കൻ വാസനയേക്കാൾ അറബി വാസനയാണ് കൂടുതൽ",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.9298245614035088
+  },
+  "ml-10078044035084322628|street_20": {
+   "id": "ml-10078044035084322628",
+   "condition": "street_20",
+   "transcript": "ഇത് ബന്ധപ്പെട്ടിരിക്കുന്നു എന്നാൽ സാധാരണയായി ആൽപ്പൈൻ ശൈലിയിലുള്ള സ്കീ ടൂറിംഗോ പർവതാരോഹണമോ ഉൾപ്പെടുന്നില്ല ഇതിൽ രണ്ടാമത്തേത് കുത്തനെയുള്ള ഭൂപ്രദേശങ്ങളിൽ ചെയ്യുന്നതും കൂടുതൽ കട്ടിയുള്ള സ്കീകളും ബൂട്ടുകളും ആവശ്യമായതും",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.75
+  },
+  "ml-10134676116368565149|street_20": {
+   "id": "ml-10134676116368565149",
+   "condition": "street_20",
+   "transcript": "മുറിവുകൾക്കായി അദ്ദേഹം ഒരു ചിത്രം സജ്ജമാക്കിയിട്ടില്ല ചൈനയുടെ സാമ്പത്തിക ഉൽപാദനത്തെ അടിസ്ഥാനമാക്കിയാണ് അവ നിർമ്മിക്കുക എന്ന് പറഞ്ഞു",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.9112227805695142
+  },
+  "ml-10277507420082337141|street_20": {
+   "id": "ml-10277507420082337141",
+   "condition": "street_20",
+   "transcript": "ബെൽജിയൻ മാനദണ്ഡങ്ങൾ അനുസരിച്ചാണ് ഹോട്ട് ചോക്ലേറ്റ് ഉണ്ടാക്കിയിട്ടുള്ളത് ഫ്രൂട്ട് ജ്യൂസുകൾ വില കൂടിയതാണെങ്കിലും രുചികരമാണ്",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.9429223744292238
+  },
+  "ml-10286327547505797785|street_20": {
+   "id": "ml-10286327547505797785",
+   "condition": "street_20",
+   "transcript": "പുരുഷ സ്റ്റാൻഡിങ് സൂപ്പർ ജിയിൽ ഓസ്ട്രേലിയയുടെ മിച്ചൽ ഗോർലി പതിനൊന്നാം സ്ഥാനത്തെത്തി പുരുഷന്മാരുടെ സിറ്റിംഗ് സൂപ്പർ ജിയിൽ ചെക്ക് എതിരാളിയായ ഓൾഡ്രിക് ജെനലെക് പതിനാറാം സ്ഥാനത്തെത്തി",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.9468390804597702
+  },
+  "ml-10332530728981827248|street_20": {
+   "id": "ml-10332530728981827248",
+   "condition": "street_20",
+   "transcript": "കഴിഞ്ഞ ആഴ്ച അമിതമായി ചൂടാകുന്ന മുപ്പത്തിനാല് സംഭവങ്ങളെക്കുറിച്ച് ആപ്പിൾ അറിയിച്ചതായി എംഇടിഐ അറിയിച്ചിരുന്നു അതിനെ കമ്പനി ഗുരുതരമല്ലാത്തത് എന്ന് വിളിച്ചു",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.6861111111111111
+  },
+  "ml-10438874059424936747|street_20": {
+   "id": "ml-10438874059424936747",
+   "condition": "street_20",
+   "transcript": "ഓർഗനൈസേഷനുകളെ ഉയർന്ന പ്രകടനത്തിലെത്താൻ സഹായിക്കുന്നതിന് ഉപയോഗിക്കുന്ന ഒരു രീതിയായി കോൺടിനം സമീപനത്തെ ഏയ്ഞ്ചൽ രണ്ടായിരത്തി ആറ് വിശദീകരിക്കുന്നു",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.7248322147651006
+  },
+  "ml-10439860146800584845|street_20": {
+   "id": "ml-10439860146800584845",
+   "condition": "street_20",
+   "transcript": "മുതിര്ന്നവരും കുട്ടികളും ഉള്പ്പെടെ ബന്ദിയാക്കപ്പെട്ട ആറ് പേരെ ആദ്യം മോചിപ്പിച്ചു ഫിലിപ്പിനോ ഫോട്ടോഗ്രാഫര്മാരും",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.8739316239316239
+  },
+  "ml-10514694764352729740|street_20": {
+   "id": "ml-10514694764352729740",
+   "condition": "street_20",
+   "transcript": "അലോയ് എന്നത് അടിസ്ഥാനപരമായി രണ്ട് അല്ലെങ്കിൽ അതിലധികം ലോഹങ്ങളുടെ സങ്കരമാണ് മൂലകങ്ങളുടെ പട്ടികയിൽ ഒരുപാട് മൂലകങ്ങളുണ്ട് എന്ന കാര്യം മറക്കരുത്",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.7177777777777777
+  },
+  "ml-10657006548453620506|street_20": {
+   "id": "ml-10657006548453620506",
+   "condition": "street_20",
+   "transcript": "അന്തർജില്ല ബസ് സ്റ്റേഷനിൽ നിന്ന് നദിക്ക് കുറുകെ ദിവസത്തിലുടനീളം ബസ്സുകൾ പുറപ്പെടുന്നു എന്നിരുന്നാലും മിക്കതും പ്രത്യേകിച്ച് കിഴക്കോട്ടും ജാക്കറിലേക്ക് ബുംതാങ്ങിലേക്ക് പോകുന്നവ ആറ് മുപ്പതിനും ഏഴ് മുപ്പതിനും ഇടയിൽ പുറപ്പെടുന്നു",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.9153846153846154
+  },
+  "mr-10201098310487173927|street_20": {
+   "id": "mr-10201098310487173927",
+   "condition": "street_20",
+   "transcript": "सिंट्राचे रोमँटिक आणि मोहक शहर हे उत्तरेकडे व सहज पोहोचता येऊ शकणारे आहे तसेच लॉर्ड बायरनने रेकॉर्ड केलेल्या त्यांच्या वैभवाच्या भव्यतेच्या वर्तनानंतर हे परदेशी लोकांमध्ये देखील प्रसिद्ध झाले आहे",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.8109965635738832
+  },
+  "mr-10209762496868095317|street_20": {
+   "id": "mr-10209762496868095317",
+   "condition": "street_20",
+   "transcript": "वनस्पती ऑक्सिजनची निर्मिती करतात ज्याचा उपयोग मनुष्य श्वास घेताना करतो आणि ते कार्बन डायऑक्साईड घेतात जो मनुष्य उच्छवासाद्वारे बाहेर सोडतो म्हणजेच श्वास सोडणे",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.6263888888888889
+  },
+  "mr-10218825816989175821|street_20": {
+   "id": "mr-10218825816989175821",
+   "condition": "street_20",
+   "transcript": "माथलीने काल नऊ सदस्यांच्या नवीन प्रोव्हिजनल इलेक्ट्रोल कौन्सिलमध्ये सीईपी शपथ घेतली",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.65
+  },
+  "mr-10257470372493232363|street_20": {
+   "id": "mr-10257470372493232363",
+   "condition": "street_20",
+   "transcript": "शेनजेन झोन असला तरी या बाबतीत काही प्रमाणात एखाद्या देशासारखा कार्य करतो",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.6007326007326007
+  },
+  "mr-10291151742776340106|street_20": {
+   "id": "mr-10291151742776340106",
+   "condition": "street_20",
+   "transcript": "रिपरक्षी प्रवाह हे किनाऱ्यापासून वेगळ्या झालेल्या लाटांपासून परतणारा प्रवाह असतात सह प्रवाली किंवा तत्सम ठिकाणी",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.7727272727272727
+  },
+  "mr-10329146223209027475|street_20": {
+   "id": "mr-10329146223209027475",
+   "condition": "street_20",
+   "transcript": "जितका तणाव कमी तितकी सकारात्मक जीवन ऊर्जा अस्तित्वात असते प्रत्येक व्यक्तीकडे संपूर्ण शांती आणि समाधान मिळवण्याची क्षमता असते",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.632183908045977
+  },
+  "mr-10357069420670487676|street_20": {
+   "id": "mr-10357069420670487676",
+   "condition": "street_20",
+   "transcript": "त्याला सुरुवातीला ग्रेट यारमाऊथ येथील जेम्स पॅगेट रुग्णालयात दाखल केले होते",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.5402298850574713
+  },
+  "mr-10362338566354994001|street_20": {
+   "id": "mr-10362338566354994001",
+   "condition": "street_20",
+   "transcript": "तथापि रीगा शांतता करार सोव्हिएत पॉलिश नॉन एग्रेशन करार तसेच अन्य आंतरराष्ट्रीय करार द्विपक्षीय आणि बहुपक्षीय दोन्हीच्या उल्लंघनामुळे पोलंडच्या पूर्व प्रदेशावर आक्रमण केल्यानंतर सोव्हिएतच्या युनियन रेड आर्मीच्या आठ लक्ष सैनिकांनी प्रवेश केला आणि बेलारूस आणि युक्रेनियन फ्रंट तयार केला  तेव्हा या योजना जवळपास रातोरात अप्रचलितपणे प्रस्तुत केल्या गेल्या",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.6584531143052703
+  },
+  "mr-10369140904526923849|street_20": {
+   "id": "mr-10369140904526923849",
+   "condition": "street_20",
+   "transcript": "त्याच धर्तीवर पुरुषांना गुडघे झाकणारे ट्राऊझर घालणे आवश्यक आहे",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.625
+  },
+  "mr-10392451913859275620|street_20": {
+   "id": "mr-10392451913859275620",
+   "condition": "street_20",
+   "transcript": "उदाहरणार्थ प्रत्येक वर्षी उत्तर कॅलोरिनातील बेनेट शाळेचे विद्यार्थी त्यांच्या राज्याच्या राजधानीला भेट देण्याच्या सहलीसंबंधी वेबसाईट तयार करतात प्रत्येक वर्षी वेबसाईट पुन्हा तयार केली जाते पण तिच्या जुन्या आवृत्त्या स्क्रॅपबुकप्रमाणे ऑनलाईन ठेवल्या जातात",
+   "retries": 0,
+   "measured_snr_db": 20.000000000000004,
+   "active_fraction": 0.6712580348943985
+  },
+  "pa-10019901230699518471|street_20": {
+   "id": "pa-10019901230699518471",
+   "condition": "street_20",
+   "transcript": "ਅਲਹੀਦਾ ਕਰਨਾ ਅਤੇ ਮੁੜ ਸੁਮੇਲ ਕਰਨਾ ਹਰੇਕ ਪੀੜ੍ਹੀ ਦੇ ਦੋ ਪੁਲਾਂ ਵਿਚਕਾਰ ਪਰਿਵਰਤਿਤ ਰੂਪ ਨੂੰ ਅੱਗੇ ਪਿੱਛੇ ਪੂਰੀ ਤਰ੍ਹਾਂ ਬਿਰਤ ਕਰ ਦਿੰਦਾ ਹੈ",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.8507751937984496
+  },
+  "pa-10033020277327712096|street_20": {
+   "id": "pa-10033020277327712096",
+   "condition": "street_20",
+   "transcript": "ਇੰਟਰਨੈੱਟ ਬਹੁਗਿਣਤੀ ਅਤੇ ਅੰਤਰ ਵਿਅਕਤੀ ਸੰਚਾਰ ਦੋਵਾਂ ਤੱਤਾਂ ਦਾ ਸੁਮੇਲ ਕਰਦਾ ਹੈ",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.6018518518518519
+  },
+  "pa-10045745942478893252|street_20": {
+   "id": "pa-10045745942478893252",
+   "condition": "street_20",
+   "transcript": "ਬਿੱਲੀਆਂ ਵਿੱਚ ਸਭ ਤੋਂ ਵੱਧ ਸਮਾਜਿਕ ਸ਼ੇਅਰ ਹਨ ਜਿਹੜੇ ਵੱਡੇ ਸਮੂਹਾਂ ਵਿੱਚ ਰਹਿੰਦੇ ਹਨ ਜਿਨ੍ਹਾਂ ਨੂੰ ਪ੍ਰਾਈਡ ਕਿਹਾ ਜਾਂਦਾ ਹੈ",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 1.0
+  },
+  "pa-10114801816081710422|street_20": {
+   "id": "pa-10114801816081710422",
+   "condition": "street_20",
+   "transcript": "ਕੋਕੈਮੋ ਘਾਟੀ ਚਿੱਲੀ ਦਾ ਪ੍ਰਮੁੱਖ ਚੜ੍ਹਾਈ ਵਾਲਾ ਭਾਗ ਜੋ ਦੱਖਣੀ ਅਮਰੀਕਾ ਦੀਆਂ ਸਖਤ ਵੱਡੀਆਂ ਦੀਵਾਰਾਂ ਦੀਆਂ ਕਿਸਮਾਂ ਅਤੇ ਕਰੇਗ ਨਾਲ ਜੋਸੇਮਾਈਟ ਦੇ ਰੂਪ ਵਿੱਚ ਜਾਣਿਆ ਜਾਂਦਾ ਹੈ",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.5547169811320755
+  },
+  "pa-10152662544244172537|street_20": {
+   "id": "pa-10152662544244172537",
+   "condition": "street_20",
+   "transcript": "ਕੁਦਰਤੀ ਵਾਤਾਵਰਨ ਵਿੱਚ ਹੋਣ ਅਤੇ ਪੌਦੇ ਖੂਬਸੂਰਤ ਦਿਖਾਈ ਦਿੰਦੇ ਹਨ ਇਸ ਲਈ ਕੇਵਲ ਇੱਕ ਨਮੂਨੇ ਨੂੰ ਵੀ ਹਟਾਉਣ ਦੇ ਲੋਭ ਦਾ ਵਿਰੋਧ ਕਰੋ",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.6286919831223629
+  },
+  "pa-1016397316453669617|street_20": {
+   "id": "pa-1016397316453669617",
+   "condition": "street_20",
+   "transcript": "ਉਹਨਾਂ ਦੇ ਪੈਰ ਚੰਮ ਜਾਂ ਖੱਲੜੀ ਦੀ ਤਹਿ ਅਤੇ ਪੰਜੇ ਵਾਲੇ ਹੁੰਦੇ ਹਨ ਉਹ ਅੰਡੇ ਦਿੰਦੇ ਹਨ ਅਤੇ ਉਹ ਆਪਣੀਆਂ ਦੋਵੇਂ ਪਿਛਲੀਆਂ ਲੱਤਾਂ ਤੇ ਟੀ ਰੈਕਸ ਵਾਂਗ ਚੱਲਦੇ ਹਨ",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.5792592592592593
+  },
+  "pa-1017212797150914463|street_20": {
+   "id": "pa-1017212797150914463",
+   "condition": "street_20",
+   "transcript": "ਇੱਕ ਪਰਮਾਣੂ ਬੰਬ ਇਸ ਸਿਧਾਂਤ ਤੇ ਕੰਮ ਕਰਦਾ ਹੈ ਕਿ ਇਹ ਕਈ ਪ੍ਰੋਟੋਨ ਅਤੇ ਨਿਊਟਰੌਨ ਨੂੰ ਇੱਕ ਕੇਂਦਰ ਬਿੰਦੂ ਵਿੱਚ ਇਕੱਠੇ ਰੱਖਣ ਲਈ ਊਰਜਾ ਲੈਂਦਾ ਹੈ",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.5342066957787481
+  },
+  "pa-10190844180610990943|street_20": {
+   "id": "pa-10190844180610990943",
+   "condition": "street_20",
+   "transcript": "ਥ੍ਰੀ ਕਿੰਗਡਮਸ ਪ੍ਰਾਚੀਨ ਚੀਨ ਦੇ ਇਤਿਹਾਸ ਦੇ ਸਭ ਤੋਂ ਖੂਨੀ ਯੁੱਗਾਂ ਵਿੱਚੋਂ ਇੱਕ ਸੀ ਹਜ਼ਾਰਾਂ ਲੋਕ ਸ਼ੀਆਨ ਦੇ ਸ਼ਾਨਦਾਰ ਮਹਿਲ ਦੀ ਸਭ ਤੋਂ ਉੱਚੇ ਤਖ਼ਤੇ ਬੈਠਣ ਲਈ ਲੜਦੇ ਹੋਏ ਮਾਰੇ ਗਏ",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.5559071729957806
+  },
+  "pa-10217761447980730728|street_20": {
+   "id": "pa-10217761447980730728",
+   "condition": "street_20",
+   "transcript": "ਇਹ ਖਤਮ ਹੋਣ ਨਹੀਂ ਜਾ ਰਿਹਾ ਇਹ ਇੱਕ ਅਧਿਆਇ ਦਾ ਅੰਤ ਅਤੇ ਇੱਕ ਨਵਾਂ ਅਧਿਆਇ ਹੈ",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.5683453237410072
+  },
+  "pa-10250259946645700913|street_20": {
+   "id": "pa-10250259946645700913",
+   "condition": "street_20",
+   "transcript": "ਹੋਰ ਨੌਮੀਨੇਸ਼ਨਾਂ ਵਿੱਚ ਸਰਬੋਤਮ ਚਿੱਤਰ ਡਾਇਰੈਕਟਰ ਸਿਨੇਮਾਟੋਗ੍ਰਾਫੀ ਕਾਸਟਿਊਮ ਡਿਜ਼ਾਇਨ ਫਿਲਮ ਸੰਪਾਦਨ ਓਰੀਜਨਲ ਸਕੋਰ ਉਤਪਾਦਨ ਡਿਜ਼ਾਇਨ ਸਾਊਂਡ ਸੰਪਾਦਨ ਸਾਊਂਡ ਮਿਕਸਿੰਗ ਅਤੇ ਓਰੀਜਨਲ ਸਕ੍ਰੀਨਪਲੇਅ ਸ਼ਾਮਿਲ ਹਨ",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.5769622833843018
+  },
+  "ta-10072217146537983584|street_20": {
+   "id": "ta-10072217146537983584",
+   "condition": "street_20",
+   "transcript": "லக்காசிங் பஜனையை வழங்கினார் பாடகர் ராஜு கண்டல்வாலும் அவருடன் வந்திருந்தார்",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.6724137931034483
+  },
+  "ta-10151944176129497809|street_20": {
+   "id": "ta-10151944176129497809",
+   "condition": "street_20",
+   "transcript": "முக்கியமான மேடைகளில் இசை நிகழ்ச்சி முடிந்திருந்தாலும் விழாவின் சில பிரிவுகள் இரவு இசைப்பதை தொடரும்",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.4879032258064516
+  },
+  "ta-10222238337252024030|street_20": {
+   "id": "ta-10222238337252024030",
+   "condition": "street_20",
+   "transcript": "பேருந்துகள் நாள் முழுவதும் மாவட்டங்களுக்கு இடையிலான பேருந்து நிலையத்திலிருந்து ஆற்றின் குறுக்கே புறப்படுகின்றன இருப்பினும் பெரும்பாலானவை குறிப்பாக கிழக்கு நோக்கி செல்லும் பேருந்துகள் மற்றும் ஜாகர் பும்தாங் ஆறரை முதல் ஏழரை மணிக்கு இடையே புறப்படச் செல்கின்றன",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.6532180595581172
+  },
+  "ta-10265284731185110799|street_20": {
+   "id": "ta-10265284731185110799",
+   "condition": "street_20",
+   "transcript": "துணி மிகவும் வெப்பமடைந்ததலை அனுமதிக்கப்படும்படி கவனமாக இருக்கவும் அதனால் துணி சுருங்கலாம் அல்லது தீவிர நிகழ்வுகளில் துணி தீயால் வாடப்படலாம்",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.6122448979591837
+  },
+  "ta-10278812186982315493|street_20": {
+   "id": "ta-10278812186982315493",
+   "condition": "street_20",
+   "transcript": "இதன் விளைவாக இரண்டு மீன் வகைகள் அழிந்துவிட்டன மேலும் ஹம்பேக்சப் உட்பட மற்ற இரண்டு அழியும் நிலையில் உள்ளன",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.9478458049886621
+  },
+  "ta-10367238297771483490|street_20": {
+   "id": "ta-10367238297771483490",
+   "condition": "street_20",
+   "transcript": "வலைப்பதிவுகளின் சரியான பயன்பாடு மாணவர்களை மேலும் விமர்சகர்களாகவும் பகுத்தாய்பவர்களாகவும் ஆக்கும் இணைய கேள்விகளுக்கு பதிலளிக்கும் போது அவர்கள் அடுத்தவர்களுடைய கருத்திற்கு தங்கள் பதிலை சொல்வதுடன் தங்களுக்கே உரிய ஓர் நிலையை எடுக்கவும் உதவுகிறது ஒராவேக் இரண்டாயிரத்தி இரண்டு",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.677390527256479
+  },
+  "ta-10394228005554884342|street_20": {
+   "id": "ta-10394228005554884342",
+   "condition": "street_20",
+   "transcript": "சிங்கத்தை போன்றே ஓநாய்கள் அல்லது நாய்கள் ஆகிய விலங்குகள் வியக்கத்தை வகையில் செயல்படுகின்றன ஆனால் மற்ற பூனை இனங்கள் இல்லை நடவடிக்கையிலும் ஒது ஒத்துப்போகின்றன மிகவும் ஆபத்தானவையும் கூட",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.9686609686609686
+  },
+  "ta-1039497074136799281|street_20": {
+   "id": "ta-1039497074136799281",
+   "condition": "street_20",
+   "transcript": "பெர்ரி இன்றிரவு காகஸின் முடிவுகளை மதிப்பிடுவதற்காக டெக்சாஸுக்கு திரும்புவேன் இந்த பந்தயத்தில் எனக்கு ஒரு பாதை இருக்கிறதா என்பதை இது தீர்மானிக்கும் என்று கூறினார் ஆனால் பின்பு அவர் பந்தயத்திலேயே இருந்து ஜனவரி இருபத்தொன்றில் தென் கரோலினா முதன்மை போட்டியில் போட்டியிடுவார் என்று தெரிவித்தார்",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.9341463414634147
+  },
+  "ta-10406373928837348332|street_20": {
+   "id": "ta-10406373928837348332",
+   "condition": "street_20",
+   "transcript": "பிரமிட் ஒலி மற்றும் ஒலி நிகழ்ச்சிகள் ஆகியவை இந்தப் பகுதியில் குழந்தைகளுக்கு மிக சுவாரஸ்யமான விஷயங்களில் ஒன்றாகும்",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.7493540051679587
+  },
+  "ta-10431271162503376039|street_20": {
+   "id": "ta-10431271162503376039",
+   "condition": "street_20",
+   "transcript": "அதன் பலனாக நடிகர்களும் கூட மேடையின் மீது கஞ்சாவை புகைக்கிறார்கள் மற்றும் தியேட்டரும் கூட பார்வையாளர்களை அதில் இணைய உற்சாகப்படுத்துகிறது",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.6989795918367347
+  },
+  "te-10054709042905280078|street_20": {
+   "id": "te-10054709042905280078",
+   "condition": "street_20",
+   "transcript": "చిన్న ద్వీపాలలో చాలా వరకు స్వతంత్ర దేశాలు లేదా ఫ్రాన్స్ తో సంబంధం కలిగి ఉన్నాయి ఇంకా వీటిని లగ్జరీ బీచ్ రిసార్ట్స్ అని పిలుస్తారు",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.821256038647343
+  },
+  "te-10085601229183142282|street_20": {
+   "id": "te-10085601229183142282",
+   "condition": "street_20",
+   "transcript": "కొన్ని క్రియలు ఆబ్జెక్టుల మధ్య తేడాను గుర్తించడానికి ఇది ఒక ముఖ్యమైన మార్గం",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.6934523809523809
+  },
+  "te-10145424547032356574|street_20": {
+   "id": "te-10145424547032356574",
+   "condition": "street_20",
+   "transcript": "ఈ దృశ్యాలు పిరమిడ్లపై ప్రదర్శించబడతాయి మరియు వేరే పిరమిడ్లను వెలిగించబడ్డాయి",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.7643097643097643
+  },
+  "te-1018616296093099687|street_20": {
+   "id": "te-1018616296093099687",
+   "condition": "street_20",
+   "transcript": "క్యాల్షియం పొటాషియం వంటి మూలకాలను లోహాలుగా పరిగణిస్తారు వెండి బంగారం వంటి లోహాలు కూడా ఉన్నాయి",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.8898305084745762
+  },
+  "te-10252770362041562600|street_20": {
+   "id": "te-10252770362041562600",
+   "condition": "street_20",
+   "transcript": "అతని పని అటువంటి గుర్తింపు పొందిన నాణ్యత మరియు వివరాలతో కూడినది అతడు ఫిలార్ టెస్టులలో చాలా తక్కువ కుటుంబ సభ్యులు లాంటి వాళ్ళలో ఒకడు అతని పనులను సేకరించడంలో మాత్రమే కొందరు ప్రత్యేకత కలిగి ఉన్నారు",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.8378033205619413
+  },
+  "te-10291149870624674262|street_20": {
+   "id": "te-10291149870624674262",
+   "condition": "street_20",
+   "transcript": "ఐరోపా సాపేక్షంగా చిన్నదే కానీ అనేక స్వతంత్ర దేశాలతో కూడిన ఖండం సాధారణ పరిస్థితుల్లో అనేక దేశాల్లో ప్రయాణించడం అంటే వీసా అప్లికేషన్లు మరియు పాస్పోర్ట్ నియంత్రణ ద్వారా అనేక సార్లు వెళ్ళాల్సి ఉంటుంది",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.7328431372549019
+  },
+  "te-10373756234313480430|street_20": {
+   "id": "te-10373756234313480430",
+   "condition": "street_20",
+   "transcript": "దాని డెబ్బై ఎనిమిది సిఫార్సులలో మొదటిది శత్రుదేశాల జోక్యానికి వ్యతిరేకంగా ఇరాక్ సరిహద్దులను సురక్షితం చేయడానికి మరియు దాని పొరుగు దేశాలతో దౌత్య సంబంధాలను తిరిగి నెలకొల్పడానికి ఈ ఏడాది చివరిలోగా ఒక కొత్త దౌత్యపరమైన చొరవ తీసుకోవాలి",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.7743413516609393
+  },
+  "te-10421077295670162774|street_20": {
+   "id": "te-10421077295670162774",
+   "condition": "street_20",
+   "transcript": "పట్టాలను నిలబెట్టడానికి క్రాస్టీలు చాలా ముందుగానే ప్రవేశపెట్టబడ్డాయి అయితే పైభాగంలో ఇనుప ఖనిజం ఉంటే ట్రాకులు మరింత సమర్థవంతంగా ఉంటాయని క్రమంగా గ్రహించారు",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.7805280528052805
+  },
+  "te-10495283664299809767|street_20": {
+   "id": "te-10495283664299809767",
+   "condition": "street_20",
+   "transcript": "ఇది బేస్ స్టేషన్ లో డ్యూయల్ రేడియోలు ఉంటే ఎనిమిది వందల రెండు పాయింట్ పదకొండు ఏ ఎనిమిది వందల రెండు పాయింట్ పదకొండు బి మరియు ఎనిమిది వందల రెండు పాయింట్ పదకొండు జీ తో అనుకూలంగా వెనుకకు అనుమతిస్తుంది",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.8029556650246306
+  },
+  "te-10529075416468337996|street_20": {
+   "id": "te-10529075416468337996",
+   "condition": "street_20",
+   "transcript": "గ్రీన్ ల్యాండ్ తక్కువ జనాభాతో ఉండేది నోర్స్ సకాస్లో రిక్ ది రెడ్ హత్య చేసినందువల్ల ఐస్లాండ్ నుండి బహిష్కరించబడినట్లు చెబుతారు ఇంకా తరువాత పశ్చిమంగా ప్రయాణిస్తున్నప్పుడు గ్రీన్ ల్యాండ్ ను కనుగొని దాన్ని గ్రీన్ ల్యాండ్ అని పేరు పెట్టాడు",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.6656378600823045
+  },
+  "bn-10012315972427481934|street_10": {
+   "id": "bn-10012315972427481934",
+   "condition": "street_10",
+   "transcript": "জার্মানির অনেক ব্রেক করা খাবারগুলিতে বাদাম হ্যাজলেট এবং অন্যান্য বাদামের উপাদান পাওয়া যায় পছন্দের কেকগুলি প্রায়শই একটি কাপ ধরা কফির সাথে ভালো আনে",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.7098765432098766
+  },
+  "bn-10025278611427771211|street_10": {
+   "id": "bn-10025278611427771211",
+   "condition": "street_10",
+   "transcript": "একজন শুধুমাত্র আশ্চর্য হতে পারে এই ভেবে যে যখন নতুন কিছু আসে তখন কিবোর্ড কীরকম হবে",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.9521072796934866
+  },
+  "bn-10059008353469041076|street_10": {
+   "id": "bn-10059008353469041076",
+   "condition": "street_10",
+   "transcript": "হাইতিয়ান ইনস্টিটিউট ফর জাস্টিস অ্যান্ড ডেমোক্রেসি এর স্বতন্ত্র সমীক্ষাতে উল্লেখ করা হয়েছে যে নেপালি জাতিসংঘের শান্তিরক্ষা বাহিনী অজান্তেই হাইতিতে এই রোগটি নিয়ে এসেছিল",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.6529492455418381
+  },
+  "bn-10112260419298134236|street_10": {
+   "id": "bn-10112260419298134236",
+   "condition": "street_10",
+   "transcript": "জাপানের পারমাণবিক সংস্থার সূত্রে জানা গিয়েছে প্ল্যান্টটিতে তেজস্ক্রিয় সিজিয়াম এবং আয়োডিন চিহ্নিত করা হয়েছে",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.9922928709055877
+  },
+  "bn-10133515389098801664|street_10": {
+   "id": "bn-10133515389098801664",
+   "condition": "street_10",
+   "transcript": "আনুষ্ঠানিকভাবে ফোকল্যান্ডস এর মুদ্রা হল ফোকল্যান্ড পাউন্ড এফকেপি যার মান এক ব্রিটিশ পাউন্ড জিবিপি এর সমান",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.4837758112094395
+  },
+  "bn-10160569019855782399|street_10": {
+   "id": "bn-10160569019855782399",
+   "condition": "street_10",
+   "transcript": "তিনি আরও যোগ করেন যা তাদের উন্নয়নের স্তর দায়িত্ব এবং সক্ষমতার সীমা ছাড়িয়ে যায় সেই সব বিষয়ে তাদের বাধ্য করা উচিত না",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.618840579710145
+  },
+  "bn-10173214416112429222|street_10": {
+   "id": "bn-10173214416112429222",
+   "condition": "street_10",
+   "transcript": "যদিও এখনও পর্যন্ত পরীক্ষামূলকভাবে একটি ভ্যাকসিন ইবোলা মৃত্যুর হার হ্রাস করতে সক্ষম হয়েছে তবে উপস্থিত সংক্রমণের চিকিৎসার জন্য উপযুক্ত কোনো ওষুধ ভালোভাবে প্রকাশ হয়নি",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.674217907227616
+  },
+  "bn-10178783284625915846|street_10": {
+   "id": "bn-10178783284625915846",
+   "condition": "street_10",
+   "transcript": "সুন্দরবনকে ইউনেস্কোর ওয়ার্ল্ড হেরিটেজ সাইট হিসেবে ঘোষণা করা হয়েছে ভারতীয় ভূখণ্ডের মধ্যে থাকা বনের অংশটিকে সুন্দরবন জাতীয় উদ্যান বলা হয়",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.6803418803418804
+  },
+  "bn-10218413643679736372|street_10": {
+   "id": "bn-10218413643679736372",
+   "condition": "street_10",
+   "transcript": "এই স্পটিকগুলি গঠন আক্রান্ত পালিত পশুগুলোর মূত্র থেকে পাওয়াগুলির সাথে মিলে যায় যখন অবলোহিত বর্ণালীবীক্ষণ যন্ত্রের এফটিআইআর দ্বারা তুলনা করা হয়",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.5811965811965812
+  },
+  "bn-10263418355661224659|street_10": {
+   "id": "bn-10263418355661224659",
+   "condition": "street_10",
+   "transcript": "ঐতিহ্যগতভাবে নৌবাহিনীর কাজ এটা নিশ্চিত করা ছিল যে আপনার দেশ যেন আপনার মানুষ এবং পণ্য স্থানান্তরের ক্ষমতা বজায় রাখে এবং একই সাথে আপনার শত্রু যেন তার লোক ও পণ্য স্থানান্তরের ক্ষমতায় হস্তক্ষেপের সম্মুখীন হয়",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.7144120247568524
+  },
+  "en-1003119935936341070|street_10": {
+   "id": "en-1003119935936341070",
+   "condition": "street_10",
+   "transcript": "however due to the slow communication channels styles in the west could lag behind by 08:05 to 30 years",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.5397727272727273
+  },
+  "en-10197164397713068203|street_10": {
+   "id": "en-10197164397713068203",
+   "condition": "street_10",
+   "transcript": "the cabbage juice changes color depending on how acidic basic alkaline the chemical is",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.13194444444444445
+  },
+  "en-10235738076911595987|street_10": {
+   "id": "en-10235738076911595987",
+   "condition": "street_10",
+   "transcript": "the hospital has followed protocol for infection control including separating the patient from others to prevent possible infection of others",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.7057793345008757
+  },
+  "en-10323357556845456822|street_10": {
+   "id": "en-10323357556845456822",
+   "condition": "street_10",
+   "transcript": "the northern mariana's emergency management office said that there were no damages reported in the nation",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.37962962962962965
+  },
+  "en-1036771894648013441|street_10": {
+   "id": "en-1036771894648013441",
+   "condition": "street_10",
+   "transcript": "as light pollution in their heyday was not the kind of problem it is today they are usually located in cities or at campuses easier to reach than those built in modern times",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.2767676767676768
+  },
+  "en-1038214857203833067|street_10": {
+   "id": "en-1038214857203833067",
+   "condition": "street_10",
+   "transcript": "the night between 15,200 copies were made now known as dunlapside",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.075
+  },
+  "en-10411016628242228511|street_10": {
+   "id": "en-10411016628242228511",
+   "condition": "street_10",
+   "transcript": "the city is also the base to climb the niraigango volcano along with some of the cheapest mountain gorilla trafficking in africa",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.4521276595744681
+  },
+  "en-1042003289011443756|street_10": {
+   "id": "en-1042003289011443756",
+   "condition": "street_10",
+   "transcript": "the internet combines elements of both mass and interpersonal communication",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.6118881118881119
+  },
+  "en-1043394666292127188|street_10": {
+   "id": "en-1043394666292127188",
+   "condition": "street_10",
+   "transcript": "what it is about certain people that make them want the things that they do and what things in their environment will make them do or not do certain things",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.7133676092544987
+  },
+  "en-1045619486290403122|street_10": {
+   "id": "en-1045619486290403122",
+   "condition": "street_10",
+   "transcript": "for example the most common still image photography format in the world is 35 millimeter which was the dominant film size at the close of the analogue film era",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.35919540229885055
+  },
+  "gu-10051332836083130420|street_10": {
+   "id": "gu-10051332836083130420",
+   "condition": "street_10",
+   "transcript": "આ પોપડો નજીકની બાજુએ લગભગ સિત્તેર કિલોમીટર જાડો અને દૂરની બાજુએ સો કિલોમીટર જાડો છે",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.6717948717948717
+  },
+  "gu-10054314118491272104|street_10": {
+   "id": "gu-10054314118491272104",
+   "condition": "street_10",
+   "transcript": "ઉત્તરમાં આ વિસ્તાર સાહેલ અને એટલાન્ટિક મહાસાગરની દક્ષિણે અને પશ્ચિમમાં બંધાયેલો",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.735897435897436
+  },
+  "gu-1008765602519405220|street_10": {
+   "id": "gu-1008765602519405220",
+   "condition": "street_10",
+   "transcript": "ફિલેપિનો ફોટોગ્રાફરો અને બાળકો તેમજ વૃદ્ધો સહિત છ બંધકોને પહેલા છોડી દેવામાં આવ્યા હતા",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.7651515151515151
+  },
+  "gu-10164951352830139261|street_10": {
+   "id": "gu-10164951352830139261",
+   "condition": "street_10",
+   "transcript": "ખાસ કરીને ઉનાળામાં સાદું લોકપ્રિય લા રાત્રિ ભોજન છે પા એમ ઓલી ઓલિવ ઓઈલ ટામેટા અને અન્ય ચીઝ ટુના ફિશ વગેરે જેવા ઉપલબ્ધ વ્યંજનો સાથે બ્રેડ",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.7027777777777777
+  },
+  "gu-10282288803999807308|street_10": {
+   "id": "gu-10282288803999807308",
+   "condition": "street_10",
+   "transcript": "રદ કરવાની નીતિઓ બદલાઈ છે પરંતુ માર્ચના અંતથી મોટાભાગની કોરોના વાયરસ આધારિત રદ કરવાની નીતિઓ જુલાઈ બે હજાર વીસ સુધી લંબાતી નથી જ્યારે ઓલિમ્પિક્સ સુનિશ્ચિત કરવામાં આવી હતી",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.7155797101449275
+  },
+  "gu-10344165401321702763|street_10": {
+   "id": "gu-10344165401321702763",
+   "condition": "street_10",
+   "transcript": "પંદરસોની સાડત્રીસમાં અસુની સિયોનની સ્થાપના થઈ ત્યારથી પેરાગ્વે તેના ઘણા પ્ર સ્વદેશી ચરિત્ર અને ઓળખને જાળવી રાખવામાં સફળ રહ્યો",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.7567140600315956
+  },
+  "gu-10347511448765778840|street_10": {
+   "id": "gu-10347511448765778840",
+   "condition": "street_10",
+   "transcript": "તેમણે આ કાપ માટે કોઈ આંકડો નક્કી કર્યો ન હતો અને કહ્યું હતું કે તેઓ ચીનના આર્થિક ઉત્પાદનથી નક્કી થશે",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.8091787439613527
+  },
+  "gu-10386183340427464557|street_10": {
+   "id": "gu-10386183340427464557",
+   "condition": "street_10",
+   "transcript": "તે જ રીતે સ્કેન જેનના વિઝા હોય તો તમારે સ્કેન જેનનો સભ્ય હોય તે દરેક દેશ માટે અલગથી વિઝા મેળવવાની અરજી કરવી જરૂરી નથી જેથી સમય નાણાં અને પેપરવર્કની બચત થાય છે",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.7889784946236559
+  },
+  "gu-10416436950497082489|street_10": {
+   "id": "gu-10416436950497082489",
+   "condition": "street_10",
+   "transcript": "બ્લોગિંગ એ એવું સાધન છે જે સહયોગ કરવાની પ્રેરણા આપે છે અને વિદ્યાર્થીઓને શાળાના પારંપરિક શિક્ષણથી વધીને શીખવા માટે પ્રોત્સાહન આપે છે",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.8112449799196787
+  },
+  "gu-10445911236372744046|street_10": {
+   "id": "gu-10445911236372744046",
+   "condition": "street_10",
+   "transcript": "ડનલેપ બ્રોડસાઇડના પચ્ચીસ દસ્તાવેજો હજુ પણ અસ્તિત્વ ધરાવતા હતા તે સૌથી જૂની વર્તમાન નકલો છે મૂળ હસ્તલિખિત નકલ બચી નથી",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.6773049645390071
+  },
+  "hi-10014385262415025488|street_10": {
+   "id": "hi-10014385262415025488",
+   "condition": "street_10",
+   "transcript": "ग्रीनलैंड को बहुत कम जगह बसाया गया था नोर्स सगास में वे कहते हैं कि एरिक रेड हत्या के लिए आइसलैंड से निर्वासित किया गया था और आगे पश्चिम की यात्रा करते समय ग्रीनलैंड मिला जिसे ग्रीनलैंड नाम दिया गया",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.7304347826086957
+  },
+  "hi-10069289676238419279|street_10": {
+   "id": "hi-10069289676238419279",
+   "condition": "street_10",
+   "transcript": "इंटरनेट पर ये खोज शत्रुतापूर्ण पर्यावरण पाठ्यक्रम के लिए अक्सर आपको एक स्थानीय कंपनी का पता प्रदान करेगी",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.4863636363636364
+  },
+  "hi-10107687492910459268|street_10": {
+   "id": "hi-10107687492910459268",
+   "condition": "street_10",
+   "transcript": "अपनी सरकार के अलावा आप अन्य देशों की सरकारों की सलाह ले सकते हैं हालांकि उनकी सलाह उनके नागरिकों को ध्यान में रखकर दी जाती है",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.9548022598870056
+  },
+  "hi-10128382631186456345|street_10": {
+   "id": "hi-10128382631186456345",
+   "condition": "street_10",
+   "transcript": "प्राचीन काल से ही लोग सोने चांदी और तांबे जैसे रासायनिक तत्वों के बारे में जानकारी रखते हैं क्योंकि इन्हें प्रकृति में मूल स्वरूप में ढूंढा जा सकता है और इन्हें प्राथमिक उपकरणों के जरिए ढूंढना अपेक्षाकृत आसान है",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.7964912280701755
+  },
+  "hi-10135688561274120767|street_10": {
+   "id": "hi-10135688561274120767",
+   "condition": "street_10",
+   "transcript": "इसे केमिकल का पीएच कहा जाता है आप लाल गोभी के जूस को इस्तेमाल करके एक संकेतक बना सकते हैं",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.5863746958637469
+  },
+  "hi-10200643191519059428|street_10": {
+   "id": "hi-10200643191519059428",
+   "condition": "street_10",
+   "transcript": "सबसे नज़दीकी सिरे पर पृष्ठ की मोटाई का रेट 17 किलोमीटर है और सबसे दूर के सिरे पर यह 100 किलोमीटर है",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.6102564102564103
+  },
+  "hi-10286778291956788434|street_10": {
+   "id": "hi-10286778291956788434",
+   "condition": "street_10",
+   "transcript": "पुरुषों के स्टैंडिंग सुपर जी में ऑस्ट्रेलिया के मिशेल गोर्ले 11वें स्थान पर रहे चेक प्रतियोगी ओल्ड्रिज जेलीनेक पुरुषों के सिटिंग सुपर जी में 16वें स्थान पर रहे",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999996,
+   "active_fraction": 0.6526610644257703
+  },
+  "hi-10359991159058879218|street_10": {
+   "id": "hi-10359991159058879218",
+   "condition": "street_10",
+   "transcript": "एम एस बीमारी केंद्रीय तंत्रिका तंत्र पर असर करती है जिसमें दिमाग स्पाइनल कॉर्ड और ऑप्टिक नर्व शामिल हैं",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.6044444444444445
+  },
+  "hi-10550791631951016124|street_10": {
+   "id": "hi-10550791631951016124",
+   "condition": "street_10",
+   "transcript": "हर कोई समाज से जुड़ा होता है और ट्रांसपोर्ट सिस्टम का उपयोग करता है लगभग सभी लोग ट्रांसपोर्ट सिस्टम के बारे में शिकायत करते हैं",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.6257309941520468
+  },
+  "hi-10582204498174558997|street_10": {
+   "id": "hi-10582204498174558997",
+   "condition": "street_10",
+   "transcript": "एक पूरी तरह से विकसित एथलीट की तरह बाघ चढ़ाई कर सकता है हालांकि अच्छी तरह से नहीं तैर सकता है बड़ी दूरी तक छलांग लगा सकता है और एक शक्तिशाली मनुष्य के 5 गुणा बल के साथ खींच सकता है",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.7193486590038314
+  },
+  "kn-10010482195448774909|street_10": {
+   "id": "kn-10010482195448774909",
+   "condition": "street_10",
+   "transcript": "ಆದರೆ ನಾಯಕನ ವಿಕೆಟ್ ಕಳೆದುಕೊಂಡ ನಂತರ ಭಾರತ ಏಳು ವಿಕೆಟ್ ಕಳೆದುಕೊಂಡು ಕೇವಲ ಮೂವತ್ತ ಆರು ರನ್ ಗಳಿಗೆ ತನ್ನ ಇನ್ನಿಂಗ್ಸ್ ಮುಗಿಸಿತು",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.6313932980599647
+  },
+  "kn-10019512818416747761|street_10": {
+   "id": "kn-10019512818416747761",
+   "condition": "street_10",
+   "transcript": "ಪಿರಮಿಡ್ ಧ್ವನಿ ಮತ್ತು ಬೆಳಕಿನ ಪ್ರದರ್ಶನವು ಈ ಭಾಗದ ಮಕ್ಕಳಿಗೆ ಅತ್ಯಂತ ಆಸಕ್ತಿದಾಯಕ ವಿಷಯವಾಗಿದೆ",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.6881720430107527
+  },
+  "kn-10092474821709819618|street_10": {
+   "id": "kn-10092474821709819618",
+   "condition": "street_10",
+   "transcript": "ಅದೇ ರೀತಿ ಶೆಂಗೆನ್ ವೀಸಾ ಹೊಂದಿದ್ದರೆ ನೀವು ಶೆಂಗೆನ್ ಸದಸ್ಯ ರಾಷ್ಟ್ರಗಳಲ್ಲಿ ಪ್ರತ್ಯೇಕವಾಗಿ ವೀಸಾಗಾಗಿ ಅರ್ಜಿ ಸಲ್ಲಿಸಬೇಕಾಗಿಲ್ಲ ಇದರಿಂದಾಗಿ ನಿಮ್ಮ ಸಮಯ ಹಣ ಮತ್ತು ಕಾಗದಪತ್ರಗಳ ಸಲ್ಲಿಕೆ ಇತ್ಯಾದಿಯ ಉಳಿತಾಯವಾಗುತ್ತದೆ",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.7023060796645703
+  },
+  "kn-10103823447819430366|street_10": {
+   "id": "kn-10103823447819430366",
+   "condition": "street_10",
+   "transcript": "ಹಾಲಿ ಸೆನೆಟರ್ ಮತ್ತು ಅರ್ಜೆಂಟೀನಾದ ಪ್ರಥಮ ಮಹಿಳೆ ಕ್ರಿಸ್ಟೀನಾ ಫರ್ನಾಂಡಿಸ್ ಡಿ ಕಿಚ್ನರ್ ಕ್ರಿಸ್ಟೀನಾ ಫರ್ನಾಂಡಿಸ್ ಡಿ ಕಿಚ್ನರ್ ಕಳೆದ ರಾತ್ರಿ ಲಾ ಪ್ಲಾಟಾದಲ್ಲಿರುವ ಅಧ್ಯಕ್ಷೀಯ ಉಮೇದುವಾರಿಕೆಯನ್ನು ಘೋಷಿಸಿದರು ಎಲ್ಲಿಸ್ ಐವತ್ತು ಕಿಮೀ ಅಂದರೆ ಮೂವತ್ತೊಂದು ಮೈಲಿ",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.7572916666666667
+  },
+  "kn-10122168936396301938|street_10": {
+   "id": "kn-10122168936396301938",
+   "condition": "street_10",
+   "transcript": "ಹಾಂಕಾಂಗ್ ಸ್ಕೈಲೈನ್ ಅನ್ನು ಜೋಡಿಸುವ ಕಟ್ಟಡಗಳ ಮೆರವಣಿಗೆಯನ್ನು ಮಿನಗುವ ಬಾರ್ ಗ್ರಾಫ್ ಗೆ ಹೋಲಿಸಲಾಗುತ್ತದೆ ಮತ್ತು ವಿಕ್ಟೋರಿಯಾ ಬಂದರಿನ ನೀರು ಅದನ್ನು ಸ್ಪಷ್ಟಪಡಿಸುತ್ತದೆ",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.7811447811447811
+  },
+  "kn-10129714409926666294|street_10": {
+   "id": "kn-10129714409926666294",
+   "condition": "street_10",
+   "transcript": "ಪ್ರಮುಖ ಮಿಲಿಟರಿ ಮತ್ತು ನಾಗರಿಕ ಸರಬರಾಜುಗಳನ್ನು ಕಡಿತಗೊಳಿಸುವ ಈ ತಂತ್ರವು ಪರಿಣಾಮಕಾರಿಯಾಗಿ ಸಾಬೀತಾಯಿತು ಆದರೆ ಕಳೆದ ಎರಡು ಶತಮಾನಗಳ ಹಲವಾರು ಅಂತಾರಾಷ್ಟ್ರೀಯ ಒಪ್ಪಂದಗಳಿಂದ ಒಟ್ಟುಗೂಡಿಸಲು ಎಲ್ಲರೂ ಒಪ್ಪಿಕೊಂಡಿರುವ ಅಂತಾರಾಷ್ಟ್ರೀಯ ಕಾನೂನನ್ನು ಈ ದಿಗ್ಬಂಧನ ಉಲ್ಲಂಘಿಸಿದೆ",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.6903460837887068
+  },
+  "kn-10171759063486736869|street_10": {
+   "id": "kn-10171759063486736869",
+   "condition": "street_10",
+   "transcript": "ಪ್ಯಾರಿಸ್ ಜನರು ಉದ್ರೇಕಕಾರಿ ಅಸಭ್ಯ ಮತ್ತು ಸೊಕ್ಕಿನಿಂದ ಕೂಡಿದವರು ಎಂಬ ಕುಖ್ಯಾತಿಯನ್ನು ಹೊಂದಿದ್ದಾರೆ",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.7470238095238095
+  },
+  "kn-10193060423779665461|street_10": {
+   "id": "kn-10193060423779665461",
+   "condition": "street_10",
+   "transcript": "ಆ ಬೇರೆ ನಾಮಾಂಕಣಗಳಲ್ಲಿ ಕೆಲವು ಅತ್ಯುತ್ತಮ ಸಿನಿಮಾ ನಿರ್ದೇಶಕ ಸಿನಿಮಾಟೋಗ್ರಫಿ ವಸ್ತ್ರ ವಿನ್ಯಾಸ ಸಿನಿಮಾ ಸಂಕಲನ ಮೂಲ ಸಂಗೀತ ಪ್ರೊಡಕ್ಷನ್ ಡಿಸೈನ್ ಧ್ವನಿ ಸಂಕಿಲನ ಧ್ವನಿ ಮಿಶ್ರಣ ಮತ್ತು ಮೂಲ ಸ್ಕ್ರೀನ್ ಪ್ಲೇ",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.7759009009009009
+  },
+  "kn-10248142223167904254|street_10": {
+   "id": "kn-10248142223167904254",
+   "condition": "street_10",
+   "transcript": "ಎಲ್ಲಾ ವಿಷಯಗಳನ್ನು ಪರಿಗಣಿಸಿದ ನಂತರ ನಮ್ಮ ಪೂರ್ವಜರು ತಮ್ಮ ಪ್ರೋಟೀನ್ ಸಮಸ್ಯೆಯನ್ನು ಸ್ವಲ್ಪ ಮಟ್ಟಿಗೆ ಸವನ್ನಾದಲ್ಲಿ ಚಿಂಪಾಂಜಿಗಳು ಮಾಡುವ ರೀತಿಯಲ್ಲಿ ಪರಿಹರಿಸಿದ್ದಲ್ಲಿ ನಾವು ಆಶ್ಚರ್ಯಪಡಬೇಕಿಲ್ಲ",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.7168141592920354
+  },
+  "kn-10332300909659383666|street_10": {
+   "id": "kn-10332300909659383666",
+   "condition": "street_10",
+   "transcript": "ಸಿಂಗಾಪುರದ ಉಪಪ್ರಧಾನಿ ವಾಂಗ್ ಕಾನ್ ಸೆಂಗ್ ಅವರನ್ನು ಬರಮಾಡಿಕೊಂಡರು ಮತ್ತು ವ್ಯಾಪಾರ ಹಾಗೂ ಭಯೋತ್ಪಾದನೆ ವಿಷಯಗಳ ಬಗ್ಗೆ ಸಿಂಗಾಪುರ ಪ್ರಧಾನಿ ಲೀ ಹೀನ್ ಲುಂಗ್ ಜೊತೆಗೆ ಚರ್ಚಿಸಿದರು",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.6440677966101694
+  },
+  "ml-10013487754489332324|street_10": {
+   "id": "ml-10013487754489332324",
+   "condition": "street_10",
+   "transcript": "ഈ നഗരം രാജ്യത്തെ മറ്റു നഗരങ്ങളിൽ നിന്ന് പൂർണമായും വ്യത്യസ്തമാണ് കാരണം ഇതിന് ആഫ്രിക്കൻ വാസനയേക്കാൾ അറബി വാസനയാണ് കൂടുതൽ",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.9298245614035088
+  },
+  "ml-10078044035084322628|street_10": {
+   "id": "ml-10078044035084322628",
+   "condition": "street_10",
+   "transcript": "ഇത് ബന്ധപ്പെട്ടിരിക്കുന്നു എന്നാൽ സാധാരണയായി ആൽപൈൻ ശൈലിയിലുള്ള സ്കീ ടൂറിംഗോ പർവതാരോഹണമോ ഉൾപ്പെടുന്നില്ല ഇതിൽ രണ്ടാമത്തേത് കുത്തനെയുള്ള ഭൂപ്രദേശങ്ങളിൽ ചെയ്യുന്നതും കൂടുതൽ കട്ടിയുള്ള സ്കീകളും ബൂട്ടുകളും ആവശ്യമായതും",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.75
+  },
+  "ml-10134676116368565149|street_10": {
+   "id": "ml-10134676116368565149",
+   "condition": "street_10",
+   "transcript": "മുറിവുകൾക്കായി അദ്ദേഹം ഒരു ചിത്രം സജ്ജമാക്കിയിട്ടില്ല ചൈനയുടെ സാമ്പത്തിക ഉത്പാദനത്തെ അടിസ്ഥാനമാക്കിയാണ് അവ നിർമ്മിക്കുക എന്ന് പറഞ്ഞു",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.9112227805695142
+  },
+  "ml-10277507420082337141|street_10": {
+   "id": "ml-10277507420082337141",
+   "condition": "street_10",
+   "transcript": "ബെൽജിയൻ മാനദണ്ഡങ്ങൾ അനുസരിച്ചാണ് ഹോട്ട് ചോക്ലേറ്റ് ഉണ്ടാക്കിയിരിക്കുന്നത് ഫ്രൂട്ട് ജ്യൂസുകൾ വില കൂടിയതാണെങ്കിലും രുചികരമാണ്",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.9429223744292238
+  },
+  "ml-10286327547505797785|street_10": {
+   "id": "ml-10286327547505797785",
+   "condition": "street_10",
+   "transcript": "പുരുഷ സ്റ്റാൻഡിങ് സൂപ്പർ ജിയിൽ ഓസ്ട്രേലിയയുടെ മിച്ചൽ ഗോർലി പതിനൊന്നാം സ്ഥാനത്തെത്തി പുരുഷന്മാരുടെ സിറ്റിംഗ് സൂപ്പർ ജിയിൽ ചെക്ക് എതിരാളിയായ ഓൾഡ്രിക് ജെനലിക് പതിനാറാം സ്ഥാനത്തെത്തി",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.9468390804597702
+  },
+  "ml-10332530728981827248|street_10": {
+   "id": "ml-10332530728981827248",
+   "condition": "street_10",
+   "transcript": "കഴിഞ്ഞ ആഴ്ച അമിതമായി ചൂടാകുന്ന മുപ്പത്തിനാല് സംഭവങ്ങളെക്കുറിച്ച് ആപ്പിള് അറിയിച്ചതായി എംഇടിഐ അറിയിച്ചിരുന്നു അതിനെ കമ്പനി ഗുരുതരമല്ലാത്തത് എന്ന് വിളിച്ചു",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.6861111111111111
+  },
+  "ml-10438874059424936747|street_10": {
+   "id": "ml-10438874059424936747",
+   "condition": "street_10",
+   "transcript": "ഓർഗനൈസേഷനുകളെ ഉയർന്ന പ്രകടനത്തിലെത്താൻ സഹായിക്കുന്നതിന് ഉപയോഗിക്കുന്ന ഒരു രീതിയായി കോൺടിനം സമീപനത്തെ ഏഞ്ചൽ രണ്ടായിരത്തി ആറ് വിശദീകരിക്കുന്നു",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.7248322147651006
+  },
+  "ml-10439860146800584845|street_10": {
+   "id": "ml-10439860146800584845",
+   "condition": "street_10",
+   "transcript": "മുതിര്ന്നവരും കുട്ടികളും ഉള്പ്പെടെ ബന്ദിയാക്കപ്പെട്ട ആറ് പേരെ ആദ്യം മോചിപ്പിച്ചു ഫിലിപ്പിനോ ഫോട്ടോഗ്രാഫര്മാരും",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.8739316239316239
+  },
+  "ml-10514694764352729740|street_10": {
+   "id": "ml-10514694764352729740",
+   "condition": "street_10",
+   "transcript": "അലോയ് എന്നത് അടിസ്ഥാനപരമായി രണ്ട് അല്ലെങ്കിൽ അതിലധികം ലോഹങ്ങളുടെ സങ്കരമാണ് മൂലകങ്ങളുടെ പട്ടികയിൽ ഒരുപാട് മൂലകങ്ങളുണ്ട് എന്ന കാര്യം മറക്കരുത്",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.7177777777777777
+  },
+  "ml-10657006548453620506|street_10": {
+   "id": "ml-10657006548453620506",
+   "condition": "street_10",
+   "transcript": "അന്തർജില്ലാ ബസ് സ്റ്റേഷനിൽ നിന്ന് നദിക്ക് കുറുകെ ദിവസത്തിലുടനീളം ബസ്സുകൾ പുറപ്പെടുന്നു എന്നിരുന്നാലും മിക്കതും പ്രത്യേകിച്ച് കിഴക്കോട്ടും ജാക്കറിലേക്ക് ബുംതാങ്ങിലേക്ക് പോകുന്നവ ആറ് മുപ്പതിനും ഏഴ് മുപ്പതിനും ഇടയിൽ പുറപ്പെടുന്നു",
+   "retries": 0,
+   "measured_snr_db": 10.000000000000002,
+   "active_fraction": 0.9153846153846154
+  },
+  "mr-10201098310487173927|street_10": {
+   "id": "mr-10201098310487173927",
+   "condition": "street_10",
+   "transcript": "सिंट्राचे रोमँटिक आणि मोहक शहर हे उत्तरेकडे व सहज पोहोचता येऊ शकणारे आहे तसेच लॉर्ड बायरनने रेकॉर्ड केलेल्या त्यांच्या वैभवाच्या भव्यतेच्या वर्तनानंतर हे परदेशी लोकांमध्ये देखील प्रसिद्ध झाले आहे",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.8109965635738832
+  },
+  "mr-10209762496868095317|street_10": {
+   "id": "mr-10209762496868095317",
+   "condition": "street_10",
+   "transcript": "वनस्पती ऑक्सिजनची निर्मिती करतात ज्याचा उपयोग मनुष्य श्वास घेताना करतो आणि ते कार्बन डायऑक्साईड घेतात जो मनुष्य उच्छवासाद्वारे बाहेर सोडतो म्हणजेच श्वास सोडणे",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.6263888888888889
+  },
+  "mr-10218825816989175821|street_10": {
+   "id": "mr-10218825816989175821",
+   "condition": "street_10",
+   "transcript": "माथलीने काल नऊ सदस्यांच्या नवीन प्रोव्हिजनल इलेक्ट्रोल कौन्सिलमध्ये सीईपी शपथ घेतली",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.65
+  },
+  "mr-10257470372493232363|street_10": {
+   "id": "mr-10257470372493232363",
+   "condition": "street_10",
+   "transcript": "शेनजेन झोन असला तरी या बाबतीत काही प्रमाणात एखाद्या देशासारखा कार्य करतो",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.6007326007326007
+  },
+  "mr-10291151742776340106|street_10": {
+   "id": "mr-10291151742776340106",
+   "condition": "street_10",
+   "transcript": "रिपरक्षी प्रवाह हे किनाऱ्यापासून वेगळ्या झालेल्या लाटांपासून परतणारा प्रवाह असतात सहजा प्रवाली किंवा तत्सम ठिकाणी",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.7727272727272727
+  },
+  "mr-10329146223209027475|street_10": {
+   "id": "mr-10329146223209027475",
+   "condition": "street_10",
+   "transcript": "जितका तणाव कमी तितकी सकारात्मक जीवन ऊर्जा अस्तित्वात असते प्रत्येक व्यक्तीकडे संपूर्ण शांती आणि समाधान मिळवण्याची क्षमता असते",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.632183908045977
+  },
+  "mr-10357069420670487676|street_10": {
+   "id": "mr-10357069420670487676",
+   "condition": "street_10",
+   "transcript": "त्याला सुरुवातीला ग्रेट यारमाऊथ येथील जेम्स प्रॅगेट रुग्णालयात दाखल केले होते",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.5402298850574713
+  },
+  "mr-10362338566354994001|street_10": {
+   "id": "mr-10362338566354994001",
+   "condition": "street_10",
+   "transcript": "तथापि रिगा शांतता करार सोव्हिएत पॉलिश नॉन एग्रेशन करार तसेच अन्य आंतरराष्ट्रीय करार द्विपक्षीय आणि बहुपक्षीय दोन्हीच्या उल्लंघनामुळे पोलंडच्या पूर्व प्रदेशावर आक्रमण केल्यानंतर सोव्हिएतच्या युनियन रेड आर्मीच्या आठ लक्ष सैनिकांनी प्रवेश केला आणि बेलारूस आणि युक्रेनियन फ्रंट तयार केला  तेव्हा या योजना जवळपास रातोरात अप्रचलितपणे प्रस्तुत केल्या गेल्या",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.6584531143052703
+  },
+  "mr-10369140904526923849|street_10": {
+   "id": "mr-10369140904526923849",
+   "condition": "street_10",
+   "transcript": "त्याच धर्तीवर पुरुषांना गुडघे झाकणारे ट्राऊझर्स घालणे आवश्यक आहे",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.625
+  },
+  "mr-10392451913859275620|street_10": {
+   "id": "mr-10392451913859275620",
+   "condition": "street_10",
+   "transcript": "उदाहरणार्थ प्रत्येक वर्षी उत्तर कॅलोरिनातील बेनेट शाळेचे विद्यार्थी त्यांच्या राज्याच्या राजधानीला भेट देण्याच्या सहलीसंबंधी वेबसाईट तयार करतात प्रत्येक वर्षी वेबसाईट पुन्हा तयार केली जाते पण तिच्या जुन्या आवृत्त्या स्क्रॅपबुकप्रमाणे ऑनलाईन ठेवल्या जातात",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.6712580348943985
+  },
+  "pa-10019901230699518471|street_10": {
+   "id": "pa-10019901230699518471",
+   "condition": "street_10",
+   "transcript": "ਅਲਹੀਦਾ ਕਰਨਾ ਅਤੇ ਮੁੜ ਸੁਮੇਲ ਕਰਨਾ ਹਰ ਇੱਕ ਪੀੜ੍ਹੀ ਦੇ ਦੋ ਪੁਲਾਂ ਵਿਚਕਾਰ ਪਰਿਵਰਤਿਤ ਰੂਪ ਨੂੰ ਅੱਗੇ ਪਿੱਛੇ ਪੂਰੀ ਤਰ੍ਹਾਂ ਬੇਤਰਤੀਬ ਕਰ ਦਿੰਦਾ ਹੈ",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.8507751937984496
+  },
+  "pa-10033020277327712096|street_10": {
+   "id": "pa-10033020277327712096",
+   "condition": "street_10",
+   "transcript": "ਇੰਟਰਨੈੱਟ ਬਹੁਗਿਣਤੀ ਅਤੇ ਅੰਤਰ ਵਿਅਕਤੀ ਸੰਚਾਰ ਦੋਵਾਂ ਤੱਤਾਂ ਦਾ ਸੁਮੇਲ ਕਰਦਾ ਹੈ",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.6018518518518519
+  },
+  "pa-10045745942478893252|street_10": {
+   "id": "pa-10045745942478893252",
+   "condition": "street_10",
+   "transcript": "ਦੁਨੀਆਂ ਵਿੱਚ ਸਭ ਤੋਂ ਵੱਧ ਸਮਾਜਿਕ ਸ਼ੇਅਰ ਹਨ ਜਿਹੜੇ ਵੱਡੇ ਸਮੂਹਾਂ ਵਿੱਚ ਰਹਿੰਦੇ ਹਨ ਜਿਨ੍ਹਾਂ ਨੂੰ ਪ੍ਰਾਈਡ ਕਿਹਾ ਜਾਂਦਾ ਹੈ",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 1.0
+  },
+  "pa-10114801816081710422|street_10": {
+   "id": "pa-10114801816081710422",
+   "condition": "street_10",
+   "transcript": "ਕੋਕੈਮੋ ਘਾਟੀ ਚਿੱਲੀ ਦਾ ਪ੍ਰਮੁੱਖ ਚੜ੍ਹਾਈ ਵਾਲਾ ਭਾਗ ਜੋ ਦੱਖਣੀ ਅਮਰੀਕਾ ਦੀਆਂ ਸਖਤ ਵੱਡੀਆਂ ਦੀਵਾਰਾਂ ਦੀਆਂ ਕਿਸਮਾਂ ਅਤੇ ਕਰੇਗ ਨਾਲ ਜੋਸੇਮਾਈਟ ਦੇ ਰੂਪ ਵਿੱਚ ਜਾਣਿਆ ਜਾਂਦਾ ਹੈ",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.5547169811320755
+  },
+  "pa-10152662544244172537|street_10": {
+   "id": "pa-10152662544244172537",
+   "condition": "street_10",
+   "transcript": "ਕੁਦਰਤੀ ਵਾਤਾਵਰਨ ਵਿੱਚ ਹੋਣ ਅਤੇ ਪੌਦੇ ਖੂਬਸੂਰਤ ਦਿਖਾਈ ਦਿੰਦੇ ਹਨ ਇਸ ਲਈ ਕੇਵਲ ਇੱਕ ਨਮੂਨੇ ਨੂੰ ਵੀ ਹਟਾਉਣ ਦੇ ਲੋਭ ਦਾ ਵਿਰੋਧ ਕਰੋ",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.6286919831223629
+  },
+  "pa-1016397316453669617|street_10": {
+   "id": "pa-1016397316453669617",
+   "condition": "street_10",
+   "transcript": "ਉਹਨਾਂ ਦੇ ਪੈਰ ਚੰਮ ਜਾਂ ਖੱਲੜੀ ਦੀ ਤਹਿ ਅਤੇ ਪੰਜੇ ਵਾਲੇ ਹੁੰਦੇ ਹਨ ਉਹ ਅੰਡੇ ਦਿੰਦੇ ਹਨ ਅਤੇ ਉਹ ਆਪਣੀਆਂ ਦੋਵੇਂ ਪਿਛਲੀਆਂ ਲੱਤਾਂ ਤੇ ਟੀ ਰੈਕਸ ਵਾਂਗ ਚੱਲਦੇ ਹਨ",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.5792592592592593
+  },
+  "pa-1017212797150914463|street_10": {
+   "id": "pa-1017212797150914463",
+   "condition": "street_10",
+   "transcript": "ਇੱਕ ਪਰਮਾਣੂ ਬੰਬ ਇਸ ਸਿਧਾਂਤ ਤੇ ਕੰਮ ਕਰਦਾ ਹੈ ਕਿ ਇਹ ਕਈ ਪ੍ਰੋਟੋਨ ਅਤੇ ਨਿਊਟਰੌਨ ਨੂੰ ਇੱਕ ਕੇਂਦਰ ਬਿੰਦੂ ਵਿੱਚ ਇਕੱਠੇ ਰੱਖਣ ਲਈ ਊਰਜਾ ਲੈਂਦਾ ਹੈ",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.5342066957787481
+  },
+  "pa-10190844180610990943|street_10": {
+   "id": "pa-10190844180610990943",
+   "condition": "street_10",
+   "transcript": "ਥ੍ਰੀ ਕਿੰਗਡਮਸ ਪ੍ਰਾਚੀਨ ਚੀਨ ਦੇ ਇਤਿਹਾਸ ਦੇ ਸਭ ਤੋਂ ਖੂਨੀ ਯੁੱਗਾਂ ਵਿੱਚੋਂ ਇੱਕ ਸੀ ਹਜ਼ਾਰਾਂ ਲੋਕ ਸ਼ੀਆਨ ਦੇ ਸ਼ਾਨਦਾਰ ਮਹਿਲ ਦੀ ਸਭ ਤੋਂ ਉੱਚੇ ਤਖ਼ਤੇ ਬੈਠਣ ਲਈ ਲੜਦੇ ਹੋਏ ਮਾਰੇ ਗਏ",
+   "retries": 0,
+   "measured_snr_db": 10.000000000000002,
+   "active_fraction": 0.5559071729957806
+  },
+  "pa-10217761447980730728|street_10": {
+   "id": "pa-10217761447980730728",
+   "condition": "street_10",
+   "transcript": "ਇਹ ਖਤਮ ਹੋਣ ਨਹੀਂ ਜਾ ਰਿਹਾ ਇਹ ਇੱਕ ਅਧਿਆਇ ਦਾ ਅੰਤ ਅਤੇ ਇੱਕ ਨਵਾਂ ਅਧਿਆਇ ਹੈ",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.5683453237410072
+  },
+  "pa-10250259946645700913|street_10": {
+   "id": "pa-10250259946645700913",
+   "condition": "street_10",
+   "transcript": "ਫੋਰ ਨੋਮੀਨੇਸ਼ਨਾਂ ਵਿੱਚ ਸਰਬੋਤਮ ਚਿੱਤਰ ਡਾਇਰੈਕਟਰ ਸਿਨੇਮਾਟੋਗ੍ਰਾਫੀ ਕਾਸਟਿਊਮ ਡਿਜ਼ਾਇਨ ਫਿਲਮ ਸੰਪਾਦਨ ਓਰੀਜਨਲ ਸਕੋਰ ਉਤਪਾਦਨ ਡਿਜ਼ਾਇਨ ਸਾਊਂਡ ਸੰਪਾਦਨ ਸਾਊਂਡ ਮਿਕਸਿੰਗ ਅਤੇ ਓਰੀਜਨਲ ਸਕ੍ਰੀਨਪਲੇਅ ਸ਼ਾਮਿਲ ਹਨ",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.5769622833843018
+  },
+  "ta-10072217146537983584|street_10": {
+   "id": "ta-10072217146537983584",
+   "condition": "street_10",
+   "transcript": "லக்காசிங் பஜனையை வழங்கினார் பாடகர் ராஜு கண்டல்வாலும் அவருடன் சென் வந்திருந்தார்",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.6724137931034483
+  },
+  "ta-10151944176129497809|street_10": {
+   "id": "ta-10151944176129497809",
+   "condition": "street_10",
+   "transcript": "முக்கியமான மேடைகளில் இசை நிகழ்ச்சி முடிந்திருந்தாலும் விழாவின் சில பிரிவுகள் இரவு இசைப்பதை தொடரும்",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.4879032258064516
+  },
+  "ta-10222238337252024030|street_10": {
+   "id": "ta-10222238337252024030",
+   "condition": "street_10",
+   "transcript": "பேருந்துகள் நாள் முழுவதும் மாவட்டங்களுக்கு இடையிலான பேருந்து நிலையத்திலிருந்து ஆற்றின் குறுக்கே புறப்படுகின்றன இருப்பினும் பெரும்பாலானவை குறிப்பாக கிழக்கு நோக்கி செல்லும் பேருந்துகள் மற்றும் ஜாகர் புந்தான் ஆறரை முதல் ஏழரை மணிக்கு இடையே புறப்படச் செல்கின்றன",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.6532180595581172
+  },
+  "ta-10265284731185110799|street_10": {
+   "id": "ta-10265284731185110799",
+   "condition": "street_10",
+   "transcript": "துணி மிகவும் வெப்பமடைந்ததலை அனுமதிக்கப்படும்படி கவனமாக இருக்கவும் அதனால் துணி சுருங்கலாம் அல்லது தீவிர நிகழ்வுகளில் துணி தீயால் வாடப்படலாம்",
+   "retries": 0,
+   "measured_snr_db": 10.000000000000002,
+   "active_fraction": 0.6122448979591837
+  },
+  "ta-10278812186982315493|street_10": {
+   "id": "ta-10278812186982315493",
+   "condition": "street_10",
+   "transcript": "இதன் விளைவாக இரண்டு மீன் வகைகள் அழிந்துவிட்டன மேலும் அம்பேக் சப் உட்பட மற்ற இரண்டு அழியும் நிலையில் உள்ளன",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.9478458049886621
+  },
+  "ta-10367238297771483490|street_10": {
+   "id": "ta-10367238297771483490",
+   "condition": "street_10",
+   "transcript": "வலைப்பதிவுகளின் சரியான பயன்பாடு மாணவர்களை மேலும் விமர்சகர்களாகவும் பகுத்தாய்பவர்களாகவும் ஆக்கும் இணைய கேள்விகளுக்கு பதிலளிக்கும் போது அவர்கள் அடுத்தவர்களுடைய கருத்துக்கு தங்கள் பதிலை சொல்வதுடன் தங்களுக்கே உரிய ஒரு நிலையை எடுக்கவும் உதவுகிறது ஒராவேக் இரண்டாயிரத்தி இரண்டு",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.677390527256479
+  },
+  "ta-10394228005554884342|street_10": {
+   "id": "ta-10394228005554884342",
+   "condition": "street_10",
+   "transcript": "சிங்கத்தை போன்றே ஓநாய்கள் அல்லது நாய்கள் ஆகிய விலங்குகள் வியக்கத்தை வகையில் செயல்படுகின்றன ஆனால் மற்ற பூனை இனங்கள் இல்லை நடவடிக்கையிலும் ஒது ஒத்துப்போகின்றன மிகவும் ஆபத்தானவையும் கூட",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999996,
+   "active_fraction": 0.9686609686609686
+  },
+  "ta-1039497074136799281|street_10": {
+   "id": "ta-1039497074136799281",
+   "condition": "street_10",
+   "transcript": "பெர்ரி இன்றிரவு காகஸின் முடிவுகளை மதிப்பிடுவதற்காக டெக்சாஸுக்கு திரும்புவேன் இந்த பந்தயத்தில் எனக்கு ஒரு பாதை இருக்கிறதா என்பதை இது தீர்மானிக்கும் என்று கூறினார் ஆனால் பின்பு அவர் பந்தயத்திலேயே இருந்து ஜனவரி இருபத்தொன்றில் தென் கரோலினா முதன்மை போட்டியில் போட்டியிடுவார் என்று தெரிவித்தார்",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.9341463414634147
+  },
+  "ta-10406373928837348332|street_10": {
+   "id": "ta-10406373928837348332",
+   "condition": "street_10",
+   "transcript": "பிரமிட் ஒலி மற்றும் ஒலி நிகழ்ச்சிகள் ஆகியவை இந்தப் பகுதியில் குழந்தைகளுக்கு மிக சுவாரஸ்யமான விஷயங்களில் ஒன்றாகும்",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.7493540051679587
+  },
+  "ta-10431271162503376039|street_10": {
+   "id": "ta-10431271162503376039",
+   "condition": "street_10",
+   "transcript": "அதன் பலனாக நடிகர்களும் கூட மேடையின் மீது கஞ்சாவை புகுக்கிறார்கள் மற்றும் தியேட்டரும் கூட பார்வையாளர்களை அது இணைய உற்சாகப்படுத்துகிறது",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.6989795918367347
+  },
+  "te-10054709042905280078|street_10": {
+   "id": "te-10054709042905280078",
+   "condition": "street_10",
+   "transcript": "చిన్న ద్వీపాలలో చాలావరకు స్వతంత్ర దేశాలు లేదా ఫ్రాన్స్ తో సంబంధం కలిగి ఉన్నాయి ఇంకా వీటిని లగ్జరీ బీచ్ రిసార్ట్స్ అని పిలుస్తారు",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.821256038647343
+  },
+  "te-10085601229183142282|street_10": {
+   "id": "te-10085601229183142282",
+   "condition": "street_10",
+   "transcript": "కొన్ని క్రియలు ఆబ్జెక్టుల మధ్య తేడాను గుర్తించడానికి ఇది ఒక ముఖ్యమైన మార్గం",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.6934523809523809
+  },
+  "te-10145424547032356574|street_10": {
+   "id": "te-10145424547032356574",
+   "condition": "street_10",
+   "transcript": "ఈ దృశ్యాలు పిరమిడ్లపై ప్రదర్శించబడతాయి మరియు వేరే పిరమిడ్లను వెలిగించబడ్డాయి",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.7643097643097643
+  },
+  "te-1018616296093099687|street_10": {
+   "id": "te-1018616296093099687",
+   "condition": "street_10",
+   "transcript": "క్యాల్షియం పొటాషియం వంటి మూలకాలను లోహాలుగా పరిగణిస్తారు వెండి బంగారం వంటి లోహాలు కూడా ఉన్నాయి",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.8898305084745762
+  },
+  "te-10252770362041562600|street_10": {
+   "id": "te-10252770362041562600",
+   "condition": "street_10",
+   "transcript": "అతని పని అటువంటి గుర్తింపు పొందిన నాణ్యత మరియు వివరాలతో కూడినది అతడు ఫిలా టెస్టులలో చాలా తక్కువ కుటుంబ సభ్యుల లాంటి వాళ్ళలో ఒకడు అతని పనులను సేకరించడంలో మాత్రమే కొందరు ప్రత్యేకత కలిగి ఉన్నారు",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.8378033205619413
+  },
+  "te-10291149870624674262|street_10": {
+   "id": "te-10291149870624674262",
+   "condition": "street_10",
+   "transcript": "ఐరోపా సాపేక్షంగా చిన్నదే కానీ అనేక స్వతంత్ర దేశాలతో కూడిన ఖండం సాధారణ పరిస్థితుల్లో అనేక దేశాల్లో ప్రయాణించడం అంటే వీసా అప్లికేషన్లు మరియు పాస్పోర్ట్ నియంత్రణ ద్వారా అనేక సార్లు వెళ్ళాల్సి ఉంటుంది",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.7328431372549019
+  },
+  "te-10373756234313480430|street_10": {
+   "id": "te-10373756234313480430",
+   "condition": "street_10",
+   "transcript": "దాని డెబ్బై ఎనిమిది సిఫార్సులలో మొదటిది శత్రుదేశాల జోక్యానికి వ్యతిరేకంగా ఇరాక్ సరిహద్దులను సురక్షితం చేయడానికి మరియు దాని పొరుగు దేశాలతో దౌత్య సంబంధాలను తిరిగి నెలకొల్పడానికి ఏడాది చివరిలోగా ఒక కొత్త దౌత్యపరమైన చొరవ తీసుకోవాలి",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.7743413516609393
+  },
+  "te-10421077295670162774|street_10": {
+   "id": "te-10421077295670162774",
+   "condition": "street_10",
+   "transcript": "పట్టాలను నిలబెట్టడానికి క్రాస్టీలు చాలా ముందుగానే ప్రవేశపెట్టబడ్డాయి అయితే పైభాగంలో ఇనుప ఖనిజం ఉంటే ట్రాక్లు మరింత సమర్థవంతంగా ఉంటాయని క్రమంగా గ్రహించారు",
+   "retries": 0,
+   "measured_snr_db": 10.000000000000002,
+   "active_fraction": 0.7805280528052805
+  },
+  "te-10495283664299809767|street_10": {
+   "id": "te-10495283664299809767",
+   "condition": "street_10",
+   "transcript": "ఇది బేస్ స్టేషన్ లో డ్యూయల్ రేడియోలు ఉంటే ఎనిమిది వందల రెండు పాయింట్ పదకొండు ఏ ఎనిమిది వందల రెండు పాయింట్ పదకొండు బి మరియు ఎనిమిది వందల రెండు పాయింట్ పదకొండు జీ తో అనుకూలంగా వెనుకకు అనుమతిస్తుంది",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.8029556650246306
+  },
+  "te-10529075416468337996|street_10": {
+   "id": "te-10529075416468337996",
+   "condition": "street_10",
+   "transcript": "గ్రీన్ ల్యాండ్ తక్కువ జనాభాతో ఉండేది నోర్స్ సకాస్లో రిక్ ది రెడ్ హత్య చేసినందువల్ల ఐస్లాండ్ నుండి బహిష్కరించబడినట్లు చెబుతారు ఇంకా తరువాత పశ్చిమంగా ప్రయాణిస్తున్నప్పుడు గ్రీన్ ల్యాండ్ ను కనుగొని దాన్ని గ్రీన్ ల్యాండ్ అని పేరు పెట్టాడు",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.6656378600823045
+  },
+  "bn-10012315972427481934|street_5": {
+   "id": "bn-10012315972427481934",
+   "condition": "street_5",
+   "transcript": "জার্মানির অনেক ব্রেক করা খাবারগুলিতে বাদাম হ্যাজমেল এবং অন্যান্য বাদামের উপাদান পাওয়া যায় পছন্দের কেকগুলি প্রায়শই একটি কাপধারা শখের সাথে ভালো মানায়",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.7098765432098766
+  },
+  "bn-10025278611427771211|street_5": {
+   "id": "bn-10025278611427771211",
+   "condition": "street_5",
+   "transcript": "একজন শুধুমাত্র আশ্চর্য হতে পারে এই ভেবে যে যখন নতুন কিছু আসে তখন কীবোর্ড কীরকম হবে",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.9521072796934866
+  },
+  "bn-10059008353469041076|street_5": {
+   "id": "bn-10059008353469041076",
+   "condition": "street_5",
+   "transcript": "হাইতিয়ান ইনস্টিটিউট ফর জাস্টিস অ্যান্ড ডেমোক্রেসি এর স্বতন্ত্র সমীক্ষাতে উল্লেখ করা হয়েছে যে নেপালি জাতিসংঘের শান্তিরক্ষা বাহিনী অজান্তেই হাইতিতে এই রোগটি নিয়ে এসেছিল",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000002,
+   "active_fraction": 0.6529492455418381
+  },
+  "bn-10112260419298134236|street_5": {
+   "id": "bn-10112260419298134236",
+   "condition": "street_5",
+   "transcript": "জাপানের পারমাণবিক সংস্থার সূত্রে জানা গিয়েছে প্ল্যান্টটিতে তেজস্ক্রিয় সিজিয়াম এবং আয়োডিন চিহ্নিত করা হয়েছে",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.9922928709055877
+  },
+  "bn-10133515389098801664|street_5": {
+   "id": "bn-10133515389098801664",
+   "condition": "street_5",
+   "transcript": "আনুষ্ঠানিকভাবে পোকল্যান্ডের মুদ্রা হল পোকল্যান্ড পাউন্ড এফএপি যার মাল এক ব্রিটিশ পাউন্ড জিডিপি এর সমান",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.4837758112094395
+  },
+  "bn-10160569019855782399|street_5": {
+   "id": "bn-10160569019855782399",
+   "condition": "street_5",
+   "transcript": "তিনি আরও যোগ করেন যা তাদের উন্নয়নের স্তর দায়িত্ব এবং সক্ষমতার সীমা ছাড়িয়ে যায় সেই সব বিষয়ে তাদের বাধ্য করা উচিত না",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000002,
+   "active_fraction": 0.618840579710145
+  },
+  "bn-10173214416112429222|street_5": {
+   "id": "bn-10173214416112429222",
+   "condition": "street_5",
+   "transcript": "যদিও এখনও পর্যন্ত পরীক্ষামূলকভাবে একটি ভ্যাকসিন ইবোলা মৃত্যুর হার হ্রাস করতে সক্ষম হয়েছে তবে উপস্থিত সংক্রমণের চিকিৎসার জন্য উপযুক্ত কোনো ওষুধ ভালোভাবে প্রকাশ হয়নি",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.674217907227616
+  },
+  "bn-10178783284625915846|street_5": {
+   "id": "bn-10178783284625915846",
+   "condition": "street_5",
+   "transcript": "সুন্দরবনকে ইউনেস্কোর ওয়ার্ল্ড হেরিটেজ সাইট হিসেবে ঘোষণা করা হয়েছে ভারতীয় ভূখণ্ডের মধ্যে থাকা বনের অংশটিকে সুন্দরবন জাতীয় উদ্যান বলা হয়",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000001,
+   "active_fraction": 0.6803418803418804
+  },
+  "bn-10218413643679736372|street_5": {
+   "id": "bn-10218413643679736372",
+   "condition": "street_5",
+   "transcript": "এই স্পটিকগুলি গঠন আক্রান্ত পালিত পশুগুলোর মূত্র থেকে পাওয়াগুলির সাথে মিলে যায় যখন অবলোহিত বর্ণালীবীক্ষণ যন্ত্রের এফটিআইআর দ্বারা তুলনা করা",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000001,
+   "active_fraction": 0.5811965811965812
+  },
+  "bn-10263418355661224659|street_5": {
+   "id": "bn-10263418355661224659",
+   "condition": "street_5",
+   "transcript": "ঐতিহ্যগতভাবে নৌবাহিনীর কাজ এটা নিশ্চিত করা ছিল যে আপনার দেশ যেন আপনার মানুষ এবং পণ্য স্থানান্তরের ক্ষমতা বজায় রাখে এবং একই সাথে আপনার শত্রু যেন তার লোক ও পণ্য স্থানান্তরের ক্ষমতায় হস্তক্ষেপের সম্মুখীন হয়",
+   "retries": 0,
+   "measured_snr_db": 4.999999999999999,
+   "active_fraction": 0.7144120247568524
+  },
+  "en-1003119935936341070|street_5": {
+   "id": "en-1003119935936341070",
+   "condition": "street_5",
+   "transcript": "however due to the slow communication styles in the west could lag behind by 08:05 to 30 years",
+   "retries": 0,
+   "measured_snr_db": 4.999999999999999,
+   "active_fraction": 0.5397727272727273
+  },
+  "en-10197164397713068203|street_5": {
+   "id": "en-10197164397713068203",
+   "condition": "street_5",
+   "transcript": "",
+   "retries": 0,
+   "measured_snr_db": 4.999999999999999,
+   "active_fraction": 0.13194444444444445
+  },
+  "en-10235738076911595987|street_5": {
+   "id": "en-10235738076911595987",
+   "condition": "street_5",
+   "transcript": "the hospital has followed protocol for infection control including separating the patient from others to prevent possible infection of others",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000001,
+   "active_fraction": 0.7057793345008757
+  },
+  "en-10323357556845456822|street_5": {
+   "id": "en-10323357556845456822",
+   "condition": "street_5",
+   "transcript": "the northern emergency management office said",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000001,
+   "active_fraction": 0.37962962962962965
+  },
+  "en-1036771894648013441|street_5": {
+   "id": "en-1036771894648013441",
+   "condition": "street_5",
+   "transcript": "",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000001,
+   "active_fraction": 0.2767676767676768
+  },
+  "en-1038214857203833067|street_5": {
+   "id": "en-1038214857203833067",
+   "condition": "street_5",
+   "transcript": "the night between 15,300 hops were",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.075
+  },
+  "en-10411016628242228511|street_5": {
+   "id": "en-10411016628242228511",
+   "condition": "street_5",
+   "transcript": "the city is also the base to find the naraigango volcano along with some of the cheapest mountain gorilla trafficking in africa",
+   "retries": 0,
+   "measured_snr_db": 4.999999999999999,
+   "active_fraction": 0.4521276595744681
+  },
+  "en-1042003289011443756|street_5": {
+   "id": "en-1042003289011443756",
+   "condition": "street_5",
+   "transcript": "the internet combines elements of both mass and interpersonal communication",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000001,
+   "active_fraction": 0.6118881118881119
+  },
+  "en-1043394666292127188|street_5": {
+   "id": "en-1043394666292127188",
+   "condition": "street_5",
+   "transcript": "please look at what it is about certain people that make them want the things that they do and what things in their environment will make them do or not do certain things",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.7133676092544987
+  },
+  "en-1045619486290403122|street_5": {
+   "id": "en-1045619486290403122",
+   "condition": "street_5",
+   "transcript": "for example the most photography",
+   "retries": 0,
+   "measured_snr_db": 4.999999999999999,
+   "active_fraction": 0.35919540229885055
+  },
+  "gu-10051332836083130420|street_5": {
+   "id": "gu-10051332836083130420",
+   "condition": "street_5",
+   "transcript": "આ પોપડો નજીકની બાજુએ લગભગ સિત્તેર કિલોમીટર જાડો અને દૂરની બાજુએ સો કિલોમીટર જાડો છે",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.6717948717948717
+  },
+  "gu-10054314118491272104|street_5": {
+   "id": "gu-10054314118491272104",
+   "condition": "street_5",
+   "transcript": "ઉત્તરમાં આ વિસ્તાર શહેર અને એટલાન્ટિક મહાસાગરની દક્ષિણે અને પશ્ચિમમાં બંધાયેલો",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.735897435897436
+  },
+  "gu-1008765602519405220|street_5": {
+   "id": "gu-1008765602519405220",
+   "condition": "street_5",
+   "transcript": "ફિલિપિનો ફોટોગ્રાફરો અને બાળકો તેમજ વૃદ્ધો સહિત છ બંધકોને પહેલા છોડી દેવામાં આવ્યા હતા",
+   "retries": 0,
+   "measured_snr_db": 4.999999999999999,
+   "active_fraction": 0.7651515151515151
+  },
+  "gu-10164951352830139261|street_5": {
+   "id": "gu-10164951352830139261",
+   "condition": "street_5",
+   "transcript": "ખાસ કરીને ઉનાળામાં સાદું લોકપ્રિય લાત્રિ ભોજન છે પા એમ ઓલીવ ઓલિવ ઓઈલ ટામેટા અને અન્ય ચીઝ તુના ફિશ વગેરે જેવા ઉપલબ્ધ વ્યંજનો સાથે બ્રેડ",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.7027777777777777
+  },
+  "gu-10282288803999807308|street_5": {
+   "id": "gu-10282288803999807308",
+   "condition": "street_5",
+   "transcript": "રદ કરવાની નીતિઓ બદલાઈ છે પરંતુ માર્ચના અંતથી મોટા ભાગની કોરોના વાયરસ આધારિત રદ કરવાની નીતિઓ જુલાઈ બે હજાર વીસ સુધી લંબાતી નથી જ્યારે ઓલિમ્પિક સુનિશ્ચિત કરવામાં આવી હતી",
+   "retries": 0,
+   "measured_snr_db": 4.999999999999999,
+   "active_fraction": 0.7155797101449275
+  },
+  "gu-10344165401321702763|street_5": {
+   "id": "gu-10344165401321702763",
+   "condition": "street_5",
+   "transcript": "પંદરસોની સાડત્રીસમાં અસોનીસિઓનની સ્થાપના થઈ ત્યારથી પેરાગ્વે તેના ઘણા પ્ર સ્વદેશી ચરિત્ર અને ઓળખને જાળવી રાખવામાં સફળ રહ્યો",
+   "retries": 0,
+   "measured_snr_db": 4.999999999999999,
+   "active_fraction": 0.7567140600315956
+  },
+  "gu-10347511448765778840|street_5": {
+   "id": "gu-10347511448765778840",
+   "condition": "street_5",
+   "transcript": "તેમણે આ કાપ માટે કોઈ આંકડો નક્કી કર્યો ન હતો અને કહ્યું હતું કે તેઓ ચીનના આર્થિક ઉત્પાદનથી નક્કી થશે",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000001,
+   "active_fraction": 0.8091787439613527
+  },
+  "gu-10386183340427464557|street_5": {
+   "id": "gu-10386183340427464557",
+   "condition": "street_5",
+   "transcript": "તે જ રીતે સ્કેન જેનના વિઝા હોય તો તમારે સ્કેન જેનનો સભ્ય હોય તે દરેક દેશ માટે અલગથી વિઝા મેળવવાની અરજી કરવી જરૂરી નથી જેથી સમય નાણાં અને પેપરવર્કની બચત થાય છે",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000001,
+   "active_fraction": 0.7889784946236559
+  },
+  "gu-10416436950497082489|street_5": {
+   "id": "gu-10416436950497082489",
+   "condition": "street_5",
+   "transcript": "બ્લોગિંગ એ એવું સાધન છે જે સહયોગ કરવાની પ્રેરણા આપે છે અને વિદ્યાર્થીઓને શાળાના પારંપરિક શિક્ષણથી વધીને શીખવા માટે પ્રોત્સાહન આપે છે",
+   "retries": 0,
+   "measured_snr_db": 4.999999999999999,
+   "active_fraction": 0.8112449799196787
+  },
+  "gu-10445911236372744046|street_5": {
+   "id": "gu-10445911236372744046",
+   "condition": "street_5",
+   "transcript": "ડનલેપ બ્રોડ સાઇડમાં પચ્ચીસ દસ્તાવેજો હજુ પણ અસ્તિત્વ ધરાવતા હતા તે સૌથી જૂની વર્તમાન નકલો છે મૂળ હસ્તલિખિત નકલ બચી નથી",
+   "retries": 0,
+   "measured_snr_db": 4.999999999999999,
+   "active_fraction": 0.6773049645390071
+  },
+  "hi-10014385262415025488|street_5": {
+   "id": "hi-10014385262415025488",
+   "condition": "street_5",
+   "transcript": "ग्रीनलैंड को बहुत कम जगह बसाया गया था नॉर्थ तबास में वे कहती हैं कि एरिक रेड हत्या के लिए आइसलैंड से निर्वासित किया गया और आगे पश्चिम की यात्रा करते समय ग्रीनलैंड मिला जिसे ग्रीनलैंड नाम दिया गया",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000001,
+   "active_fraction": 0.7304347826086957
+  },
+  "hi-10069289676238419279|street_5": {
+   "id": "hi-10069289676238419279",
+   "condition": "street_5",
+   "transcript": "इंटरनेट पर ये खोज शत्रुतापूर्ण पर्यावरण पाठ्यक्रम के लिए अक्सर आपको एक स्थानीय कंपनी का पता प्रदान करेगी",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000001,
+   "active_fraction": 0.4863636363636364
+  },
+  "hi-10107687492910459268|street_5": {
+   "id": "hi-10107687492910459268",
+   "condition": "street_5",
+   "transcript": "अपनी सरकार के अलावा आप अन्य देशों की सरकारों की सलाह ले सकते हैं हालांकि उनकी सलाह उनके नागरिकों को ध्यान में रखकर दी जाती है",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000002,
+   "active_fraction": 0.9548022598870056
+  },
+  "hi-10128382631186456345|street_5": {
+   "id": "hi-10128382631186456345",
+   "condition": "street_5",
+   "transcript": "प्राचीन काल से ही लोग सोने चांदी और तांबे जैसे रासायनिक तत्वों के बारे में जानकारी रखते हैं क्योंकि इन्हें प्रकृति में मूल स्वरूप में ढूंढा जा सकता है और इन्हें प्राथमिक उपकरणों के जरिए ढूंढना अपेक्षाकृत आसान है",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.7964912280701755
+  },
+  "hi-10135688561274120767|street_5": {
+   "id": "hi-10135688561274120767",
+   "condition": "street_5",
+   "transcript": "इसे केमिकल का पीएच कहा जाता है आप लाल गोभी के जूस को इस्तेमाल करके एक संकेतक बना सकते हैं",
+   "retries": 0,
+   "measured_snr_db": 4.999999999999999,
+   "active_fraction": 0.5863746958637469
+  },
+  "hi-10200643191519059428|street_5": {
+   "id": "hi-10200643191519059428",
+   "condition": "street_5",
+   "transcript": "सबसे नज़दीकी सिरे पर पृष्ठ की मोटाई करीब 70 किलोमीटर है और सबसे दूर के सिरे पर यह 100 किलोमीटर है",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.6102564102564103
+  },
+  "hi-10286778291956788434|street_5": {
+   "id": "hi-10286778291956788434",
+   "condition": "street_5",
+   "transcript": "पुरुषों के स्टैंडिंग सुपर जी में ऑस्ट्रेलिया के मिशेल गोर्ले 11वें स्थान पर रहे चेक प्रतियोगी ओल्ड्रिज जेलिनेक पुरुषों के सिटिंग सुपर जी में 16वें स्थान पर रहे",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.6526610644257703
+  },
+  "hi-10359991159058879218|street_5": {
+   "id": "hi-10359991159058879218",
+   "condition": "street_5",
+   "transcript": "एम एस बीमारी केंद्रीय तंत्रिका तंत्र पर असर करती है जिसमें दिमाग स्पाइनल कॉर्ड और ऑप्टिक नर्व शामिल हैं",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.6044444444444445
+  },
+  "hi-10550791631951016124|street_5": {
+   "id": "hi-10550791631951016124",
+   "condition": "street_5",
+   "transcript": "हर कोई समाज से जुड़ा होता है और ट्रांसपोर्ट सिस्टम का उपयोग करता है लगभग सभी लोग ट्रांसपोर्ट सिस्टम के बारे में शिकायत करते हैं",
+   "retries": 0,
+   "measured_snr_db": 4.999999999999999,
+   "active_fraction": 0.6257309941520468
+  },
+  "hi-10582204498174558997|street_5": {
+   "id": "hi-10582204498174558997",
+   "condition": "street_5",
+   "transcript": "एक पूरी तरह से विकसित एथलीट की तरह बाग चढ़ाई कर सकता है हालांकि अच्छी तरह से नहीं तैर सकता है बड़ी दूरी तक छलांग लगा सकता है और एक शक्तिशाली मनुष्य के 5 गुणा बल के साथ खींच सकता है",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.7193486590038314
+  },
+  "kn-10010482195448774909|street_5": {
+   "id": "kn-10010482195448774909",
+   "condition": "street_5",
+   "transcript": "ಆದರೆ ನಾಯಕನ ವಿಕೆಟ್ ಕಳೆದುಕೊಂಡ ನಂತರ ಭಾರತ ಏಳು ವಿಕೆಟ್ ಕಳೆದುಕೊಂಡು ಕೇವಲ ಮೂವತ್ತ ಆರು ರನ್ ಗಳಿಗೆ ತನ್ನ ಇನ್ನಿಂಗ್ಸ್ ಮುಗಿಸಿತು",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.6313932980599647
+  },
+  "kn-10019512818416747761|street_5": {
+   "id": "kn-10019512818416747761",
+   "condition": "street_5",
+   "transcript": "ಪಿರಮಿಡ್ ಧ್ವನಿ ಮತ್ತು ಬೆಳಕಿನ ಪ್ರದರ್ಶನವು ಈ ಭಾಗದ ಮಕ್ಕಳಿಗೆ ಅತ್ಯಂತ ಆಸಕ್ತಿದಾಯಕ ವಿಷಯವಾಗಿದೆ",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000001,
+   "active_fraction": 0.6881720430107527
+  },
+  "kn-10092474821709819618|street_5": {
+   "id": "kn-10092474821709819618",
+   "condition": "street_5",
+   "transcript": "ಅದೇ ರೀತಿ ಶೆಂಗೆನ್ ವೀಸಾ ಹೊಂದಿದ್ದರೆ ನೀವು ಶೆಂಗೆನ್ ಸದಸ್ಯ ರಾಷ್ಟ್ರಗಳಲ್ಲಿ ಪ್ರತ್ಯೇಕವಾಗಿ ವೀಸಾಗಾಗಿ ಅರ್ಜಿ ಸಲ್ಲಿಸಬೇಕಾಗಿದೆ ಇದರಿಂದಾಗಿ ನಿಮ್ಮ ಸಮಯ ಹಣ ಮತ್ತು ಕಾಗದಪತ್ರಗಳ ಸಲ್ಲಿಕೆ ಇತ್ಯಾದಿ ಉಳಿತಾಯವಾಗುತ್ತದೆ",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.7023060796645703
+  },
+  "kn-10103823447819430366|street_5": {
+   "id": "kn-10103823447819430366",
+   "condition": "street_5",
+   "transcript": "ಹಾಲಿ ಸೆರೆತ ಮತ್ತು ಅರ್ಜೆಂಟೀನಾದ ಪ್ರಥಮ ಮಹಿಳೆ ಕ್ರಿಸ್ಟೀನಾ ಫರ್ನಾಂಡಿಸ್ ಡಿ ಕಿಚ್ನರ್ ಕ್ರಿಸ್ಟೀನಾ ಫರ್ನಾಂಡಿಸ್ ಡಿ ಕಿಚ್ನರ್ ಕಳೆದ ರಾತ್ರಿ ಲಾ ಪ್ಲಾಸದಲ್ಲಿರುವ ಅಧ್ಯಕ್ಷೀಯ ಉಮೇದುವಾರಿಕೆಯನ್ನು ಘೋಷಿಸಿದರು ಎಲ್ಲಿಸ್ ಐವತ್ತು ಕಿಮೀ ಅಂದರೆ ಮೂವತ್ತೊಂದು ಮೈಲಿ",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.7572916666666667
+  },
+  "kn-10122168936396301938|street_5": {
+   "id": "kn-10122168936396301938",
+   "condition": "street_5",
+   "transcript": "ಹಾಂಕಾಂಗ್ ಸ್ಕೈಲೈನ್ ಅನ್ನು ನಿರ್ಮಿಸುವ ಕಟ್ಟಡಗಳ ಮೆರವಣಿಗೆಯನ್ನು ಮಿನುಗುವ ಬಾರ್ ಗ್ರಾಫ್ ಗೆ ಹೋಲಿಸಲಾಗುತ್ತದೆ ಮತ್ತು ವಿಕ್ಟೋರಿಯಾ ಬಂದರಿನ ನೀರು ಅದನ್ನು ಸ್ಪಷ್ಟಪಡಿಸುತ್ತದೆ",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.7811447811447811
+  },
+  "kn-10129714409926666294|street_5": {
+   "id": "kn-10129714409926666294",
+   "condition": "street_5",
+   "transcript": "ಪ್ರಮುಖ ಮಿಲಿಟರಿ ಮತ್ತು ನಾಗರಿಕ ಸರಬರಾಜುಗಳನ್ನು ಕಡಿತಗೊಳಿಸುವ ಈ ತಂತ್ರವು ಪರಿಣಾಮಕಾರಿಯಾಗಿ ಸಾಬೀತಾಯಿತು ಆದರೆ ಕಳೆದ ಎರಡು ಶತಮಾನಗಳ ಹಲವಾರು ಅಂತಾರಾಷ್ಟ್ರೀಯ ಒಪ್ಪಂದಗಳಿಂದ ಒಟ್ಟುಗೂಡಿಸಲು ಎಲ್ಲರೂ ಒಪ್ಪಿಕೊಂಡಿರುವ ಅಂತಾರಾಷ್ಟ್ರೀಯ ಕಾನೂನನ್ನು ಈ ದಿಗ್ಬಂಧನ ಉಲ್ಲಂಘಿಸಿದೆ",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.6903460837887068
+  },
+  "kn-10171759063486736869|street_5": {
+   "id": "kn-10171759063486736869",
+   "condition": "street_5",
+   "transcript": "ಪ್ಯಾರಿಸ್ ಜನರು ಉದ್ರೇಕಕಾರಿ ಅಸಭ್ಯ ಮತ್ತು ಸೊಕ್ಕಿನಿಂದ ಕೂಡಿದವರು ಎಂಬ ಕುಖ್ಯಾತಿಯನ್ನು ಹೊಂದಿದ್ದಾರೆ",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000001,
+   "active_fraction": 0.7470238095238095
+  },
+  "kn-10193060423779665461|street_5": {
+   "id": "kn-10193060423779665461",
+   "condition": "street_5",
+   "transcript": "ಆ ಬೇರೆ ನಾಮಾಂಕಣಗಳಲ್ಲಿ ಕೆಲವು ಅತ್ಯುತ್ತಮ ಸಿನಿಮಾ ನಿರ್ದೇಶಕ ಸಿನಿಮಾಟೋಗ್ರಫರ್ ವಸ್ತ್ರ ವಿನ್ಯಾಸ ಸಿನಿಮಾ ಸಂಕಲನ ಮೂಲ ಸಂಗೀತ ಪ್ರೊಡಕ್ಷನ್ ಡಿಸೈನ್ ಧ್ವನಿ ಸಂಕಿಲನ ಧ್ವನಿ ಮಿಶ್ರಣ ಮತ್ತು ಮೂಲ ಸ್ಕ್ರೀನ್ ಪ್ಲೇ",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000001,
+   "active_fraction": 0.7759009009009009
+  },
+  "kn-10248142223167904254|street_5": {
+   "id": "kn-10248142223167904254",
+   "condition": "street_5",
+   "transcript": "ಎಲ್ಲಾ ವಿಷಯಗಳನ್ನು ಪರಿಗಣಿಸಿದ ನಂತರ ನಮ್ಮ ಪೂರ್ವಜರು ತಮ್ಮ ಪ್ರೋಟೀನ್ ಸಮಸ್ಯೆಯನ್ನು ಸ್ವಲ್ಪ ಮಟ್ಟಿಗೆ ಸವನ್ನಾದಲ್ಲಿ ಚಿಂಪಾಂಜಿಗಳು ಮಾಡುವ ರೀತಿಯಲ್ಲಿ ಪರಿಹರಿಸಿದ್ದಲ್ಲಿ ನಾವು ಆಶ್ಚರ್ಯಪಡಬೇಕಿಲ್ಲ",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.7168141592920354
+  },
+  "kn-10332300909659383666|street_5": {
+   "id": "kn-10332300909659383666",
+   "condition": "street_5",
+   "transcript": "ಸಿಂಗಾಪುರದ ಉಪ ಪ್ರಧಾನಿ ವಾಂಗ್ ಕಾನ್ ಸೆಂಗ್ ಅವರನ್ನು ಬರಮಾಡಿಕೊಂಡರು ಮತ್ತು ವ್ಯಾಪಾರ ಹಾಗೂ ಭಯೋತ್ಪಾದನೆ ವಿಷಯಗಳ ಬಗ್ಗೆ ಸಿಂಗಾಪುರ ಪ್ರಧಾನಿ ಲೀ ಹೇನ್ ಲುಂಗ್ ಜೊತೆಗೆ ಚರ್ಚಿಸಿದರು",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000001,
+   "active_fraction": 0.6440677966101694
+  },
+  "ml-10013487754489332324|street_5": {
+   "id": "ml-10013487754489332324",
+   "condition": "street_5",
+   "transcript": "ഈ നഗരം രാജ്യത്തെ മറ്റു നഗരങ്ങളിൽ നിന്ന് പൂർണ്ണമായും വ്യത്യസ്തമാണ് കാരണം ഇതിന് ആഫ്രിക്കൻ വാസനയേക്കാൾ അറബി വാസനയാണ് കൂടുതൽ",
+   "retries": 0,
+   "measured_snr_db": 4.999999999999999,
+   "active_fraction": 0.9298245614035088
+  },
+  "ml-10078044035084322628|street_5": {
+   "id": "ml-10078044035084322628",
+   "condition": "street_5",
+   "transcript": "ഇത് ബന്ധപ്പെട്ടിരിക്കുന്നു എന്നാൽ സാധാരണയായി ആൽപൈൻ ശൈലിയിലുള്ള സ്കീ ടൂറിങ്ങോ പർവതാരോഹണമോ ഉൾപ്പെടുന്നില്ല ഇതിൽ രണ്ടാമത്തേത് കുത്തനെയുള്ള ഭൂപ്രദേശങ്ങളിൽ ചെയ്യുന്നതും കൂടുതൽ കട്ടിയുള്ള കീകളും ബൂട്ടുകളും ആവശ്യമായതും",
+   "retries": 0,
+   "measured_snr_db": 4.999999999999999,
+   "active_fraction": 0.75
+  },
+  "ml-10134676116368565149|street_5": {
+   "id": "ml-10134676116368565149",
+   "condition": "street_5",
+   "transcript": "മുറിവുകൾക്കായി അദ്ദേഹം ഒരു ചിത്രം സജ്ജമാക്കിയിട്ടില്ല ചൈനയുടെ സാമ്പത്തിക ഉൽപാദനത്തെ അടിസ്ഥാനമാക്കിയാണ് അവ നിർമിക്കുക എന്ന് പറഞ്ഞു",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.9112227805695142
+  },
+  "ml-10277507420082337141|street_5": {
+   "id": "ml-10277507420082337141",
+   "condition": "street_5",
+   "transcript": "ബെൽജിയം മാനദണ്ഡങ്ങൾ അനുസരിച്ചാണ് ഹോട്ട് ചോക്ലേറ്റ് ഉണ്ടാക്കിയിരിക്കുന്നത് ഫ്രൂട്ട് ജ്യൂസുകൾ വില കൂടിയതാണെങ്കിലും രുചികരമാണ്",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000001,
+   "active_fraction": 0.9429223744292238
+  },
+  "ml-10286327547505797785|street_5": {
+   "id": "ml-10286327547505797785",
+   "condition": "street_5",
+   "transcript": "പുരുഷ സ്റ്റാൻഡിങ് സൂപ്പർ ജിയിൽ ഓസ്ട്രേലിയയുടെ മിച്ചൽ ഗോർലി പതിനൊന്നാം സ്ഥാനത്തെത്തി പുരുഷന്മാരുടെ സിറ്റിങ് സൂപ്പർ ജിയിൽ ചെക്ക് എതിരാളിയായ ഓൾഡ്രിക് ജെനലി പതിനാറാം സ്ഥാനത്തെത്തി",
+   "retries": 0,
+   "measured_snr_db": 4.999999999999999,
+   "active_fraction": 0.9468390804597702
+  },
+  "ml-10332530728981827248|street_5": {
+   "id": "ml-10332530728981827248",
+   "condition": "street_5",
+   "transcript": "കഴിഞ്ഞ ആഴ്ച അമിതമായി ചൂടാകുന്ന മുപ്പത്തിനാല് സംഭവങ്ങളെക്കുറിച്ച് ആപ്പിൾ അറിയിച്ചതായി എംഇടിഐ അറിയിച്ചിരുന്നു അതിനെ കമ്പനി ഗുരുതരമല്ലാത്തത് എന്ന് വിളിച്ചു",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000001,
+   "active_fraction": 0.6861111111111111
+  },
+  "ml-10438874059424936747|street_5": {
+   "id": "ml-10438874059424936747",
+   "condition": "street_5",
+   "transcript": "ഓർഗനൈസേഷനുകളെ ഉയർന്ന പ്രകടനത്തിലെത്താൻ സഹായിക്കുന്നതിന് ഉപയോഗിക്കുന്ന ഒരു രീതിയായി കോൺടിനെൻറ്റ് സമീപനത്തെ ഏഞ്ചൽ രണ്ടായിരത്തി ആറ് വിശദീകരിക്കുന്നു",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000001,
+   "active_fraction": 0.7248322147651006
+  },
+  "ml-10439860146800584845|street_5": {
+   "id": "ml-10439860146800584845",
+   "condition": "street_5",
+   "transcript": "മുതിര്ന്നവരും കുട്ടികളും ഉള്പ്പെടെ ബന്ദിയാക്കപ്പെട്ട ആറ് പേരെ ആദ്യം മോചിപ്പിച്ചു ഫിലിപ്പിനോ ഫോട്ടോഗ്രാഫര്മാര്",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.8739316239316239
+  },
+  "ml-10514694764352729740|street_5": {
+   "id": "ml-10514694764352729740",
+   "condition": "street_5",
+   "transcript": "അലോയ് എന്നത് അടിസ്ഥാനപരമായി രണ്ട് അല്ലെങ്കിൽ അതിലധികം ലോഹങ്ങളുടെ സങ്കരമാണ് മൂലകങ്ങളുടെ പട്ടികയിൽ ഒരുപാട് മൂലകങ്ങളുണ്ട് എന്ന കാര്യം മറക്കരുത്",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.7177777777777777
+  },
+  "ml-10657006548453620506|street_5": {
+   "id": "ml-10657006548453620506",
+   "condition": "street_5",
+   "transcript": "അന്തർജില്ലാ ബസ് സ്റ്റേഷനിൽ നിന്ന് നദിക്ക് കുറുകെ ദിവസത്തിലുടനീളം ബസ്സുകൾ പുറപ്പെടുന്നു എന്നിരുന്നാലും മിക്കതും പ്രത്യേകിച്ച് കിഴക്കോട്ടും ജാക്കറിലേക്ക് ബുംടാങ്കിലേക്ക് പോകുന്നവ ആറ് മുപ്പതിനും ഏഴ് മുപ്പതിനും ഇടയിൽ പുറപ്പെടുന്നു",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.9153846153846154
+  },
+  "mr-10201098310487173927|street_5": {
+   "id": "mr-10201098310487173927",
+   "condition": "street_5",
+   "transcript": "सिंट्राचे रोमँटिक आणि मोहक शहर हे उत्तरेकडे सहज पोहोचता येऊ शकणारे आहे तसेच लॉर्ड बायरनने रेकॉर्ड केलेल्या त्यांच्या वैभवाच्या भव्यतेच्या वर्तनानंतर हे परदेशी लोकांमध्ये देखील प्रसिद्ध झाले आहे",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.8109965635738832
+  },
+  "mr-10209762496868095317|street_5": {
+   "id": "mr-10209762496868095317",
+   "condition": "street_5",
+   "transcript": "वनस्पती ऑक्सिजनची निर्मिती करतात ज्याचा उपयोग मनुष्य श्वास घेताना करतो आणि ते कार्बन डायऑक्साईड घेतात जो मनुष्य उच्छवासाद्वारे बाहेर सोडतो म्हणजे श्वास तोडणे",
+   "retries": 0,
+   "measured_snr_db": 4.999999999999999,
+   "active_fraction": 0.6263888888888889
+  },
+  "mr-10218825816989175821|street_5": {
+   "id": "mr-10218825816989175821",
+   "condition": "street_5",
+   "transcript": "माथलीने काल नऊ सदस्यांच्या नवीन प्रोव्हिजनल इलेक्ट्रोल कौन्सिलमध्ये सीईपी शपथ घेतली",
+   "retries": 0,
+   "measured_snr_db": 4.999999999999999,
+   "active_fraction": 0.65
+  },
+  "mr-10257470372493232363|street_5": {
+   "id": "mr-10257470372493232363",
+   "condition": "street_5",
+   "transcript": "शेनजेन झोन असला तरी या बाबतीत काही प्रमाणात एखाद्या देशासारखा कार्य करतो",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.6007326007326007
+  },
+  "mr-10291151742776340106|street_5": {
+   "id": "mr-10291151742776340106",
+   "condition": "street_5",
+   "transcript": "रिपरक्षी प्रवाह हे किनाऱ्यापासून वेगळ्या झालेल्या लाटांपासून परतणारा प्रवाह असतात सहभा प्रवाली किंवा तत्सम ठिकाणी",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.7727272727272727
+  },
+  "mr-10329146223209027475|street_5": {
+   "id": "mr-10329146223209027475",
+   "condition": "street_5",
+   "transcript": "जितका तणाव कमी तितकी सकारात्मक जीवन ऊर्जा अस्तित्वात असते प्रत्येक व्यक्तीकडे संपूर्ण शांती आणि समाधान मिळवण्याची क्षमता असते",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000001,
+   "active_fraction": 0.632183908045977
+  },
+  "mr-10357069420670487676|street_5": {
+   "id": "mr-10357069420670487676",
+   "condition": "street_5",
+   "transcript": "त्याला सुरुवातीला ग्रेट यारमाऊथ येथील जेम्स पॅगेट रुग्णालयात दाखल केले होते",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000001,
+   "active_fraction": 0.5402298850574713
+  },
+  "mr-10362338566354994001|street_5": {
+   "id": "mr-10362338566354994001",
+   "condition": "street_5",
+   "transcript": "तथापि रिगा शांतता करार सोव्हिएत पॉलिश नॉन एग्रेशन करार तसेच अन्य आंतरराष्ट्रीय करार द्विपक्षीय आणि बहुपक्षीय दोन्हीच्या उल्लंघनामुळे पोलंडच्या पूर्व प्रदेशावर आक्रमण केल्यानंतर सोव्हिएतच्या युनियन रेड आर्मीच्या आठ लक्ष सैनिकांनी प्रवेश केला आणि बेलारूस आणि युक्रेनियन फ्रंट तयार केला  तेव्हा या योजना जवळपास रातोरात अप्रचलितपणे प्रस्तुत केल्या गेल्या",
+   "retries": 0,
+   "measured_snr_db": 4.999999999999999,
+   "active_fraction": 0.6584531143052703
+  },
+  "mr-10369140904526923849|street_5": {
+   "id": "mr-10369140904526923849",
+   "condition": "street_5",
+   "transcript": "त्याच धर्तीवर पुरुषांना गुडघे झाकणारे ट्राऊझर्स घालणे आवश्यक आहे",
+   "retries": 0,
+   "measured_snr_db": 4.999999999999999,
+   "active_fraction": 0.625
+  },
+  "mr-10392451913859275620|street_5": {
+   "id": "mr-10392451913859275620",
+   "condition": "street_5",
+   "transcript": "उदाहरणार्थ प्रत्येक वर्षी उत्तर कॅलोरिनातील बेनेट शाळेचे विद्यार्थी त्यांच्या राज्याच्या राजधानीला भेट देण्याच्या सहलीसंबंधी वेबसाईट तयार करतात प्रत्येक वर्षी वेबसाईट पुन्हा तयार केली जाते पण तिच्या जुन्या आवृत्त्या स्क्रॅपबुकप्रमाणे ऑनलाइन ठेवल्या जातात",
+   "retries": 0,
+   "measured_snr_db": 4.999999999999999,
+   "active_fraction": 0.6712580348943985
+  },
+  "pa-10019901230699518471|street_5": {
+   "id": "pa-10019901230699518471",
+   "condition": "street_5",
+   "transcript": "ਅਲਹੀਦਾ ਕਰਨਾ ਅਤੇ ਮੁੜ ਸੁਮੇਲ ਕਰਨਾ ਹਰੇਕ ਪੀੜ੍ਹੀ ਦੇ ਦੋ ਪੁਲਾਂ ਵਿਚਕਾਰ ਪਰਿਵਰਤਿਤ ਰੂਪ ਨੂੰ ਅੱਗੇ ਪਿੱਛੇ ਪੂਰੀ ਤਰ੍ਹਾਂ ਬਿਰ ਤਕਦੀਰ ਕਰ ਦਿੰਦਾ ਹੈ",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.8507751937984496
+  },
+  "pa-10033020277327712096|street_5": {
+   "id": "pa-10033020277327712096",
+   "condition": "street_5",
+   "transcript": "ਇੰਟਰਨੈੱਟ ਬਹੁਗਿਣਤੀ ਅਤੇ ਅੰਤਰ ਵਿਅਕਤੀ ਸੰਚਾਰ ਦੋਵਾਂ ਤੱਤਾਂ ਦਾ ਸਮੇਲ ਕਰਦਾ ਹੈ",
+   "retries": 0,
+   "measured_snr_db": 4.999999999999999,
+   "active_fraction": 0.6018518518518519
+  },
+  "pa-10045745942478893252|street_5": {
+   "id": "pa-10045745942478893252",
+   "condition": "street_5",
+   "transcript": "ਦਿੱਲੀ ਵਿੱਚ ਸਭ ਤੋਂ ਵੱਧ ਸਮਾਜਿਕ ਸ਼ੇਅਰ ਹਨ ਜਿਹੜੇ ਵੱਡੇ ਸਮੂਹਾਂ ਵਿੱਚ ਰਹਿੰਦੇ ਹਨ ਜਿਨ੍ਹਾਂ ਨੂੰ ਪ੍ਰਾਈਡ ਕਿਹਾ ਜਾਂਦਾ ਹੈ",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 1.0
+  },
+  "pa-10114801816081710422|street_5": {
+   "id": "pa-10114801816081710422",
+   "condition": "street_5",
+   "transcript": "ਕੋਕੈਮੋ ਘਾਟੀ ਚਿੱਲੀ ਦਾ ਪ੍ਰਮੁੱਖ ਚੜ੍ਹਾਈ ਵਾਲਾ ਭਾਗ ਜੋ ਦੱਖਣੀ ਅਮਰੀਕਾ ਦੀਆਂ ਸਭ ਤੋਂ ਵੱਡੀਆਂ ਦੀਵਾਰਾਂ ਦੀਆਂ ਕਿਸਮਾਂ ਅਤੇ ਕਰੇਗ ਨਾਲ ਜੋਸੇਨਾਈਟ ਦੇ ਰੂਪ ਵਿੱਚ ਜਾਣਿਆ ਜਾਂਦਾ",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000001,
+   "active_fraction": 0.5547169811320755
+  },
+  "pa-10152662544244172537|street_5": {
+   "id": "pa-10152662544244172537",
+   "condition": "street_5",
+   "transcript": "ਕੁਦਰਤੀ ਵਾਤਾਵਰਨ ਵਿੱਚ ਹੋਣ ਅਤੇ ਪੌਦੇ ਖੂਬਸੂਰਤ ਦਿਖਾਈ ਦਿੰਦੇ ਹਨ ਇਸ ਲਈ ਕੇਵਲ ਇੱਕ ਨਮੂਨੇ ਨੂੰ ਹੀ ਹਟਾਉਣ ਦੇ ਲੋਭ ਦਾ ਵਿਰੋਧ ਕਰੋ",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000001,
+   "active_fraction": 0.6286919831223629
+  },
+  "pa-1016397316453669617|street_5": {
+   "id": "pa-1016397316453669617",
+   "condition": "street_5",
+   "transcript": "ਉਹਨਾਂ ਦੇ ਪੈਰ ਚੰਮ ਜਾਂ ਖੱਲੜੀ ਦੀ ਤਹਿ ਅਤੇ ਪੰਜੇ ਵਾਲੇ ਹੁੰਦੇ ਹਨ ਉਹ ਅੰਡੇ ਦਿੰਦੇ ਹਨ ਅਤੇ ਉਹ ਆਪਣੀਆਂ ਦੋਵੇਂ ਪਿਛਲੀਆਂ ਲੱਤਾਂ ਤੇ ਟੀ ਰੈਥ ਵਾਂਗ ਚੱਲਦੇ ਹਨ",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000001,
+   "active_fraction": 0.5792592592592593
+  },
+  "pa-1017212797150914463|street_5": {
+   "id": "pa-1017212797150914463",
+   "condition": "street_5",
+   "transcript": "ਇੱਕ ਪਰਮਾਣੂ ਬੰਬ ਇਸ ਸਿਧਾਂਤ ਤੇ ਕੰਮ ਕਰਦਾ ਹੈ ਕਿ ਇਹ ਕਈ ਪ੍ਰੋਟੋਨ ਅਤੇ ਨਿਊਟਰੋਨ ਨੂੰ ਇੱਕ ਕੇਂਦਰ ਬਿੰਦੂ ਵਿੱਚ ਇਕੱਠੇ ਰੱਖਣ ਲਈ ਊਰਜਾ ਲੈਂਦਾ ਹੈ",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.5342066957787481
+  },
+  "pa-10190844180610990943|street_5": {
+   "id": "pa-10190844180610990943",
+   "condition": "street_5",
+   "transcript": "ਫਰੀ ਕਿੰਗਡਮਸ ਪ੍ਰਾਚੀਨ ਚੀਨ ਦੇ ਇਤਿਹਾਸ ਦੇ ਸਭ ਤੋਂ ਖੂਨੀ ਯੁੱਗਾਂ ਵਿੱਚੋਂ ਇੱਕ ਸੀ ਹਜ਼ਾਰਾਂ ਲੋਕ ਸ਼ੀਆਨ ਦੇ ਸ਼ਾਨਦਾਰ ਮਹਿਲ ਦੀ ਸਭ ਤੋਂ ਉੱਚੇ ਤਖ਼ਤੇ ਬੈਠਣ ਲਈ ਲੜਦੇ ਹੋਏ ਮਾਰੇ ਗਏ",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000001,
+   "active_fraction": 0.5559071729957806
+  },
+  "pa-10217761447980730728|street_5": {
+   "id": "pa-10217761447980730728",
+   "condition": "street_5",
+   "transcript": "ਇਹ ਖਤਮ ਹੋਣ ਨਹੀਂ ਜਾ ਰਿਹਾ ਇਹ ਇੱਕ ਅਧਿਆਇ ਦਾ ਅੰਤ ਅਤੇ ਇੱਕ ਨਵਾਂ ਅਧਿਆਇ ਹੈ",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000002,
+   "active_fraction": 0.5683453237410072
+  },
+  "pa-10250259946645700913|street_5": {
+   "id": "pa-10250259946645700913",
+   "condition": "street_5",
+   "transcript": "ਹੋਰ ਨੋਮੀਨੇਸ਼ਨਾਂ ਵਿੱਚ ਸਰਬੋਤਮ ਚਿੱਤਰ ਡਾਇਰੈਕਟਰ ਸਿਨੇਮਾਟੋਗ੍ਰਾਫੀ ਕਾਸਟਿਊਮ ਡਿਜ਼ਾਇਨ ਫਿਲਮ ਸੰਪਾਦਨ ਓਰੀਜਨਲ ਸਕੋਰ ਉਤਪਾਦਨ ਡਿਜ਼ਾਇਨ ਸਾਊਂਡ ਸੰਪਾਦਨ ਸਾਊਂਡ ਮਿਕਸਿੰਗ ਅਤੇ ਓਰੀਜਨਲ ਸਕ੍ਰੀਨਪਲੇਅ ਸ਼ਾਮਿਲ ਹਨ",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.5769622833843018
+  },
+  "ta-10072217146537983584|street_5": {
+   "id": "ta-10072217146537983584",
+   "condition": "street_5",
+   "transcript": "லக்காசிங் பஜனை வழங்கினார் பாடகர் ராஜு கண்டறிவாலு அவருடன் வந்திருந்தார்",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.6724137931034483
+  },
+  "ta-10151944176129497809|street_5": {
+   "id": "ta-10151944176129497809",
+   "condition": "street_5",
+   "transcript": "முக்கியமான மேடைகளில் இசை நிகழ்ச்சி முடிந்திருந்தாலும் விழாவின் சில பிரிவுகள் இரவு இசைப்பதை தொடரும்",
+   "retries": 0,
+   "measured_snr_db": 4.999999999999999,
+   "active_fraction": 0.4879032258064516
+  },
+  "ta-10222238337252024030|street_5": {
+   "id": "ta-10222238337252024030",
+   "condition": "street_5",
+   "transcript": "பேருந்துகள் நாள் முழுவதும் மாவட்டங்களுக்கு இடையிலான பேருந்து நிலையத்திலிருந்து மற்றும் குறுக்கே புறப்படுகின்றன இருப்பினும் பெரும்பாலானவை குறிப்பாக கிழக்கு நோக்கி செல்லும் பேருந்துகள் மற்றும் ஜாகர் பும்டாங் ஆறா முதல் இரவு மணிக்கு இடையே புறப்படச் செல்லுகின்றன",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000001,
+   "active_fraction": 0.6532180595581172
+  },
+  "ta-10265284731185110799|street_5": {
+   "id": "ta-10265284731185110799",
+   "condition": "street_5",
+   "transcript": "துணி மிகவும் வெப்ப நிலமைகளை அணிவது கவனமாக இருக்கிறது அதனால் துணி சுழலம் அல்லது தீவிர நிகழ்வுகளில் துணி தீயால் வாழப்படலாம்",
+   "retries": 0,
+   "measured_snr_db": 4.999999999999998,
+   "active_fraction": 0.6122448979591837
+  },
+  "ta-10278812186982315493|street_5": {
+   "id": "ta-10278812186982315493",
+   "condition": "street_5",
+   "transcript": "இதன் விளைவாக இரண்டு மீன் வகைகள் அழிந்துவிட்டன மேலும் கம்பேக்சக் உட்பட மற்ற இரண்டு அழியும் நிலையில் உள்ளன",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.9478458049886621
+  },
+  "ta-10367238297771483490|street_5": {
+   "id": "ta-10367238297771483490",
+   "condition": "street_5",
+   "transcript": "வலைப்பதிவுகளின் சரியான பயன்பாடு மாணவர்களை மேலும் விமர்சகர்களாகவும் பகுத்தாய்பவர்களாகவும் ஆக்கும் இணைய கேள்விகளுக்கு பதிலளிக்கும்போது அவர்கள் அடுத்தவர்களுடைய கருத்துக்கு தங்கள் பதிலை சொல்வதுடன் தங்களுக்கே உரிய ஒரு நிலையை எடுக்கவும் உதவுகிறது ஒராவேக் இரண்டாயிரத்தி இரண்டு",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000002,
+   "active_fraction": 0.677390527256479
+  },
+  "ta-10394228005554884342|street_5": {
+   "id": "ta-10394228005554884342",
+   "condition": "street_5",
+   "transcript": "சிங்கத்தைப் போன்றே ஓநாய்கள் அல்லது நாய்கள் ஆகிய விலங்குகள் வியக்கத்தை வகையில் செயல்படுகின்றன ஆனால் மற்ற பூனையினங்கள் இல்லை நடவடிக்கையிலும் ஒத்துப்போகின்றன மிகவும் ஆபத்தானவையும் கூட",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.9686609686609686
+  },
+  "ta-1039497074136799281|street_5": {
+   "id": "ta-1039497074136799281",
+   "condition": "street_5",
+   "transcript": "பெர்ரி இன்றிரவு காகசின் முடிவுகளை மதிப்பிடுவதற்காக டெக்சாஸுக்கு திரும்புவேன் இந்த பந்தயத்தில் எனக்கு ஒரு பாதை இருக்கிறதா என்பதை இது தீர்மானிக்கும் என்று கூறினார் ஆனால் பின்பு அவர் பந்தயத்திலேயே இருந்து ஜனவரி இருபத்தொன்றில் தென் கரோலினா முதன்மை போட்டியில் போட்டியிடுவார் என்று தெரிவித்தார்",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000002,
+   "active_fraction": 0.9341463414634147
+  },
+  "ta-10406373928837348332|street_5": {
+   "id": "ta-10406373928837348332",
+   "condition": "street_5",
+   "transcript": "கிரனிக் ஒலி மற்றும் ஒலி நிகழ்ச்சிகள் ஆகியவை இந்த பகுதியில் குழந்தைகளுக்கு மிக சுவாரஸ்யமான விஷயங்களில் ஒன்றாகும்",
+   "retries": 0,
+   "measured_snr_db": 4.999999999999999,
+   "active_fraction": 0.7493540051679587
+  },
+  "ta-10431271162503376039|street_5": {
+   "id": "ta-10431271162503376039",
+   "condition": "street_5",
+   "transcript": "அதன் பலனாக நடிகர்களும் கூட மேடையின் மீது கஞ்சாவை புகைக்கிறார்கள் மற்றும் தியேட்டரும் கூட பார்வையாளர்களை அது இணைய உற்சாகப்படுத்துகிறது",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000001,
+   "active_fraction": 0.6989795918367347
+  },
+  "te-10054709042905280078|street_5": {
+   "id": "te-10054709042905280078",
+   "condition": "street_5",
+   "transcript": "చిన్న ద్వీపాలలో చాలా వరకు స్వతంత్ర దేశాలు లేదా ఫ్రాన్స్ తో సంబంధం కలిగి ఉన్నాయి ఇంకా వీటిని లగ్జరీ బీచ్ రిసార్ట్స్ అని పిలుస్తారు",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.821256038647343
+  },
+  "te-10085601229183142282|street_5": {
+   "id": "te-10085601229183142282",
+   "condition": "street_5",
+   "transcript": "కొన్ని క్రియలు ఆబ్జెక్టులు మధ్య తేడాను గుర్తించడానికి ఇది ఒక ముఖ్యమైన మార్గం",
+   "retries": 0,
+   "measured_snr_db": 4.999999999999999,
+   "active_fraction": 0.6934523809523809
+  },
+  "te-10145424547032356574|street_5": {
+   "id": "te-10145424547032356574",
+   "condition": "street_5",
+   "transcript": "ఈ దృశ్యాలు పిరమిడ్లపై ప్రదర్శించబడతాయి మరియు వేరే పిరమిడ్లను వెలిగించబడ్డాయి",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.7643097643097643
+  },
+  "te-1018616296093099687|street_5": {
+   "id": "te-1018616296093099687",
+   "condition": "street_5",
+   "transcript": "క్యాల్షియం పొటాషియం వంటి మూలకాలను లోహాలుగా పరిగణిస్తారు వెండి బంగారం వంటి లోహాలు కూడా ఉన్నాయి",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.8898305084745762
+  },
+  "te-10252770362041562600|street_5": {
+   "id": "te-10252770362041562600",
+   "condition": "street_5",
+   "transcript": "అతని పని అటువంటి గుర్తింపు పొందిన నాణ్యత మరియు వివరాలతో కూడినది అతడు ఫెలా టెస్టులలో చాలా తక్కువ కుటుంబ సభ్యులలాంటి వాళ్ళలో ఒకడు అతని పనులను సేకరించడంలో మాత్రమే కొందరు ప్రత్యేకత కలిగి ఉన్నారు",
+   "retries": 0,
+   "measured_snr_db": 4.999999999999999,
+   "active_fraction": 0.8378033205619413
+  },
+  "te-10291149870624674262|street_5": {
+   "id": "te-10291149870624674262",
+   "condition": "street_5",
+   "transcript": "ఐరోపా సాపేక్షంగా చిన్నదే కానీ అనేక స్వతంత్ర దేశాలతో కూడిన ఖండ సాధారణ పరిస్థితుల్లో అనేక దేశాల్లో ప్రయాణించడం అంటే వీసా అప్లికేషన్లు మరియు పాస్పోర్ట్ నియంత్రణ ద్వారా అనేక సార్లు వెళ్ళాల్సి ఉంటుంది",
+   "retries": 0,
+   "measured_snr_db": 4.999999999999999,
+   "active_fraction": 0.7328431372549019
+  },
+  "te-10373756234313480430|street_5": {
+   "id": "te-10373756234313480430",
+   "condition": "street_5",
+   "transcript": "దాని డెబ్బై ఎనిమిది సిఫార్సులలో మొదటిది శత్రుదేశాల జోక్యానికి వ్యతిరేకంగా ఇరాక్ సరిహద్దులను సురక్షితం చేయడానికి మరియు దాని పొరుగు దేశాలతో దౌత్య సంబంధాలను తిరిగి నెలకొల్పడానికి ఈ ఏడాది చివరిలోగా ఒక కొత్త దౌత్యపరమైన చొరవ తీసుకోవాలి",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.7743413516609393
+  },
+  "te-10421077295670162774|street_5": {
+   "id": "te-10421077295670162774",
+   "condition": "street_5",
+   "transcript": "పట్టాలను నిలబెట్టడానికి క్రాస్టీలు చాలా ముందుగానే ప్రవేశపెట్టబడ్డాయి అయితే పైభాగంలో ఇనుప ఖనిజం ఉంటే ట్రాక్లు మరింత సమర్థవంతంగా ఉంటాయని క్రమంగా గ్రహించారు",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000001,
+   "active_fraction": 0.7805280528052805
+  },
+  "te-10495283664299809767|street_5": {
+   "id": "te-10495283664299809767",
+   "condition": "street_5",
+   "transcript": "ఇది బేస్ స్టేషన్ లో డ్యూయల్ రేడియోలు ఉంటే ఎనిమిది వందల రెండు పాయింట్ పదకొండు ఏ ఎనిమిది వందల రెండు పాయింట్ పదకొండు బి మరియు ఎనిమిది వందల రెండు పాయింట్ పదకొండు జీ తో అనుకూలంగా వెనుకకు అనుమతిస్తుంది",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000001,
+   "active_fraction": 0.8029556650246306
+  },
+  "te-10529075416468337996|street_5": {
+   "id": "te-10529075416468337996",
+   "condition": "street_5",
+   "transcript": "గ్రీన్ ల్యాండ్ తక్కువ జనాభాతో ఉండేది నోర్స్ సగాస్లో రిక్ ది రెడ్ హత్య చేసినందువల్ల ఐస్లాండ్ నుండి బహిష్కరించబడినట్లు చెబుతారు ఇంకా తరువాత పశ్చిమంగా ప్రయాణిస్తున్నప్పుడు గ్రీన్ ల్యాండ్ ను కనుగొని దాన్ని గ్రీన్ ల్యాండ్ అని పేరు పెట్టాడు",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000001,
+   "active_fraction": 0.6656378600823045
+  }
+ }
+}
