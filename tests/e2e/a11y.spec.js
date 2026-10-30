@@ -40,9 +40,6 @@ async function interactiveReport(page, scope = "body") {
         if (/** @type {HTMLInputElement} */ (el).type === "hidden") continue;
         const id = el.id ? `#${el.id}` : `${el.tagName.toLowerCase()}.${el.className}`;
         if (nameOf(el) === "") report.unnamed.push(id);
-        // KNOWN VISUAL ISSUE, not fixed here (the look is frozen before the rehearsal): the
-        // "Back" link in the page header is a small inline text link. Listed in HANDOFF.md.
-        if (el.closest(".sub")) continue;
         if (box.height < min || box.width < min) {
           report.small.push(`${id} ${Math.round(box.width)}x${Math.round(box.height)}`);
         }
