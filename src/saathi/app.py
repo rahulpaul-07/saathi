@@ -21,6 +21,7 @@ from saathi.gnani import GnaniClient, GnaniError
 from saathi.languages import LANGUAGES
 from saathi.pipeline import (
     NoSpeechError,
+    TranslationUnavailableError,
     TurnInputError,
     UnreliableTranslationError,
     run_turn,
@@ -163,6 +164,8 @@ def create_app(
             if exc.status == 429:
                 raise HTTPException(503, "speech service busy, retry shortly") from exc
             raise HTTPException(502, "speech service unavailable") from exc
+        except TranslationUnavailableError as exc:
+            raise HTTPException(502, "translation unavailable") from exc
 
         timings = result.timings
         log.info(

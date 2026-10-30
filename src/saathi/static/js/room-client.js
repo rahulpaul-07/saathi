@@ -49,9 +49,9 @@ async function request(path, init) {
     }
     const { code, message: serverMessage } = await errorDetail(response);
     const verdict = classify(response.status, code);
-    // The server words a speech-service failure in the speaker's own language.
+    // The server words a speech-service or translator failure in the speaker's own language.
     const message =
-      (code === "speech_unavailable" ? serverMessage : null) ??
+      (code === "speech_unavailable" || code === "translation_unavailable" ? serverMessage : null) ??
       specificMessage(response.status) ??
       ("message" in verdict ? verdict.message : "");
     return {

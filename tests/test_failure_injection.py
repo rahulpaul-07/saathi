@@ -19,7 +19,7 @@ from saathi.app import create_app
 from saathi.config import Settings
 from saathi.gnani import GnaniClient, GnaniError
 from saathi.rooms import Event, Role, Room, RoomManager
-from saathi.unavailable import unavailable_text
+from saathi.unavailable import translation_unavailable_text, unavailable_text
 from wavs import make_wav
 
 SEED_TRANSCRIPT = "gate number 2 near the blue temple"  # synthetic
@@ -181,17 +181,23 @@ async def test_a_garbage_transcript_gives_no_facts_and_no_card_change(env: Env) 
     assert env.queues["rider"].empty()
 
 
-async def test_a_translation_exception_is_a_generic_500_and_the_room_is_untouched(
-    env: Env,
+@pytest.mark.parametrize("who", ["customer", "rider"])
+async def test_a_translation_exception_is_a_localized_502_and_the_room_is_untouched(
+    env: Env, who: Role
 ) -> None:
     env.gnani.transcript = NEW_TRANSCRIPT
     env.translator.error = RuntimeError(UPSTREAM_DETAIL)
     before = env.untouched()
 
-    response = await env.turn("customer")
+    response = await env.turn(who)
 
-    assert response.status_code == 500
+    assert response.status_code == 502
     assert UPSTREAM_DETAIL not in response.text
+    speaker_language = env.room.participants[who].language
+    assert response.json()["detail"] == {
+        "code": "translation_unavailable",
+        "message": translation_unavailable_text(speaker_language),
+    }
     assert env.untouched() == before
     assert env.gnani.tts_calls == 0  # nothing was spoken for a sentence that never existed
 
