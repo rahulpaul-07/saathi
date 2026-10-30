@@ -1,0 +1,276 @@
+{
+  "commit": "a5c79bf",
+  "sentences": 980,
+  "forms_by_source": {
+    "bn": {
+      "numbers": 29,
+      "ascii": 0.5172413793103449,
+      "native": 0.0,
+      "word": 0.4827586206896552
+    },
+    "en": {
+      "numbers": 57,
+      "ascii": 0.45614035087719296,
+      "native": 0.0,
+      "word": 0.543859649122807
+    },
+    "gu": {
+      "numbers": 13,
+      "ascii": 0.46153846153846156,
+      "native": 0.0,
+      "word": 0.5384615384615384
+    },
+    "hi": {
+      "numbers": 40,
+      "ascii": 0.35,
+      "native": 0.0,
+      "word": 0.65
+    },
+    "kn": {
+      "numbers": 25,
+      "ascii": 0.48,
+      "native": 0.0,
+      "word": 0.52
+    },
+    "ml": {
+      "numbers": 17,
+      "ascii": 0.6470588235294118,
+      "native": 0.0,
+      "word": 0.35294117647058826
+    }
+  },
+  "by_class": {
+    "digits": {
+      "back_plain": [
+        494,
+        577
+      ],
+      "back_masked": [
+        439,
+        577
+      ],
+      "direct_plain": [
+        304,
+        577
+      ],
+      "direct_masked": [
+        365,
+        577
+      ]
+    },
+    "digits, target en": {
+      "back_plain": [
+        58,
+        65
+      ],
+      "back_masked": [
+        58,
+        65
+      ],
+      "direct_plain": [
+        58,
+        65
+      ],
+      "direct_masked": [
+        58,
+        65
+      ]
+    },
+    "words": {
+      "back_plain": [
+        480,
+        749
+      ],
+      "back_masked": [
+        348,
+        749
+      ],
+      "direct_plain": [
+        203,
+        749
+      ],
+      "direct_masked": [
+        347,
+        749
+      ]
+    },
+    "words, target en": {
+      "back_plain": [
+        54,
+        74
+      ],
+      "back_masked": [
+        53,
+        74
+      ],
+      "direct_plain": [
+        54,
+        74
+      ],
+      "direct_masked": [
+        53,
+        74
+      ]
+    },
+    "mixed": {
+      "back_plain": [
+        735,
+        822
+      ],
+      "back_masked": [
+        668,
+        822
+      ],
+      "direct_plain": [
+        394,
+        822
+      ],
+      "direct_masked": [
+        556,
+        822
+      ]
+    },
+    "mixed, target en": {
+      "back_plain": [
+        65,
+        66
+      ],
+      "back_masked": [
+        65,
+        66
+      ],
+      "direct_plain": [
+        65,
+        66
+      ],
+      "direct_masked": [
+        65,
+        66
+      ]
+    },
+    "none": {
+      "back_plain": [
+        406,
+        645
+      ],
+      "back_masked": [
+        418,
+        645
+      ],
+      "direct_plain": [
+        142,
+        645
+      ],
+      "direct_masked": [
+        149,
+        645
+      ]
+    },
+    "none, target en": {
+      "back_plain": [
+        53,
+        80
+      ],
+      "back_masked": [
+        53,
+        80
+      ],
+      "direct_plain": [
+        53,
+        80
+      ],
+      "direct_masked": [
+        53,
+        80
+      ]
+    }
+  },
+  "overall": {
+    "all pairs": {
+      "back_plain": [
+        2115,
+        2793
+      ],
+      "back_masked": [
+        1873,
+        2793
+      ],
+      "direct_plain": [
+        1043,
+        2793
+      ],
+      "direct_masked": [
+        1417,
+        2793
+      ]
+    },
+    "target en": {
+      "back_plain": [
+        230,
+        285
+      ],
+      "back_masked": [
+        229,
+        285
+      ],
+      "direct_plain": [
+        230,
+        285
+      ],
+      "direct_masked": [
+        229,
+        285
+      ]
+    },
+    "target not en": {
+      "back_plain": [
+        1885,
+        2508
+      ],
+      "back_masked": [
+        1644,
+        2508
+      ],
+      "direct_plain": [
+        813,
+        2508
+      ],
+      "direct_masked": [
+        1188,
+        2508
+      ]
+    }
+  },
+  "fallback_by_source": {
+    "bn": 0.027777777777777776,
+    "en": 0.005555555555555556,
+    "gu": 0.022222222222222223,
+    "hi": 0.03333333333333333,
+    "kn": 0.07222222222222222,
+    "ml": 0.0125
+  },
+  "lost_by_kind": {
+    "floor": 134,
+    "gate": 88,
+    "cross": 86,
+    "main": 55,
+    "block": 5,
+    "flat": 11
+  },
+  "gained_by_kind": {
+    "main": 11,
+    "floor": 17,
+    "flat": 52,
+    "gate": 39,
+    "block": 7,
+    "cross": 11
+  },
+  "loss_by_cause": {
+    "masked text itself lacks the fact (target-language extractor)": 164,
+    "fallback: slot dropped": 38,
+    "back-translation lost it (masked text is fine)": 122,
+    "verified, but placeholder residue is left in the text": 11,
+    "verified, but a source digit is absent": 7
+  },
+  "facts_masked_found_that_plain_missed": 100
+}
