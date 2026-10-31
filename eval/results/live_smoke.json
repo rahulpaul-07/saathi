@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-31",
+  "pair": "kn customer, hi rider (example pair)",
+  "clips": [
+    "kn-bakery",
+    "kn-gate-correction"
+  ],
+  "content_free": true,
+  "passed": true,
+  "stopped_early": null,
+  "gnani_calls": 6,
+  "ledger_total": 873,
+  "fact_kinds_per_turn": [
+    {
+      "cross": 1,
+      "main": 1,
+      "gate": 1,
+      "landmark": 1
+    },
+    {
+      "gate": 1
+    }
+  ],
+  "steps": [
+    {
+      "name": "rooms: create and join",
+      "ok": true
+    },
+    {
+      "name": "turn 1: card has cross, main, gate and no changed marker",
+      "ok": true
+    },
+    {
+      "name": "turn 1: translated audio is served",
+      "ok": true
+    },
+    {
+      "name": "turn 2: correction marks only the gate, was the first value",
+      "ok": true
+    },
+    {
+      "name": "quick reply: customer to rider arrives with audio",
+      "ok": true
+    },
+    {
+      "name": "quick reply: rider to customer arrives with audio",
+      "ok": true
+    },
+    {
+      "name": "chip ask: customer sees one question, on the asked chip",
+      "ok": true
+    },
+    {
+      "name": "chip confirm: gate confirmed, marker cleared, question unchanged",
+      "ok": true
+    },
+    {
+      "name": "room end: both sides told",
+      "ok": true
+    }
+  ]
+}
