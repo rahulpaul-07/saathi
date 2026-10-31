@@ -65,7 +65,7 @@ async def test_demo_lists_and_serves_only_manifest_clips_with_a_file(
 ) -> None:
     assert (await on.get("/features")).json() == {"demo_input": True}
     listed = (await on.get("/demo/clips")).json()
-    assert listed == [{"id": "kn-gate", "lang": "kn", "label": "Gate 2"}]
+    assert listed == [{"id": "kn-gate", "lang": "kn", "label": "Gate 2", "label_local": ""}]
     audio = await on.get("/demo/clips/kn-gate.wav")
     assert audio.status_code == 200 and audio.headers["content-type"] == "audio/wav"
     assert audio.content == make_wav()

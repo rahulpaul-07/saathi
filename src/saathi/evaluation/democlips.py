@@ -31,6 +31,7 @@ class ClipSpec:
     # What the sentence is meant to carry: (kind, value, lowercase English words that would show
     # the fact survived a back-translation). Used by scripts/backtranslate_demo.py only.
     facts: tuple[tuple[str, str, tuple[str, ...]], ...] = ()
+    label_local: str = ""  # `label` in the clip's own language: the main line in the picker
 
 
 # kn text for "wrong-translation" is gold utterance g02; the others are new synthetic addresses.
@@ -47,6 +48,7 @@ CLIP_SPECS = (
             ("gate", "2", ("2", "two", "second", "2nd")),
             ("landmark", "Ganesha temple", ("ganesh",)),
         ),
+        "ಗೇಟ್ 2, ಗಣೇಶ ದೇವಸ್ಥಾನ",
     ),
     ClipSpec(
         "kn-bakery",
@@ -60,6 +62,7 @@ CLIP_SPECS = (
             ("gate", "4", ("4", "four", "fourth", "4th")),
             ("landmark", "bakery", ("bakery",)),
         ),
+        "ಗೇಟ್ 4, ಬೇಕರಿ",
     ),
     ClipSpec(
         "kn-gate-correction",
@@ -68,6 +71,7 @@ CLIP_SPECS = (
         "ಕ್ಷಮಿಸಿ, ಗೇಟ್ ನಂಬರ್ ಎರಡು",
         "spoken correction after kn-bakery: only the gate changes, 4 to 2 (kn to hi)",
         (("gate", "2", ("2", "two", "second", "2nd")),),
+        "ಕ್ಷಮಿಸಿ, ಗೇಟ್ 2",
     ),
     ClipSpec(
         "ta-gate",
@@ -81,6 +85,7 @@ CLIP_SPECS = (
             ("gate", "3", ("3", "three", "third", "3rd")),
             ("landmark", "bakery", ("bakery",)),
         ),
+        "கேட் 3, பேக்கரி",
     ),
     ClipSpec(
         "te-gate",
@@ -94,6 +99,7 @@ CLIP_SPECS = (
             ("gate", "1", ("1", "one", "first", "1st")),
             ("landmark", "Hanuman temple", ("hanuman",)),
         ),
+        "గేట్ 1, హనుమాన్ గుడి",
     ),
 )
 
@@ -173,7 +179,9 @@ async def build_clips(
         (out_dir / f"{spec.id}.wav").write_bytes(mix_clip(tts_wav, noise, seed, spec.id))
     # A partial run (--only) must not drop the clips it did not regenerate.
     entries = _kept_manifest_entries(out_dir, {s.id for s in specs})
-    entries += [{"id": s.id, "lang": s.lang, "label": s.label} for s in specs]
+    entries += [
+        {"id": s.id, "lang": s.lang, "label": s.label, "label_local": s.label_local} for s in specs
+    ]
     order = {s.id: i for i, s in enumerate(CLIP_SPECS)}
     entries.sort(key=lambda e: order.get(e["id"], len(order)))
     manifest = {"clips": entries}

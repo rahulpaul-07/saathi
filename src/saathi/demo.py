@@ -25,7 +25,8 @@ ClipIdPath = Annotated[str, PathParam(pattern=r"^[a-z0-9][a-z0-9_-]{0,39}$")]
 class DemoClip(BaseModel):
     id: str
     lang: str
-    label: str
+    label: str  # English
+    label_local: str = ""  # the same name in the clip's own language; empty when not written yet
 
 
 def load_demo_clips(directory: Path) -> dict[str, DemoClip]:
