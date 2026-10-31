@@ -2,7 +2,7 @@
 // Language picker data. The table lives on the server (languages.py); this only labels it.
 
 /**
- * @typedef {{code: string, name: string, tier: string}} Language
+ * @typedef {{code: string, name: string, tier: string, native?: string}} Language
  */
 
 /** @type {Record<string, string>} */
@@ -23,10 +23,10 @@ export function languageLabel(language) {
 export function parseLanguages(body) {
   if (!Array.isArray(body)) throw new Error("bad language list");
   return body.map((item) => {
-    const { code, name, tier } = item ?? {};
+    const { code, name, tier, native } = item ?? {};
     if (typeof code !== "string" || typeof name !== "string" || typeof tier !== "string") {
       throw new Error("bad language entry");
     }
-    return { code, name, tier };
+    return { code, name, tier, native: typeof native === "string" ? native : undefined };
   });
 }

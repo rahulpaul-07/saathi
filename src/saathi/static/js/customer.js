@@ -1,5 +1,6 @@
 // @ts-check
 import { AudioPlayer } from "./audio-player.js";
+import { applyChrome, setChromeTable, setLanguage, t } from "./i18n.js";
 import { parseLanguages } from "./languages.js";
 import { createRoom, getJson } from "./room-client.js";
 import { enterRoom } from "./room-screen.js";
@@ -40,7 +41,9 @@ function onEnded(end) {
   clearSession(sessionStorage);
   setNotice(
     sessionStorage,
-    end === "closed" ? "The room has ended." : "The room has expired. Start a new one.",
+    end === "closed"
+      ? t("room_ended", "The room has ended.")
+      : t("room_expired_customer", "The room has expired. Start a new one."),
   );
   location.reload();
 }
@@ -73,7 +76,14 @@ closeButton.addEventListener("click", () => {
   location.reload();
 });
 
+/** The page follows the language picked in the form, before a room exists. */
+languageSelect.addEventListener("change", () => {
+  setLanguage(languageSelect.value);
+  applyChrome();
+});
+
 try {
+  setChromeTable(await getJson("/chrome").catch(() => null));
   languages = parseLanguages(await getJson("/languages"));
   fillLanguageSelect(languageSelect, languages);
   requireChoice([languageSelect], [createButton]);
@@ -86,5 +96,5 @@ try {
     if (notice) setStatus(setupStatusEl, notice);
   }
 } catch {
-  setStatus(setupStatusEl, "Could not load the language list. Reload the page.", true);
+  setStatus(setupStatusEl, t("language_list_failed", "Could not load the language list. Reload the page."), true);
 }

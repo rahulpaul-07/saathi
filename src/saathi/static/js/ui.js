@@ -1,6 +1,7 @@
 // @ts-check
 // Small DOM helpers shared by the customer and rider screens. Received text is only ever set
 // through textContent, never as HTML.
+import { t } from "./i18n.js";
 import { languageLabel } from "./languages.js";
 
 /**
@@ -34,7 +35,8 @@ export function setStatus(el, text, isError = false) {
 export function fillLanguageSelect(select, languages) {
   const placeholder = document.createElement("option");
   placeholder.value = "";
-  placeholder.textContent = "Choose a language";
+  placeholder.textContent = t("choose_a_language", "Choose a language");
+  placeholder.dataset.i18n = "choose_a_language";
   placeholder.disabled = true;
   placeholder.selected = true;
   select.replaceChildren(
@@ -90,10 +92,10 @@ export function renderRows(list, rows) {
 export function renderTimings(list, timings, extraRows = []) {
   const ms = (/** @type {number} */ value) => `${Math.round(value)} ms`;
   renderRows(list, [
-    ["Speech to text", ms(timings.stt_ms)],
-    ["Translation", ms(timings.translate_ms)],
-    ["Text to speech", ms(timings.tts_ms)],
-    ["Server total", ms(timings.total_ms)],
+    [t("time_stt", "Speech to text"), ms(timings.stt_ms)],
+    [t("time_translate", "Translation"), ms(timings.translate_ms)],
+    [t("time_tts", "Text to speech"), ms(timings.tts_ms)],
+    [t("time_total", "Server total"), ms(timings.total_ms)],
     ...extraRows,
   ]);
 }
@@ -183,7 +185,7 @@ function buildChip(chip, actions) {
   }
   if (chip.confirmed) {
     item.classList.add("chip-confirmed");
-    item.append(checkIcon(`${chip.label} confirmed`));
+    item.append(checkIcon(`${chip.label} ${t("confirmed", "confirmed")}`));
   }
   if (chip.question) {
     const question = document.createElement("span");
@@ -197,8 +199,8 @@ function buildChip(chip, actions) {
     const confirm = document.createElement("button");
     confirm.type = "button";
     confirm.className = "chip-confirm";
-    confirm.setAttribute("aria-label", `Confirm ${chip.label}`);
-    confirm.append(checkIcon(`Confirm ${chip.label}`));
+    confirm.setAttribute("aria-label", `${t("confirm", "Confirm")} ${chip.label}`);
+    confirm.append(checkIcon(`${t("confirm", "Confirm")} ${chip.label}`));
     confirm.addEventListener("click", () => actions.confirm(chip.kind));
     const ask = document.createElement("button");
     ask.type = "button";

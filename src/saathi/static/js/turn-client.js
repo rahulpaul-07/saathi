@@ -1,4 +1,5 @@
 // @ts-check
+import { t } from "./i18n.js";
 import { MAX_AUTO_RETRIES, backoffDelayMs, classify } from "./retry.js";
 
 const REQUEST_TIMEOUT_MS = 45_000;
@@ -83,7 +84,7 @@ export async function sendTurn(wav, src, tgt, deps = {}) {
     if (verdict.outcome === "unreliable_translation" && error.transcript !== null) {
       return {
         ok: false,
-        message: `I heard: ${error.transcript}. ${verdict.message}`,
+        message: `${t("i_heard", "I heard")}: ${error.transcript}. ${verdict.message}`,
         keepRecording: verdict.keepRecording,
         code: "unreliable_translation",
         transcript: error.transcript,

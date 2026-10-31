@@ -14,6 +14,8 @@
  * landmark, so the screen can show it smaller.
  */
 
+import { t } from "./i18n.js";
+
 const KIND_ORDER = ["gate", "floor", "cross", "main", "block", "flat", "landmark"];
 /** @type {Record<string, string>} */
 const KIND_LABELS = {
@@ -71,8 +73,8 @@ export function chipsFromFacts(facts, forListener = false) {
     .map((fact) => {
       /** @type {string | null} */
       let note = null;
-      if (fact.ambiguous && fact.reading) note = `could be ${fact.reading}`;
-      else if (fact.confidence === "low") note = "check this";
+      if (fact.ambiguous && fact.reading) note = `${t("could_be", "could be")} ${fact.reading}`;
+      else if (fact.confidence === "low") note = t("check_this", "check this");
       let value = fact.value;
       let machineTranslated = false;
       /** @type {string | null} */
@@ -131,7 +133,7 @@ export function cardChips(entries, forListener = false) {
     // The old landmark reads like the current one (translation, then the original in brackets).
     const oldLocal =
       forListener && chip.kind === "landmark" ? usableLocal(entry.previous_local, previous) : null;
-    const changedNote = `changed, was ${oldLocal === null ? previous : `${oldLocal} (${previous})`}`;
+    const changedNote = `${t("changed_was", "changed, was")} ${oldLocal === null ? previous : `${oldLocal} (${previous})`}`;
     return {
       ...chip,
       changed: true,

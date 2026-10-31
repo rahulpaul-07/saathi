@@ -1,4 +1,5 @@
 // @ts-check
+import { t } from "./i18n.js";
 import { MAX_SECONDS, TARGET_RATE, clampToMaxDuration, encodeWav } from "./wav.js";
 
 /** Thrown with a user-facing message; everything else is a bug and should surface. */
@@ -17,8 +18,7 @@ export class RecorderError extends Error {}
 export async function startRecording(onAutoStop) {
   if (!window.isSecureContext || !navigator.mediaDevices?.getUserMedia) {
     throw new RecorderError(
-      "The microphone needs a secure page (HTTPS or localhost). " +
-        "See the README section 'Run the UI' for the phone setup.",
+      t("mic_secure_page", "The microphone needs a secure page (HTTPS or localhost)."),
     );
   }
   /** @type {MediaStream} */
@@ -31,8 +31,11 @@ export async function startRecording(onAutoStop) {
     const name = error instanceof DOMException ? error.name : "";
     throw new RecorderError(
       name === "NotFoundError"
-        ? "No microphone was found."
-        : "Microphone access was blocked. Allow it in the browser's site settings, then try again.",
+        ? t("mic_not_found", "No microphone was found.")
+        : t(
+            "mic_blocked",
+            "Microphone access was blocked. Allow it in the browser's site settings, then try again.",
+          ),
     );
   }
 
@@ -74,7 +77,9 @@ export async function toWav(recorded) {
   try {
     decoded = await new OfflineAudioContext(1, 1, TARGET_RATE).decodeAudioData(encoded);
   } catch {
-    throw new RecorderError("This browser could not read the recording. Please try again.");
+    throw new RecorderError(
+      t("recording_unreadable", "This browser could not read the recording. Please try again."),
+    );
   }
   const frames = Math.max(1, Math.ceil(decoded.duration * TARGET_RATE));
   const context = new OfflineAudioContext(1, frames, TARGET_RATE);

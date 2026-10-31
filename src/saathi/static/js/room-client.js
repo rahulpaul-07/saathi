@@ -1,5 +1,6 @@
 // @ts-check
 // HTTP and SSE calls for rooms. Tokens go in an Authorization header (never the URL).
+import { t } from "./i18n.js";
 import { classify } from "./retry.js";
 import { createSseParser } from "./sse.js";
 
@@ -65,7 +66,7 @@ async function request(path, init) {
     return {
       ok: false,
       status: null,
-      message: "No connection to the server. Check the network and try again.",
+      message: t("no_connection", "No connection to the server. Check the network and try again."),
       keepRecording: "keepRecording" in verdict && verdict.keepRecording,
     };
   }
@@ -77,9 +78,9 @@ async function request(path, init) {
  * @returns {string | null}
  */
 function specificMessage(status) {
-  if (status === 404) return "Room not found or it has expired. Check the code.";
-  if (status === 409) return "Waiting for the other person to join, or the room is full.";
-  if (status === 403) return "That action is not allowed here.";
+  if (status === 404) return t("room_not_found", "Room not found or it has expired. Check the code.");
+  if (status === 409) return t("wait_or_full", "Waiting for the other person to join, or the room is full.");
+  if (status === 403) return t("not_allowed", "That action is not allowed here.");
   return null;
 }
 

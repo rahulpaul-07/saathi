@@ -1,5 +1,6 @@
 // @ts-check
 import { AudioPlayer } from "./audio-player.js";
+import { applyChrome, setChromeTable, setLanguage, t } from "./i18n.js";
 import { parseLanguages } from "./languages.js";
 import { getJson, joinRoom } from "./room-client.js";
 import { enterRoom } from "./room-screen.js";
@@ -22,7 +23,7 @@ let languages = [];
 async function onJoin() {
   const code = codeInput.value.trim().toUpperCase();
   if (!CODE_PATTERN.test(code)) {
-    setStatus(joinStatusEl, "Enter the 6-character room code.", true);
+    setStatus(joinStatusEl, t("enter_code", "Enter the 6-character room code."), true);
     return;
   }
   joinButton.disabled = true;
@@ -37,7 +38,7 @@ async function onJoin() {
   }
   saveSession(sessionStorage, result.data);
   showRoom(result.data, players);
-  if (!unlocked) setStatus(statusEl, "Tap Repeat to hear each message.");
+  if (!unlocked) setStatus(statusEl, t("tap_repeat_each", "Tap Repeat to hear each message."));
 }
 
 /**
@@ -55,7 +56,9 @@ function onEnded(end) {
   clearSession(sessionStorage);
   setNotice(
     sessionStorage,
-    end === "closed" ? "The room has ended." : "The room has expired. Ask for a new code.",
+    end === "closed"
+      ? t("room_ended", "The room has ended.")
+      : t("room_expired_rider", "The room has expired. Ask for a new code."),
   );
   location.reload();
 }
@@ -65,7 +68,14 @@ joinButton.addEventListener("click", () => void onJoin());
 const prefill = new URLSearchParams(location.search).get("code");
 if (prefill) codeInput.value = prefill.toUpperCase().slice(0, 6);
 
+/** The page follows the language picked in the form, before a room is joined. */
+languageSelect.addEventListener("change", () => {
+  setLanguage(languageSelect.value);
+  applyChrome();
+});
+
 try {
+  setChromeTable(await getJson("/chrome").catch(() => null));
   languages = parseLanguages(await getJson("/languages"));
   fillLanguageSelect(languageSelect, languages);
   requireChoice([languageSelect], [joinButton]);
@@ -73,11 +83,11 @@ try {
   if (saved) {
     // After a reload there is no tap, so audio stays locked until the person taps Repeat.
     showRoom(saved, [new AudioPlayer(), new AudioPlayer()]);
-    setStatus(statusEl, "Tap Repeat to hear each message.");
+    setStatus(statusEl, t("tap_repeat_each", "Tap Repeat to hear each message."));
   } else {
     const notice = takeNotice(sessionStorage);
     if (notice) setStatus(joinStatusEl, notice);
   }
 } catch {
-  setStatus(joinStatusEl, "Could not load the language list. Reload the page.", true);
+  setStatus(joinStatusEl, t("language_list_failed", "Could not load the language list. Reload the page."), true);
 }

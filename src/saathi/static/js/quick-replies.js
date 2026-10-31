@@ -4,6 +4,8 @@
 // the table has none); the recipient hears it in theirs. If the recipient's language has no entry
 // the server refuses, so the buttons are disabled with a reason instead.
 
+import { t } from "./i18n.js";
+
 /**
  * @typedef {{text: string, review_status: string}} Phrase
  * @typedef {{ids: Record<string, string[]>, languages: Record<string, Record<string, Phrase>>}} QuickReplyTable
@@ -23,7 +25,10 @@ export function quickReplyOptions(table, role, ownLanguage, peerLanguage) {
   if (!(peerLanguage in table.languages)) {
     return {
       enabled: false,
-      reason: "Quick replies are not available in the other person's language.",
+      reason: t(
+        "quick_replies_unavailable",
+        "Quick replies are not available in the other person's language.",
+      ),
       items,
     };
   }
