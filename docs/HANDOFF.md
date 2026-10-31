@@ -720,3 +720,38 @@ Log, newest last. Checks = pytest, ruff, mypy, typecheck, npm test, e2e.
 - The gold-turn A/B did not reproduce (B 0.747, not 0.808). README, docs/EVAL.md, DECISIONS.md and
   `eval/results/masking_ab.json` now carry the current-code rerun (B 0.747, C 0.843, 9/90 failed);
   the first file is in commit 8e2d64d.
+
+## Rehearsal 2 fixes (2026-10-31, no Gnani calls; nothing committed)
+Evidence: kn customer, hi rider, demo clip "Gate 4, bakery"; Gnani /stt/v3 returned 400 twice, our turn 502,
+UI "speech service not responding"; no `GET /demo/clips/kn-bakery.wav` before the turn. The ledger counts
+the 2 failed calls.
+
+- Item 1 (clip not fetched): NOT reproduced. On the current code the clip is requested first and the
+  uploaded Blob has exactly the clip's byte length (`tests/e2e/demo.spec.js`, two tests). Most likely the
+  rehearsal sent live microphone audio in demo mode, or ran a stale cached page. Items 2-4 make that case
+  fail safely; the root cause of the missing request is unproven.
+- Item 2: `audio.wav_duration_s` rejects empty, non-WAV, shorter than 0.3 s and sample rates outside
+  8000..48000; the turn route answers 400 `bad_recording` before any Gnani call.
+- Item 3: a Gnani 4xx other than 429 becomes `RecordingRejectedError` -> 400 `bad_recording` with the
+  localized "that recording can't be used" text; the client does not retry 400 or 413.
+- Item 4: the fake Gnani clients (test_room_api, test_failure_injection, test_live_turn, test_pipeline,
+  e2e `serve.py`) refuse empty or invalid audio with a 400 via `tests/wavs.require_speech_audio`. Not made
+  strict: the eval-tooling fakes (test_eval_turns, test_lexprobe, test_noiseeval, test_latency,
+  test_democlips), which never feed the app route.
+- Item 5 (bilingual interface): every string is a `Bi{local, english}` drawn as
+  `<span class="l-main">` + `<span class="l-en" lang="en">`; English pages draw one line. Options in
+  pickers use "local / English" on one line; aria-labels stay in the viewer's language. Server error
+  bodies carry `message_en`. Tests: wiring test (every id used, English twin equals the source table),
+  `journeys.spec.js` bilingual completeness on hi/kn and en/ta (both lines on every string, no second
+  line on English, 44 px targets on a 360 px phone).
+- Item 6 (rider/room loanwords): all ten languages now use the English loanwords (table below in the
+  final report); `tests/test_chrome.py` has banned-word tests for the interface and for the unavailable,
+  quick-reply and repeat-prompt tables. The rewritten strings stay "pending". Caveats: the back-translation
+  rows in `eval/results/chrome_backtranslation.json` for these strings are stale, and a rerun of
+  `scripts/gen_chrome.py` keeps only "reviewed" entries, so it would overwrite the pending rewrites.
+- Item 7 (language names): `src/saathi/language_names.py`, `/languages` `names`, and
+  `languages.nameForViewer` give "कन्नड़ (Kannada)" on a Hindi page, "Kannada" on an English one. The
+  spellings are machine-assisted, not native-reviewed.
+- Counts: pytest 1023 passed (10 model tests deselected), mypy 149 files clean, ruff clean,
+  `npm run typecheck` clean, `npm test` 70 pass, `npm run e2e` 41 pass. `ruff format --check` was not
+  part of the repo's checks and reports files needing reformat (not touched).
