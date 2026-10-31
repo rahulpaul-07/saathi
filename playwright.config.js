@@ -3,6 +3,7 @@ import { defineConfig } from "@playwright/test";
 
 const PORT = 8765; // keep in sync with tests/e2e/serve.py
 const DEMO_PORT = 8766; // the same file with --demo
+const JOURNEY_PORT = 8767; // the same file with --journey
 
 export default defineConfig({
   testDir: "tests/e2e",
@@ -25,6 +26,12 @@ export default defineConfig({
     {
       command: "uv run --no-sync python tests/e2e/serve.py --demo",
       url: `http://127.0.0.1:${DEMO_PORT}/`,
+      reuseExistingServer: false,
+      timeout: 60_000,
+    },
+    {
+      command: "uv run --no-sync python tests/e2e/serve.py --journey",
+      url: `http://127.0.0.1:${JOURNEY_PORT}/`,
       reuseExistingServer: false,
       timeout: 60_000,
     },

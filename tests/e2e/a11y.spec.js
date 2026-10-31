@@ -2,6 +2,13 @@
 // Accessibility checks that need no extra tools: tap target size, accessible names and colour
 // contrast of the design tokens. Room pages are checked at 360 px wide, the smallest supported.
 import { expect, test } from "@playwright/test";
+import { loadUi } from "./chrome-text.js";
+
+/** The interface text a viewer in a language sees. @type {(language: string, key: string) => string} */
+let ui = () => "";
+test.beforeAll(async ({ playwright }) => {
+  ui = await loadUi(playwright, "http://127.0.0.1:8765");
+});
 
 const MIN_TARGET_PX = 44;
 const INTERACTIVE = "button, a[href], select, input, textarea, [role=button]";
@@ -63,12 +70,12 @@ async function roomAt360(browser) {
   const rider = await riderContext.newPage();
   await customer.goto("/customer.html");
   await customer.locator("#language").selectOption("ta");
-  await customer.getByRole("button", { name: "Create room" }).click();
+  await customer.getByRole("button", { name: ui("ta", "create_room") }).click();
   await expect(customer.locator("#code")).toHaveText(/^[A-Z0-9]{6}$/);
   const code = (await customer.locator("#code").textContent()) ?? "";
   await rider.goto(`/rider.html?code=${code}`);
   await rider.locator("#language").selectOption("ml");
-  await rider.getByRole("button", { name: /Join/ }).click();
+  await rider.getByRole("button", { name: ui("ml", "join_and_sound") }).click();
   await expect(customer.locator("#talk")).toBeEnabled();
   await customer.locator("#talk").click();
   await customer.waitForTimeout(1500); // let the fake microphone produce some audio

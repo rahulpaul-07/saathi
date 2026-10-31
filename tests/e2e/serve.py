@@ -24,6 +24,7 @@ from saathi.languages import LANGUAGES
 
 PORT = 8765
 DEMO_PORT = 8766  # `--demo`: demo input mode on, clips from a temp folder
+JOURNEY_PORT = 8767  # `--journey`: script-aware fake translator, every language alternates the gate
 TRANSCRIPT = "gate number 2 third floor near the blue temple"  # synthetic address
 
 
@@ -41,13 +42,14 @@ CHANGING_LANGUAGE = "pa-IN"  # Punjabi speakers alternate gate 2 and gate 4 per 
 
 
 class FakeGnani:
-    def __init__(self) -> None:
-        self.changing_calls = 0
+    def __init__(self, *, alternate_all: bool = False) -> None:
+        self._alternate_all = alternate_all
+        self._calls: dict[str, int] = {}
 
     async def transcribe(self, audio: bytes, filename: str, language: str) -> str:
-        if language == CHANGING_LANGUAGE:
-            self.changing_calls += 1
-            if self.changing_calls % 2 == 0:
+        if self._alternate_all or language == CHANGING_LANGUAGE:
+            self._calls[language] = self._calls.get(language, 0) + 1
+            if self._calls[language] % 2 == 0:
                 return TRANSCRIPT.replace("gate number 2", "gate number 4")
         return TRANSCRIPT
 
@@ -61,6 +63,31 @@ class FakeGnani:
 class FakeTranslator:
     def translate(self, text: str, src: str, tgt: str) -> str:
         return f"<b>{tgt}</b> {text}"  # markup on purpose: the UI must show it as text
+
+
+# One short word per script so a landmark rendering passes the listener-script check, the way a real
+# translation would. Synthetic; the journey specs only need the script, not the meaning.
+SCRIPT_WORDS: dict[str, str] = {
+    "bn": "মন্দির",
+    "hi": "मंदिर",
+    "mr": "मंदिर",
+    "kn": "ದೇವಾಲಯ",
+    "te": "దేవాలయం",
+    "gu": "મંદિર",
+    "ml": "ക്ഷേത്രം",
+    "pa": "ਮੰਦਰ",
+    "ta": "கோவில்",
+}
+
+
+class ScriptFakeTranslator:
+    """Writes the target script: a bare landmark becomes one word, a sentence keeps its slots."""
+
+    def translate(self, text: str, src: str, tgt: str) -> str:
+        word = SCRIPT_WORDS.get(tgt)
+        if word is None:
+            return text
+        return f"{word} {text}" if "#" in text else word
 
 
 def demo_clips_dir() -> Path:
@@ -81,6 +108,7 @@ def demo_clips_dir() -> Path:
 
 if __name__ == "__main__":
     demo = "--demo" in sys.argv
+    journey = "--journey" in sys.argv
     # Every spec shares one client IP and one server, so the production per-minute limits would make
     # a test fail depending on how fast the suite ran. The limits themselves are covered by pytest.
     open_limit = 10_000
@@ -101,7 +129,8 @@ if __name__ == "__main__":
         )
     app = create_app(
         settings,
-        gnani=cast(GnaniClient, FakeGnani()),
-        translator=FakeTranslator(),
+        gnani=cast(GnaniClient, FakeGnani(alternate_all=journey)),
+        translator=ScriptFakeTranslator() if journey else FakeTranslator(),
     )
-    uvicorn.run(app, host="127.0.0.1", port=DEMO_PORT if demo else PORT, log_level="warning")
+    port = JOURNEY_PORT if journey else DEMO_PORT if demo else PORT
+    uvicorn.run(app, host="127.0.0.1", port=port, log_level="warning")
