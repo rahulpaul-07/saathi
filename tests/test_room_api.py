@@ -1081,4 +1081,5 @@ async def test_chrome_endpoint_serves_every_string_in_every_language(
     assert set(table) == set(LANGUAGES)
     assert len({len(strings) for strings in table.values()}) == 1
     assert table["en"]["create_room"] == {"text": "Create room", "review_status": "source"}
-    assert table["hi"]["create_room"]["review_status"] == "pending"
+    assert table["hi"]["create_room"]["review_status"] == "reviewed"
+    assert table["kn"]["create_room"]["review_status"] == "pending"

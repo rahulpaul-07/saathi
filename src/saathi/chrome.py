@@ -1,9 +1,10 @@
 """Interface text for the room pages, in all 10 languages.
 
 Every visible string on the customer and rider pages has an id here. English is the source; the
-other nine languages are machine output from `scripts/gen_chrome.py` (local IndicTrans2) kept in
-`chrome_data.py`, and each text carries a review status per string, as the quick replies do:
-"pending" means no speaker has checked that exact text and the UI says so. Strings contain no
+other nine languages are in `chrome_data.py`: machine output from `scripts/gen_chrome.py` (local
+IndicTrans2), then corrected by the author for bn and hi, which are marked "reviewed". Each text
+carries a review status per string, as the quick replies do: "pending" means no speaker has
+checked that exact text and the UI says so. Strings contain no
 placeholders: the browser joins pieces (`Sent` + `:` + a label) so a translation can never lose or
 corrupt a value. Nothing here is personal data.
 """

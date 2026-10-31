@@ -62,10 +62,36 @@ def test_no_translation_is_left_as_the_english_source() -> None:
     assert same == []
 
 
-def test_the_drift_report_covers_every_generated_string() -> None:
+def test_the_drift_report_covers_every_string_still_machine_made() -> None:
     report = json.loads(REPORT.read_text(encoding="utf-8"))
-    assert report["strings"] == (len(LANGUAGES) - 1) * len(ENGLISH)
+    pending = {
+        (code, key)
+        for code, strings in CHROME.items()
+        for key, phrase in strings.items()
+        if phrase.review_status == "pending"
+    }
+    assert {(row["lang"], row["key"]) for row in report["rows"]} == pending
+    assert report["strings"] == len(pending)
     assert report["flagged"] == sum(1 for row in report["rows"] if row["flagged"])
+
+
+def test_bn_and_hi_are_reviewed_and_use_the_agreed_words_for_rider_and_room() -> None:
+    forbidden = {
+        "hi": ("सवार", "कमर", "कक्ष"),
+        "bn": ("আরোহী", "ঘর", "কক্ষ"),
+    }
+    for code, words in forbidden.items():
+        assert {p.review_status for p in CHROME[code].values()} == {"reviewed"}, code
+        bad = [k for k, p in CHROME[code].items() if any(w in p.text for w in words)]
+        assert bad == [], code
+    assert CHROME["hi"]["role_rider"].text == "राइडर"
+    assert "रूम" in CHROME["hi"]["room"].text and "রুম" in CHROME["bn"]["room"].text
+
+
+def test_https_and_localhost_stay_in_latin_in_the_microphone_message() -> None:
+    for code in ("bn", "hi"):
+        text = CHROME[code]["mic_secure_page"].text
+        assert "HTTPS" in text and "localhost" in text, code
 
 
 def test_word_overlap_flags_a_lost_meaning() -> None:

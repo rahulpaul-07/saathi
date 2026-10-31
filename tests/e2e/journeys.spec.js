@@ -31,6 +31,9 @@ test.beforeAll(async ({ playwright }) => {
 });
 /** The text a viewer in `language` sees for `key`. */
 const ui = (/** @type {string} */ language, /** @type {string} */ key) => CHROME[language][key].text;
+/** True when some string of `language` still has the review status "pending". */
+const isUnreviewed = (/** @type {string} */ language) =>
+  Object.values(CHROME[language]).some((entry) => entry.review_status === "pending");
 
 /** @type {Record<string, RegExp>} */
 const SCRIPT = {
@@ -310,6 +313,11 @@ for (const [customerLanguage, riderLanguage] of [
   ["hi", "kn"],
   ["kn", "hi"],
 ]) {
+  // The notice check below needs one reviewed and one unreviewed language in the pair.
+  test(`the ${customerLanguage}/${riderLanguage} pair has one reviewed and one unreviewed language`, () => {
+    expect([isUnreviewed(customerLanguage), isUnreviewed(riderLanguage)].sort()).toEqual([false, true]);
+  });
+
   test(`${customerLanguage} customer and ${riderLanguage} rider pages show no English interface text`, async ({
     browser,
   }) => {
@@ -336,7 +344,10 @@ for (const [customerLanguage, riderLanguage] of [
     ]);
     for (const [page, language] of viewers) {
       await expect(page.locator("html")).toHaveAttribute("lang", language);
-      await expect(page.locator("#chrome-note")).toBeVisible();
+      // The machine-translation notice shows exactly for a language with unreviewed strings.
+      const note = page.locator("#chrome-note");
+      if (isUnreviewed(language)) await expect(note).toBeVisible();
+      else await expect(note).toBeHidden();
       expect(await latinWordsOnScreen(page)).toEqual([]);
     }
 
