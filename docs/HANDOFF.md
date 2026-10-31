@@ -755,3 +755,59 @@ the 2 failed calls.
 - Counts: pytest 1023 passed (10 model tests deselected), mypy 149 files clean, ruff clean,
   `npm run typecheck` clean, `npm test` 70 pass, `npm run e2e` 41 pass. `ruff format --check` was not
   part of the repo's checks and reports files needing reformat (not touched).
+
+## Phase 5: product polish (branch `features`, uncommitted)
+
+Screenshots: `docs/media/design/before/` (old UI) and `docs/media/design/after/`, made with
+`node scripts/screenshots.mjs design <before|after>` (real app in demo mode, scripted fakes via
+`scripts/design_server.py`, no Gnani). 1920x1080 split and 360x780 phones, kn customer and hi rider.
+
+1. Fact tiles: 2-column grid, landmark spans the row when the count is odd. All four visible on
+   the 360x780 phones (rider ends near 764 px, customer near 635 px) and on the split.
+2. "Changed, was X" is an amber note (`--warn-*` tokens, contrast pair added to a11y spec).
+3. Hierarchy: type scale tokens (`--fs-label`, `--fs-value`), value large, label small.
+4. Demo mode: clip picker and send button above the mic; mic gets `.minor`. Without clips the mic
+   stays primary.
+5. Room code box gets `.compact` once the rider joins.
+6. Status: one line per side. Customer "What the rider sees" removed; rider's "What the customer
+   sees" and customer's "From the rider" stay hidden until the first send or turn.
+7. Clip picker starts on a disabled placeholder (`choose_a_clip`), send disabled until a clip is
+   chosen, option text "local / English" (`label_local` in the manifest).
+8. Card question has its English line.
+9. Timings: one line in demo mode (stage dl hidden), details toggle otherwise.
+10. Brand: inline SVG mark and wordmark, new favicon, 16:9 framed demo split.
+11. Landing page rewritten (English): pitch, problem, two big buttons, demo link, honesty notes.
+12. `gen_chrome.py` no longer overwrites manual edits: `chrome_overrides.OVERRIDES` wins
+    (tested in `tests/test_chrome_overrides.py`).
+
+Checks run: pytest 1026 passed, ruff, mypy, `npm run typecheck`, `npm test` 71, `npm run e2e` 39.
+
+Things to know:
+- `choose_a_clip` is pending in 9 languages, so the bn and hi pages show the "machine-translated,
+  not yet reviewed" note again. Read bn "ক্লিপ বেছে নিন" and hi "क्लिप चुनें", then mark reviewed.
+- The local gitignored `demo/clips/manifest.json` was not regenerated (needs Gnani), so existing
+  clips show English-only names until it is.
+- Retired keys `sees_rider` and `sent_card_has_details` were removed from the chrome table.
+- The `before/` PNGs were captured from the old UI.
+- No Gnani calls were made.
+
+## Phase 5b: colour and personality (branch `features`, uncommitted)
+
+- Tokens: warm light base is the default; dark via `prefers-color-scheme` (applied by
+  `static/js/theme.js`, a classic script in `<head>` so there is no flash) and a switch. The switch
+  is on the landing page and the demo bar only; room pages follow the saved choice or the system,
+  because a switch there would need a translated label in every language.
+- Each fact kind has a hue, tint and line icon (`js/kind-icons.js`): gate, floor, cross, main,
+  block, flat, landmark. Confirmed tiles turn green with a tick, asked tiles get a blue question
+  badge, changed tiles keep the amber "changed, was X" badge, red is for errors only.
+- Role colours: customer indigo, rider teal. Pane header bands in the demo, the top band and every
+  primary button on each person's own pages (`data-role` on `<html>`), and the two logo bubbles.
+- Motion (under 250 ms, only without `prefers-reduced-motion: reduce`): tile slides in, changed
+  badge pulses once, tick draws itself.
+- Landing: friendly headline, the seven kind chips, role-coloured buttons. Demo frame uses app.css.
+- a11y.spec.js: every text pair (4.5) and graphic pair (3) is checked on the landing, customer and
+  rider pages in both themes, plus two tests for the switch.
+- bn and hi `choose_a_clip` are reviewed in `chrome_overrides.py`; the other 7 stay pending.
+- Screenshots regenerated (light) in `docs/media/design/after/`, plus
+  `split-1920-dark-4-confirm-and-ask.png`.
+- Checks: pytest, ruff, mypy, typecheck, `npm test` 71, e2e 45. No Gnani calls.

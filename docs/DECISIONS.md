@@ -742,3 +742,26 @@ script, not to ration money. Raised from 900 to 1500 in `evaluation/calls.py`; t
 constant. The stop rules (401/402/403 stop, 429 backs off, 5xx retries once, three consecutive
 failures stop the run) and the `--dry-run` first rule are unchanged. The measured rate is in
 docs/PATH_TO_PRODUCTION.md section 3.
+
+## Phase 5 UI decisions
+
+- Amber, not red, for "changed, was X": a correction is information, not an error.
+- Manual interface-text edits live in `chrome_overrides.py` (status per key) and win over the
+  generated `chrome_data.py`, so regenerating never destroys a reviewed edit.
+- Tiles are a 2-column grid so four facts fit a 360x780 screen without scrolling.
+- `label_local` is an optional manifest field; clips without it fall back to English only.
+- Customer's "What the rider sees" was removed: it showed nothing the status line did not.
+  Echo and incoming blocks are hidden until they have content.
+- Demo mode shows timings as one summary line; the per-stage list stays behind a toggle elsewhere.
+
+## Colour and theme
+
+- Light is the default theme (outdoor readability); `theme.js` follows the saved choice, then the
+  system setting. A single token block per theme; no per-component dark rules.
+- Colour carries meaning twice: the kind hue is never the only cue, each tile also has an icon and
+  a text label, so colour-blind riders lose nothing.
+- Role colours are tokens (`--customer`, `--rider`); `--accent` resolves per page from `data-role`.
+- The theme switch has an English accessible name, so it lives only on the English pages. Room
+  pages must not show untranslated words, and a new interface string would mark every language
+  as unreviewed again.
+- Tiles animate with a translate, not a scale, so tap targets never measure under 44 px mid-animation.
