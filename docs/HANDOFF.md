@@ -1,5 +1,138 @@
 # Handoff
 
+## Overnight build 31 Oct
+
+Nothing is committed by this run. Branch `features`, started from a3e4aa8 with a clean tree.
+
+### Definition of done (filled in at the end; see "Phase log" for progress)
+Pending.
+
+### Phase log
+
+#### Phase 0: baseline (done)
+- Checks at start: pytest 981 passed, 10 deselected (the `model` marker); ruff clean; mypy clean
+  (139 files); `npm run typecheck` clean; `npm test` 61 pass; `npm run e2e` 22 pass (53 s).
+- No test is skipped (`pytest -rs` lists none) and none failed on the single baseline run;
+  flakiness is judged in Phase 10 by running everything twice.
+- Coverage map (test file to module): test_masking, test_translate, test_transmatrix cover
+  masking.py, translate.py and the matrix script; test_facts*, test_fact_gold, test_extragold cover
+  the extractor; test_rooms, test_room_api, test_card, test_integration, test_failure_injection,
+  test_security_headers, test_ratelimit cover rooms, routes and the safety layers; test_gnani,
+  test_eval_*, test_latency, test_noiseeval, test_speecheval, test_live_turn cover the Gnani client
+  and the evaluation scripts. The browser UI is covered by tests/js (pure modules) and tests/e2e
+  (Playwright, fake Gnani and fake translator through tests/e2e/serve.py).
+- Phase 1 started: power state was AC; `analyze_masking_reversal.py collect` running in the
+  background (resumes from eval/state/masking_reversal.json, 41 of 90 pairs to do at start).
+
+#### Phase 2: end-to-end journeys, fake Gnani (done; final run of the whole suite is Phase 10)
+- New `tests/e2e/journeys.spec.js` and a third e2e server mode, `tests/e2e/serve.py --journey`
+  (port 8767, wired in playwright.config.js): a fake translator that writes the target script
+  (so landmark and label assertions are meaningful) and a fake STT that alternates gate 2 and gate 4
+  per language (so every pair gets a correction turn).
+- 10 journeys, one per pair (kn-hi, ta-hi, te-en, bn-kn, hi-ta, en-ml, gu-mr, pa-gu, ml-pa, mr-bn):
+  all 10 languages appear once as the customer and once as the rider. Each journey: quick replies both
+  ways first (the "Nothing received yet" placeholder goes), customer turn, card on both screens with
+  every chip label in the viewer's own script, listener landmark in the listener's script with the
+  original in brackets, correction turn (only the gate says "changed, was 2"), rider ask (customer sees
+  the question in their script, marker stays), rider confirm (marker and question go, customer sees the
+  check), rider reload (card, confirmation and translation intact), stream dropped (Reconnecting, then
+  recovered), room ended (other side told, no more /events requests, reload stays on the join screen).
+  Every journey fails on any console error, page error or CSP violation event.
+  Journeys 1, 5 and 8 run both pages at 360x780 with hasTouch and use tap(); the floor "ask" element
+  handle is taken before the confirm re-render and must stay connected.
+- Plus one split-page journey at 1920x1080 on the demo server.
+- Bugs found:
+  - bug: on the demo split page the rider's room code was never filled in. Cause: demo-split.js
+    tested `input instanceof HTMLInputElement`, but the element belongs to the iframe's window, so
+    the test was always false. Fix: compare `tagName`. Test: the split-page journey and the
+    strengthened `demo.spec.js` split test.
+  - bug (test): `demo.spec.js` "split-screen page loads both screens" read the room code straight
+    after the click, got an empty string and compared it to the rider's empty input, so it passed
+    while the feature was broken. It now waits for a real 6-character code first.
+  - No product bug was found in the rider ask / confirm path: it works end to end (chip-reply POSTs,
+    customer sees the question, then the check), on desktop and on a touch phone.
+- Not covered: a correction of the landmark (the fakes only alternate the gate); "was X" for a
+  translated landmark in the viewer's script; the interface wording is still English (Phase 4 changes
+  "changed, was" and "The room has ended." and these tests will then need the localized strings).
+- Files touched: tests/e2e/journeys.spec.js (new), tests/e2e/serve.py, tests/e2e/demo.spec.js,
+  playwright.config.js, src/saathi/static/js/demo-split.js.
+- Checks after the phase: ruff clean, mypy clean, typecheck clean; journeys + demo specs 15 passed.
+  Full suite after the phase: pytest 981 passed (10 model-marked deselected), npm test 61 passed,
+  npm run e2e 33 passed (22 earlier + 11 new), mypy and typecheck clean.
+- Gnani calls this phase: 0. Ledger total unchanged (867).
+
+#### Phase 1: translation matrix collect finished (done)
+- The power guard stopped the collect once more (a brief power-state change; Windows reported AC
+  again a minute later); it resumed from its checkpoint with the same command and finished all 90
+  pairs (20 sentences each). No Gnani calls (local IndicTrans2 only).
+- Regenerated `eval/results/masking_reversal.json` (`analyze_masking_reversal.py report`).
+- Numbers over the full 90 pairs: back-translation 0.75 plain, 0.68 masked; target-language 0.37
+  plain, 0.44 masked (the partial figures were 0.76/0.67 and 0.37/0.51). Masking still lowers the
+  back-translated score in every class with numbers; on the target-language score it helps words
+  (+0.12) and mixed (+0.17), little for digits. Lost facts: 527 vs 170 found (net -357); fallbacks
+  and residue explain 92 of the 527. Flat and block numbers are the only kinds where masking is net
+  positive. The conclusion of the diagnosis stands; only the size of the target-language gain changed.
+- Files touched: docs/EVAL.md (diagnosis section), README.md (matrix row),
+  eval/results/masking_reversal.json.
+
+#### Phase 3: live smoke through the HTTP API (done, passed)
+- New `src/saathi/evaluation/livesmoke.py`, `scripts/smoke_live.py`, `tests/test_livesmoke.py`.
+  A real local server (uvicorn on an ephemeral port) with the real metered Gnani client (paced to
+  3 calls per 10 s, ceiling 12 per run, stop on 401/402/403) and the real local translator; two
+  HTTP clients with SSE streams act as the kn customer and hi rider (example pair).
+- Run on 2026-10-31 on AC: all 9 steps passed (rooms; turn 1 card with cross, main, gate, landmark
+  and no marker; translated audio served; correction marks only the gate with "was" = first value;
+  quick reply each way with audio; chip ask shows one question; chip confirm clears the marker and
+  keeps the question; room end reaches both sides). Result: `eval/results/live_smoke.json`
+  (content-free: step names, fact kinds, counts).
+- Gnani calls spent: 6 (2 STT, 4 TTS). Ledger total 873 of 1500. Tonight's total: 6 of 120.
+- Tests: 9 in `tests/test_livesmoke.py` (full journey with 6 calls, content-free summary, 401 stops
+  after one call, run ceiling, misheard correction fails its step and the run goes on, dry-run,
+  refusals). Not covered: 429 back-off (the run stops at the first failed step instead).
+- Bug found while writing it: none in the product. A turn with no facts sends no card event, so a
+  step waiting for one would hang; the smoke checks the turn's facts first and fails the step.
+- Files touched: the three new files above, eval/results/live_smoke.json.
+
+#### Phase 4: interface chrome in all 10 languages (done; e2e count below)
+- One table, `src/saathi/chrome.py` (108 English source strings, review status per string, like
+  `quickreplies.py`) plus generated `src/saathi/chrome_data.py` (9 languages x 108 = 972 strings,
+  all "pending"). Generated by `scripts/gen_chrome.py` with local IndicTrans2 (en-indic), then
+  back-translated (indic-en); strings whose round trip keeps under half the source words are
+  flagged in `eval/results/chrome_backtranslation.json`: 53 of 972. The flag is a list to read,
+  not a quality score. No Gnani calls.
+- Served at `GET /chrome`. Browser `static/js/i18n.js` (`t`, `setLanguage`, `applyChrome`): the
+  page follows the viewer's language (picker change, room entry, reload), sets `<html lang>`, and
+  shows a machine-translation notice on any language that is not reviewed. The English text stays
+  in the HTML/JS as the fallback, so the page works if `/chrome` fails; a wiring test makes the
+  English in the code equal the table. Strings have no placeholders; JS joins the pieces.
+  The demo badge shows the viewer's language plus English. In-room "their language" uses the
+  native-script name (new `native` field in `languages.py`, in `/languages`).
+- Tests: `tests/test_chrome.py` (7: all keys in all 10 languages, own script per language, review
+  statuses, no placeholders or markup, no untranslated English, drift report matches, overlap),
+  `tests/test_chrome_wiring.py` (4), `tests/js/i18n.test.js` (5), an API test for `/chrome`, and in
+  `tests/e2e/journeys.spec.js` three more: hi/kn and kn/hi pages show no Latin words in the
+  interface (the translated speech, room code, link and chip values are excluded), and an English
+  page keeps English with no notice. Older e2e specs now read expected text from `/chrome`
+  (`tests/e2e/chrome-text.js`) instead of English literals; no assertion was loosened.
+- Checks after the phase: pytest 1002 passed; ruff clean; mypy clean (147 files); typecheck clean;
+  `npm test` 66 passed; `npm run e2e` 36 passed, 0 failed.
+- Bugs: (1) leak test read `#code` before it was filled: wait for the code first. (2) "ms" is a unit,
+  not English: allowed. (3) the leak test flagged `#translation`: that is translated speech
+  (`lang="und"`), not interface: excluded. (4) older specs clicked "Create room" after choosing
+  ta/ml/...: the button is now localized, specs use the table.
+- Gnani calls: 0. Ledger total 873 of 1500. Tonight: 6 of 120.
+- Files touched (new): chrome.py, chrome_data.py, gen_chrome.py, i18n.js, chrome-text.js, the
+  three test files above, chrome_backtranslation.json. Edited: catalog_routes.py, languages.py,
+  customer.html, rider.html, chips.js, ui.js, retry.js, room-client.js, turn-client.js,
+  quick-replies.js, recorder.js, room-screen.js, customer.js, rider.js, languages.js,
+  test_room_api.py, pyproject.toml (E501 ignore for the generated data file only).
+  Edited in two phases: `tests/e2e/journeys.spec.js` (Phases 2 and 4).
+  Also touched: rooms.spec.js, demo.spec.js, a11y.spec.js (expected text only).
+- Decisions waiting: every non-English string is "pending". Review bn and hi first; the 53
+  drift-flagged strings are listed in the report. Tamil `tap_repeat` keeps Latin "Repeat";
+  `mic_secure_page` keeps "HTTPS". index.html and solo.html stay English (the spec covers room
+  pages).
+
 ## Overnight summary (2026-10-29, slice 5)
 Done: loanword/number masking with restore, landmark chips in the listener's language, fact-summary
 fallback, hi/bn number and trigger rules, A/B script, latency study and beta smoke scripts (dry-run
