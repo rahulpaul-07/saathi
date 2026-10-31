@@ -5,7 +5,7 @@
 // or on any language.
 import { AudioPlayer } from "./audio-player.js";
 import { cardChips, chipsFromFacts } from "./chips.js";
-import { clipsForLanguage, parseDemoClips } from "./demo-clips.js";
+import { clipsForLanguage, oneLine, parseDemoClips } from "./demo-clips.js";
 import { nameForViewer } from "./languages.js";
 import { applyChrome, Bi, bi, renderText, setLanguage, tb } from "./i18n.js";
 import { parseQuickReplyTable, quickReplyOptions } from "./quick-replies.js";
@@ -20,7 +20,7 @@ import {
   sendChipReply,
   sendQuickReply,
 } from "./room-client.js";
-import { byId, renderChips, renderTimings, setStatus } from "./ui.js";
+import { byId, renderChips, renderTimings, setStatus, timingsSummary } from "./ui.js";
 
 /**
  * @param {import("./room-client.js").RoomInfo} room
@@ -46,8 +46,15 @@ export function enterRoom(room, languages, players, onEnded) {
   const discardButton = byId("discard", HTMLButtonElement);
   const cardChipsEl = byId("card-chips", HTMLElement);
   const cardEmptyEl = byId("card-empty", HTMLElement);
-  const sentChipsEl = byId("sent-chips", HTMLElement);
-  const sentEmptyEl = byId("sent-empty", HTMLElement);
+  // The rider's page echoes what the customer received; the customer's page has no such block
+  // because its delivery card already shows every fact.
+  const sentEl = document.getElementById("sent");
+  const sentChipsEl = document.getElementById("sent-chips");
+  const sentEmptyEl = document.getElementById("sent-empty");
+  const incomingEl = document.getElementById("incoming");
+  const codeBoxEl = document.getElementById("code-box");
+  const timingsBoxEl = byId("timings-box", HTMLDetailsElement);
+  const timingsSummaryEl = byId("timings-summary", HTMLElement);
   const timingsEl = byId("timings", HTMLElement);
   const repeatEl = byId("repeat-prompt", HTMLElement);
   const repeatTextEl = byId("repeat-text", HTMLElement);
@@ -140,9 +147,12 @@ export function enterRoom(room, languages, players, onEnded) {
     talkButton.disabled = !state.peerJoined || state.busy || state.pending !== null;
     renderText(talkLabel, recording ? tb("tap_to_stop", "Tap to stop and send") : idleLabel);
     actionsEl.hidden = state.pending === null || state.busy;
-    sentEmptyEl.hidden = sentChipsEl.childElementCount > 0;
     demoSendButton.disabled =
-      !state.peerJoined || state.busy || state.pending !== null || demoClips.length === 0;
+      !state.peerJoined ||
+      state.busy ||
+      state.pending !== null ||
+      demoClips.length === 0 ||
+      demoSelect.value === "";
     renderQuickReplies();
   }
 
@@ -157,15 +167,27 @@ export function enterRoom(room, languages, players, onEnded) {
     }
     demoBannerEl.hidden = false; // demo mode is on for the room even if this person has no clips
     if (demoClips.length === 0) return; // an empty picker would only be noise
+    // Start on a placeholder so a clip is never sent unless the presenter picked it.
+    const placeholder = document.createElement("option");
+    const choose = tb("choose_a_clip", "Choose a clip");
+    placeholder.value = "";
+    placeholder.textContent = oneLine(choose.local, choose.english);
+    placeholder.dataset.i18n = "choose_a_clip";
+    placeholder.disabled = true;
+    placeholder.selected = true;
     demoSelect.replaceChildren(
+      placeholder,
       ...demoClips.map((clip) => {
         const option = document.createElement("option");
         option.value = clip.id;
-        option.textContent = clip.label;
+        option.textContent = oneLine(clip.labelLocal, clip.label);
         return option;
       }),
     );
     demoEl.hidden = false;
+    // With a clip to send, the clip is the main action and the microphone steps back.
+    document.body.classList.add("demo-on");
+    talkButton.classList.add("minor");
     render();
   }
 
@@ -221,6 +243,8 @@ export function enterRoom(room, languages, players, onEnded) {
         ? tb("rider_joined", "The rider joined.")
         : tb("customer_joined", "The customer joined.");
     renderText(peerEl, bi`${joined} ${tb("their_language", "Their language")}: ${languageName(code)}.`);
+    // The code has done its job; keep it as a small line in case the rider has to rejoin.
+    codeBoxEl?.classList.add("compact");
   }
 
   /**
@@ -284,6 +308,7 @@ export function enterRoom(room, languages, players, onEnded) {
   async function showIncomingTurn(data, live) {
     shownTurnId = turnKey(data);
     incomingStatusEl.hidden = false;
+    if (incomingEl) incomingEl.hidden = false;
     // The customer's facts live on the delivery card; repeating them per turn showed every value twice.
     const chips = peerRole === "customer" ? [] : chipsFromFacts(data.facts, true);
     renderChips(chipsEl, chips);
@@ -438,18 +463,21 @@ export function enterRoom(room, languages, players, onEnded) {
       return;
     }
     state.pending = null;
-    const customerSpoke = room.role === "customer"; // see showIncomingTurn: the card has the facts
-    renderChips(sentChipsEl, customerSpoke ? [] : chipsFromFacts(result.data.facts));
-    renderText(
-      sentEmptyEl,
-      customerSpoke
-        ? tb("sent_card_has_details", "Sent. The delivery card has the details.")
-        : tb("nothing_sent", "Nothing sent yet."),
-    );
-    sentEmptyEl.hidden = sentChipsEl.childElementCount > 0;
+    if (sentEl && sentChipsEl && sentEmptyEl) {
+      renderChips(sentChipsEl, chipsFromFacts(result.data.facts));
+      sentEmptyEl.hidden = sentChipsEl.childElementCount > 0;
+      sentEl.hidden = false;
+    }
     sentDemoBadgeEl.hidden = !demoClip;
     renderTimings(timingsEl, result.data.timings);
-    timingsEl.hidden = false;
+    // In demo mode the one-line summary is the readout; elsewhere the detail sits behind a toggle.
+    const demoMode = document.body.classList.contains("demo-on");
+    renderText(
+      timingsSummaryEl,
+      demoMode ? timingsSummary(result.data.timings) : tb("time_taken", "Time taken by your last message"),
+    );
+    timingsBoxEl.open = demoMode;
+    timingsBoxEl.hidden = false;
     showRepeatPrompt(result.data.repeat);
     setStatus(statusEl, sentMessage(demoClip, result.data.verified === true));
   }
@@ -477,6 +505,7 @@ export function enterRoom(room, languages, players, onEnded) {
   repeatButton.addEventListener("click", () => void turnPlayer.replay());
   replyReplayButton.addEventListener("click", () => void replyPlayer.replay());
   demoSendButton.addEventListener("click", () => void sendDemoClip());
+  demoSelect.addEventListener("change", render);
 
   if (room.peer_language) showPeer(room.peer_language);
   render();

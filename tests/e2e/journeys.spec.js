@@ -149,15 +149,15 @@ for (const [index, [customerLanguage, riderLanguage]] of PAIRS.entries()) {
     await expect(customer.locator("#talk")).toBeEnabled();
     await expect(customer.locator("#peer")).toContainText(ui.has(customerLanguage, "rider_joined"));
 
-    // Quick replies go both ways first, so the customer's placeholder is still showing: it goes
-    // away once something arrives. Texts come from the catalog, in the recipient's language.
+    // Quick replies go both ways first; the customer's "From the rider" block stays hidden until a
+    // spoken turn arrives. Texts come from the catalog, in the recipient's language.
     const catalog = await (await customer.request.get("/quick-replies")).json();
     const phrase = (/** @type {string} */ language, /** @type {string} */ id) =>
       catalog.languages[language][id].text;
-    await expect(customer.locator("#incoming-status")).toHaveText(ui(customerLanguage, "nothing_received"));
+    await expect(customer.locator("#incoming")).toBeHidden();
     await press(rider.getByRole("button", { name: phrase(riderLanguage, "which_floor") }), phone);
     await expect(customer.locator("#reply-text")).toHaveText(phrase(customerLanguage, "which_floor"));
-    await expect(customer.locator("#incoming-status")).toBeHidden();
+    await expect(customer.locator("#incoming")).toBeHidden();
     await press(customer.getByRole("button", { name: phrase(customerLanguage, "come_to_gate") }), phone);
     await expect(rider.locator("#reply-text")).toHaveText(phrase(riderLanguage, "come_to_gate"));
 
@@ -192,7 +192,12 @@ for (const [index, [customerLanguage, riderLanguage]] of PAIRS.entries()) {
     await press(chip(rider, "gate").locator(".chip-ask"), phone);
     const question = chip(customer, "gate").locator(".chip-question");
     await expect(question).toHaveText(/\?$/);
-    expect((await question.textContent())?.trim()).toMatch(SCRIPT[customerLanguage]);
+    if (customerLanguage === "en") {
+      await expect(question).toHaveText("Gate?"); // English pages draw one line
+    } else {
+      expect((await question.locator(".l-main").textContent())?.trim()).toMatch(SCRIPT[customerLanguage]);
+      await expect(question.locator(".l-en")).toHaveText("Gate?");
+    }
     await expect(chip(customer, "gate").locator(".chip-note")).toHaveText(
       ui.with(customerLanguage, "changed_was", "2"),
     );
@@ -328,11 +333,8 @@ for (const [customerLanguage, riderLanguage] of [
   ["hi", "kn"],
   ["kn", "hi"],
 ]) {
-  // The notice check below needs one reviewed and one unreviewed language in the pair.
-  test(`the ${customerLanguage}/${riderLanguage} pair has one reviewed and one unreviewed language`, () => {
-    expect([isUnreviewed(customerLanguage), isUnreviewed(riderLanguage)].sort()).toEqual([false, true]);
-  });
-
+  // hi gained a hand-written, still unreviewed string (choose_a_clip), so both languages of the pair
+  // now show the notice; the hidden case is covered by the English page test below.
   test(`${customerLanguage} customer and ${riderLanguage} rider pages show no English interface text`, async ({
     browser,
   }) => {

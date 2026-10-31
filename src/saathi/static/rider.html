@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-role="rider">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -7,6 +7,7 @@
     <title>Saathi rider</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="app.css" />
+    <script src="js/theme.js"></script>
   </head>
   <body>
     <main>
@@ -63,6 +64,12 @@
         <div id="replies" class="replies" role="group" aria-labelledby="reply-heading"></div>
         <p id="replies-note" class="small"></p>
 
+        <section id="demo" class="demo" hidden aria-label="Demo clip" data-i18n-aria-label="demo_clip">
+          <label for="demo-clip" data-i18n="demo_clip_in_language">Demo clip in your language</label>
+          <select id="demo-clip"></select>
+          <button type="button" id="demo-send" class="big-btn" disabled data-i18n="send_demo_clip">Send demo clip</button>
+        </section>
+
         <h2 id="speak-heading" data-i18n="speak_to_customer">Speak to the customer</h2>
         <button type="button" class="talk-btn minor" id="talk" aria-pressed="false" disabled>
           <svg class="icon icon-mic" viewBox="0 0 24 24" aria-hidden="true">
@@ -74,8 +81,7 @@
           <span class="label" data-i18n="use_when_stopped">Use when stopped: tap and speak</span>
         </button>
 
-        <p id="status" class="status" role="status" aria-live="polite"></p>
-        <div id="repeat-prompt" class="repeat-prompt" role="status" hidden>
+        <p id="status" class="status" role="status" aria-live="polite"></p>        <div id="repeat-prompt" class="repeat-prompt" role="status" hidden>
           <p id="repeat-text"></p>
           <p id="repeat-note" class="small"></p>
         </div>
@@ -85,17 +91,16 @@
           <button type="button" id="discard" class="secondary" data-i18n="discard_recording">Discard recording</button>
         </div>
 
-        <section id="demo" class="demo" hidden aria-label="Demo clip" data-i18n-aria-label="demo_clip">
-          <label for="demo-clip" data-i18n="demo_clip_in_language">Demo clip in your language</label>
-          <select id="demo-clip"></select>
-          <button type="button" id="demo-send" class="secondary" disabled data-i18n="send_demo_clip">Send demo clip</button>
+        <section id="sent" aria-labelledby="sent-heading" hidden>
+          <h2 id="sent-heading" data-i18n="sees_customer">What the customer sees</h2>
+          <p id="sent-demo-badge" class="badge" data-i18n="demo_badge" hidden>Demo clip, not live speech</p>
+          <ul id="sent-chips" class="chips" aria-labelledby="sent-heading" aria-live="polite"></ul>
+          <p id="sent-empty" class="small" data-i18n="nothing_sent">Nothing sent yet.</p>
         </section>
-
-        <h2 id="sent-heading" data-i18n="sees_customer">What the customer sees</h2>
-        <p id="sent-demo-badge" class="badge" data-i18n="demo_badge" hidden>Demo clip, not live speech</p>
-        <ul id="sent-chips" class="chips" aria-labelledby="sent-heading" aria-live="polite"></ul>
-        <p id="sent-empty" class="small" data-i18n="nothing_sent">Nothing sent yet.</p>
-        <dl id="timings" class="timings" aria-label="Time taken by your last message" data-i18n-aria-label="time_taken" hidden></dl>
+        <details id="timings-box" class="timings-box" hidden>
+          <summary id="timings-summary"></summary>
+          <dl id="timings" class="timings" aria-label="Time taken by your last message" data-i18n-aria-label="time_taken"></dl>
+        </details>
       </section>
       <p id="chrome-note" class="small" data-i18n="chrome_unreviewed" hidden>
         The text on this page is machine-translated and not yet reviewed.

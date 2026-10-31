@@ -1,7 +1,8 @@
 // @ts-check
 // Small DOM helpers shared by the customer and rider screens. Received text is only ever set
 // through textContent, never as HTML.
-import { Bi, renderText, t, tb } from "./i18n.js";
+import { Bi, bi, renderText, t, tb } from "./i18n.js";
+import { kindIcon } from "./kind-icons.js";
 import { languageLabel } from "./languages.js";
 
 /**
@@ -104,6 +105,15 @@ export function renderTimings(list, timings, extraRows = []) {
 }
 
 /**
+ * The whole turn on one line: "2.8 s: Speech to text 0.8, Translation 0.9, Text to speech 1.1".
+ * @param {{stt_ms: number, translate_ms: number, tts_ms: number, total_ms: number}} timings
+ */
+export function timingsSummary(timings) {
+  const s = (/** @type {number} */ value) => (value / 1000).toFixed(1);
+  return bi`${s(timings.total_ms)} s: ${tb("time_stt", "Speech to text")} ${s(timings.stt_ms)}, ${tb("time_translate", "Translation")} ${s(timings.translate_ms)}, ${tb("time_tts", "Text to speech")} ${s(timings.tts_ms)}`;
+}
+
+/**
  * A check mark icon; the text alternative is the accessible name.
  * @param {string} name
  */
@@ -118,6 +128,23 @@ function checkIcon(name) {
   path.setAttribute("fill", "none");
   path.setAttribute("stroke", "currentColor");
   path.setAttribute("stroke-width", "3");
+  path.setAttribute("stroke-linecap", "round");
+  path.setAttribute("stroke-linejoin", "round");
+  svg.append(path);
+  return svg;
+}
+
+/** A question mark icon for the ask button; the button carries the accessible name. */
+function askIcon() {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", "0 0 24 24");
+  svg.setAttribute("class", "icon-ask");
+  svg.setAttribute("aria-hidden", "true");
+  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path.setAttribute("d", "M9 9a3 3 0 1 1 4.5 2.6c-1 .6-1.5 1.1-1.5 2.4M12 17.5v.01");
+  path.setAttribute("fill", "none");
+  path.setAttribute("stroke", "currentColor");
+  path.setAttribute("stroke-width", "2.5");
   path.setAttribute("stroke-linecap", "round");
   path.setAttribute("stroke-linejoin", "round");
   svg.append(path);
@@ -179,7 +206,7 @@ function buildChip(chip, actions) {
     original.textContent = bracket;
     value.append(original);
   }
-  item.append(label, value);
+  item.append(kindIcon(chip.kind), label, value);
   if (chip.note) {
     const note = document.createElement("span");
     note.className = "chip-note";
@@ -193,7 +220,8 @@ function buildChip(chip, actions) {
   if (chip.question) {
     const question = document.createElement("span");
     question.className = "chip-question";
-    question.textContent = chip.question;
+    // The server's question is the label plus "?", so its English twin is built the same way.
+    renderText(question, new Bi(chip.question, `${chip.labelEn}?`));
     item.append(question);
   }
   if (actions) {
@@ -207,8 +235,9 @@ function buildChip(chip, actions) {
     confirm.addEventListener("click", () => actions.confirm(chip.kind));
     const ask = document.createElement("button");
     ask.type = "button";
-    ask.className = "chip-ask secondary";
-    renderText(ask, new Bi(`${chip.label}?`, `${chip.labelEn}?`));
+    ask.className = "chip-ask";
+    ask.setAttribute("aria-label", `${chip.label}?`);
+    ask.append(askIcon());
     ask.addEventListener("click", () => actions.ask(chip.kind));
     bar.append(confirm, ask);
     item.append(bar);

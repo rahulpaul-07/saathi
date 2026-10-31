@@ -67,8 +67,7 @@ test("both roles speak and reply in ta and ml: chips, audio, repeat, quick repli
   await expect(rider.locator("#translation")).toContainText("<b>ml</b>");
   // A customer turn has no per-turn chips on either screen: the card below is the one place the
   // facts appear, so no value shows twice.
-  await expect(customer.locator("#sent-chips .chip")).toHaveCount(0);
-  await expect(customer.locator("#sent-empty")).toHaveText(ui("ta", "sent_card_has_details"));
+  await expect(customer.locator("#sent")).toHaveCount(0); // the customer's page has no echo block
   await expect(rider.locator("#chips .chip")).toHaveCount(0);
   // The pinned card collects the customer's facts on both screens, with no "changed" marker yet.
   for (const page of [customer, rider]) {
@@ -263,7 +262,7 @@ test("the rider confirms or asks on card chips; a changed value stays marked unt
 
   // Ask: the customer sees the question in their own language; the marker stays.
   const askButton = gate(rider).locator(".chip-ask");
-  const riderQuestion = (await askButton.textContent()) ?? "";
+  const riderQuestion = (await askButton.getAttribute("aria-label")) ?? "";
   expect(riderQuestion.endsWith("?")).toBe(true);
   await askButton.click();
   await expect(gate(customer).locator(".chip-question")).toHaveText(/\?$/);
@@ -448,18 +447,19 @@ test("on a phone, ask and confirm on different chips each send exactly one chip-
   expect(problems).toEqual([]);
 });
 
-test("the customer's 'nothing received' placeholder goes away once a reply arrives", async ({
+test("the customer's 'From the rider' block appears only once the rider has spoken", async ({
   browser,
 }) => {
   const { customer, rider, problems } = await openRoom(browser);
-  await expect(customer.locator("#incoming-status")).toHaveText(ui("ta", "nothing_received"));
+  // Nothing from the rider yet: the whole "From the rider" block stays out of the way.
+  await expect(customer.locator("#incoming")).toBeHidden();
 
   const catalog = await (await customer.request.get("/quick-replies")).json();
   await rider.getByRole("button", { name: catalog.languages.ml.which_floor.text }).click();
   await expect(customer.locator("#reply")).toBeVisible();
-  await expect(customer.locator("#incoming-status")).toBeHidden();
+  await expect(customer.locator("#incoming")).toBeHidden();
 
-  // A later spoken turn brings the status line back with its own message.
+  // A later spoken turn shows the block with its own message.
   await speak(rider, "ml");
   await expect(customer.locator("#incoming-status")).toContainText(ui.has("ta", "new_message_rider"));
   expect(problems).toEqual([]);

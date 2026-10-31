@@ -1,25 +1,89 @@
+/* Tokens. Light is the default (easier to read outdoors); theme.js sets data-theme from the person's
+   choice or the system setting. Every colour a page uses is defined here, and a11y.spec.js checks
+   each text pair in both themes. */
 :root {
-  --bg: #f6f7f9;
+  color-scheme: light;
+  --bg: #fffaf0;
   --surface: #ffffff;
-  --text: #1a1d23;
-  --muted: #5a6270;
-  --accent: #0b5fff;
-  --accent-text: #ffffff;
+  --text: #211b16;
+  --muted: #5e5348;
+  --border: #e5d8c4;
+  --brand: #f5a524;
+  --brand-on: #2a1a00;
+  --customer: #4338ca;
+  --customer-on: #ffffff;
+  --rider: #0f766e;
+  --rider-on: #ffffff;
   --danger: #c62828;
-  --border: #d5d9e0;
+  --danger-on: #ffffff;
+  --warn-bg: #fff1cc;
+  --warn-text: #5c3b00;
+  --warn-border: #b36b00;
+  --ok: #15803d;
+  --ok-bg: #e2f5e7;
+  --ask: #1d4ed8;
+  --ask-bg: #e3edff;
+  --ask-text: #1e3a8a;
+  --gate: #c2410c;
+  --gate-bg: #ffefe3;
+  --floor: #4338ca;
+  --floor-bg: #ecebfd;
+  --cross: #be185d;
+  --cross-bg: #fde8f2;
+  --main: #0f766e;
+  --main-bg: #def4f0;
+  --block: #475569;
+  --block-bg: #eaeef3;
+  --flat: #0e7490;
+  --flat-bg: #dff3f8;
+  --landmark: #a21caf;
+  --landmark-bg: #fae8ff;
+  --accent: var(--customer);
+  --accent-text: var(--customer-on);
+  --fs-label: 0.8rem;
+  --fs-value: 1.9rem;
 }
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #12151a;
-    --surface: #1c2027;
-    --text: #eef0f4;
-    --muted: #a3abb8;
-    --accent: #5b8cff;
-    --accent-text: #0a0f1a;
-    --danger: #ff6b6b;
-    --border: #343a45;
-  }
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #17130f;
+  --surface: #221c16;
+  --text: #f5ede3;
+  --muted: #bfb2a2;
+  --border: #4a3f33;
+  --brand: #fbbf24;
+  --brand-on: #2a1a00;
+  --customer: #a5b4fc;
+  --customer-on: #14123d;
+  --rider: #5eead4;
+  --rider-on: #062b27;
+  --danger: #ff7b7b;
+  --danger-on: #2a0505;
+  --warn-bg: #3d2d05;
+  --warn-text: #ffd98a;
+  --warn-border: #d99a1e;
+  --ok: #4ade80;
+  --ok-bg: #123a22;
+  --ask: #93c5fd;
+  --ask-bg: #1b2f52;
+  --ask-text: #dbeafe;
+  --gate: #fb923c;
+  --gate-bg: #3a2210;
+  --floor: #a5b4fc;
+  --floor-bg: #26264f;
+  --cross: #f9a8d4;
+  --cross-bg: #3f1730;
+  --main: #5eead4;
+  --main-bg: #0f3a35;
+  --block: #cbd5e1;
+  --block-bg: #2b3340;
+  --flat: #67e8f9;
+  --flat-bg: #0e3540;
+  --landmark: #f0abfc;
+  --landmark-bg: #3b1a45;
 }
+/* Each person's pages carry their colour: the header band, links and every primary button. */
+:root[data-role="customer"] { --accent: var(--customer); --accent-text: var(--customer-on); }
+:root[data-role="rider"] { --accent: var(--rider); --accent-text: var(--rider-on); }
 * { box-sizing: border-box; }
 body {
   margin: 0;
@@ -42,7 +106,7 @@ h2 { margin: 1rem 0 0.25rem; font-size: 0.85rem; color: var(--muted); text-trans
   min-height: 5.5rem; border: 2px solid var(--accent); border-radius: 1rem;
   background: var(--surface); color: var(--text); font: inherit; font-size: 1.15rem; font-weight: 600;
 }
-.talk-btn[aria-pressed="true"] { background: var(--danger); border-color: var(--danger); color: #fff; }
+.talk-btn[aria-pressed="true"] { background: var(--danger); border-color: var(--danger); color: var(--danger-on); }
 .talk-btn:disabled { opacity: 0.5; }
 .icon { width: 1.75rem; height: 1.75rem; fill: currentColor; }
 .icon-stop { display: none; }
@@ -93,28 +157,55 @@ button.secondary { min-height: 2.75rem; padding: 0 1rem; border-radius: 0.6rem; 
 .mono { font-family: ui-monospace, Consolas, monospace; overflow-wrap: anywhere; }
 .code-box { background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; padding: 0.5rem 1rem; }
 .code { margin: 0; font: 700 2.75rem/1.2 ui-monospace, Consolas, monospace; letter-spacing: 0.25em; }
-.chips { list-style: none; margin: 0.5rem 0; padding: 0; display: grid; gap: 0.5rem; }
+/* Fact tiles: two columns from 360 px up. A landmark that would start a row spans both columns. */
+.chips { list-style: none; margin: 0.5rem 0; padding: 0; display: grid; gap: 0.5rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+/* Each kind of fact has its own hue and icon: a tinted tile, a coloured border and icon, and text in
+   the normal high-contrast colour. */
+.chip-gate, .k-gate { --k: var(--gate); --k-bg: var(--gate-bg); }
+.chip-floor, .k-floor { --k: var(--floor); --k-bg: var(--floor-bg); }
+.chip-cross, .k-cross { --k: var(--cross); --k-bg: var(--cross-bg); }
+.chip-main, .k-main { --k: var(--main); --k-bg: var(--main-bg); }
+.chip-block, .k-block { --k: var(--block); --k-bg: var(--block-bg); }
+.chip-flat, .k-flat { --k: var(--flat); --k-bg: var(--flat-bg); }
+.chip-landmark, .k-landmark { --k: var(--landmark); --k-bg: var(--landmark-bg); }
 .chip {
-  display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.75rem; padding: 0.6rem 1rem;
-  background: var(--surface); border: 2px solid var(--text); border-radius: 0.75rem;
+  position: relative; display: flex; flex-direction: column; gap: 0.15rem; padding: 0.5rem 0.65rem;
+  background: var(--k-bg); border: 2px solid var(--k); border-radius: 0.6rem; min-width: 0;
 }
-.chip-label { font-size: 0.9rem; font-weight: 700; text-transform: uppercase; color: var(--muted); min-width: 5.5rem; }
-.chip-value { font-size: 1.6rem; font-weight: 800; overflow-wrap: anywhere; }
+.icon-kind { position: absolute; top: 0.5rem; left: 0.6rem; width: 1.3rem; height: 1.3rem; color: var(--k); }
+.chip .chip-label { padding-left: 1.7rem; }
+/* Confirmed: the whole tile turns green and shows a tick. */
+.chip-confirmed { background: var(--ok-bg); border-color: var(--ok); }
+.chip-landmark:nth-child(odd) { grid-column: 1 / -1; }
+.chip-label { font-size: var(--fs-label); font-weight: 700; text-transform: uppercase; color: var(--muted); padding-right: 1.6rem; }
+.chip-label .l-en { font-size: 0.85em; }
+.chip-value { font-size: var(--fs-value); font-weight: 800; line-height: 1.15; overflow-wrap: anywhere; }
 .chip-original { font-size: 1rem; font-weight: 600; color: var(--muted); }
-.chip-note { flex-basis: 100%; font-size: 0.95rem; color: var(--danger); }
+/* A caution or a change is amber with its own text, never red: red means something went wrong. */
+.chip-note {
+  align-self: flex-start; padding: 0.1rem 0.5rem; border: 1px solid var(--warn-border); border-radius: 0.4rem;
+  background: var(--warn-bg); color: var(--warn-text); font-size: var(--fs-label); font-weight: 600;
+}
 .chip-uncertain { border-style: dashed; }
-.chip-changed { border-width: 3px; }
-.icon-check { width: 1.4rem; height: 1.4rem; flex: none; align-self: center; }
-.chip-confirmed .icon-check { color: var(--text); margin-left: auto; }
-.chip-question { flex-basis: 100%; font-size: 1.1rem; font-weight: 700; }
-.chip-actions { flex-basis: 100%; display: flex; gap: 0.5rem; margin-top: 0.25rem; }
-.chip-actions button { min-height: 2.75rem; min-width: 2.75rem; }
-.chip-confirm .icon-check { width: 1.6rem; height: 1.6rem; }
-.chip-actions:focus-within, .chip-actions button:focus-visible { outline-offset: 2px; }
+.icon-check { width: 1.4rem; height: 1.4rem; flex: none; }
+.chip-confirmed > .icon-check { position: absolute; top: 0.4rem; right: 0.45rem; color: var(--ok); }
+/* Asked: a blue question badge. */
+.chip-question {
+  align-self: flex-start; padding: 0.1rem 0.5rem; border: 1px solid var(--ask); border-radius: 0.4rem;
+  background: var(--ask-bg); color: var(--ask-text); font-size: 1.05rem; font-weight: 700;
+}
+.chip-actions { display: flex; gap: 0.4rem; margin-top: 0.25rem; }
+.chip-actions button {
+  flex: 1; min-height: 2.75rem; min-width: 2.75rem; padding: 0; display: flex; align-items: center;
+  justify-content: center; border: 2px solid var(--ok); border-radius: 0.5rem;
+  background: var(--surface); color: var(--ok);
+}
+.chip-actions .icon-check, .chip-actions .icon-ask { width: 1.5rem; height: 1.5rem; }
+.chip-actions .chip-ask { border-color: var(--ask); color: var(--ask); }
+.chip-actions button:focus-visible { outline-offset: 2px; }
 .card { margin: 1rem 0; }
 .card h2 { margin: 0 0 0.25rem; }
-.chips.big .chip-value { font-size: 2.4rem; }
-.chips.big .chip { padding: 0.9rem 1rem; }
+.chips.big .chip { padding: 0.5rem 0.65rem; }
 .translation { margin: 0.5rem 0; font-size: 1.1rem; overflow-wrap: anywhere; }
 .reply { background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; padding: 0.5rem 1rem 1rem; margin: 1rem 0; }
 .reply-text { margin: 0 0 0.5rem; font-size: 1.6rem; font-weight: 700; overflow-wrap: anywhere; }
@@ -141,10 +232,88 @@ button.secondary { min-height: 2.75rem; padding: 0 1rem; border-radius: 0.6rem; 
 .demo { display: grid; gap: 0.5rem; margin: 1rem 0; }
 .demo select { min-height: 2.75rem; }
 .demo button { min-height: 2.75rem; }
+.demo .big-btn { margin: 0.25rem 0; min-height: 3.5rem; font-size: 1.1rem; }
+.demo-on .talk-btn { margin-top: 0.25rem; }
+
+/* The code box is the first thing the customer needs; once the rider is in it shrinks to one line. */
+.code-box.compact { display: flex; align-items: baseline; gap: 0.75rem; padding: 0.25rem 0.75rem; }
+.code-box.compact .small, .code-box.compact #link { display: none; }
+.code-box.compact .code { font-size: 1.1rem; letter-spacing: 0.2em; }
+
+/* One quiet line for who has joined. */
+.status.quiet { min-height: 0; margin: 0.5rem 0; font-weight: 400; color: var(--muted); font-size: 0.9rem; }
+
+/* Timings: one line in demo mode, the per-stage list behind a toggle elsewhere. */
+.timings-box { margin: 0.5rem 0; font-size: 0.9rem; color: var(--muted); }
+.timings-box summary { min-height: 2.75rem; display: block; padding: 0.3rem 0; cursor: pointer; }
+.timings-box summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.timings-box .timings { margin-top: 0.25rem; }
+.demo-on .timings-box summary { cursor: default; pointer-events: none; list-style: none; font-variant-numeric: tabular-nums; }
+.demo-on .timings-box summary::-webkit-details-marker { display: none; }
+.demo-on .timings-box .timings { display: none; }
+
+/* Room screens: a tighter top so the four fact tiles fit a 360 x 780 phone without scrolling. */
+main:has(#room) h1 { font-size: 1.25rem; }
+main:has(#room) .sub { margin: 0 0 0.5rem; }
+main:has(#room) .demo-banner { margin: 0 0 0.5rem; padding: 0.3rem 0.6rem; font-size: 0.8rem; font-weight: 600; }
+main:has(#room) .status { margin: 0.25rem 0; }
+main:has(#room) .small { margin: 0.1rem 0; }
+main:has(#room) .card { margin: 0.5rem 0; }
+main:has(#room) h2 { margin: 0.5rem 0 0.15rem; }
+.chips { margin: 0.35rem 0; }
+
+/* Landing page and brand mark. */
+.brand { display: flex; align-items: center; gap: 0.6rem; }
+.logo { width: 2.25rem; height: 2.25rem; flex: none; }
+/* The two speech bubbles are the two people: customer and rider colours. */
+.logo-a { fill: var(--customer); }
+.logo-b { fill: var(--rider); stroke: var(--bg); stroke-width: 2; paint-order: stroke; }
+.landing .wordmark { font-size: 1.5rem; font-weight: 800; }
+.landing .headline {
+  margin: 1.25rem 0 0.5rem; padding-left: 0.75rem; border-left: 0.4rem solid var(--brand);
+  font-size: 1.9rem; font-weight: 800; line-height: 1.2;
+}
+.landing .pitch { margin: 0.75rem 0 0.5rem; font-size: 1.15rem; font-weight: 600; line-height: 1.4; }
+.kind-strip { list-style: none; display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; padding: 0; }
+.kind-strip li {
+  display: flex; align-items: center; gap: 0.35rem; padding: 0.2rem 0.6rem 0.2rem 0.4rem;
+  background: var(--k-bg); border: 2px solid var(--k); border-radius: 0.6rem; font-size: 0.9rem; font-weight: 700;
+}
+.kind-strip .icon-kind { position: static; width: 1.2rem; height: 1.2rem; }
+.role-customer { --accent: var(--customer); --accent-text: var(--customer-on); }
+.role-rider { --accent: var(--rider); --accent-text: var(--rider-on); }
+
+/* A coloured band on a person's own pages, and the light/dark switch. The switch is on the English
+   pages only (landing, demo bar); room pages follow the saved choice or the system setting, so no
+   interface text there needs an untranslated label. */
+:root[data-role] body { border-top: 0.4rem solid var(--accent); }
+.theme-toggle {
+  display: flex; align-items: center; justify-content: center; width: 2.75rem; height: 2.75rem; padding: 0;
+  border: 2px solid var(--border); border-radius: 0.6rem; background: var(--surface); color: var(--text);
+}
+.brand .theme-toggle { margin-left: auto; }
+.in-frame .theme-toggle { display: none; }
+
+/* Motion: short, and only for people who have not asked for less. A new tile pops in, a changed
+   badge pulses once, a confirm tick draws itself. */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes pop { from { transform: translateY(0.4rem); opacity: 0.4; } to { transform: none; opacity: 1; } }
+  @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+  @keyframes tick { from { stroke-dashoffset: 20; } to { stroke-dashoffset: 0; } }
+  .chip { animation: pop 200ms ease-out; }
+  .chip-changed .chip-note { animation: pulse 240ms ease-in-out 200ms 1; }
+  .chip-confirmed > .icon-check path { stroke-dasharray: 20; animation: tick 220ms ease-out; }
+  button, .big-btn { transition: background-color 120ms, border-color 120ms, color 120ms; }
+}
+.landing .problem { margin: 0 0 0.5rem; color: var(--muted); }
+.notes { margin-top: 1.5rem; padding-top: 0.5rem; border-top: 1px solid var(--border); }
+.notes ul { margin: 0.25rem 0; padding-left: 1.2rem; color: var(--muted); font-size: 0.9rem; }
+.notes li { margin: 0.25rem 0; }
 
 /* Bilingual text: the viewer's language is the main line, the English twin sits smaller below it.
    Both lines inherit the element's colour, so the contrast of the main line carries over. */
 .l-main, .l-en { display: block; }
 .l-en { font-size: 0.8em; font-weight: 400; }
+.big-btn:has(> .l-en) { flex-direction: column; gap: 0; }
 button .l-main, button .l-en, .reply-btn .l-main, .reply-btn .l-en { text-align: inherit; }
 button:has(.l-en) { padding-top: 0.4rem; padding-bottom: 0.4rem; }

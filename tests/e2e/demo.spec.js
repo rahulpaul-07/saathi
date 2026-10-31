@@ -38,8 +38,14 @@ test("demo mode: a prepared clip is sent, both screens say it is a demo clip", a
   await expect(customer.locator("#peer")).toContainText(ui.has("kn", "rider_joined"));
 
   // The picker offers only clips in the speaker's own language.
-  await expect(customer.locator("#demo-clip option")).toHaveText(["Sample kn"]);
+  await expect(customer.locator("#demo-clip option")).toHaveText([
+    `${ui.main("kn", "choose_a_clip")} / Choose a clip`,
+    "ಮಾದರಿ ಕ್ಲಿಪ್ / Sample kn",
+  ]);
+  await expect(customer.locator("#demo-clip")).toHaveValue("");
+  await expect(customer.locator("#demo-send")).toBeDisabled();
   await expect(customer.locator("#sent-demo-badge")).toBeHidden();
+  await customer.locator("#demo-clip").selectOption("clip-kn");
   await customer.locator("#demo-send").click();
   await expect(rider.locator("#card-chips .chip-gate .chip-value")).toHaveText("2");
   await expect(rider.locator("#demo-badge")).toBeVisible();
@@ -82,7 +88,9 @@ test("demo mode: the clip is fetched before the turn and its exact bytes are wha
   await rider.getByRole("button", { name: ui("bn", "join_and_sound") }).click();
   await expect(page.locator("#peer")).toContainText(ui.has("kn", "rider_joined"));
 
-  const clipId = await page.locator("#demo-clip").inputValue();
+  const clipId = "clip-kn";
+  await expect(page.locator("#demo-send")).toBeDisabled(); // nothing is sent until a clip is chosen
+  await page.locator("#demo-clip").selectOption(clipId);
   const clip = await page.request.get(`${DEMO}/demo/clips/${clipId}.wav`);
   const clipBytes = await clip.body();
   expect(clipBytes.length).toBeGreaterThan(44);

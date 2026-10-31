@@ -128,8 +128,12 @@ function contrast(a, b) {
   return (hi + 0.05) / (lo + 0.05);
 }
 
-// Text-on-background pairs the pages actually use. WCAG AA: 4.5 for normal text.
-const PAIRS = [
+
+const KINDS = ["gate", "floor", "cross", "main", "block", "flat", "landmark"];
+
+// Text on its background, for every pair the pages use. WCAG AA: 4.5 for normal text.
+/** @type {[string, string][]} */
+const TEXT_PAIRS = [
   ["--text", "--bg"],
   ["--text", "--surface"],
   ["--muted", "--bg"],
@@ -139,20 +143,78 @@ const PAIRS = [
   ["--accent-text", "--accent"],
   ["--danger", "--bg"],
   ["--danger", "--surface"],
+  ["--danger-on", "--danger"],
+  ["--warn-text", "--warn-bg"],
+  ["--brand-on", "--brand"],
+  ["--customer-on", "--customer"],
+  ["--rider-on", "--rider"],
+  ["--customer", "--bg"],
+  ["--rider", "--bg"],
+  ["--text", "--ok-bg"],
+  ["--muted", "--ok-bg"],
+  ["--ask-text", "--ask-bg"],
+  ...KINDS.flatMap((kind) => /** @type {[string, string][]} */ ([
+    ["--text", `--${kind}-bg`],
+    ["--muted", `--${kind}-bg`],
+  ])),
 ];
 
+// Icons, borders and ticks are graphics: WCAG 1.4.11 asks for 3:1.
+/** @type {[string, string][]} */
+const GRAPHIC_PAIRS = [
+  ["--ok", "--ok-bg"],
+  ["--ask", "--ask-bg"],
+  ["--warn-border", "--warn-bg"],
+  ["--ok", "--surface"],
+  ["--ask", "--surface"],
+  ...KINDS.flatMap((kind) => /** @type {[string, string][]} */ ([
+    [`--${kind}`, `--${kind}-bg`],
+    ["--ok", `--${kind}-bg`],
+    ["--ask", `--${kind}-bg`],
+  ])),
+];
+
+// Each page resolves --accent to its own role colour, so all three are checked.
+const PAGES = ["/index.html", "/customer.html", "/rider.html"];
+
 for (const scheme of /** @type {const} */ (["light", "dark"])) {
-  test(`colour tokens meet WCAG AA text contrast (${scheme})`, async ({ browser }) => {
-    const context = await browser.newContext({ colorScheme: scheme });
-    const page = await context.newPage();
-    await page.goto("/rider.html");
-    const tokens = await page.evaluate((names) => {
-      const style = getComputedStyle(document.documentElement);
-      return Object.fromEntries(names.map((n) => [n, style.getPropertyValue(n).trim()]));
-    }, [...new Set(PAIRS.flat())]);
-    for (const [fg, bg] of PAIRS) {
-      const ratio = contrast(tokens[fg], tokens[bg]);
-      expect(ratio, `${fg} on ${bg} (${scheme}) is ${ratio.toFixed(2)}`).toBeGreaterThanOrEqual(4.5);
-    }
-  });
+  for (const path of PAGES) {
+    test(`colour tokens meet WCAG AA contrast on ${path} (${scheme})`, async ({ browser }) => {
+      const context = await browser.newContext({ colorScheme: scheme });
+      const page = await context.newPage();
+      await page.goto(path);
+      const tokens = await page.evaluate((names) => {
+        const style = getComputedStyle(document.documentElement);
+        return Object.fromEntries(names.map((n) => [n, style.getPropertyValue(n).trim()]));
+      }, [...new Set([...TEXT_PAIRS, ...GRAPHIC_PAIRS].flat())]);
+      for (const [pairs, minimum] of /** @type {const} */ ([[TEXT_PAIRS, 4.5], [GRAPHIC_PAIRS, 3]])) {
+        for (const [fg, bg] of pairs) {
+          const ratio = contrast(tokens[fg], tokens[bg]);
+          expect(ratio, `${fg} on ${bg} (${path}, ${scheme}) is ${ratio.toFixed(2)}`).toBeGreaterThanOrEqual(minimum);
+        }
+      }
+    });
+  }
 }
+
+test("the theme switch changes the theme and the choice is kept", async ({ browser }) => {
+  const context = await browser.newContext({ colorScheme: "light" });
+  const page = await context.newPage();
+  await page.goto("/index.html");
+  const html = page.locator("html");
+  await expect(html).toHaveAttribute("data-theme", "light");
+  const toggle = page.getByRole("button", { name: "Dark theme" });
+  await expect(toggle).toHaveAttribute("aria-pressed", "false");
+  await toggle.click();
+  await expect(html).toHaveAttribute("data-theme", "dark");
+  await expect(toggle).toHaveAttribute("aria-pressed", "true");
+  await page.reload();
+  await expect(html).toHaveAttribute("data-theme", "dark");
+});
+
+test("the system dark setting applies when no choice was made", async ({ browser }) => {
+  const context = await browser.newContext({ colorScheme: "dark" });
+  const page = await context.newPage();
+  await page.goto("/rider.html");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+});
