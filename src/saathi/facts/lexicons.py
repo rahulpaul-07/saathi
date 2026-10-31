@@ -7,6 +7,7 @@ Tamil and Telugu live in lexicons_ta_te.py and were built from real STT output i
 """
 
 from saathi.facts.lexicon import Lexicon, merge, phrases, same, table, trigger_map, words
+from saathi.facts.lexicons_gu_ml_mr_pa import GU, ML, MR, PA
 from saathi.facts.lexicons_ta_te import TA, TE
 from saathi.facts.text import key
 
@@ -265,7 +266,9 @@ BN = _bn_lexicon()
 
 # Native layers by language code. A language missing here gets only the universal English layer
 # (digits and English direction words), which is the stated limit for the non-core languages.
-NATIVE: dict[str, Lexicon] = {"kn": KN, "hi": HI, "bn": BN, "ta": TA, "te": TE}
+NATIVE: dict[str, Lexicon] = {
+    "kn": KN, "hi": HI, "bn": BN, "ta": TA, "te": TE, "gu": GU, "ml": ML, "mr": MR, "pa": PA,
+}  # fmt: skip
 
 
 def lexicon_for(language: str) -> Lexicon:

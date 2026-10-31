@@ -141,7 +141,7 @@ async function submit(pending, tappedStopAt) {
   });
   if (!outcome.ok) {
     if (!outcome.keepRecording) state.pending = null;
-    setStatus(outcome.message, true);
+    setStatus(outcome.message.local, true);
     return;
   }
   state.pending = null;

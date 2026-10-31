@@ -19,8 +19,9 @@ const inner = (f, id) => f.contentDocument?.getElementById(id) ?? null;
 
 setInterval(() => {
   const code = inner(customer, "code")?.textContent?.trim() ?? "";
-  const input = inner(rider, "code-input");
-  if (code && input instanceof HTMLInputElement && input.value !== code) {
+  // The element belongs to the frame's own window, so `instanceof HTMLInputElement` is false here.
+  const input = /** @type {HTMLInputElement | null} */ (inner(rider, "code-input"));
+  if (code && input?.tagName === "INPUT" && input.value !== code) {
     input.value = code;
     input.dispatchEvent(new Event("input", { bubbles: true }));
   }

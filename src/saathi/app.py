@@ -21,6 +21,8 @@ from saathi.gnani import GnaniClient, GnaniError
 from saathi.languages import LANGUAGES
 from saathi.pipeline import (
     NoSpeechError,
+    RecordingRejectedError,
+    TranslationUnavailableError,
     TurnInputError,
     UnreliableTranslationError,
     run_turn,
@@ -116,6 +118,12 @@ def create_app(
     if settings.demo_input:
         app.include_router(demo_router(settings.demo_clips_dir))
 
+    @app.get("/healthz")
+    async def healthz() -> dict[str, str]:
+        # Liveness only: it touches no dependency (not Gnani, not the translator) so a probe
+        # cannot spend credits or fail because an upstream is down.
+        return {"status": "ok"}
+
     @app.post("/turn")
     async def turn(
         request: Request,
@@ -153,10 +161,16 @@ def create_app(
                     "transcript": exc.transcript,
                 },
             ) from exc
+        except RecordingRejectedError as exc:
+            raise HTTPException(
+                400, {"code": "bad_recording", "message": "the recording cannot be used"}
+            ) from exc
         except GnaniError as exc:
             if exc.status == 429:
                 raise HTTPException(503, "speech service busy, retry shortly") from exc
             raise HTTPException(502, "speech service unavailable") from exc
+        except TranslationUnavailableError as exc:
+            raise HTTPException(502, "translation unavailable") from exc
 
         timings = result.timings
         log.info(

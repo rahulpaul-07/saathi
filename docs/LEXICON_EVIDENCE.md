@@ -1,4 +1,7 @@
-# Tamil and Telugu chip lexicons: evidence
+# Chip lexicons for ta, te, gu, ml, mr, pa: evidence
+
+The first part covers Tamil and Telugu; "Round 2" at the end covers Gujarati, Malayalam, Marathi
+and Punjabi.
 
 Status of every entry: **machine-verified, not native-reviewed.** Nobody who reads Tamil or Telugu
 has checked these words. Each one is a spelling that the real Gnani STT wrote when it heard
@@ -116,3 +119,69 @@ loose for எதிரில் and பக்கத்தில்).
   street noise (10 dB).
 - A native speaker has not read any of this. The ta and te chip rules are machine-verified only,
   whatever the tier label of the language says.
+
+# Round 2: Gujarati, Malayalam, Marathi and Punjabi (2026-10-30)
+
+Same status and same method as above: **machine-verified, not native-reviewed.** Code:
+`src/saathi/facts/lexicons_gu_ml_mr_pa.py`; one unit test per entry and four verbatim-transcript
+tests: `tests/test_facts_gu_ml_mr_pa.py`. The STT wrote number words, never digits, in all four
+languages, so without these tables a spoken gate, cross or floor produced no chip.
+
+## How the evidence was made
+
+1. The same 8 probe sentences per language (`scripts/probe_numbers.py --round2`), the words in
+   `saathi.evaluation.lexprobe`. Evidence ids `p1`-`p8` are gu-probe-N, ml-probe-N and so on.
+2. Back-translation with local indic-en (`--round2 --table`, no Gnani calls): 31 of 32 sentences
+   kept all their numbers. One was flagged: **pa-probe-4** (the 16-20 block list), where 19 (ਉੱਨੀ)
+   came back as "one". The spoken word was still written back by the STT, so the entry exists; the
+   flag says the local translator may lose a Punjabi 19 on the rider's side.
+3. TTS then STT for each sentence: 64 planned calls, limit 72, 70 spent (retries after Gnani 504s
+   count). Transcripts: `eval/state/lexicon_probe_round2.json` (gitignored; synthetic number lists).
+4. A script check confirmed every lexicon entry appears verbatim in a transcript, and the
+   own-script test (Gujarati U+0A80-U+0AFF, Malayalam U+0D00-U+0D7F, Devanagari U+0900-U+097F,
+   Gurmukhi U+0A00-U+0A7F) passes for all four.
+
+## Where the STT wrote something other than what was spoken
+
+| Lang | Spoken | Written (in the lexicon) |
+|---|---|---|
+| gu | flat | ફ્લૅટ and ફ્લેટ (both mapped); main મેઈન -> મેઇન |
+| ml | 9 | ഒമ്പത് (cardinal), ഒൻപതാം (ordinal, probe) |
+| ml | 19 | പത്തൊൻപത് (spoken പത്തൊമ്പത്) |
+| mr | ordinal 11 | अकरावं (spoken अकरावा) |
+| mr | ordinal 19 | एकोणीसावा (spoken एकोणिसावा) |
+| pa | 9 | ਨੌ (spoken ਨੌਂ) |
+| pa | 14, 16, 18 | ਚੌਦ੍ਹਾਂ, ਸੋਲ੍ਹਾਂ, ਅਠਾਰ੍ਹਾਂ (half-h) |
+| pa | ordinals 11-14, 18 | half-h forms such as ਗਿਆਰ੍ਹਵਾਂ |
+| pa | cross | ਕਰਾਸ and ਕ੍ਰਾਸ (both mapped) |
+
+## Known gaps
+
+- **Marathi landmarks are not covered.** The STT glued the cue to the name ("बेकरीसमोर"), and the
+  extractor matches whole tokens, so there is no postposition to match. Marathi gets no landmark
+  chip; the rider still gets the translated audio.
+- **Punjabi ordinal 17 is absent.** The STT wrote the spoken ordinal as the cardinal ਸਤਾਰ੍ਹਾਂ, so 17
+  has no ordinal entry; as a cardinal before a trigger it already reads as 17.
+- **Malayalam "മീൻ" (fish) for "മെയിൻ"** once, for 15 (ml-probe-7). It is STT noise and is not mapped.
+- Numbers above 20, digit ordinals, block and flat letters were not probed (as for ta and te).
+- No noise testing; no native review.
+
+## Held-out run (24 sentences, 48 calls)
+
+The probe words are also the lexicon, so scoring the probe would be circular. A second set
+(`saathi.evaluation.extragold`, `scripts/eval_facts_extra.py`) recombines the probe words in new
+orders and number-trigger pairings, for all six round 1 and round 2 languages, 4 sentences each,
+through TTS and STT again. Results are in docs/EVAL.md. It found five real gaps, all spellings the
+STT wrote that the probe had not produced; they were then added to the lexicons, one test each
+(`tests/test_extragold.py`):
+
+| Lang | Added | Heard in | Why it was missing |
+|---|---|---|---|
+| ta | ordinal 13 பதின்மூன்றாவது | x-ta-3 | the probe had written பதிமூன்றாவது |
+| te | ordinal 7 ఏడో | x-te-1 | the probe wrote only the -వ form for 6-10 |
+| te | ordinal 9 తొమ్మిదో | x-te-2 | same |
+| ml | ordinal 9 ഒമ്പതാം | x-ml-2 | the probe wrote ഒൻപതാം |
+| pa | cardinal 12 ਬਾਰ੍ਹਾਂ | x-pa-1 | the probe wrote ਬਾਰਾਂ |
+
+The lesson: one STT rendering per word is not the whole space. Each of these words has at least
+two spellings, and the lexicons hold only the ones seen so far.

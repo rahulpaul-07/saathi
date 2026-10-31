@@ -1,0 +1,305 @@
+{
+  "commit": "a3e4aa8",
+  "sentences": 1800,
+  "forms_by_source": {
+    "bn": {
+      "numbers": 29,
+      "ascii": 0.5172413793103449,
+      "native": 0.0,
+      "word": 0.4827586206896552
+    },
+    "en": {
+      "numbers": 57,
+      "ascii": 0.45614035087719296,
+      "native": 0.0,
+      "word": 0.543859649122807
+    },
+    "gu": {
+      "numbers": 13,
+      "ascii": 0.46153846153846156,
+      "native": 0.0,
+      "word": 0.5384615384615384
+    },
+    "hi": {
+      "numbers": 40,
+      "ascii": 0.35,
+      "native": 0.0,
+      "word": 0.65
+    },
+    "kn": {
+      "numbers": 25,
+      "ascii": 0.48,
+      "native": 0.0,
+      "word": 0.52
+    },
+    "ml": {
+      "numbers": 17,
+      "ascii": 0.6470588235294118,
+      "native": 0.0,
+      "word": 0.35294117647058826
+    },
+    "mr": {
+      "numbers": 11,
+      "ascii": 0.6363636363636364,
+      "native": 0.0,
+      "word": 0.36363636363636365
+    },
+    "pa": {
+      "numbers": 22,
+      "ascii": 0.5,
+      "native": 0.0,
+      "word": 0.5
+    },
+    "ta": {
+      "numbers": 6,
+      "ascii": 1.0,
+      "native": 0.0,
+      "word": 0.0
+    },
+    "te": {
+      "numbers": 15,
+      "ascii": 0.5333333333333333,
+      "native": 0.0,
+      "word": 0.4666666666666667
+    }
+  },
+  "by_class": {
+    "digits": {
+      "back_plain": [
+        1130,
+        1332
+      ],
+      "back_masked": [
+        1067,
+        1332
+      ],
+      "direct_plain": [
+        702,
+        1332
+      ],
+      "direct_masked": [
+        745,
+        1332
+      ]
+    },
+    "digits, target en": {
+      "back_plain": [
+        121,
+        135
+      ],
+      "back_masked": [
+        124,
+        135
+      ],
+      "direct_plain": [
+        121,
+        135
+      ],
+      "direct_masked": [
+        124,
+        135
+      ]
+    },
+    "words": {
+      "back_plain": [
+        786,
+        1197
+      ],
+      "back_masked": [
+        573,
+        1197
+      ],
+      "direct_plain": [
+        343,
+        1197
+      ],
+      "direct_masked": [
+        496,
+        1197
+      ]
+    },
+    "words, target en": {
+      "back_plain": [
+        91,
+        116
+      ],
+      "back_masked": [
+        82,
+        116
+      ],
+      "direct_plain": [
+        91,
+        116
+      ],
+      "direct_masked": [
+        82,
+        116
+      ]
+    },
+    "mixed": {
+      "back_plain": [
+        846,
+        945
+      ],
+      "back_masked": [
+        747,
+        945
+      ],
+      "direct_plain": [
+        469,
+        945
+      ],
+      "direct_masked": [
+        634,
+        945
+      ]
+    },
+    "mixed, target en": {
+      "back_plain": [
+        77,
+        78
+      ],
+      "back_masked": [
+        76,
+        78
+      ],
+      "direct_plain": [
+        77,
+        78
+      ],
+      "direct_masked": [
+        76,
+        78
+      ]
+    },
+    "none": {
+      "back_plain": [
+        1077,
+        1656
+      ],
+      "back_masked": [
+        1095,
+        1656
+      ],
+      "direct_plain": [
+        385,
+        1656
+      ],
+      "direct_masked": [
+        391,
+        1656
+      ]
+    },
+    "none, target en": {
+      "back_plain": [
+        120,
+        184
+      ],
+      "back_masked": [
+        123,
+        184
+      ],
+      "direct_plain": [
+        120,
+        184
+      ],
+      "direct_masked": [
+        123,
+        184
+      ]
+    }
+  },
+  "overall": {
+    "all pairs": {
+      "back_plain": [
+        3839,
+        5130
+      ],
+      "back_masked": [
+        3482,
+        5130
+      ],
+      "direct_plain": [
+        1899,
+        5130
+      ],
+      "direct_masked": [
+        2266,
+        5130
+      ]
+    },
+    "target en": {
+      "back_plain": [
+        409,
+        513
+      ],
+      "back_masked": [
+        405,
+        513
+      ],
+      "direct_plain": [
+        409,
+        513
+      ],
+      "direct_masked": [
+        405,
+        513
+      ]
+    },
+    "target not en": {
+      "back_plain": [
+        3430,
+        4617
+      ],
+      "back_masked": [
+        3077,
+        4617
+      ],
+      "direct_plain": [
+        1490,
+        4617
+      ],
+      "direct_masked": [
+        1861,
+        4617
+      ]
+    }
+  },
+  "fallback_by_source": {
+    "bn": 0.027777777777777776,
+    "en": 0.005555555555555556,
+    "gu": 0.022222222222222223,
+    "hi": 0.03333333333333333,
+    "kn": 0.07222222222222222,
+    "ml": 0.005555555555555556,
+    "mr": 0.06666666666666667,
+    "pa": 0.05555555555555555,
+    "ta": 0.016666666666666666,
+    "te": 0.027777777777777776
+  },
+  "lost_by_kind": {
+    "floor": 147,
+    "gate": 165,
+    "cross": 126,
+    "main": 79,
+    "block": 14,
+    "flat": 49
+  },
+  "gained_by_kind": {
+    "main": 22,
+    "floor": 19,
+    "flat": 68,
+    "gate": 61,
+    "block": 35,
+    "cross": 18
+  },
+  "loss_by_cause": {
+    "masked text itself lacks the fact (target-language extractor)": 257,
+    "fallback: slot dropped": 81,
+    "back-translation lost it (masked text is fine)": 162,
+    "verified, but placeholder residue is left in the text": 11,
+    "verified, but a source digit is absent": 13,
+    "masked translation failed": 3
+  },
+  "facts_masked_found_that_plain_missed": 170
+}

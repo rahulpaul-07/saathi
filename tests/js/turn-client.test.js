@@ -2,6 +2,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
+import { Bi } from "../../src/saathi/static/js/i18n.js";
 import { sendTurn } from "../../src/saathi/static/js/turn-client.js";
 
 const RESULT = {
@@ -59,7 +60,11 @@ test("gives up after 3 automatic retries and keeps the recording", async () => {
   const { fetchFn, sentAudio } = fakeFetch([503, 503, 503, 503, 200]);
   const outcome = await sendTurn(wav, "bn", "kn", { fetchFn, sleep: noSleep });
   assert.equal(sentAudio.length, 4); // 1 attempt + 3 retries
-  assert.deepEqual(outcome, { ok: false, message: "Still busy. Try again.", keepRecording: true });
+  assert.deepEqual(outcome, {
+    ok: false,
+    message: new Bi("Still busy. Try again.", "Still busy. Try again."),
+    keepRecording: true,
+  });
 });
 
 test("a network error is retried like a 503", async () => {
@@ -96,7 +101,10 @@ test("unreliable_translation 422: no retry, recording dropped, transcript expose
   assert.equal(sentAudio.length, 1);
   assert.deepEqual(outcome, {
     ok: false,
-    message: "I heard: <b>heard</b>. I couldn't translate that reliably. Please try again.",
+    message: new Bi(
+      "I heard: <b>heard</b>. I couldn't translate that reliably. Please try again.",
+      "I heard: <b>heard</b>. I couldn't translate that reliably. Please try again.",
+    ),
     keepRecording: false,
     code: "unreliable_translation",
     transcript: "<b>heard</b>",
@@ -106,7 +114,7 @@ test("unreliable_translation 422: no retry, recording dropped, transcript expose
 test("no_speech 422 keeps the existing message", async () => {
   const body = JSON.stringify({ detail: { code: "no_speech", message: "no speech detected" } });
   const outcome = await sendTurn(wav, "bn", "kn", { fetchFn: fakeFetch([422], body).fetchFn });
-  assert.equal(!outcome.ok && outcome.message, "Didn't catch that, please try again.");
+  assert.equal(!outcome.ok && outcome.message.local, "Didn't catch that, please try again.");
   assert.equal(!outcome.ok && outcome.keepRecording, false);
 });
 
@@ -120,6 +128,6 @@ test("422 with a non-JSON, unknown-code or malformed body falls back to the no-s
   ];
   for (const body of bodies) {
     const outcome = await sendTurn(wav, "bn", "kn", { fetchFn: fakeFetch([422], body).fetchFn });
-    assert.equal(!outcome.ok && outcome.message, "Didn't catch that, please try again.", body);
+    assert.equal(!outcome.ok && outcome.message.local, "Didn't catch that, please try again.", body);
   }
 });

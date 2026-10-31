@@ -6,6 +6,11 @@ import wave
 
 MAX_AUDIO_BYTES = 2_500_000  # 60 s of 16 kHz mono 16-bit PCM is 1.92 MB
 MAX_AUDIO_SECONDS = 60.0  # Prisma's documented per-request limit
+# Our own sanity limits, not Gnani's documented ones: a clip shorter than this is a mis-tap and
+# a rate outside this range is not speech from any browser, so neither is worth a paid call.
+MIN_AUDIO_SECONDS = 0.3
+MIN_SAMPLE_RATE_HZ = 8_000
+MAX_SAMPLE_RATE_HZ = 48_000
 
 
 class AudioError(ValueError):
@@ -31,7 +36,11 @@ def wav_duration_s(data: bytes) -> float:
         raise AudioError("audio must be a PCM WAV file") from exc
     if frames == 0 or rate == 0:
         raise AudioError("audio is empty")
+    if not MIN_SAMPLE_RATE_HZ <= rate <= MAX_SAMPLE_RATE_HZ:
+        raise AudioError(f"sample rate {rate} Hz is outside the accepted range")
     duration: float = frames / rate
+    if duration < MIN_AUDIO_SECONDS:
+        raise AudioError(f"audio shorter than {MIN_AUDIO_SECONDS} seconds")
     if duration > MAX_AUDIO_SECONDS:
         raise AudioError(f"audio longer than {MAX_AUDIO_SECONDS:.0f} seconds")
     return duration

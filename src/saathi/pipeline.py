@@ -3,10 +3,11 @@
 import asyncio
 import logging
 import time
+from collections.abc import Callable
 from dataclasses import dataclass
 
 from saathi.facts import Fact, extract_facts
-from saathi.gnani import GnaniClient
+from saathi.gnani import GnaniClient, GnaniError
 from saathi.guard import has_repeated_phrase
 from saathi.landmarks import localize_landmarks
 from saathi.languages import LANGUAGES
@@ -23,6 +24,11 @@ class TurnInputError(ValueError):
     """The requested language pair is not supported."""
 
 
+class RecordingRejectedError(Exception):
+    """Prisma refused this audio (a 4xx other than rate limiting): re-recording is the fix, a
+    retry of the same bytes cannot work."""
+
+
 class NoSpeechError(Exception):
     """Prisma returned an empty transcript, so there is nothing to translate or speak."""
 
@@ -33,6 +39,10 @@ class UnreliableTranslationError(Exception):
     def __init__(self, transcript: str) -> None:
         super().__init__("unreliable translation")
         self.transcript = transcript
+
+
+class TranslationUnavailableError(Exception):
+    """The translator itself failed (model error, out of memory), as opposed to a bad output."""
 
 
 @dataclass(frozen=True)
@@ -75,7 +85,12 @@ async def run_turn(
     src_lang, tgt_lang = LANGUAGES[src], LANGUAGES[tgt]
 
     t0 = time.perf_counter()
-    transcript = (await gnani.transcribe(audio, AUDIO_FILENAME, src_lang.gnani_code)).strip()
+    try:
+        transcript = (await gnani.transcribe(audio, AUDIO_FILENAME, src_lang.gnani_code)).strip()
+    except GnaniError as exc:
+        if 400 <= exc.status < 500 and exc.status != 429:
+            raise RecordingRejectedError from exc
+        raise
     t1 = time.perf_counter()
     if not transcript:
         raise NoSpeechError
@@ -83,10 +98,8 @@ async def run_turn(
     # Facts come from the source text, so they survive whatever the translation does. The model is
     # blocking and GPU-bound; keep it off the event loop.
     facts = tuple(extract_facts(transcript, src))
-    translated = await asyncio.to_thread(
-        _translate_checked, translator, transcript, src, tgt, facts, True
-    )
-    facts = await asyncio.to_thread(localize_landmarks, facts, src, tgt, translator)
+    translated = await _in_thread(_translate_checked, translator, transcript, src, tgt, facts, True)
+    facts = await _in_thread(localize_landmarks, facts, src, tgt, translator)
     translation, verified = translated.text, translated.verified
     if not verified:
         # A number or loanword placeholder was lost: do not speak a sentence that may carry a
@@ -94,7 +107,7 @@ async def run_turn(
         log.warning("masked translation %s->%s lost a placeholder; speaking the fallback", src, tgt)
         translation = fact_summary(facts, tgt)
         if not translation:
-            plain = await asyncio.to_thread(
+            plain = await _in_thread(
                 _translate_checked, translator, transcript, src, tgt, facts, False
             )
             translation = plain.text
@@ -111,6 +124,20 @@ async def run_turn(
         facts=facts,
         verified=verified,
     )
+
+
+async def _in_thread[**P, R](fn: Callable[P, R], *args: P.args, **kwargs: P.kwargs) -> R:
+    """Run blocking translator work off the loop; a translator crash becomes a typed error.
+
+    Only the exception type is logged: the message of a model error can quote the input text.
+    """
+    try:
+        return await asyncio.to_thread(fn, *args, **kwargs)
+    except UnreliableTranslationError:
+        raise
+    except Exception as exc:
+        log.error("translator failed: %s", type(exc).__name__)
+        raise TranslationUnavailableError from exc
 
 
 def _translate_checked(

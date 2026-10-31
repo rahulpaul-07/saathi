@@ -144,3 +144,17 @@ async def test_failures_log_the_status_but_never_the_response_body(
         await retrying.transcribe(b"x", "a.wav", "bn-IN")
     assert "504" in caplog.text
     assert "PRIVATE-BODY" not in caplog.text
+
+
+@respx.mock
+async def test_the_api_key_is_not_in_the_settings_repr_or_in_failure_logs(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    key = "key-that-must-not-leak"
+    settings = Settings(gnani_api_key=SecretStr(key), gnani_base_url=BASE)
+    respx.post(f"{BASE}{STT_PATH}").mock(return_value=httpx.Response(500, text="x"))
+    gnani = GnaniClient(settings, retry_wait_s=0)
+    with caplog.at_level("DEBUG"), pytest.raises(GnaniError):
+        await gnani.transcribe(b"x", "a.wav", "bn-IN")
+    assert key not in repr(settings) and key not in str(settings)
+    assert key not in caplog.text

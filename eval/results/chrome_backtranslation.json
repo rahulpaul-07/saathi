@@ -1,0 +1,5201 @@
+{
+ "drift_below": 0.5,
+ "strings": 742,
+ "flagged": 42,
+ "rows": [
+  {
+   "lang": "kn",
+   "key": "role_customer",
+   "back": "Customer",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "role_rider",
+   "back": "Rider",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "back",
+   "back": "Go back.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "demo_banner",
+   "back": "Demo mode: This screen can send ready-made clips instead of live speech.",
+   "overlap": 0.92,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "start_a_room",
+   "back": "Start a room.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "join_a_room",
+   "back": "Join a room",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "room",
+   "back": "The room",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "your_language",
+   "back": "your language.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "choose_a_language",
+   "back": "Choose a language",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "create_room",
+   "back": "Create space",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "room_code",
+   "back": "The code of the room",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "join_and_sound",
+   "back": "Join and turn on the sound",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "give_code_to_rider",
+   "back": "the room code. Give it to the rider.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "rider_link",
+   "back": "Rider Link",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "reconnecting",
+   "back": "Reconnecting...",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "waiting_for_rider",
+   "back": "Waiting for the rider to join.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "waiting_for_customer",
+   "back": "Waiting for the customer.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "waiting_for_directions",
+   "back": "Waiting for directions.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "delivery_card",
+   "back": "Delivery Card",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "card_empty_customer",
+   "back": "There are no details of the address yet. They gather here when you speak.",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "card_empty_rider",
+   "back": "There are no details of the address yet.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "key_facts",
+   "back": "Important facts",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "tap_and_speak",
+   "back": "Press and speak directions.",
+   "overlap": 0.6,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "tap_to_stop",
+   "back": "Tap to stop and send",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "use_when_stopped",
+   "back": "Use when stopped: Tap and talk",
+   "overlap": 0.83,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "ready",
+   "back": "It's ready.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "try_again",
+   "back": "Try again.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "discard_recording",
+   "back": "Skip recording",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "recording",
+   "back": "the recording. Tap again when you're done (maximum 60c).",
+   "overlap": 0.6,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "preparing_audio",
+   "back": "Preparing the recording...",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "sending",
+   "back": "Sending...",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "recording_discarded",
+   "back": "The recording was rejected. It's ready.",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "demo_clip",
+   "back": "Demo Clip",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "demo_clip_in_language",
+   "back": "Demo clip in your language",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "send_demo_clip",
+   "back": "send demo footage",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "demo_badge",
+   "back": "Demo clip, not live speech",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "loading_demo_clip",
+   "back": "Loading demo footage...",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "demo_clip_failed",
+   "back": "Could not load demo footage.",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "sees_customer",
+   "back": "What the customer sees",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "nothing_sent",
+   "back": "Nothing has been sent yet.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "sent_rider_has_details",
+   "back": "has been sent. The rider has these details.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "sent_customer_has_details",
+   "back": "has been sent. Customers have these details.",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "sent_demo_rider_has_details",
+   "back": "A demo clip has been sent. The rider has these details.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "sent_demo_customer_has_details",
+   "back": "A demo clip has been sent. Customers have these details.",
+   "overlap": 0.75,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "sent_check_translation",
+   "back": "Sent, but check the translation.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "sent_demo_check_translation",
+   "back": "A demo clip has been sent, but check the translation.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "sent",
+   "back": "has been sent.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "time_taken",
+   "back": "The time your last message took",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "time_stt",
+   "back": "Speech to Text",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "time_translate",
+   "back": "Translation",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "time_tts",
+   "back": "Text of speech",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "time_total",
+   "back": "Server Total",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "replies_to_rider",
+   "back": "Quick answers for the rider",
+   "overlap": 0.6,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "reply_to_customer",
+   "back": "Respond to the customer",
+   "overlap": 0.75,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "speak_to_customer",
+   "back": "Talk to your customers",
+   "overlap": 0.25,
+   "flagged": true
+  },
+  {
+   "lang": "kn",
+   "key": "quick_replies_failed",
+   "back": "Could not load quick replies.",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "quick_replies_unavailable",
+   "back": "Quick answers are not available in the other person's language.",
+   "overlap": 0.9,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "from_rider",
+   "back": "From the rider",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "nothing_received",
+   "back": "Nothing has been accepted yet.",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "repeat",
+   "back": "Repeat",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "play_again",
+   "back": "Play again",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "rider_says",
+   "back": "The rider says",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "customer_says",
+   "back": "Customers say",
+   "overlap": 0.0,
+   "flagged": true
+  },
+  {
+   "lang": "kn",
+   "key": "quick_reply_from_rider",
+   "back": "Quick response from riders",
+   "overlap": 0.4,
+   "flagged": true
+  },
+  {
+   "lang": "kn",
+   "key": "quick_reply_from_customer",
+   "back": "Quick response from customers",
+   "overlap": 0.4,
+   "flagged": true
+  },
+  {
+   "lang": "kn",
+   "key": "new_message_rider",
+   "back": "New message from the rider.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "new_message_customer",
+   "back": "New message from the customer.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "last_message_rider",
+   "back": "The last message from the rider.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "last_message_customer",
+   "back": "The last message from the customer.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "translation_unchecked",
+   "back": "The translation could not be fully verified; believe the above facts.",
+   "overlap": 0.82,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "audio_failed",
+   "back": "Could not load audio. The above is still true.",
+   "overlap": 0.73,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "tap_repeat",
+   "back": "Tap Repeat to listen to it.",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "tap_repeat_each",
+   "back": "Tap Repeat to listen to each message.",
+   "overlap": 0.83,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "unreviewed_translation",
+   "back": "Unverified machine translation.",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "labels_unreviewed",
+   "back": "Some labels are unverified machine spellings.",
+   "overlap": 0.83,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "landmark_machine",
+   "back": "The landmark is machine-translated; the original is in brackets.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "end_room",
+   "back": "The final room",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "rider_joined",
+   "back": "The rider joined in.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "customer_joined",
+   "back": "Customers also joined in.",
+   "overlap": 0.33,
+   "flagged": true
+  },
+  {
+   "lang": "kn",
+   "key": "their_language",
+   "back": "their language.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "could_be",
+   "back": "It might be",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "check_this",
+   "back": "Check this",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "changed_was",
+   "back": "It has changed,",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "confirm",
+   "back": "Confirm",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "confirmed",
+   "back": "Confirmed",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "enter_code",
+   "back": "Enter a 6-character room code.",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "room_ended",
+   "back": "The room is finished.",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "room_expired_rider",
+   "back": "The room is out of date. Ask for the new code.",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "room_expired_customer",
+   "back": "The room is out of date. Start new.",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "language_list_failed",
+   "back": "Could not load language list. reload the page.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "no_connection",
+   "back": "There is no connection to the server. Check the network and try again.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "room_not_found",
+   "back": "The room has not been found or is expired. Check the code.",
+   "overlap": 0.9,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "wait_or_full",
+   "back": "Waiting for another person to join, or the room is full.",
+   "overlap": 0.92,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "not_allowed",
+   "back": "That action is not allowed here.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "still_busy",
+   "back": "It's still working. Try again.",
+   "overlap": 0.75,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "too_many_turns",
+   "back": "Several turns, wait a moment, then try again.",
+   "overlap": 0.78,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "speech_unavailable",
+   "back": "Speech service is not available. Try again.",
+   "overlap": 0.71,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "no_speech",
+   "back": "I don't understand it, please try again.",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "unreliable",
+   "back": "I could not translate it reliably. Please try again.",
+   "overlap": 0.75,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "bad_recording",
+   "back": "That recording cannot be used. Please record again.",
+   "overlap": 0.88,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "i_heard",
+   "back": "I've heard.",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "mic_secure_page",
+   "back": "The microphone needs a secure page (HTTPS or local host).",
+   "overlap": 0.89,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "mic_not_found",
+   "back": "No microphone was found.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "mic_blocked",
+   "back": "Access to the microphone is restricted. Allow it in the browser's site settings, then try again.",
+   "overlap": 0.86,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "recording_unreadable",
+   "back": "This browser could not read the recording. Please try again.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "kn",
+   "key": "chrome_unreviewed",
+   "back": "The text on this page has been machine-translated and has not yet been verified.",
+   "overlap": 0.82,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "role_customer",
+   "back": "The consumer",
+   "overlap": 0.0,
+   "flagged": true
+  },
+  {
+   "lang": "te",
+   "key": "role_rider",
+   "back": "Rider",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "back",
+   "back": "Back",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "demo_banner",
+   "back": "Demo mode: This screen can send clips made in lieu of live speech.",
+   "overlap": 0.83,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "start_a_room",
+   "back": "Start the room",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "join_a_room",
+   "back": "Get into a room",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "room",
+   "back": "Room",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "your_language",
+   "back": "your language.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "choose_a_language",
+   "back": "Choose a language",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "create_room",
+   "back": "Create a room",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "room_code",
+   "back": "The room code",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "join_and_sound",
+   "back": "join and turn on the sound",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "give_code_to_rider",
+   "back": "the room code. Give it to the rider.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "rider_link",
+   "back": "Rider Link",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "reconnecting",
+   "back": "Reconnecting...",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "waiting_for_rider",
+   "back": "Waiting for the rider to join.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "waiting_for_customer",
+   "back": "Wait for the customer.",
+   "overlap": 0.75,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "waiting_for_directions",
+   "back": "Wait for directions.",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "delivery_card",
+   "back": "Delivery Card",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "card_empty_customer",
+   "back": "Address details are not available yet. They gather here when you speak.",
+   "overlap": 0.7,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "card_empty_rider",
+   "back": "Address details are not available yet.",
+   "overlap": 0.75,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "key_facts",
+   "back": "Key facts",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "tap_and_speak",
+   "back": "Tap directions and talk",
+   "overlap": 0.6,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "tap_to_stop",
+   "back": "Tap to stop and send",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "use_when_stopped",
+   "back": "Use when stopped: Tap and talk",
+   "overlap": 0.83,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "ready",
+   "back": "It's ready.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "try_again",
+   "back": "Try again.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "discard_recording",
+   "back": "Delete Recording",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "recording",
+   "back": "the recording. Tap again when you're done (maximum 60c).",
+   "overlap": 0.6,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "preparing_audio",
+   "back": "Preparing audio...",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "sending",
+   "back": "Sending...",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "recording_discarded",
+   "back": "The recording was cancelled. It's ready.",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "demo_clip",
+   "back": "Demo Clip",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "demo_clip_in_language",
+   "back": "Demo clip in your language",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "send_demo_clip",
+   "back": "Send a demo clip",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "demo_badge",
+   "back": "Demo clip rather than live speech",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "loading_demo_clip",
+   "back": "Loading the demo clip...",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "demo_clip_failed",
+   "back": "Could not load the demo clip.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "sees_customer",
+   "back": "What the consumer will see.",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "nothing_sent",
+   "back": "Nothing has been sent yet.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "sent_rider_has_details",
+   "back": "have been sent. The rider has these details.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "sent_customer_has_details",
+   "back": "have been sent. Customers have this information.",
+   "overlap": 0.17,
+   "flagged": true
+  },
+  {
+   "lang": "te",
+   "key": "sent_demo_rider_has_details",
+   "back": "A demo clip was sent. The rider has these details.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "sent_demo_customer_has_details",
+   "back": "A demo clip was sent. Customers have this information.",
+   "overlap": 0.38,
+   "flagged": true
+  },
+  {
+   "lang": "te",
+   "key": "sent_check_translation",
+   "back": "Sent, but check the translation.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "sent_demo_check_translation",
+   "back": "A demo clip has been sent, but check the translation.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "sent",
+   "back": "have been sent.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "time_taken",
+   "back": "Time taken for your last message",
+   "overlap": 0.83,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "time_stt",
+   "back": "Speech to text",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "time_translate",
+   "back": "Translation",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "time_tts",
+   "back": "Speech to text",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "time_total",
+   "back": "The total number of servers",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "replies_to_rider",
+   "back": "Quick responses to the rider",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "reply_to_customer",
+   "back": "Respond to customers",
+   "overlap": 0.25,
+   "flagged": true
+  },
+  {
+   "lang": "te",
+   "key": "speak_to_customer",
+   "back": "Talk to your customers",
+   "overlap": 0.25,
+   "flagged": true
+  },
+  {
+   "lang": "te",
+   "key": "quick_replies_failed",
+   "back": "Could not load quick replies.",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "quick_replies_unavailable",
+   "back": "Quick answers are not available in the other person's language.",
+   "overlap": 0.9,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "from_rider",
+   "back": "From the rider",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "nothing_received",
+   "back": "Nothing has been found yet.",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "repeat",
+   "back": "Repeat",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "play_again",
+   "back": "Play again.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "rider_says",
+   "back": "The rider said.",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "customer_says",
+   "back": "the customer said.",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "quick_reply_from_rider",
+   "back": "Quick reply from the rider.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "quick_reply_from_customer",
+   "back": "Quick response from the customer.",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "new_message_rider",
+   "back": "New message from the rider.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "new_message_customer",
+   "back": "New message from the user.",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "last_message_rider",
+   "back": "The last message from the rider.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "last_message_customer",
+   "back": "The last message from the user.",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "translation_unchecked",
+   "back": "Couldn't check the translation completely; trust the facts above.",
+   "overlap": 0.55,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "audio_failed",
+   "back": "Could not load audio. The above facts are still true.",
+   "overlap": 0.91,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "tap_repeat",
+   "back": "Tap Repeat to listen.",
+   "overlap": 0.6,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "tap_repeat_each",
+   "back": "Tap Repeat to listen to each message.",
+   "overlap": 0.83,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "unreviewed_translation",
+   "back": "Unreviewed machine translation.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "labels_unreviewed",
+   "back": "Some labels are unreviewed machine spellings.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "landmark_machine",
+   "back": "This landmark has been machine translated; the original is in brackets.",
+   "overlap": 0.89,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "end_room",
+   "back": "The End Room",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "rider_joined",
+   "back": "The rider has arrived.",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "customer_joined",
+   "back": "The customer has joined.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "their_language",
+   "back": "their language.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "could_be",
+   "back": "It might be",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "check_this",
+   "back": "Check this out",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "changed_was",
+   "back": "has been changed,",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "confirm",
+   "back": "Verify",
+   "overlap": 0.0,
+   "flagged": true
+  },
+  {
+   "lang": "te",
+   "key": "confirmed",
+   "back": "Confirmed",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "enter_code",
+   "back": "Enter a 6-character room code.",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "room_ended",
+   "back": "The room is finished.",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "room_expired_rider",
+   "back": "The room is expired. Ask for the new code.",
+   "overlap": 0.78,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "room_expired_customer",
+   "back": "The room is expired. Start something new.",
+   "overlap": 0.62,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "language_list_failed",
+   "back": "Could not load language list. reload the page.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "no_connection",
+   "back": "The server is not connected. Check the network and try again.",
+   "overlap": 0.73,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "room_not_found",
+   "back": "Room not found or expired. Check the code.",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "wait_or_full",
+   "back": "Waiting for the other person to join, or the room will be full.",
+   "overlap": 0.92,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "not_allowed",
+   "back": "That action is not allowed here.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "still_busy",
+   "back": "They are still busy. Try again.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "too_many_turns",
+   "back": "Many turns, wait a moment, and then try again.",
+   "overlap": 0.89,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "speech_unavailable",
+   "back": "No speech service is available. Try again.",
+   "overlap": 0.71,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "no_speech",
+   "back": "I don't understand it, please try again.",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "unreliable",
+   "back": "I couldn't translate it reliably. Please try again.",
+   "overlap": 0.88,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "bad_recording",
+   "back": "That recording cannot be used. Please record again.",
+   "overlap": 0.88,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "i_heard",
+   "back": "I heard.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "mic_secure_page",
+   "back": "The microphone requires a secure page (HTTPS or local host).",
+   "overlap": 0.78,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "mic_not_found",
+   "back": "The microphone was not found.",
+   "overlap": 0.75,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "mic_blocked",
+   "back": "Access to the microphone is blocked. Allow this in the browser's site settings, and then try again.",
+   "overlap": 0.86,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "recording_unreadable",
+   "back": "This browser could not read the recording. Please try again.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "te",
+   "key": "chrome_unreviewed",
+   "back": "The text on this page has been machine translated and has not yet been reviewed.",
+   "overlap": 0.82,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "role_customer",
+   "back": "Customer",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "role_rider",
+   "back": "the rider",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "back",
+   "back": "Back",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "demo_banner",
+   "back": "Demo mode: This screen can send ready-made clips instead of live speech.",
+   "overlap": 0.92,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "start_a_room",
+   "back": "Start the room.",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "join_a_room",
+   "back": "Join a room",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "room",
+   "back": "Room",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "your_language",
+   "back": "It's your language",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "choose_a_language",
+   "back": "Select the language",
+   "overlap": 0.33,
+   "flagged": true
+  },
+  {
+   "lang": "gu",
+   "key": "create_room",
+   "back": "Make room",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "room_code",
+   "back": "The room code",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "join_and_sound",
+   "back": "Join and turn on the sound",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "give_code_to_rider",
+   "back": "the room code. Give it to the morning.",
+   "overlap": 0.86,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "rider_link",
+   "back": "Link to ride",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "reconnecting",
+   "back": "Rejoining...",
+   "overlap": 0.0,
+   "flagged": true
+  },
+  {
+   "lang": "gu",
+   "key": "waiting_for_rider",
+   "back": "Wait until the morning to join.",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "waiting_for_customer",
+   "back": "Waiting for the customer.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "waiting_for_directions",
+   "back": "Waiting for directions.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "delivery_card",
+   "back": "Delivery Card",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "card_empty_customer",
+   "back": "Address details are not available yet. They gather here when you speak.",
+   "overlap": 0.7,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "card_empty_rider",
+   "back": "Address details are not available yet.",
+   "overlap": 0.75,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "key_facts",
+   "back": "The main facts",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "tap_and_speak",
+   "back": "Tap on directions and speak.",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "tap_to_stop",
+   "back": "Tap to stop and send.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "use_when_stopped",
+   "back": "Use when closed: Tap and speak",
+   "overlap": 0.83,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "ready",
+   "back": "They were ready.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "try_again",
+   "back": "Try again",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "discard_recording",
+   "back": "Delete recording",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "recording",
+   "back": "recording. Tap again when you're done (maximum 60 seconds).",
+   "overlap": 0.7,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "preparing_audio",
+   "back": "Preparing sound...",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "sending",
+   "back": "Sending...",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "recording_discarded",
+   "back": "The recording was deleted. They were ready.",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "demo_clip",
+   "back": "Demo clip",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "demo_clip_in_language",
+   "back": "Demo clip in your language",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "send_demo_clip",
+   "back": "Send a demo clip",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "demo_badge",
+   "back": "Not a live speech, demo clip",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "loading_demo_clip",
+   "back": "Loading demo clip...",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "demo_clip_failed",
+   "back": "The demo clip cannot be loaded.",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "sees_customer",
+   "back": "What the customer sees.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "nothing_sent",
+   "back": "Nothing has been sent yet.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "sent_rider_has_details",
+   "back": "sent. Morning has these details.",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "sent_customer_has_details",
+   "back": "sent. The customer has these details.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "sent_demo_rider_has_details",
+   "back": "Send a demo clip. Morning has these details.",
+   "overlap": 0.62,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "sent_demo_customer_has_details",
+   "back": "Send a demo clip. The customer has these details.",
+   "overlap": 0.88,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "sent_check_translation",
+   "back": "Sent, but check the translation.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "sent_demo_check_translation",
+   "back": "The demo clip has been sent, but check the translation.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "sent",
+   "back": "sent",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "time_taken",
+   "back": "The time taken in your last message",
+   "overlap": 0.83,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "time_stt",
+   "back": "Speech in text",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "time_translate",
+   "back": "Translation",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "time_tts",
+   "back": "Text to speech",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "time_total",
+   "back": "Server Total",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "replies_to_rider",
+   "back": "Quick response to the morning.",
+   "overlap": 0.6,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "reply_to_customer",
+   "back": "Respond to the customer.",
+   "overlap": 0.75,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "speak_to_customer",
+   "back": "Talk to the customer.",
+   "overlap": 0.75,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "quick_replies_failed",
+   "back": "Could not load quick replies.",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "quick_replies_unavailable",
+   "back": "Quick answers are not available in the other person's language.",
+   "overlap": 0.9,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "from_rider",
+   "back": "From the morning",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "nothing_received",
+   "back": "Nothing has been found yet.",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "repeat",
+   "back": "Repeat",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "play_again",
+   "back": "Play again",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "rider_says",
+   "back": "says the rider.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "customer_says",
+   "back": "The customer says.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "quick_reply_from_rider",
+   "back": "Quick response from the morning.",
+   "overlap": 0.6,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "quick_reply_from_customer",
+   "back": "Quick response from the customer.",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "new_message_rider",
+   "back": "A new message from the morning.",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "new_message_customer",
+   "back": "A new message from the customer.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "last_message_rider",
+   "back": "The last message of the morning.",
+   "overlap": 0.6,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "last_message_customer",
+   "back": "The last message from the customer.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "translation_unchecked",
+   "back": "The translation could not be fully verified; trust the facts above.",
+   "overlap": 0.91,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "audio_failed",
+   "back": "Could not load audio. The above facts are still true.",
+   "overlap": 0.91,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "tap_repeat",
+   "back": "Tap Repeat to listen to it.",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "tap_repeat_each",
+   "back": "Tap Repeat to listen to each message.",
+   "overlap": 0.83,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "unreviewed_translation",
+   "back": "Unreviewed machine translation.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "labels_unreviewed",
+   "back": "Some labels are unreviewed machine spellings.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "landmark_machine",
+   "back": "The landmark is machine-translated; the original is in parentheses.",
+   "overlap": 0.89,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "end_room",
+   "back": "The End Room",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "rider_joined",
+   "back": "morning joined.",
+   "overlap": 0.33,
+   "flagged": true
+  },
+  {
+   "lang": "gu",
+   "key": "customer_joined",
+   "back": "The customer joined.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "their_language",
+   "back": "their language.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "could_be",
+   "back": "It might be",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "check_this",
+   "back": "Check this out",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "changed_was",
+   "back": "It was changed",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "confirm",
+   "back": "Confirm",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "confirmed",
+   "back": "Confirmed",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "enter_code",
+   "back": "Enter the 6-character room code.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "room_ended",
+   "back": "The room was finished.",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "room_expired_rider",
+   "back": "The room has expired. Ask for the new code.",
+   "overlap": 0.89,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "room_expired_customer",
+   "back": "The room has expired. Make a new start.",
+   "overlap": 0.88,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "language_list_failed",
+   "back": "The language list cannot be loaded. reload the page.",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "no_connection",
+   "back": "There is no connection to the server. Check the network and try again.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "room_not_found",
+   "back": "The room has not been found or has expired. Check the code.",
+   "overlap": 0.9,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "wait_or_full",
+   "back": "Waiting for the other person to join, or the room fills up.",
+   "overlap": 0.83,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "not_allowed",
+   "back": "That action is not allowed here.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "still_busy",
+   "back": "It's still busy. Try again.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "too_many_turns",
+   "back": "Many turns, wait a moment, then try again.",
+   "overlap": 0.89,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "speech_unavailable",
+   "back": "Speech service is not available. Try again.",
+   "overlap": 0.71,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "no_speech",
+   "back": "I don't understand it, please try again.",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "unreliable",
+   "back": "I could not translate it reliably. Please try again.",
+   "overlap": 0.75,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "bad_recording",
+   "back": "That recording cannot be used. Please re-record.",
+   "overlap": 0.62,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "i_heard",
+   "back": "I've heard.",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "mic_secure_page",
+   "back": "The microphone needs a secure page (HTTPS or localhost).",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "mic_not_found",
+   "back": "No microphone was found.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "mic_blocked",
+   "back": "Access to the microphone was blocked. Allow it in the browser's site settings, then try again.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "recording_unreadable",
+   "back": "This browser could not read the recording. Please try again.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "gu",
+   "key": "chrome_unreviewed",
+   "back": "The text on this page has been machine-translated and has not yet been reviewed.",
+   "overlap": 0.91,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "role_customer",
+   "back": "the Customer",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "role_rider",
+   "back": "Rider",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "back",
+   "back": "Return",
+   "overlap": 0.0,
+   "flagged": true
+  },
+  {
+   "lang": "ml",
+   "key": "demo_banner",
+   "back": "Demo mode: This screen can send ready-made clips instead of live speech.",
+   "overlap": 0.92,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "start_a_room",
+   "back": "Start a room",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "join_a_room",
+   "back": "Join a room",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "room",
+   "back": "The room",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "your_language",
+   "back": "It's your language",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "choose_a_language",
+   "back": "Choose a language",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "create_room",
+   "back": "Create a room",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "room_code",
+   "back": "The room code",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "join_and_sound",
+   "back": "turn on the volume together",
+   "overlap": 0.4,
+   "flagged": true
+  },
+  {
+   "lang": "ml",
+   "key": "give_code_to_rider",
+   "back": "The room code. Give it to the rider.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "rider_link",
+   "back": "Rider link",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "reconnecting",
+   "back": "Reconnecting...",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "waiting_for_rider",
+   "back": "Waiting for the rider to join.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "waiting_for_customer",
+   "back": "Waiting for the customer.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "waiting_for_directions",
+   "back": "Waiting for directions.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "delivery_card",
+   "back": "Delivery Card",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "card_empty_customer",
+   "back": "Address details are not yet available. They gather here when you talk.",
+   "overlap": 0.6,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "card_empty_rider",
+   "back": "Address details are not yet available.",
+   "overlap": 0.75,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "key_facts",
+   "back": "Important facts",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "tap_and_speak",
+   "back": "Tap and talk to suggestions",
+   "overlap": 0.4,
+   "flagged": true
+  },
+  {
+   "lang": "ml",
+   "key": "tap_to_stop",
+   "back": "Tap to stop and send",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "use_when_stopped",
+   "back": "Use when stopped: Tap and speak",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "ready",
+   "back": "Ready.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "try_again",
+   "back": "Try again.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "discard_recording",
+   "back": "Skip recording",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "recording",
+   "back": "the recording. Tap again when you're done (maximum 60c).",
+   "overlap": 0.6,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "preparing_audio",
+   "back": "Preparing the sound system...",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "sending",
+   "back": "Sending...",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "recording_discarded",
+   "back": "The recording was abandoned. Ready.",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "demo_clip",
+   "back": "Demo Clip",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "demo_clip_in_language",
+   "back": "Demo clip in your language",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "send_demo_clip",
+   "back": "Send a demo clip",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "demo_badge",
+   "back": "Not a live speech, but a demo clip",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "loading_demo_clip",
+   "back": "Loading demo clip...",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "demo_clip_failed",
+   "back": "Could not load demo clip.",
+   "overlap": 0.83,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "sees_customer",
+   "back": "What the customer sees",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "nothing_sent",
+   "back": "Nothing has been sent yet.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "sent_rider_has_details",
+   "back": "Sent. The rider has these details.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "sent_customer_has_details",
+   "back": "Sent. The customer has these details.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "sent_demo_rider_has_details",
+   "back": "The demo clip was sent. The rider has these details.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "sent_demo_customer_has_details",
+   "back": "The demo clip was sent. The customer has these details.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "sent_check_translation",
+   "back": "Check the translation, even if it was sent.",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "sent_demo_check_translation",
+   "back": "The demo clip has been sent, but check the translation.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "sent",
+   "back": "Sent it.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "time_taken",
+   "back": "Time to take your last message",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "time_stt",
+   "back": "Speech to the Word",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "time_translate",
+   "back": "Translation",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "time_tts",
+   "back": "From text to speech",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "time_total",
+   "back": "Total number of servers",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "replies_to_rider",
+   "back": "Quick reactions to the rider",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "reply_to_customer",
+   "back": "Respond to the customer",
+   "overlap": 0.75,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "speak_to_customer",
+   "back": "Talk to the customer",
+   "overlap": 0.75,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "quick_replies_failed",
+   "back": "Could not load quick responses.",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "quick_replies_unavailable",
+   "back": "Quick replies are not available in someone else's language.",
+   "overlap": 0.7,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "from_rider",
+   "back": "From the rider",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "nothing_received",
+   "back": "Nothing has been found yet.",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "repeat",
+   "back": "Repeat.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "play_again",
+   "back": "Play again.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "rider_says",
+   "back": "The rider says",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "customer_says",
+   "back": "The customer says.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "quick_reply_from_rider",
+   "back": "Quick response from the rider",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "quick_reply_from_customer",
+   "back": "Quick response from the customer.",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "new_message_rider",
+   "back": "New message from the rider.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "new_message_customer",
+   "back": "A new message from the customer.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "last_message_rider",
+   "back": "The last message from the rider.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "last_message_customer",
+   "back": "The last message from the customer.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "translation_unchecked",
+   "back": "The translation could not be fully verified; believe the above facts.",
+   "overlap": 0.82,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "audio_failed",
+   "back": "Could not load audio. The above facts are still true.",
+   "overlap": 0.91,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "tap_repeat",
+   "back": "Press \"Repeat\" to listen to it.",
+   "overlap": 0.4,
+   "flagged": true
+  },
+  {
+   "lang": "ml",
+   "key": "tap_repeat_each",
+   "back": "Tap \"Repeat\" to listen to each message.",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "unreviewed_translation",
+   "back": "Unreviewed machine translation.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "labels_unreviewed",
+   "back": "Some labels are unreviewed machine spellings.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "landmark_machine",
+   "back": "The milestone is machine translated; the original is in brackets.",
+   "overlap": 0.78,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "end_room",
+   "back": "The End Room",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "rider_joined",
+   "back": "The rider joined in.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "customer_joined",
+   "back": "The customer joined in.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "their_language",
+   "back": "their language.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "could_be",
+   "back": "It could be",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "check_this",
+   "back": "Check this out",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "changed_was",
+   "back": "It has changed",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "confirm",
+   "back": "Confirm",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "confirmed",
+   "back": "Confirmed",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "enter_code",
+   "back": "Enter the 6-letter room code.",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "room_ended",
+   "back": "The room is finished.",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "room_expired_rider",
+   "back": "The room was empty. Ask for a new code.",
+   "overlap": 0.78,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "room_expired_customer",
+   "back": "The room was empty. Start a new one.",
+   "overlap": 0.75,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "language_list_failed",
+   "back": "Could not load the language list. reload the page.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "no_connection",
+   "back": "There is no connection to the server. Check the network and try again.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "room_not_found",
+   "back": "The room was found or expired. Check the code.",
+   "overlap": 0.7,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "wait_or_full",
+   "back": "Wait until someone else joins, or the room fills up.",
+   "overlap": 0.33,
+   "flagged": true
+  },
+  {
+   "lang": "ml",
+   "key": "not_allowed",
+   "back": "This action is not allowed here.",
+   "overlap": 0.83,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "still_busy",
+   "back": "It's still busy. Try again.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "too_many_turns",
+   "back": "Too many turns, wait a moment, and then try again.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "speech_unavailable",
+   "back": "No talk service is available. Try again.",
+   "overlap": 0.57,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "no_speech",
+   "back": "I don't understand it, please try again.",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "unreliable",
+   "back": "I couldn't translate it reliably. Please try again.",
+   "overlap": 0.88,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "bad_recording",
+   "back": "That recording cannot be used. Please re-record.",
+   "overlap": 0.62,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "i_heard",
+   "back": "I heard.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "mic_secure_page",
+   "back": "The microphone requires a secure page (HTTPS or local host).",
+   "overlap": 0.78,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "mic_not_found",
+   "back": "No microphone was found.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "mic_blocked",
+   "back": "Access to the microphone was blocked. Allow this in the browser's site settings, then try again.",
+   "overlap": 0.93,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "recording_unreadable",
+   "back": "This browser could not read the recording. Please try again.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ml",
+   "key": "chrome_unreviewed",
+   "back": "The text on this page has been machine translated and has not yet been reviewed.",
+   "overlap": 0.82,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "role_customer",
+   "back": "The customer's",
+   "overlap": 0.0,
+   "flagged": true
+  },
+  {
+   "lang": "mr",
+   "key": "role_rider",
+   "back": "The Cyclist",
+   "overlap": 0.0,
+   "flagged": true
+  },
+  {
+   "lang": "mr",
+   "key": "back",
+   "back": "Back again.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "demo_banner",
+   "back": "Demo mode: This screen can send ready-made clips instead of direct speech.",
+   "overlap": 0.83,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "start_a_room",
+   "back": "Start the room",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "join_a_room",
+   "back": "Join a room.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "room",
+   "back": "The room",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "your_language",
+   "back": "your language.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "choose_a_language",
+   "back": "Select Language",
+   "overlap": 0.33,
+   "flagged": true
+  },
+  {
+   "lang": "mr",
+   "key": "create_room",
+   "back": "Create a room",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "room_code",
+   "back": "The code of the room",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "join_and_sound",
+   "back": "Join and turn on the volume",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "give_code_to_rider",
+   "back": "the room code. Give it to the rider.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "rider_link",
+   "back": "Driver link",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "reconnecting",
+   "back": "Reconnect...",
+   "overlap": 0.0,
+   "flagged": true
+  },
+  {
+   "lang": "mr",
+   "key": "waiting_for_rider",
+   "back": "Waiting for the rider to join.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "waiting_for_customer",
+   "back": "Waiting for the customer.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "waiting_for_directions",
+   "back": "Waiting to be misled.",
+   "overlap": 0.33,
+   "flagged": true
+  },
+  {
+   "lang": "mr",
+   "key": "delivery_card",
+   "back": "The distribution card",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "card_empty_customer",
+   "back": "Address details are not yet available. They come together here as you speak.",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "card_empty_rider",
+   "back": "Address details are not yet available.",
+   "overlap": 0.75,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "key_facts",
+   "back": "The main facts",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "tap_and_speak",
+   "back": "Press Direction and Speak",
+   "overlap": 0.4,
+   "flagged": true
+  },
+  {
+   "lang": "mr",
+   "key": "tap_to_stop",
+   "back": "Press to stop and send",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "use_when_stopped",
+   "back": "Use when stopped: Tap and speak",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "ready",
+   "back": "It's ready.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "try_again",
+   "back": "Try again.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "discard_recording",
+   "back": "Remove the recording",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "recording",
+   "back": "the recording. Tap again when you're done (maximum 60 seconds).",
+   "overlap": 0.7,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "preparing_audio",
+   "back": "Creating sound...",
+   "overlap": 0.0,
+   "flagged": true
+  },
+  {
+   "lang": "mr",
+   "key": "sending",
+   "back": "Sending...",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "recording_discarded",
+   "back": "The recording was cancelled. It's ready.",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "demo_clip",
+   "back": "Demo Clip",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "demo_clip_in_language",
+   "back": "Demo Clips in your language",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "send_demo_clip",
+   "back": "Send a demo clip",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "demo_badge",
+   "back": "Demo clip, not live speech",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "loading_demo_clip",
+   "back": "Loading demo clip...",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "demo_clip_failed",
+   "back": "Unable to load demo clip.",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "sees_customer",
+   "back": "What the customer sees.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "nothing_sent",
+   "back": "Nothing has been sent yet.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "sent_rider_has_details",
+   "back": "sent to. The rider has these details.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "sent_customer_has_details",
+   "back": "sent to. The customer has these details.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "sent_demo_rider_has_details",
+   "back": "Demo clip sent. The rider has these details.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "sent_demo_customer_has_details",
+   "back": "Demo clip sent. The customer has these details.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "sent_check_translation",
+   "back": "Sent, but check the translation.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "sent_demo_check_translation",
+   "back": "Send a demo clip, but check the translation.",
+   "overlap": 0.86,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "sent",
+   "back": "sent to.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "time_taken",
+   "back": "The time taken by your last message",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "time_stt",
+   "back": "Text speech",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "time_translate",
+   "back": "The translation",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "time_tts",
+   "back": "Text to Speech",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "time_total",
+   "back": "The total number of servers",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "replies_to_rider",
+   "back": "Quick response to rider",
+   "overlap": 0.6,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "reply_to_customer",
+   "back": "Respond to the customer",
+   "overlap": 0.75,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "speak_to_customer",
+   "back": "Talk to the customer",
+   "overlap": 0.75,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "quick_replies_failed",
+   "back": "Could not load immediate responses.",
+   "overlap": 0.33,
+   "flagged": true
+  },
+  {
+   "lang": "mr",
+   "key": "quick_replies_unavailable",
+   "back": "Quick answers are not available in the language of the other\\ u093C.",
+   "overlap": 0.7,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "from_rider",
+   "back": "From the rider",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "nothing_received",
+   "back": "Nothing has been found yet.",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "repeat",
+   "back": "Repeat",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "play_again",
+   "back": "Play again.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "rider_says",
+   "back": "The rider says:",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "customer_says",
+   "back": "The customer says:",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "quick_reply_from_rider",
+   "back": "Quick response from the rider",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "quick_reply_from_customer",
+   "back": "Quick response from customers.",
+   "overlap": 0.4,
+   "flagged": true
+  },
+  {
+   "lang": "mr",
+   "key": "new_message_rider",
+   "back": "New message from the rider.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "new_message_customer",
+   "back": "New messages from customers.",
+   "overlap": 0.4,
+   "flagged": true
+  },
+  {
+   "lang": "mr",
+   "key": "last_message_rider",
+   "back": "The last message from the driver.",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "last_message_customer",
+   "back": "The last message from the customer.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "translation_unchecked",
+   "back": "The translation could not be fully verified; trust the above facts.",
+   "overlap": 0.91,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "audio_failed",
+   "back": "Could not load sound. The above facts are still true.",
+   "overlap": 0.82,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "tap_repeat",
+   "back": "Press Repeat to listen to it.",
+   "overlap": 0.6,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "tap_repeat_each",
+   "back": "Press Repeat to listen to each message.",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "unreviewed_translation",
+   "back": "Unseen machine translation.",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "labels_unreviewed",
+   "back": "Some labels are unobservable machine writing.",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "landmark_machine",
+   "back": "This landmark is machine translated; the original is in parentheses.",
+   "overlap": 0.78,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "end_room",
+   "back": "The last room",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "rider_joined",
+   "back": "The rider joined in.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "customer_joined",
+   "back": "The customer joined in.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "their_language",
+   "back": "their language.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "could_be",
+   "back": "It might be",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "check_this",
+   "back": "Check this",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "changed_was",
+   "back": "It had changed",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "confirm",
+   "back": "Confirm",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "confirmed",
+   "back": "Confirmed",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "enter_code",
+   "back": "Enter the 6-character room code.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "room_ended",
+   "back": "The room is finished.",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "room_expired_rider",
+   "back": "The room has expired. Ask for a new code.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "room_expired_customer",
+   "back": "The room has expired. Start anew.",
+   "overlap": 0.62,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "language_list_failed",
+   "back": "Could not load the language list. reload the page.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "no_connection",
+   "back": "There is no connection to the server. Check the network and try again.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "room_not_found",
+   "back": "The room has not been found or is out of date. Check the code.",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "wait_or_full",
+   "back": "The other person is waiting to join, or the room is full.",
+   "overlap": 0.92,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "not_allowed",
+   "back": "This activity is not allowed here.",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "still_busy",
+   "back": "It's still busy. Try again.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "too_many_turns",
+   "back": "Turn around a lot, pause for a moment, then try again.",
+   "overlap": 0.56,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "speech_unavailable",
+   "back": "Speech service is not available. Try again.",
+   "overlap": 0.71,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "no_speech",
+   "back": "I don't understand it, please try again.",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "unreliable",
+   "back": "I could not translate it reliably. Please try again.",
+   "overlap": 0.75,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "bad_recording",
+   "back": "It cannot be used for recording. Please re-enter.",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "i_heard",
+   "back": "I heard.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "mic_secure_page",
+   "back": "The microphone is called the safe page (H. T. T. P. S. or localhost) is required.",
+   "overlap": 0.56,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "mic_not_found",
+   "back": "No microphone was found.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "mic_blocked",
+   "back": "Access to the microphone was blocked. Let it be in the browser's site settings, then try again.",
+   "overlap": 0.93,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "recording_unreadable",
+   "back": "This browser could not read the recording. Please try again.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "mr",
+   "key": "chrome_unreviewed",
+   "back": "The text on this page is machine translated and has not yet been reviewed.",
+   "overlap": 0.91,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "role_customer",
+   "back": "Customer",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "role_rider",
+   "back": "Rider",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "back",
+   "back": "Back",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "demo_banner",
+   "back": "Demo mode: This screen can send ready-made clips instead of live speech.",
+   "overlap": 0.92,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "start_a_room",
+   "back": "Start the room",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "join_a_room",
+   "back": "Join the room.",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "room",
+   "back": "Room",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "your_language",
+   "back": "It's your language",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "choose_a_language",
+   "back": "Select Language",
+   "overlap": 0.33,
+   "flagged": true
+  },
+  {
+   "lang": "pa",
+   "key": "create_room",
+   "back": "Create a room",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "room_code",
+   "back": "The code of the room",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "join_and_sound",
+   "back": "Connect and turn on the sound",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "give_code_to_rider",
+   "back": "The code of the room. Give it to the rider.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "rider_link",
+   "back": "Rider link",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "reconnecting",
+   "back": "Reconnecting...",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "waiting_for_rider",
+   "back": "Waiting for the rider to join.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "waiting_for_customer",
+   "back": "Wait for the customer.",
+   "overlap": 0.75,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "waiting_for_directions",
+   "back": "Wait for directions.",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "delivery_card",
+   "back": "Delivery Card",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "card_empty_customer",
+   "back": "There are no details of the address yet. They gather here when you speak.",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "card_empty_rider",
+   "back": "There are no details of the address yet.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "key_facts",
+   "back": "The main facts",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "tap_and_speak",
+   "back": "Press and speak directions",
+   "overlap": 0.6,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "tap_to_stop",
+   "back": "Press to stop and send",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "use_when_stopped",
+   "back": "Use when turned off: Press and speak",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "ready",
+   "back": "Be prepared",
+   "overlap": 0.0,
+   "flagged": true
+  },
+  {
+   "lang": "pa",
+   "key": "try_again",
+   "back": "Try again",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "discard_recording",
+   "back": "Cancel recording",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "recording",
+   "back": "recording. Press again when you're done (maximum 60c).",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "preparing_audio",
+   "back": "Preparing audio...",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "sending",
+   "back": "Sending...",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "recording_discarded",
+   "back": "The recording was cancelled. Be prepared",
+   "overlap": 0.33,
+   "flagged": true
+  },
+  {
+   "lang": "pa",
+   "key": "demo_clip",
+   "back": "Demo Clip",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "demo_clip_in_language",
+   "back": "Demo clip in your language",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "send_demo_clip",
+   "back": "Send a demo clip",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "demo_badge",
+   "back": "Demo clip, not live speech",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "loading_demo_clip",
+   "back": "Loading demo clip...",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "demo_clip_failed",
+   "back": "Could not load demo clip.",
+   "overlap": 0.83,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "sees_customer",
+   "back": "What the customer sees.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "nothing_sent",
+   "back": "Nothing has been sent yet.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "sent_rider_has_details",
+   "back": "sent The rider has these details.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "sent_customer_has_details",
+   "back": "sent The customer has these details.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "sent_demo_rider_has_details",
+   "back": "Send demo clip. The rider has these details.",
+   "overlap": 0.88,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "sent_demo_customer_has_details",
+   "back": "Send demo clip. The customer has these details.",
+   "overlap": 0.88,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "sent_check_translation",
+   "back": "Sent, but check the translation.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "sent_demo_check_translation",
+   "back": "The demo clip was sent, but check the translation.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "sent",
+   "back": "was sent.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "time_taken",
+   "back": "The time taken by your last message",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "time_stt",
+   "back": "Talk to the text",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "time_translate",
+   "back": "Translation",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "time_tts",
+   "back": "Text for speech",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "time_total",
+   "back": "Server Total",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "replies_to_rider",
+   "back": "Quick response to the rider",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "reply_to_customer",
+   "back": "Respond to the customer",
+   "overlap": 0.75,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "speak_to_customer",
+   "back": "Talk to the customer.",
+   "overlap": 0.75,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "quick_replies_failed",
+   "back": "Could not load immediate responses.",
+   "overlap": 0.33,
+   "flagged": true
+  },
+  {
+   "lang": "pa",
+   "key": "quick_replies_unavailable",
+   "back": "Immediate answers are not available in the other person's language.",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "from_rider",
+   "back": "from the rider.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "nothing_received",
+   "back": "Nothing has been achieved yet.",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "repeat",
+   "back": "Repeat",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "play_again",
+   "back": "Play again",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "rider_says",
+   "back": "says the rider.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "customer_says",
+   "back": "The customer said.",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "quick_reply_from_rider",
+   "back": "The rider's immediate response",
+   "overlap": 0.2,
+   "flagged": true
+  },
+  {
+   "lang": "pa",
+   "key": "quick_reply_from_customer",
+   "back": "Quick response from the customer.",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "new_message_rider",
+   "back": "New message from the rider.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "new_message_customer",
+   "back": "New message from the customer.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "last_message_rider",
+   "back": "The last message from the rider.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "last_message_customer",
+   "back": "The last message from the customer.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "translation_unchecked",
+   "back": "The translation could not be fully verified; rely on the facts above.",
+   "overlap": 0.82,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "audio_failed",
+   "back": "Could not load audio. The above facts are still true.",
+   "overlap": 0.91,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "tap_repeat",
+   "back": "Press Repeat to listen to it.",
+   "overlap": 0.6,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "tap_repeat_each",
+   "back": "Press Repeat to listen to each message.",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "unreviewed_translation",
+   "back": "Unreviewed machine translation.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "labels_unreviewed",
+   "back": "Some labels are un-reviewed machine spelling.",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "landmark_machine",
+   "back": "This milestone is machine-translated; the original is in brackets.",
+   "overlap": 0.89,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "end_room",
+   "back": "The End Room",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "rider_joined",
+   "back": "The rider also joined in.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "customer_joined",
+   "back": "The customer also joined in.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "their_language",
+   "back": "their language.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "could_be",
+   "back": "It might be",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "check_this",
+   "back": "Check it out",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "changed_was",
+   "back": "It was changed",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "confirm",
+   "back": "Confirm",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "confirmed",
+   "back": "Confirmed",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "enter_code",
+   "back": "Enter the 6-character room code.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "room_ended",
+   "back": "The room was finished.",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "room_expired_rider",
+   "back": "The room has expired. Ask for a new code.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "room_expired_customer",
+   "back": "The room has expired. Begin a new one.",
+   "overlap": 0.88,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "language_list_failed",
+   "back": "Could not load language list. Reload the page.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "no_connection",
+   "back": "There is no connection to the server. Check the network and try again.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "room_not_found",
+   "back": "Room not found or expired. Check the code.",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "wait_or_full",
+   "back": "Waiting for the other person to join, or the room is full.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "not_allowed",
+   "back": "This action is not allowed here.",
+   "overlap": 0.83,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "still_busy",
+   "back": "They are still busy. Try again.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "too_many_turns",
+   "back": "Many turns, wait a moment, then try again.",
+   "overlap": 0.89,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "speech_unavailable",
+   "back": "Speech service is not available. Try again.",
+   "overlap": 0.71,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "no_speech",
+   "back": "Could not find it, please try again.",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "unreliable",
+   "back": "I could not translate it reliably. Please try again.",
+   "overlap": 0.75,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "bad_recording",
+   "back": "That recording cannot be used. Please re-record.",
+   "overlap": 0.62,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "i_heard",
+   "back": "I heard.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "mic_secure_page",
+   "back": "The microphone needs a secure page (HTTPS or localhost).",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "mic_not_found",
+   "back": "No microphone was found.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "mic_blocked",
+   "back": "Access to the microphone was blocked. Allow this in the browser's site settings, then try again.",
+   "overlap": 0.93,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "recording_unreadable",
+   "back": "This browser could not read the recording. Please try again.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "pa",
+   "key": "chrome_unreviewed",
+   "back": "The text on this page has been machine-translated and has not yet been reviewed.",
+   "overlap": 0.91,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "role_customer",
+   "back": "Customer",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "role_rider",
+   "back": "the rider",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "back",
+   "back": "backwards",
+   "overlap": 0.0,
+   "flagged": true
+  },
+  {
+   "lang": "ta",
+   "key": "demo_banner",
+   "back": "Demo mode: You can send ready-made clips instead of live talk on this screen.",
+   "overlap": 0.83,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "start_a_room",
+   "back": "Start a room",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "join_a_room",
+   "back": "Join a room",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "room",
+   "back": "The room.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "your_language",
+   "back": "your language.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "choose_a_language",
+   "back": "Select a language",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "create_room",
+   "back": "Create a room",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "room_code",
+   "back": "Room code",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "join_and_sound",
+   "back": "connect and play sound",
+   "overlap": 0.4,
+   "flagged": true
+  },
+  {
+   "lang": "ta",
+   "key": "give_code_to_rider",
+   "back": "The room code. Give it to the rider.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "rider_link",
+   "back": "Ride Link",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "reconnecting",
+   "back": "Reconnecting...",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "waiting_for_rider",
+   "back": "Waited for the rider to join.",
+   "overlap": 0.83,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "waiting_for_customer",
+   "back": "Waiting for the customer.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "waiting_for_directions",
+   "back": "Waiting for directions.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "delivery_card",
+   "back": "Delivery Card",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "card_empty_customer",
+   "back": "Address details are not available yet. They gather here when you talk.",
+   "overlap": 0.6,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "card_empty_rider",
+   "back": "Address details are not available yet.",
+   "overlap": 0.75,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "key_facts",
+   "back": "The main facts",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "tap_and_speak",
+   "back": "Tap directions and talk",
+   "overlap": 0.6,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "tap_to_stop",
+   "back": "Tap Stop, Send, and",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "use_when_stopped",
+   "back": "Use when stopped: Tap and talk",
+   "overlap": 0.83,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "ready",
+   "back": "Ready.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "try_again",
+   "back": "Try again.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "discard_recording",
+   "back": "Reject the entry",
+   "overlap": 0.0,
+   "flagged": true
+  },
+  {
+   "lang": "ta",
+   "key": "recording",
+   "back": "the recording. Tap again when you're done (maximum 60c).",
+   "overlap": 0.6,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "preparing_audio",
+   "back": "Preparing audio...",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "sending",
+   "back": "Sending...",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "recording_discarded",
+   "back": "The registration was rejected. Ready.",
+   "overlap": 0.33,
+   "flagged": true
+  },
+  {
+   "lang": "ta",
+   "key": "demo_clip",
+   "back": "Demo Clip",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "demo_clip_in_language",
+   "back": "Demo clip in your language",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "send_demo_clip",
+   "back": "send demo clip",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "demo_badge",
+   "back": "Demo clip, not live text",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "loading_demo_clip",
+   "back": "Loading demo clip...",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "demo_clip_failed",
+   "back": "Could not load demo clip.",
+   "overlap": 0.83,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "sees_customer",
+   "back": "What the customer is looking at",
+   "overlap": 0.75,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "nothing_sent",
+   "back": "Nothing has been sent yet.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "sent_rider_has_details",
+   "back": "He sent. The rider has these details.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "sent_customer_has_details",
+   "back": "He sent. The customer has these details.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "sent_demo_rider_has_details",
+   "back": "The demo clip was sent. The rider has these details.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "sent_demo_customer_has_details",
+   "back": "The demo clip was sent. The customer has these details.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "sent_check_translation",
+   "back": "Sent, but check the translation.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "sent_demo_check_translation",
+   "back": "The demo clip was sent, but check the translation.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "sent",
+   "back": "has been sent.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "time_taken",
+   "back": "Time taken by your last message",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "time_stt",
+   "back": "Text in text",
+   "overlap": 0.33,
+   "flagged": true
+  },
+  {
+   "lang": "ta",
+   "key": "time_translate",
+   "back": "Translation",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "time_tts",
+   "back": "Text to text",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "time_total",
+   "back": "Total number of servers",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "replies_to_rider",
+   "back": "Quick responses to the rider",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "reply_to_customer",
+   "back": "The customer's response",
+   "overlap": 0.25,
+   "flagged": true
+  },
+  {
+   "lang": "ta",
+   "key": "speak_to_customer",
+   "back": "Talk to the customer.",
+   "overlap": 0.75,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "quick_replies_failed",
+   "back": "Could not load quick replies.",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "quick_replies_unavailable",
+   "back": "Quick answers are not available in the other person's language.",
+   "overlap": 0.9,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "from_rider",
+   "back": "from the rider.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "nothing_received",
+   "back": "Nothing has been found so far.",
+   "overlap": 0.33,
+   "flagged": true
+  },
+  {
+   "lang": "ta",
+   "key": "repeat",
+   "back": "Do it again.",
+   "overlap": 0.0,
+   "flagged": true
+  },
+  {
+   "lang": "ta",
+   "key": "play_again",
+   "back": "Play again.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "rider_says",
+   "back": "The rider says",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "customer_says",
+   "back": "The customer says.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "quick_reply_from_rider",
+   "back": "Quick response from the rider",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "quick_reply_from_customer",
+   "back": "Quick response from the customer.",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "new_message_rider",
+   "back": "New news from the rider.",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "new_message_customer",
+   "back": "New message from the customer.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "last_message_rider",
+   "back": "The last message from the rider.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "last_message_customer",
+   "back": "The last message from the customer.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "translation_unchecked",
+   "back": "The translation could not be fully verified; trust the above facts.",
+   "overlap": 0.91,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "audio_failed",
+   "back": "Could not load audio. The above facts are more accurate.",
+   "overlap": 0.82,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "tap_repeat",
+   "back": "Tap Repeat to listen to it.",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "tap_repeat_each",
+   "back": "Tap'Repeat'to listen to each message.",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "unreviewed_translation",
+   "back": "Unreviewed machine translation.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "labels_unreviewed",
+   "back": "Some labels are unreviewed machine spellings.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "landmark_machine",
+   "back": "This milestone has been translated by the machine; the original is in parentheses.",
+   "overlap": 0.67,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "end_room",
+   "back": "The final room",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "rider_joined",
+   "back": "The rider also joined in.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "customer_joined",
+   "back": "The customer joined in.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "their_language",
+   "back": "their language.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "could_be",
+   "back": "It might be",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "check_this",
+   "back": "Check this",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "changed_was",
+   "back": "has been changed,",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "confirm",
+   "back": "Confirm",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "confirmed",
+   "back": "Confirmed",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "enter_code",
+   "back": "Enter a 6-character room code.",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "room_ended",
+   "back": "The room is finished.",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "room_expired_rider",
+   "back": "The time of the room is over. Ask for a new code.",
+   "overlap": 0.78,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "room_expired_customer",
+   "back": "The time of the room is over. Start new.",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "language_list_failed",
+   "back": "Could not load language list. reload the page.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "no_connection",
+   "back": "There is no connection to the server. Check the network and try again.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "room_not_found",
+   "back": "The room has not been found or is out of date. Check the code.",
+   "overlap": 0.8,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "wait_or_full",
+   "back": "Waiting for the other person to join, or the room is full.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "not_allowed",
+   "back": "This action is not allowed here.",
+   "overlap": 0.83,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "still_busy",
+   "back": "He's still busy. Try again.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "too_many_turns",
+   "back": "Many turns, wait a moment, and then try again.",
+   "overlap": 0.89,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "speech_unavailable",
+   "back": "No talk service is available. Try again.",
+   "overlap": 0.57,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "no_speech",
+   "back": "I don't like it, please try again.",
+   "overlap": 0.5,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "unreliable",
+   "back": "I couldn't translate it reliably. Please try again.",
+   "overlap": 0.88,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "bad_recording",
+   "back": "That record cannot be used. Please register again.",
+   "overlap": 0.75,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "i_heard",
+   "back": "I heard.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "mic_secure_page",
+   "back": "The microphone requires a secure page (HTTPS or local host).",
+   "overlap": 0.78,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "mic_not_found",
+   "back": "No microphone was found.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "mic_blocked",
+   "back": "Access to the microphone was blocked. Allow it in the browser's site settings and then try again.",
+   "overlap": 1.0,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "recording_unreadable",
+   "back": "This browser could not read the record. Please try again.",
+   "overlap": 0.9,
+   "flagged": false
+  },
+  {
+   "lang": "ta",
+   "key": "chrome_unreviewed",
+   "back": "The text on this page is machine translation and has not yet been reviewed.",
+   "overlap": 0.91,
+   "flagged": false
+  }
+ ]
+}

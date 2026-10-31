@@ -7,12 +7,16 @@
  * @typedef {{kind: string, value: string, heard: string, confidence: string,
  *   ambiguous: boolean, reading: string | null, local?: string | null, label?: string,
  *   label_status?: string}} Fact
- * @typedef {{kind: string, label: string, value: string, note: string | null,
- *   labelPending: boolean, machineTranslated: boolean, original: string | null,
- *   changed: boolean, confirmed: boolean, question: string | null}} Chip
+ * @typedef {{kind: string, label: string, labelEn: string, value: string, note: string | null,
+ *   noteEn: string | null, labelPending: boolean, machineTranslated: boolean,
+ *   original: string | null, changed: boolean, confirmed: boolean,
+ *   question: string | null}} Chip
  * `value` is the full text; `original` is the bracketed part of it, set only for a translated
- * landmark, so the screen can show it smaller.
+ * landmark, so the screen can show it smaller. `labelEn` and `noteEn` are the English twins of
+ * `label` and `note`, shown as the smaller second line.
  */
+
+import { bi, tb } from "./i18n.js";
 
 const KIND_ORDER = ["gate", "floor", "cross", "main", "block", "flat", "landmark"];
 /** @type {Record<string, string>} */
@@ -69,10 +73,10 @@ export function chipsFromFacts(facts, forListener = false) {
     .filter(isFact)
     .filter((fact) => fact.kind in KIND_LABELS)
     .map((fact) => {
-      /** @type {string | null} */
+      /** @type {import("./i18n.js").Bi | null} */
       let note = null;
-      if (fact.ambiguous && fact.reading) note = `could be ${fact.reading}`;
-      else if (fact.confidence === "low") note = "check this";
+      if (fact.ambiguous && fact.reading) note = bi`${tb("could_be", "could be")} ${fact.reading}`;
+      else if (fact.confidence === "low") note = tb("check_this", "check this");
       let value = fact.value;
       let machineTranslated = false;
       /** @type {string | null} */
@@ -91,8 +95,10 @@ export function chipsFromFacts(facts, forListener = false) {
       return {
         kind: fact.kind,
         label,
+        labelEn: KIND_LABELS[fact.kind],
         value,
-        note,
+        note: note === null ? null : note.local,
+        noteEn: note === null ? null : note.english,
         labelPending: fact.label_status === "pending",
         machineTranslated,
         original,
@@ -131,13 +137,15 @@ export function cardChips(entries, forListener = false) {
     // The old landmark reads like the current one (translation, then the original in brackets).
     const oldLocal =
       forListener && chip.kind === "landmark" ? usableLocal(entry.previous_local, previous) : null;
-    const changedNote = `changed, was ${oldLocal === null ? previous : `${oldLocal} (${previous})`}`;
+    const was = oldLocal === null ? previous : `${oldLocal} (${previous})`;
+    const changedNote = bi`${tb("changed_was", "changed, was")} ${was}`;
     return {
       ...chip,
       changed: true,
       confirmed,
       question,
-      note: chip.note ? `${chip.note}; ${changedNote}` : changedNote,
+      note: chip.note ? `${chip.note}; ${changedNote.local}` : changedNote.local,
+      noteEn: chip.noteEn ? `${chip.noteEn}; ${changedNote.english}` : changedNote.english,
     };
   });
 }

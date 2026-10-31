@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-role="customer">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -7,38 +7,46 @@
     <title>Saathi customer</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="app.css" />
+    <script src="js/theme.js"></script>
   </head>
   <body>
     <main>
       <header>
-        <h1>Customer</h1>
-        <p class="sub"><a href="index.html">Back</a></p>
+        <h1 data-i18n="role_customer">Customer</h1>
+        <p class="sub"><a href="index.html" data-i18n="back">Back</a></p>
       </header>
-      <p id="demo-banner" class="demo-banner" hidden>
+      <p id="demo-banner" class="demo-banner" data-i18n="demo_banner" hidden>
         Demo mode: this screen can send prepared clips instead of live speech.
       </p>
 
-      <section id="setup" aria-label="Start a room">
-        <label for="language">Your language</label>
+      <section id="setup" aria-label="Start a room" data-i18n-aria-label="start_a_room">
+        <label for="language" data-i18n="your_language">Your language</label>
         <select id="language"></select>
-        <button type="button" id="create" class="big-btn" disabled>Create room</button>
+        <button type="button" id="create" class="big-btn" disabled data-i18n="create_room">Create room</button>
         <p id="setup-status" class="status" role="status" aria-live="polite"></p>
       </section>
 
-      <section id="room" hidden aria-label="Room">
-        <div class="code-box">
-          <p class="small">Room code. Give it to the rider.</p>
-          <p id="code" class="code" aria-label="Room code"></p>
-          <p class="small">Rider link: <span id="link" class="mono"></span></p>
+      <section id="room" hidden aria-label="Room" data-i18n-aria-label="room">
+        <div id="code-box" class="code-box">
+          <p class="small" data-i18n="give_code_to_rider">Room code. Give it to the rider.</p>
+          <p id="code" class="code" aria-label="Room code" data-i18n-aria-label="room_code"></p>
+          <p class="small" data-i18n="rider_link">Rider link</p>
+          <p class="small"><span id="link" class="mono"></span></p>
         </div>
 
-        <p id="reconnecting" class="status error" role="status" aria-live="polite" hidden>Reconnecting...</p>
-        <p id="peer" class="status" role="status" aria-live="polite">Waiting for the rider to join.</p>
+        <p id="reconnecting" class="status error" role="status" aria-live="polite" hidden data-i18n="reconnecting">Reconnecting...</p>
+        <p id="peer" class="status quiet" role="status" aria-live="polite" data-i18n="waiting_for_rider">Waiting for the rider to join.</p>
 
         <section class="card" aria-labelledby="card-heading">
-          <h2 id="card-heading">Delivery card</h2>
-          <p id="card-empty" class="small">No address details yet. They collect here as you speak.</p>
+          <h2 id="card-heading" data-i18n="delivery_card">Delivery card</h2>
+          <p id="card-empty" class="small" data-i18n="card_empty_customer">No address details yet. They collect here as you speak.</p>
           <ul id="card-chips" class="chips" aria-labelledby="card-heading" aria-live="polite"></ul>
+        </section>
+
+        <section id="demo" class="demo" hidden aria-label="Demo clip" data-i18n-aria-label="demo_clip">
+          <label for="demo-clip" data-i18n="demo_clip_in_language">Demo clip in your language</label>
+          <select id="demo-clip"></select>
+          <button type="button" id="demo-send" class="big-btn" disabled data-i18n="send_demo_clip">Send demo clip</button>
         </section>
 
         <button type="button" class="talk-btn" id="talk" aria-pressed="false" disabled>
@@ -48,53 +56,51 @@
           <svg class="icon icon-stop" viewBox="0 0 24 24" aria-hidden="true">
             <rect x="6" y="6" width="12" height="12" rx="2" />
           </svg>
-          <span class="label">Tap and speak the directions</span>
+          <span class="label" data-i18n="tap_and_speak">Tap and speak the directions</span>
         </button>
 
-        <p id="status" class="status" role="status" aria-live="polite">Ready.</p>
+        <p id="status" class="status" role="status" aria-live="polite" data-i18n="ready">Ready.</p>
+        <p id="sent-demo-badge" class="badge" data-i18n="demo_badge" hidden>Demo clip, not live speech</p>
+        <details id="timings-box" class="timings-box" hidden>
+          <summary id="timings-summary"></summary>
+          <dl id="timings" class="timings" aria-label="Time taken by your last message" data-i18n-aria-label="time_taken"></dl>
+        </details>
         <div id="repeat-prompt" class="repeat-prompt" role="status" hidden>
           <p id="repeat-text"></p>
           <p id="repeat-note" class="small"></p>
         </div>
 
         <div id="actions" class="actions" hidden>
-          <button type="button" id="retry">Try again</button>
-          <button type="button" id="discard" class="secondary">Discard recording</button>
+          <button type="button" id="retry" data-i18n="try_again">Try again</button>
+          <button type="button" id="discard" class="secondary" data-i18n="discard_recording">Discard recording</button>
         </div>
 
-        <section id="demo" class="demo" hidden aria-label="Demo clip">
-          <label for="demo-clip">Demo clip in your language</label>
-          <select id="demo-clip"></select>
-          <button type="button" id="demo-send" class="secondary" disabled>Send demo clip</button>
-        </section>
-
-        <h2 id="sent-heading">What the rider sees</h2>
-        <p id="sent-demo-badge" class="badge" hidden>Demo clip, not live speech</p>
-        <ul id="sent-chips" class="chips" aria-labelledby="sent-heading" aria-live="polite"></ul>
-        <p id="sent-empty" class="small">Nothing sent yet.</p>
-        <dl id="timings" class="timings" aria-label="Time taken by your last message" hidden></dl>
-
-        <h2 id="reply-heading">Quick replies to the rider</h2>
+        <h2 id="reply-heading" data-i18n="replies_to_rider">Quick replies to the rider</h2>
         <div id="replies" class="replies" role="group" aria-labelledby="reply-heading"></div>
         <p id="replies-note" class="small"></p>
 
-        <h2 id="incoming-heading">From the rider</h2>
-        <p id="incoming-status" class="status" role="status" aria-live="polite">Nothing received yet.</p>
-        <p id="demo-badge" class="badge" hidden>Demo clip, not live speech</p>
-        <ul id="chips" class="chips big" aria-labelledby="incoming-heading" aria-live="polite"></ul>
-        <p id="chips-note" class="small"></p>
-        <p id="translation" class="translation" lang="und"></p>
-        <button type="button" id="repeat" class="secondary" disabled>Repeat</button>
-
-        <section id="reply" class="reply" hidden aria-label="Quick reply from the rider">
-          <h2>Rider says</h2>
-          <p id="reply-text" class="reply-text" lang="und"></p>
-          <p id="reply-note" class="small"></p>
-          <button type="button" id="reply-replay" class="secondary">Play again</button>
+        <section id="incoming" aria-labelledby="incoming-heading" hidden>
+          <h2 id="incoming-heading" data-i18n="from_rider">From the rider</h2>
+          <p id="incoming-status" class="status" role="status" aria-live="polite" data-i18n="nothing_received">Nothing received yet.</p>
+          <p id="demo-badge" class="badge" data-i18n="demo_badge" hidden>Demo clip, not live speech</p>
+          <ul id="chips" class="chips big" aria-labelledby="incoming-heading" aria-live="polite"></ul>
+          <p id="chips-note" class="small"></p>
+          <p id="translation" class="translation" lang="und"></p>
+          <button type="button" id="repeat" class="secondary" disabled data-i18n="repeat">Repeat</button>
         </section>
 
-        <button type="button" id="close" class="secondary">End room</button>
+        <section id="reply" class="reply" hidden aria-label="Quick reply from the rider" data-i18n-aria-label="quick_reply_from_rider">
+          <h2 data-i18n="rider_says">Rider says</h2>
+          <p id="reply-text" class="reply-text" lang="und"></p>
+          <p id="reply-note" class="small"></p>
+          <button type="button" id="reply-replay" class="secondary" data-i18n="play_again">Play again</button>
+        </section>
+
+        <button type="button" id="close" class="secondary" data-i18n="end_room">End room</button>
       </section>
+      <p id="chrome-note" class="small" data-i18n="chrome_unreviewed" hidden>
+        The text on this page is machine-translated and not yet reviewed.
+      </p>
     </main>
     <script type="module" src="js/customer.js"></script>
   </body>
