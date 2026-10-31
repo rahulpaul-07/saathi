@@ -1,6 +1,6 @@
 // @ts-check
 import { AudioPlayer } from "./audio-player.js";
-import { applyChrome, setChromeTable, setLanguage, t } from "./i18n.js";
+import { applyChrome, decodeBi, encodeBi, setChromeTable, setLanguage, tb } from "./i18n.js";
 import { parseLanguages } from "./languages.js";
 import { getJson, joinRoom } from "./room-client.js";
 import { enterRoom } from "./room-screen.js";
@@ -23,7 +23,7 @@ let languages = [];
 async function onJoin() {
   const code = codeInput.value.trim().toUpperCase();
   if (!CODE_PATTERN.test(code)) {
-    setStatus(joinStatusEl, t("enter_code", "Enter the 6-character room code."), true);
+    setStatus(joinStatusEl, tb("enter_code", "Enter the 6-character room code."), true);
     return;
   }
   joinButton.disabled = true;
@@ -38,7 +38,7 @@ async function onJoin() {
   }
   saveSession(sessionStorage, result.data);
   showRoom(result.data, players);
-  if (!unlocked) setStatus(statusEl, t("tap_repeat_each", "Tap Repeat to hear each message."));
+  if (!unlocked) setStatus(statusEl, tb("tap_repeat_each", "Tap Repeat to hear each message."));
 }
 
 /**
@@ -56,9 +56,11 @@ function onEnded(end) {
   clearSession(sessionStorage);
   setNotice(
     sessionStorage,
-    end === "closed"
-      ? t("room_ended", "The room has ended.")
-      : t("room_expired_rider", "The room has expired. Ask for a new code."),
+    encodeBi(
+      end === "closed"
+        ? tb("room_ended", "The room has ended.")
+        : tb("room_expired_rider", "The room has expired. Ask for a new code."),
+    ),
   );
   location.reload();
 }
@@ -83,11 +85,11 @@ try {
   if (saved) {
     // After a reload there is no tap, so audio stays locked until the person taps Repeat.
     showRoom(saved, [new AudioPlayer(), new AudioPlayer()]);
-    setStatus(statusEl, t("tap_repeat_each", "Tap Repeat to hear each message."));
+    setStatus(statusEl, tb("tap_repeat_each", "Tap Repeat to hear each message."));
   } else {
     const notice = takeNotice(sessionStorage);
-    if (notice) setStatus(joinStatusEl, notice);
+    if (notice) setStatus(joinStatusEl, decodeBi(notice));
   }
 } catch {
-  setStatus(joinStatusEl, t("language_list_failed", "Could not load the language list. Reload the page."), true);
+  setStatus(joinStatusEl, tb("language_list_failed", "Could not load the language list. Reload the page."), true);
 }

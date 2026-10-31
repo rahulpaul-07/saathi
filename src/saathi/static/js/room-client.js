@@ -1,6 +1,6 @@
 // @ts-check
 // HTTP and SSE calls for rooms. Tokens go in an Authorization header (never the URL).
-import { t } from "./i18n.js";
+import { Bi, tb } from "./i18n.js";
 import { classify } from "./retry.js";
 import { createSseParser } from "./sse.js";
 
@@ -11,7 +11,7 @@ const REQUEST_TIMEOUT_MS = 45_000;
  *   peer_language?: string | null}} RoomInfo
  * @typedef {{kind: string, value: string, heard: string, confidence: string,
  *   ambiguous: boolean, reading: string | null}} TurnFact
- * @typedef {{ok: true, data: any} | {ok: false, status: number | null, message: string,
+ * @typedef {{ok: true, data: any} | {ok: false, status: number | null, message: Bi,
  *   keepRecording: boolean}} Result
  */
 
@@ -21,15 +21,16 @@ const bearer = (token) => ({ Authorization: `Bearer ${token}` });
 /**
  * Error body to machine code and text: FastAPI sends {detail: "text"} or {detail: {code, message}}.
  * @param {Response} response
- * @returns {Promise<{code: string | null, message: string | null}>}
+ * @returns {Promise<{code: string | null, message: Bi | null}>}
  */
 async function errorDetail(response) {
   try {
     const detail = (await response.json())?.detail;
-    return {
-      code: typeof detail?.code === "string" ? detail.code : null,
-      message: typeof detail?.message === "string" ? detail.message : null,
-    };
+    const message =
+      typeof detail?.message === "string"
+        ? new Bi(detail.message, typeof detail.message_en === "string" ? detail.message_en : detail.message)
+        : null;
+    return { code: typeof detail?.code === "string" ? detail.code : null, message };
   } catch {
     return { code: null, message: null };
   }
@@ -54,7 +55,7 @@ async function request(path, init) {
     const message =
       (code === "speech_unavailable" || code === "translation_unavailable" ? serverMessage : null) ??
       specificMessage(response.status) ??
-      ("message" in verdict ? verdict.message : "");
+      ("message" in verdict ? verdict.message : new Bi("", ""));
     return {
       ok: false,
       status: response.status,
@@ -66,7 +67,7 @@ async function request(path, init) {
     return {
       ok: false,
       status: null,
-      message: t("no_connection", "No connection to the server. Check the network and try again."),
+      message: tb("no_connection", "No connection to the server. Check the network and try again."),
       keepRecording: "keepRecording" in verdict && verdict.keepRecording,
     };
   }
@@ -75,12 +76,12 @@ async function request(path, init) {
 /**
  * Room-level failures whose meaning differs from the turn-upload messages in retry.js.
  * @param {number} status
- * @returns {string | null}
+ * @returns {Bi | null}
  */
 function specificMessage(status) {
-  if (status === 404) return t("room_not_found", "Room not found or it has expired. Check the code.");
-  if (status === 409) return t("wait_or_full", "Waiting for the other person to join, or the room is full.");
-  if (status === 403) return t("not_allowed", "That action is not allowed here.");
+  if (status === 404) return tb("room_not_found", "Room not found or it has expired. Check the code.");
+  if (status === 409) return tb("wait_or_full", "Waiting for the other person to join, or the room is full.");
+  if (status === 403) return tb("not_allowed", "That action is not allowed here.");
   return null;
 }
 

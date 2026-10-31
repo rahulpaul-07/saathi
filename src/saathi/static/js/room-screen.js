@@ -6,7 +6,8 @@
 import { AudioPlayer } from "./audio-player.js";
 import { cardChips, chipsFromFacts } from "./chips.js";
 import { clipsForLanguage, parseDemoClips } from "./demo-clips.js";
-import { applyChrome, setLanguage, t } from "./i18n.js";
+import { nameForViewer } from "./languages.js";
+import { applyChrome, Bi, bi, renderText, setLanguage, tb } from "./i18n.js";
 import { parseQuickReplyTable, quickReplyOptions } from "./quick-replies.js";
 import { followStream } from "./reconnect.js";
 import { RecorderError, startRecording, toWav } from "./recorder.js";
@@ -69,7 +70,8 @@ export function enterRoom(room, languages, players, onEnded) {
   const demoBadgeEl = byId("demo-badge", HTMLElement);
   const sentDemoBadgeEl = byId("sent-demo-badge", HTMLElement);
 
-  const idleLabel = talkLabel.textContent ?? "";
+  // applyChrome has stored the page's English text on the element, so the idle label keeps both lines.
+  const idleLabel = tb(String(talkLabel.dataset.i18n), talkLabel.dataset.en ?? "");
   /** @type {{recording: import("./recorder.js").Recording | null, busy: boolean,
    *   peerJoined: boolean, pending: Blob | null, pendingDemo: boolean}} */
   const state = {
@@ -94,12 +96,12 @@ export function enterRoom(room, languages, players, onEnded) {
   function incomingHeading(/** @type {boolean} */ live) {
     if (peerRole === "rider") {
       return live
-        ? t("new_message_rider", "New message from the rider.")
-        : t("last_message_rider", "Last message from the rider.");
+        ? tb("new_message_rider", "New message from the rider.")
+        : tb("last_message_rider", "Last message from the rider.");
     }
     return live
-      ? t("new_message_customer", "New message from the customer.")
-      : t("last_message_customer", "Last message from the customer.");
+      ? tb("new_message_customer", "New message from the customer.")
+      : tb("last_message_customer", "Last message from the customer.");
   }
 
   /**
@@ -110,30 +112,33 @@ export function enterRoom(room, languages, players, onEnded) {
   function sentMessage(demoClip, verified) {
     if (!verified) {
       return demoClip
-        ? t("sent_demo_check_translation", "Sent demo clip, but check the translation.")
-        : t("sent_check_translation", "Sent, but check the translation.");
+        ? tb("sent_demo_check_translation", "Sent demo clip, but check the translation.")
+        : tb("sent_check_translation", "Sent, but check the translation.");
     }
     if (peerRole === "rider") {
       return demoClip
-        ? t("sent_demo_rider_has_details", "Sent demo clip. The rider has these details.")
-        : t("sent_rider_has_details", "Sent. The rider has these details.");
+        ? tb("sent_demo_rider_has_details", "Sent demo clip. The rider has these details.")
+        : tb("sent_rider_has_details", "Sent. The rider has these details.");
     }
     return demoClip
-      ? t("sent_demo_customer_has_details", "Sent demo clip. The customer has these details.")
-      : t("sent_customer_has_details", "Sent. The customer has these details.");
+      ? tb("sent_demo_customer_has_details", "Sent demo clip. The customer has these details.")
+      : tb("sent_customer_has_details", "Sent. The customer has these details.");
   }
 
   /** @param {string} code */
   function languageName(code) {
-    const language = languages.find((item) => item.code === code);
-    return language ? (language.native ?? language.name) : code;
+    return nameForViewer(
+      languages.find((item) => item.code === code),
+      room.language,
+      code,
+    );
   }
 
   function render() {
     const recording = state.recording !== null;
     talkButton.setAttribute("aria-pressed", String(recording));
     talkButton.disabled = !state.peerJoined || state.busy || state.pending !== null;
-    talkLabel.textContent = recording ? t("tap_to_stop", "Tap to stop and send") : idleLabel;
+    renderText(talkLabel, recording ? tb("tap_to_stop", "Tap to stop and send") : idleLabel);
     actionsEl.hidden = state.pending === null || state.busy;
     sentEmptyEl.hidden = sentChipsEl.childElementCount > 0;
     demoSendButton.disabled =
@@ -169,9 +174,9 @@ export function enterRoom(room, languages, players, onEnded) {
     state.busy = true;
     render();
     try {
-      setStatus(statusEl, t("loading_demo_clip", "Loading demo clip..."));
+      setStatus(statusEl, tb("loading_demo_clip", "Loading demo clip..."));
       const clip = await fetchDemoClip(demoSelect.value);
-      if (!clip) setStatus(statusEl, t("demo_clip_failed", "Could not load the demo clip."), true);
+      if (!clip) setStatus(statusEl, tb("demo_clip_failed", "Could not load the demo clip."), true);
       else await submit(clip, true);
     } finally {
       state.busy = false;
@@ -192,19 +197,19 @@ export function enterRoom(room, languages, players, onEnded) {
         const button = document.createElement("button");
         button.type = "button";
         button.className = "reply-btn";
-        button.textContent = label;
+        renderText(button, label);
         button.disabled = !options.enabled;
         button.addEventListener("click", () => void onReply(id, label));
         return button;
       }),
     );
-    repliesNoteEl.textContent = state.peerJoined ? (options.reason ?? "") : "";
+    renderText(repliesNoteEl, state.peerJoined && options.reason ? options.reason : "");
   }
 
-  /** @param {string} id @param {string} label */
+  /** @param {string} id @param {Bi} label */
   async function onReply(id, label) {
     const result = await sendQuickReply(room, id);
-    setStatus(statusEl, result.ok ? `${t("sent", "Sent")}: ${label}` : result.message, !result.ok);
+    setStatus(statusEl, result.ok ? bi`${tb("sent", "Sent")}: ${label}` : result.message, !result.ok);
   }
 
   /** @param {string} code */
@@ -213,9 +218,9 @@ export function enterRoom(room, languages, players, onEnded) {
     state.peerJoined = true;
     const joined =
       peerRole === "rider"
-        ? t("rider_joined", "The rider joined.")
-        : t("customer_joined", "The customer joined.");
-    peerEl.textContent = `${joined} ${t("their_language", "Their language")}: ${languageName(code)}.`;
+        ? tb("rider_joined", "The rider joined.")
+        : tb("customer_joined", "The customer joined.");
+    renderText(peerEl, bi`${joined} ${tb("their_language", "Their language")}: ${languageName(code)}.`);
   }
 
   /**
@@ -282,16 +287,19 @@ export function enterRoom(room, languages, players, onEnded) {
     // The customer's facts live on the delivery card; repeating them per turn showed every value twice.
     const chips = peerRole === "customer" ? [] : chipsFromFacts(data.facts, true);
     renderChips(chipsEl, chips);
-    chipsNoteEl.textContent = [
-      chips.some((chip) => chip.labelPending) && t("labels_unreviewed", "Some labels are unreviewed machine spellings."),
+    const notes = [
+      chips.some((chip) => chip.labelPending) &&
+        tb("labels_unreviewed", "Some labels are unreviewed machine spellings."),
       chips.some((chip) => chip.machineTranslated) &&
-        t(
-          "landmark_machine",
-          "The landmark is machine-translated; the original is in brackets.",
-        ),
-    ]
-      .filter(Boolean)
-      .join(" ");
+        tb("landmark_machine", "The landmark is machine-translated; the original is in brackets."),
+    ].filter((note) => note !== false);
+    renderText(
+      chipsNoteEl,
+      new Bi(
+        notes.map((note) => note.local).join(" "),
+        notes.map((note) => note.english).join(" "),
+      ),
+    );
     translationEl.textContent = typeof data.translation === "string" ? data.translation : "";
     demoBadgeEl.hidden = data.demo_clip !== true;
     const heading = incomingHeading(live);
@@ -299,14 +307,14 @@ export function enterRoom(room, languages, players, onEnded) {
       incomingStatusEl,
       data.verified
         ? heading
-        : `${heading} ${t("translation_unchecked", "The translation could not be fully checked; trust the facts above.")}`,
+        : bi`${heading} ${tb("translation_unchecked", "The translation could not be fully checked; trust the facts above.")}`,
     );
     if (typeof data.audio_path !== "string") return;
     const url = await fetchAudioUrl(room, data.audio_path);
     if (!url) {
       // Audio is kept for about a minute, so a late catch-up legitimately has none.
       if (live) {
-        setStatus(incomingStatusEl, t("audio_failed", "Could not load the audio. The facts above are still correct."), true);
+        setStatus(incomingStatusEl, tb("audio_failed", "Could not load the audio. The facts above are still correct."), true);
       }
       return;
     }
@@ -317,7 +325,7 @@ export function enterRoom(room, languages, players, onEnded) {
     }
     const played = await turnPlayer.play(url);
     repeatButton.disabled = false;
-    if (!played) setStatus(incomingStatusEl, t("tap_repeat", "Tap Repeat to hear it."), true);
+    if (!played) setStatus(incomingStatusEl, tb("tap_repeat", "Tap Repeat to hear it."), true);
   }
 
   /**
@@ -331,10 +339,12 @@ export function enterRoom(room, languages, players, onEnded) {
     // contradict the reply shown below it.
     if (shownTurnId === "") incomingStatusEl.hidden = true;
     replyTextEl.textContent = data.text;
-    replyNoteEl.textContent =
+    renderText(
+      replyNoteEl,
       data.review_status === "pending"
-        ? t("unreviewed_translation", "Unreviewed machine translation.")
-        : "";
+        ? tb("unreviewed_translation", "Unreviewed machine translation.")
+        : "",
+    );
     replyEl.hidden = false;
     if (typeof data.audio_path !== "string") return;
     const url = await fetchAudioUrl(room, data.audio_path);
@@ -366,10 +376,10 @@ export function enterRoom(room, languages, players, onEnded) {
     render();
     try {
       state.recording = await startRecording(() => void finishRecording());
-      setStatus(statusEl, t("recording", "Recording. Tap again when you are done (60 s maximum)."));
+      setStatus(statusEl, tb("recording", "Recording. Tap again when you are done (60 s maximum)."));
     } catch (error) {
       if (!(error instanceof RecorderError)) throw error;
-      setStatus(statusEl, error.message, true);
+      setStatus(statusEl, error.text, true);
     } finally {
       state.busy = false;
       render();
@@ -382,12 +392,12 @@ export function enterRoom(room, languages, players, onEnded) {
     state.recording = null;
     state.busy = true;
     render();
-    setStatus(statusEl, t("preparing_audio", "Preparing audio..."));
+    setStatus(statusEl, tb("preparing_audio", "Preparing audio..."));
     try {
       await submit(await toWav(await recording.stop()));
     } catch (error) {
       if (!(error instanceof RecorderError)) throw error;
-      setStatus(statusEl, error.message, true);
+      setStatus(statusEl, error.text, true);
     } finally {
       state.busy = false;
       render();
@@ -403,10 +413,12 @@ export function enterRoom(room, languages, players, onEnded) {
     repeatEl.hidden = text === "";
     repeatTextEl.textContent = text;
     repeatTextEl.lang = room.language;
-    repeatNoteEl.textContent =
+    renderText(
+      repeatNoteEl,
       text !== "" && repeat?.review_status === "pending"
-        ? t("unreviewed_translation", "Unreviewed machine translation.")
-        : "";
+        ? tb("unreviewed_translation", "Unreviewed machine translation.")
+        : "",
+    );
   }
 
   /**
@@ -417,7 +429,7 @@ export function enterRoom(room, languages, players, onEnded) {
   async function submit(wav, demoClip = false) {
     state.pending = wav;
     state.pendingDemo = demoClip;
-    setStatus(statusEl, t("sending", "Sending..."));
+    setStatus(statusEl, tb("sending", "Sending..."));
     showRepeatPrompt(null);
     const result = await postTurn(room, wav, demoClip);
     if (!result.ok) {
@@ -428,9 +440,12 @@ export function enterRoom(room, languages, players, onEnded) {
     state.pending = null;
     const customerSpoke = room.role === "customer"; // see showIncomingTurn: the card has the facts
     renderChips(sentChipsEl, customerSpoke ? [] : chipsFromFacts(result.data.facts));
-    sentEmptyEl.textContent = customerSpoke
-      ? t("sent_card_has_details", "Sent. The delivery card has the details.")
-      : t("nothing_sent", "Nothing sent yet.");
+    renderText(
+      sentEmptyEl,
+      customerSpoke
+        ? tb("sent_card_has_details", "Sent. The delivery card has the details.")
+        : tb("nothing_sent", "Nothing sent yet."),
+    );
     sentEmptyEl.hidden = sentChipsEl.childElementCount > 0;
     sentDemoBadgeEl.hidden = !demoClip;
     renderTimings(timingsEl, result.data.timings);
@@ -456,7 +471,7 @@ export function enterRoom(room, languages, players, onEnded) {
   });
   discardButton.addEventListener("click", () => {
     state.pending = null;
-    setStatus(statusEl, t("recording_discarded", "Recording discarded. Ready."));
+    setStatus(statusEl, tb("recording_discarded", "Recording discarded. Ready."));
     render();
   });
   repeatButton.addEventListener("click", () => void turnPlayer.replay());
@@ -474,7 +489,7 @@ export function enterRoom(room, languages, players, onEnded) {
       quickReplies = parseQuickReplyTable(await getJson("/quick-replies"));
       render();
     } catch {
-      repliesNoteEl.textContent = t("quick_replies_failed", "Quick replies could not be loaded.");
+      renderText(repliesNoteEl, tb("quick_replies_failed", "Quick replies could not be loaded."));
     }
   }
 

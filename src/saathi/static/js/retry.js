@@ -1,14 +1,15 @@
 // @ts-check
 // Retry policy for POST /turn (docs/DESIGN.md section 8). Pure, so it runs under node --test.
 
-import { t } from "./i18n.js";
+import { tb } from "./i18n.js";
 
 export const MAX_AUTO_RETRIES = 3;
 const BASE_DELAY_MS = 1000;
 
 /**
  * @typedef {"ok" | "transient" | "rate_limited" | "upstream" | "no_speech" | "unreliable_translation" | "bad_input"} Outcome
- * @typedef {{outcome: Exclude<Outcome, "ok">, message: string, keepRecording: boolean}} Verdict
+ * @typedef {{outcome: Exclude<Outcome, "ok">, message: import("./i18n.js").Bi,
+ *   keepRecording: boolean}} Verdict
  */
 
 /**
@@ -54,7 +55,7 @@ const SPECS = {
  */
 function verdict(outcome) {
   const spec = SPECS[outcome];
-  return { outcome, message: t(spec.key, spec.english), keepRecording: spec.keepRecording };
+  return { outcome, message: tb(spec.key, spec.english), keepRecording: spec.keepRecording };
 }
 
 /**

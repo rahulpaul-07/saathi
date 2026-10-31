@@ -1,6 +1,6 @@
 // @ts-check
 import { AudioPlayer } from "./audio-player.js";
-import { applyChrome, setChromeTable, setLanguage, t } from "./i18n.js";
+import { applyChrome, decodeBi, encodeBi, setChromeTable, setLanguage, tb } from "./i18n.js";
 import { parseLanguages } from "./languages.js";
 import { createRoom, getJson } from "./room-client.js";
 import { enterRoom } from "./room-screen.js";
@@ -41,9 +41,11 @@ function onEnded(end) {
   clearSession(sessionStorage);
   setNotice(
     sessionStorage,
-    end === "closed"
-      ? t("room_ended", "The room has ended.")
-      : t("room_expired_customer", "The room has expired. Start a new one."),
+    encodeBi(
+      end === "closed"
+        ? tb("room_ended", "The room has ended.")
+        : tb("room_expired_customer", "The room has expired. Start a new one."),
+    ),
   );
   location.reload();
 }
@@ -93,8 +95,8 @@ try {
     showRoom(saved, [new AudioPlayer(), new AudioPlayer()]);
   } else {
     const notice = takeNotice(sessionStorage);
-    if (notice) setStatus(setupStatusEl, notice);
+    if (notice) setStatus(setupStatusEl, decodeBi(notice));
   }
 } catch {
-  setStatus(setupStatusEl, t("language_list_failed", "Could not load the language list. Reload the page."), true);
+  setStatus(setupStatusEl, tb("language_list_failed", "Could not load the language list. Reload the page."), true);
 }

@@ -1,7 +1,7 @@
 // @ts-check
 // Small DOM helpers shared by the customer and rider screens. Received text is only ever set
 // through textContent, never as HTML.
-import { t } from "./i18n.js";
+import { Bi, renderText, t, tb } from "./i18n.js";
 import { languageLabel } from "./languages.js";
 
 /**
@@ -18,11 +18,11 @@ export function byId(id, type) {
 
 /**
  * @param {HTMLElement} el
- * @param {string} text
+ * @param {string | Bi} text
  * @param {boolean} [isError]
  */
 export function setStatus(el, text, isError = false) {
-  el.textContent = text;
+  renderText(el, text);
   el.classList.toggle("error", isError);
 }
 
@@ -35,7 +35,10 @@ export function setStatus(el, text, isError = false) {
 export function fillLanguageSelect(select, languages) {
   const placeholder = document.createElement("option");
   placeholder.value = "";
-  placeholder.textContent = t("choose_a_language", "Choose a language");
+  // An <option> holds text only, so both lines go on one line.
+  const choose = tb("choose_a_language", "Choose a language");
+  placeholder.textContent =
+    choose.local === choose.english ? choose.english : `${choose.local} / ${choose.english}`;
   placeholder.dataset.i18n = "choose_a_language";
   placeholder.disabled = true;
   placeholder.selected = true;
@@ -69,13 +72,13 @@ export function requireChoice(selects, buttons) {
 /**
  * Fill a description list with name/value rows.
  * @param {HTMLElement} list
- * @param {[string, string][]} rows
+ * @param {[string | Bi, string][]} rows
  */
 export function renderRows(list, rows) {
   list.replaceChildren(
     ...rows.flatMap(([name, value]) => {
       const dt = document.createElement("dt");
-      dt.textContent = name;
+      renderText(dt, name);
       const dd = document.createElement("dd");
       dd.textContent = value;
       return [dt, dd];
@@ -87,15 +90,15 @@ export function renderRows(list, rows) {
  * The per-stage durations of one turn, as the server measured them.
  * @param {HTMLElement} list
  * @param {{stt_ms: number, translate_ms: number, tts_ms: number, total_ms: number}} timings
- * @param {[string, string][]} [extraRows]
+ * @param {[string | Bi, string][]} [extraRows]
  */
 export function renderTimings(list, timings, extraRows = []) {
   const ms = (/** @type {number} */ value) => `${Math.round(value)} ms`;
   renderRows(list, [
-    [t("time_stt", "Speech to text"), ms(timings.stt_ms)],
-    [t("time_translate", "Translation"), ms(timings.translate_ms)],
-    [t("time_tts", "Text to speech"), ms(timings.tts_ms)],
-    [t("time_total", "Server total"), ms(timings.total_ms)],
+    [tb("time_stt", "Speech to text"), ms(timings.stt_ms)],
+    [tb("time_translate", "Translation"), ms(timings.translate_ms)],
+    [tb("time_tts", "Text to speech"), ms(timings.tts_ms)],
+    [tb("time_total", "Server total"), ms(timings.total_ms)],
     ...extraRows,
   ]);
 }
@@ -163,7 +166,7 @@ function buildChip(chip, actions) {
   item.className = `chip chip-${chip.kind}${chip.note ? " chip-uncertain" : ""}${chip.changed ? " chip-changed" : ""}`;
   const label = document.createElement("span");
   label.className = "chip-label";
-  label.textContent = chip.label;
+  renderText(label, new Bi(chip.label, chip.labelEn));
   const value = document.createElement("span");
   value.className = "chip-value";
   value.textContent = chip.value;
@@ -180,7 +183,7 @@ function buildChip(chip, actions) {
   if (chip.note) {
     const note = document.createElement("span");
     note.className = "chip-note";
-    note.textContent = chip.note;
+    renderText(note, new Bi(chip.note, chip.noteEn ?? chip.note));
     item.append(note);
   }
   if (chip.confirmed) {
@@ -205,7 +208,7 @@ function buildChip(chip, actions) {
     const ask = document.createElement("button");
     ask.type = "button";
     ask.className = "chip-ask secondary";
-    ask.textContent = `${chip.label}?`;
+    renderText(ask, new Bi(`${chip.label}?`, `${chip.labelEn}?`));
     ask.addEventListener("click", () => actions.ask(chip.kind));
     bar.append(confirm, ask);
     item.append(bar);

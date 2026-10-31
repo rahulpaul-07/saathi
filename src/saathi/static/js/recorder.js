@@ -1,9 +1,18 @@
 // @ts-check
-import { t } from "./i18n.js";
+import { tb } from "./i18n.js";
 import { MAX_SECONDS, TARGET_RATE, clampToMaxDuration, encodeWav } from "./wav.js";
 
-/** Thrown with a user-facing message; everything else is a bug and should surface. */
-export class RecorderError extends Error {}
+/**
+ * Thrown with a user-facing message; everything else is a bug and should surface. `text` holds
+ * the message in both languages for the screen; `message` is the viewer's language alone.
+ */
+export class RecorderError extends Error {
+  /** @param {import("./i18n.js").Bi} text */
+  constructor(text) {
+    super(text.local);
+    this.text = text;
+  }
+}
 
 /**
  * @typedef {{stop: () => Promise<Blob>}} Recording
@@ -18,7 +27,7 @@ export class RecorderError extends Error {}
 export async function startRecording(onAutoStop) {
   if (!window.isSecureContext || !navigator.mediaDevices?.getUserMedia) {
     throw new RecorderError(
-      t("mic_secure_page", "The microphone needs a secure page (HTTPS or localhost)."),
+      tb("mic_secure_page", "The microphone needs a secure page (HTTPS or localhost)."),
     );
   }
   /** @type {MediaStream} */
@@ -31,8 +40,8 @@ export async function startRecording(onAutoStop) {
     const name = error instanceof DOMException ? error.name : "";
     throw new RecorderError(
       name === "NotFoundError"
-        ? t("mic_not_found", "No microphone was found.")
-        : t(
+        ? tb("mic_not_found", "No microphone was found.")
+        : tb(
             "mic_blocked",
             "Microphone access was blocked. Allow it in the browser's site settings, then try again.",
           ),
@@ -78,7 +87,7 @@ export async function toWav(recorded) {
     decoded = await new OfflineAudioContext(1, 1, TARGET_RATE).decodeAudioData(encoded);
   } catch {
     throw new RecorderError(
-      t("recording_unreadable", "This browser could not read the recording. Please try again."),
+      tb("recording_unreadable", "This browser could not read the recording. Please try again."),
     );
   }
   const frames = Math.max(1, Math.ceil(decoded.duration * TARGET_RATE));

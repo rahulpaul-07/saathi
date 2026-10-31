@@ -29,7 +29,8 @@
         <div class="code-box">
           <p class="small" data-i18n="give_code_to_rider">Room code. Give it to the rider.</p>
           <p id="code" class="code" aria-label="Room code" data-i18n-aria-label="room_code"></p>
-          <p class="small"><span data-i18n="rider_link">Rider link</span>: <span id="link" class="mono"></span></p>
+          <p class="small" data-i18n="rider_link">Rider link</p>
+          <p class="small"><span id="link" class="mono"></span></p>
         </div>
 
         <p id="reconnecting" class="status error" role="status" aria-live="polite" hidden data-i18n="reconnecting">Reconnecting...</p>
@@ -69,7 +70,7 @@
         </section>
 
         <h2 id="sent-heading" data-i18n="sees_rider">What the rider sees</h2>
-        <p id="sent-demo-badge" class="badge" data-i18n="demo_badge" data-i18n-also-en hidden>Demo clip, not live speech</p>
+        <p id="sent-demo-badge" class="badge" data-i18n="demo_badge" hidden>Demo clip, not live speech</p>
         <ul id="sent-chips" class="chips" aria-labelledby="sent-heading" aria-live="polite"></ul>
         <p id="sent-empty" class="small" data-i18n="nothing_sent">Nothing sent yet.</p>
         <dl id="timings" class="timings" aria-label="Time taken by your last message" data-i18n-aria-label="time_taken" hidden></dl>
@@ -80,7 +81,7 @@
 
         <h2 id="incoming-heading" data-i18n="from_rider">From the rider</h2>
         <p id="incoming-status" class="status" role="status" aria-live="polite" data-i18n="nothing_received">Nothing received yet.</p>
-        <p id="demo-badge" class="badge" data-i18n="demo_badge" data-i18n-also-en hidden>Demo clip, not live speech</p>
+        <p id="demo-badge" class="badge" data-i18n="demo_badge" hidden>Demo clip, not live speech</p>
         <ul id="chips" class="chips big" aria-labelledby="incoming-heading" aria-live="polite"></ul>
         <p id="chips-note" class="small"></p>
         <p id="translation" class="translation" lang="und"></p>

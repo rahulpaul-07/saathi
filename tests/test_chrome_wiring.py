@@ -12,7 +12,9 @@ STATIC = Path(__file__).resolve().parent.parent / "src" / "saathi" / "static"
 PAGES = ("customer.html", "rider.html")
 TEXT_ATTR = re.compile(r'data-i18n="(\w+)"[^>]*>(.*?)</', re.DOTALL)
 ARIA_ATTR = re.compile(r'aria-label="([^"]*)"[^>]*data-i18n-aria-label="(\w+)"')
-JS_LOOKUP = re.compile(r'(?:t\(|key: )\s*"(\w+)",\s*(?:english: )?"((?:[^"\\]|\\.)*)"', re.DOTALL)
+JS_LOOKUP = re.compile(
+    r'(?:\btb?\(|key: )\s*"(\w+)",\s*(?:english: )?"((?:[^"\\]|\\.)*)"', re.DOTALL
+)
 
 
 def squash(text: str) -> str:

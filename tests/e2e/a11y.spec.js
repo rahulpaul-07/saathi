@@ -2,10 +2,11 @@
 // Accessibility checks that need no extra tools: tap target size, accessible names and colour
 // contrast of the design tokens. Room pages are checked at 360 px wide, the smallest supported.
 import { expect, test } from "@playwright/test";
-import { loadUi } from "./chrome-text.js";
+import { loadUi, makeUi } from "./chrome-text.js";
 
 /** The interface text a viewer in a language sees. @type {(language: string, key: string) => string} */
-let ui = () => "";
+/** @type {ReturnType<typeof makeUi>} */
+let ui = makeUi({});
 test.beforeAll(async ({ playwright }) => {
   ui = await loadUi(playwright, "http://127.0.0.1:8765");
 });

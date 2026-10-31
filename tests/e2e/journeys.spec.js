@@ -1,6 +1,8 @@
 // @ts-check
 import { expect, test } from "@playwright/test";
 
+import { makeUi } from "./chrome-text.js";
+
 // Full customer and rider journeys against the journey server (tests/e2e/serve.py --journey): fake
 // Gnani and a fake translator that writes the target script. Every language appears once as the
 // customer and once as the rider. The pairs are examples; nothing ties a role to a language.
@@ -27,10 +29,11 @@ let CHROME = {};
 test.beforeAll(async ({ playwright }) => {
   const api = await playwright.request.newContext({ baseURL: "http://127.0.0.1:8767" });
   CHROME = (await (await api.get("/chrome")).json()).languages;
+  ui = makeUi(CHROME);
   await api.dispose();
 });
 /** The text a viewer in `language` sees for `key`. */
-const ui = (/** @type {string} */ language, /** @type {string} */ key) => CHROME[language][key].text;
+let ui = makeUi({});
 /** True when some string of `language` still has the review status "pending". */
 const isUnreviewed = (/** @type {string} */ language) =>
   Object.values(CHROME[language]).some((entry) => entry.review_status === "pending");
@@ -114,9 +117,13 @@ async function speak(page, language, phone) {
  * @param {string} language
  */
 async function expectLabelsIn(page, language) {
-  const labels = await page.locator("#card-chips .chip-label").allTextContents();
+  const main = language === "en" ? ".chip-label" : ".chip-label .l-main";
+  const labels = await page.locator(`#card-chips ${main}`).allTextContents();
   expect(labels.length).toBeGreaterThan(0);
   for (const label of labels) expect(label.trim(), `label for ${language}`).toMatch(SCRIPT[language]);
+  // The English second line sits under every label of a non-English page, and only there.
+  const english = await page.locator("#card-chips .chip-label .l-en").count();
+  expect(english).toBe(language === "en" ? 0 : labels.length);
 }
 
 /** @param {import("@playwright/test").Page} page @param {string} kind */
@@ -140,7 +147,7 @@ for (const [index, [customerLanguage, riderLanguage]] of PAIRS.entries()) {
     await rider.locator("#language").selectOption(riderLanguage);
     await press(rider.getByRole("button", { name: ui(riderLanguage, "join_and_sound") }), phone);
     await expect(customer.locator("#talk")).toBeEnabled();
-    await expect(customer.locator("#peer")).toContainText(ui(customerLanguage, "rider_joined"));
+    await expect(customer.locator("#peer")).toContainText(ui.has(customerLanguage, "rider_joined"));
 
     // Quick replies go both ways first, so the customer's placeholder is still showing: it goes
     // away once something arrives. Texts come from the catalog, in the recipient's language.
@@ -176,7 +183,7 @@ for (const [index, [customerLanguage, riderLanguage]] of PAIRS.entries()) {
     for (const page of [customer, rider]) {
       await expect(chip(page, "gate").locator(".chip-value")).toHaveText("4");
       const viewer = page === customer ? customerLanguage : riderLanguage;
-      await expect(chip(page, "gate").locator(".chip-note")).toHaveText(`${ui(viewer, "changed_was")} 2`);
+      await expect(chip(page, "gate").locator(".chip-note")).toHaveText(ui.with(viewer, "changed_was", "2"));
       await expect(page.locator("#card-chips .chip-changed")).toHaveCount(1);
     }
 
@@ -187,7 +194,7 @@ for (const [index, [customerLanguage, riderLanguage]] of PAIRS.entries()) {
     await expect(question).toHaveText(/\?$/);
     expect((await question.textContent())?.trim()).toMatch(SCRIPT[customerLanguage]);
     await expect(chip(customer, "gate").locator(".chip-note")).toHaveText(
-      `${ui(customerLanguage, "changed_was")} 2`,
+      ui.with(customerLanguage, "changed_was", "2"),
     );
     const floorAsk = await chip(rider, "floor").locator(".chip-ask").elementHandle();
 
@@ -202,7 +209,7 @@ for (const [index, [customerLanguage, riderLanguage]] of PAIRS.entries()) {
     // A reload rejoins the room with the card and the confirmation intact.
     await rider.reload();
     await expect(rider.locator("#room")).toBeVisible();
-    await expect(rider.locator("#peer")).toContainText(ui(riderLanguage, "customer_joined"));
+    await expect(rider.locator("#peer")).toContainText(ui.has(riderLanguage, "customer_joined"));
     await expect(chip(rider, "gate").locator(".chip-value")).toHaveText("4");
     await expect(rider.locator("#card-chips .chip-changed")).toHaveCount(0);
     await expect(chip(rider, "gate")).toHaveClass(/chip-confirmed/);
@@ -215,7 +222,7 @@ for (const [index, [customerLanguage, riderLanguage]] of PAIRS.entries()) {
     await expect(rider.locator("#reconnecting")).toBeVisible();
     await rider.unroute("**/events");
     await expect(rider.locator("#reconnecting")).toBeHidden({ timeout: 15_000 });
-    await expect(rider.locator("#peer")).toContainText(ui(riderLanguage, "customer_joined"));
+    await expect(rider.locator("#peer")).toContainText(ui.has(riderLanguage, "customer_joined"));
 
     // End the room: the other side is told, the stored session is gone, the stream stops retrying.
     let eventRequests = 0;
@@ -257,7 +264,7 @@ test("demo split page: the code is carried across, a turn shows on both frames, 
   await rider.locator("#language").selectOption("hi");
   await expect(rider.locator("#join")).toBeEnabled();
   await rider.getByRole("button", { name: ui("hi", "join_and_sound") }).click();
-  await expect(customer.locator("#peer")).toContainText(ui("pa", "rider_joined"));
+  await expect(customer.locator("#peer")).toContainText(ui.has("pa", "rider_joined"));
   await expect(customer.locator("#talk")).toBeEnabled();
 
   for (const gate of ["2", "4"]) {
@@ -268,10 +275,10 @@ test("demo split page: the code is carried across, a turn shows on both frames, 
     await expect(rider.locator("#card-chips .chip-gate .chip-value")).toHaveText(gate);
   }
   await expect(rider.locator("#card-chips .chip-gate .chip-note")).toHaveText(
-    `${ui("hi", "changed_was")} 2`,
+    ui.with("hi", "changed_was", "2"),
   );
   await expect(customer.locator("#card-chips .chip-gate .chip-note")).toHaveText(
-    `${ui("pa", "changed_was")} 2`,
+    ui.with("pa", "changed_was", "2"),
   );
   await expect(rider.locator("#card-chips .chip-floor .chip-changed")).toHaveCount(0);
   expect(problems.filter((text) => !expected(text))).toEqual([]);
@@ -279,12 +286,15 @@ test("demo split page: the code is carried across, a turn shows on both frames, 
 
 /**
  * Words the page shows in Latin letters, apart from content the person or the translator made
- * (chip values, the room code and link) and the language pickers, whose names are English labels.
+ * (chip values, the room code and link), the language pickers, whose names are English labels, and
+ * the English second line (`.l-en`) that sits under every string by design. The main line of every
+ * string must still be free of English.
  * @param {import("@playwright/test").Page} page
  */
 async function latinWordsOnScreen(page) {
   return page.evaluate(() => {
-    const skip = "select, option, #code, #link, #translation, .chip-value, .chip-original, script, style";
+    const skip =
+      "select, option, #code, #link, #translation, .chip-value, .chip-original, .l-en, script, style";
     const visible = (/** @type {Element} */ el) => el.getClientRects().length > 0;
     /** @type {string[]} */
     const found = [];
@@ -302,8 +312,13 @@ async function latinWordsOnScreen(page) {
       const words = (el.getAttribute("aria-label") ?? "").match(/[A-Za-z]{2,}/g) ?? [];
       found.push(...words.map((word) => `${word} @aria-label of ${el.id || el.className}`));
     }
-    // "ms" is a unit symbol, not a word.
-    return found.filter((entry) => !entry.startsWith("ms @"));
+    // "ms" is a unit symbol, not a word. An English language name in brackets after the name in
+    // the viewer's script ("कन्नड़ (Kannada)") is the point of the peer line.
+    const languageNames = ["Bengali", "English", "Hindi", "Kannada", "Telugu", "Gujarati",
+      "Malayalam", "Marathi", "Punjabi", "Tamil"];
+    return found.filter(
+      (entry) => !entry.startsWith("ms @") && !languageNames.some((name) => entry === `${name} @l-main`),
+    );
   });
 }
 
@@ -336,7 +351,7 @@ for (const [customerLanguage, riderLanguage] of [
     await rider.locator("#language").selectOption(riderLanguage);
     expect(await latinWordsOnScreen(rider)).toEqual([]);
     await rider.getByRole("button", { name: ui(riderLanguage, "join_and_sound") }).click();
-    await expect(customer.locator("#peer")).toContainText(ui(customerLanguage, "rider_joined"));
+    await expect(customer.locator("#peer")).toContainText(ui.has(customerLanguage, "rider_joined"));
 
     const viewers = /** @type {const} */ ([
       [customer, customerLanguage],
@@ -365,3 +380,98 @@ test("an English page needs no machine-translation notice and keeps English text
   await expect(page.locator("#chrome-note")).toBeHidden();
   await expect(page.getByRole("button", { name: "Create room" })).toBeVisible();
 });
+
+/**
+ * Bilingual check on one screen: every string the interface draws has a main line in the chosen
+ * language and the English line under it; an English page has one line and no second line.
+ * Returns the problems found.
+ * @param {import("@playwright/test").Page} page
+ * @param {string} language
+ */
+async function bilingualProblems(page, language) {
+  return page.evaluate((lang) => {
+    const visible = (/** @type {Element} */ el) => el.getClientRects().length > 0;
+    /** @type {string[]} */
+    const problems = [];
+    const mains = [...document.querySelectorAll(".l-main")].filter(visible);
+    const seconds = [...document.querySelectorAll(".l-en")].filter(visible);
+    if (lang === "en") {
+      if (mains.length || seconds.length) problems.push("English page has a second line");
+    } else {
+      if (!mains.length) problems.push("no main lines");
+      for (const main of mains) {
+        const second = main.nextElementSibling;
+        const where = main.parentElement?.id || main.parentElement?.className || "?";
+        if (!(main.textContent ?? "").trim()) problems.push(`empty main line @${where}`);
+        if (!second?.classList.contains("l-en") || !(second.textContent ?? "").trim()) {
+          problems.push(`missing English line @${where}`);
+        }
+      }
+      for (const second of seconds) {
+        if (!second.previousElementSibling?.classList.contains("l-main")) {
+          problems.push(`English line without a main line @${second.parentElement?.id}`);
+        }
+      }
+      // Translated elements that were never drawn bilingually.
+      for (const el of document.querySelectorAll("[data-i18n]")) {
+        if (!visible(el) || el.closest("option, select")) continue;
+        if (!el.querySelector(".l-main")) problems.push(`not bilingual: ${el.getAttribute("data-i18n")}`);
+      }
+    }
+    return problems;
+  }, language);
+}
+
+/** Touch targets stay at least 44 px tall and wide, with two lines in a button. */
+const TARGETS = "button, select, input:not([type=hidden]), a.button, summary";
+
+/** @param {import("@playwright/test").Page} page */
+async function smallTargets(page) {
+  return page.evaluate((selector) => {
+    return [...document.querySelectorAll(selector)]
+      .filter((el) => el.getClientRects().length > 0)
+      .map((el) => ({ el, box: el.getBoundingClientRect() }))
+      .filter(({ box }) => box.height < 44 || box.width < 44)
+      .map(({ el, box }) => `${el.id || el.textContent?.trim().slice(0, 20)} ${Math.round(box.width)}x${Math.round(box.height)}`);
+  }, TARGETS);
+}
+
+for (const [customerLanguage, riderLanguage, seenByCustomer, riderNative, seenByRider] of [
+  ["hi", "kn", "कन्नड़ (Kannada)", "ಕನ್ನಡ", "ಹಿಂದಿ (Hindi)"],
+  ["en", "ta", "Tamil", "தமிழ்", "ஆங்கிலம் (English)"],
+]) {
+  test(`${customerLanguage} customer and ${riderLanguage} rider: every string has both lines, targets stay 44 px, the peer language is named in the viewer's script`, async ({
+    browser,
+  }) => {
+    const { page: customer, problems: customerProblems } = await newPage(browser, true);
+    const { page: rider, problems: riderProblems } = await newPage(browser, true);
+    await customer.goto("/customer.html");
+    await customer.locator("#language").selectOption(customerLanguage);
+    const create = customer.getByRole("button", { name: ui(customerLanguage, "create_room") });
+    await expect(create).toBeVisible();
+    expect(await bilingualProblems(customer, customerLanguage)).toEqual([]);
+    expect(await smallTargets(customer)).toEqual([]);
+    await create.click();
+    await expect(customer.locator("#code")).toHaveText(/^[A-Z0-9]{6}$/);
+    const code = (await customer.locator("#code").textContent()) ?? "";
+    await rider.goto(`/rider.html?code=${code}`);
+    await rider.locator("#language").selectOption(riderLanguage);
+    expect(await bilingualProblems(rider, riderLanguage)).toEqual([]);
+    expect(await smallTargets(rider)).toEqual([]);
+    await rider.getByRole("button", { name: ui(riderLanguage, "join_and_sound") }).click();
+    await expect(customer.locator("#peer")).toContainText(ui.has(customerLanguage, "rider_joined"));
+
+    // The other person's language: the viewer's script, then English; never the other's own script.
+    await expect(customer.locator("#peer")).toContainText(seenByCustomer);
+    expect((await customer.locator("#peer").textContent()) ?? "").not.toContain(riderNative);
+    await expect(rider.locator("#peer")).toContainText(seenByRider);
+    for (const [page, language] of /** @type {const} */ ([
+      [customer, customerLanguage],
+      [rider, riderLanguage],
+    ])) {
+      expect(await bilingualProblems(page, language)).toEqual([]);
+      expect(await smallTargets(page)).toEqual([]);
+    }
+    expect([...customerProblems, ...riderProblems].filter((text) => !expected(text))).toEqual([]);
+  });
+}

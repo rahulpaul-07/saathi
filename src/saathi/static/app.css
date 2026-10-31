@@ -141,3 +141,10 @@ button.secondary { min-height: 2.75rem; padding: 0 1rem; border-radius: 0.6rem; 
 .demo { display: grid; gap: 0.5rem; margin: 1rem 0; }
 .demo select { min-height: 2.75rem; }
 .demo button { min-height: 2.75rem; }
+
+/* Bilingual text: the viewer's language is the main line, the English twin sits smaller below it.
+   Both lines inherit the element's colour, so the contrast of the main line carries over. */
+.l-main, .l-en { display: block; }
+.l-en { font-size: 0.8em; font-weight: 400; }
+button .l-main, button .l-en, .reply-btn .l-main, .reply-btn .l-en { text-align: inherit; }
+button:has(.l-en) { padding-top: 0.4rem; padding-bottom: 0.4rem; }

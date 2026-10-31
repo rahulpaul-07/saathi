@@ -5,6 +5,7 @@ import { afterEach, test } from "node:test";
 import { chipsFromFacts, cardChips } from "../../src/saathi/static/js/chips.js";
 import { classify } from "../../src/saathi/static/js/retry.js";
 import {
+  Bi,
   currentLanguage,
   isUnreviewed,
   setChromeTable,
@@ -67,7 +68,7 @@ test("chip notes and retry messages follow the language", () => {
   assert.equal(changed.note, "बदला, पहले था 2");
   assert.deepEqual(classify(503), {
     outcome: "transient",
-    message: "अभी व्यस्त है। फिर कोशिश करें।",
+    message: new Bi("अभी व्यस्त है। फिर कोशिश करें।", "Still busy. Try again."),
     keepRecording: true,
   });
 });
