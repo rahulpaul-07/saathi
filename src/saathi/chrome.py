@@ -10,6 +10,7 @@ corrupt a value. Nothing here is personal data.
 """
 
 from saathi.chrome_data import TRANSLATED
+from saathi.chrome_overrides import apply_overrides
 from saathi.quickreplies import Phrase
 
 SOURCE = "en"
@@ -51,16 +52,15 @@ ENGLISH: dict[str, str] = {
     "recording_discarded": "Recording discarded. Ready.",
     # Demo clips
     "demo_clip": "Demo clip",
+    "choose_a_clip": "Choose a clip",
     "demo_clip_in_language": "Demo clip in your language",
     "send_demo_clip": "Send demo clip",
     "demo_badge": "Demo clip, not live speech",
     "loading_demo_clip": "Loading demo clip...",
     "demo_clip_failed": "Could not load the demo clip.",
     # What I sent
-    "sees_rider": "What the rider sees",
     "sees_customer": "What the customer sees",
     "nothing_sent": "Nothing sent yet.",
-    "sent_card_has_details": "Sent. The delivery card has the details.",
     "sent_rider_has_details": "Sent. The rider has these details.",
     "sent_customer_has_details": "Sent. The customer has these details.",
     "sent_demo_rider_has_details": "Sent demo clip. The rider has these details.",
@@ -141,7 +141,7 @@ CHROME: dict[str, dict[str, Phrase]] = {
     SOURCE: {key: Phrase(text, "source") for key, text in ENGLISH.items()},
     **{
         code: {key: Phrase(text, status) for key, (text, status) in strings.items()}
-        for code, strings in TRANSLATED.items()
+        for code, strings in apply_overrides(TRANSLATED).items()
     },
 }
 

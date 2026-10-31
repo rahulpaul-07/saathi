@@ -103,7 +103,15 @@ def demo_clips_dir() -> Path:
         wav.setsampwidth(2)
         wav.setframerate(16000)
         wav.writeframes(struct.pack("<h", 3000) * 32000)
-    clips = [{"id": f"clip-{code}", "lang": code, "label": f"Sample {code}"} for code in LANGUAGES]
+    clips = [
+        {
+            "id": f"clip-{code}",
+            "lang": code,
+            "label": f"Sample {code}",
+            "label_local": "ಮಾದರಿ ಕ್ಲಿಪ್" if code == "kn" else "",
+        }
+        for code in LANGUAGES
+    ]
     for clip in clips:
         (directory / f"{clip['id']}.wav").write_bytes(buf.getvalue())
     (directory / "manifest.json").write_text(json.dumps({"clips": clips}), encoding="utf-8")

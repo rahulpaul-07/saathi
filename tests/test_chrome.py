@@ -5,6 +5,7 @@ import re
 from pathlib import Path
 
 from saathi.chrome import CHROME, ENGLISH, SOURCE, word_overlap
+from saathi.chrome_overrides import OVERRIDES
 from saathi.languages import LANGUAGES
 from saathi.quickreplies import QUICK_REPLIES
 from saathi.repeatprompts import REPEAT_PROMPTS
@@ -67,11 +68,12 @@ def test_no_translation_is_left_as_the_english_source() -> None:
 
 def test_the_drift_report_covers_every_string_still_machine_made() -> None:
     report = json.loads(REPORT.read_text(encoding="utf-8"))
+    # Hand-written overrides are not machine output, so the back-translation report skips them.
     pending = {
         (code, key)
         for code, strings in CHROME.items()
         for key, phrase in strings.items()
-        if phrase.review_status == "pending"
+        if phrase.review_status == "pending" and key not in OVERRIDES.get(code, {})
     }
     assert {(row["lang"], row["key"]) for row in report["rows"]} == pending
     assert report["strings"] == len(pending)
@@ -84,7 +86,10 @@ def test_bn_and_hi_are_reviewed_and_use_the_agreed_words_for_rider_and_room() ->
         "bn": ("আরোহী", "ঘর", "কক্ষ"),
     }
     for code, words in forbidden.items():
-        assert {p.review_status for p in CHROME[code].values()} == {"reviewed"}, code
+        # A string added after the review (a hand-written override) stays "pending" until the author
+        # has read it; it is the only kind allowed to differ.
+        statuses = {p.review_status for k, p in CHROME[code].items() if k not in OVERRIDES[code]}
+        assert statuses == {"reviewed"}, code
         bad = [k for k, p in CHROME[code].items() if any(w in p.text for w in words)]
         assert bad == [], code
     assert CHROME["hi"]["role_rider"].text == "राइडर"

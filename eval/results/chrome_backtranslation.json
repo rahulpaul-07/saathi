@@ -1,6 +1,6 @@
 {
  "drift_below": 0.5,
- "strings": 756,
+ "strings": 742,
  "flagged": 42,
  "rows": [
   {
@@ -271,13 +271,6 @@
   },
   {
    "lang": "kn",
-   "key": "sees_rider",
-   "back": "What the rider sees",
-   "overlap": 1.0,
-   "flagged": false
-  },
-  {
-   "lang": "kn",
    "key": "sees_customer",
    "back": "What the customer sees",
    "overlap": 1.0,
@@ -287,13 +280,6 @@
    "lang": "kn",
    "key": "nothing_sent",
    "back": "Nothing has been sent yet.",
-   "overlap": 1.0,
-   "flagged": false
-  },
-  {
-   "lang": "kn",
-   "key": "sent_card_has_details",
-   "back": "has been sent. The delivery card has the details.",
    "overlap": 1.0,
    "flagged": false
   },
@@ -1027,13 +1013,6 @@
   },
   {
    "lang": "te",
-   "key": "sees_rider",
-   "back": "What the rider sees",
-   "overlap": 1.0,
-   "flagged": false
-  },
-  {
-   "lang": "te",
    "key": "sees_customer",
    "back": "What the consumer will see.",
    "overlap": 0.5,
@@ -1044,13 +1023,6 @@
    "key": "nothing_sent",
    "back": "Nothing has been sent yet.",
    "overlap": 1.0,
-   "flagged": false
-  },
-  {
-   "lang": "te",
-   "key": "sent_card_has_details",
-   "back": "have been sent. The delivery card will have the details.",
-   "overlap": 0.86,
    "flagged": false
   },
   {
@@ -1783,13 +1755,6 @@
   },
   {
    "lang": "gu",
-   "key": "sees_rider",
-   "back": "What do you see in the morning?",
-   "overlap": 0.5,
-   "flagged": false
-  },
-  {
-   "lang": "gu",
    "key": "sees_customer",
    "back": "What the customer sees.",
    "overlap": 1.0,
@@ -1800,13 +1765,6 @@
    "key": "nothing_sent",
    "back": "Nothing has been sent yet.",
    "overlap": 1.0,
-   "flagged": false
-  },
-  {
-   "lang": "gu",
-   "key": "sent_card_has_details",
-   "back": "sent. The delivery card contains the details.",
-   "overlap": 0.86,
    "flagged": false
   },
   {
@@ -2539,13 +2497,6 @@
   },
   {
    "lang": "ml",
-   "key": "sees_rider",
-   "back": "What the rider sees",
-   "overlap": 1.0,
-   "flagged": false
-  },
-  {
-   "lang": "ml",
    "key": "sees_customer",
    "back": "What the customer sees",
    "overlap": 1.0,
@@ -2555,13 +2506,6 @@
    "lang": "ml",
    "key": "nothing_sent",
    "back": "Nothing has been sent yet.",
-   "overlap": 1.0,
-   "flagged": false
-  },
-  {
-   "lang": "ml",
-   "key": "sent_card_has_details",
-   "back": "Sent. The delivery card has the details.",
    "overlap": 1.0,
    "flagged": false
   },
@@ -3295,13 +3239,6 @@
   },
   {
    "lang": "mr",
-   "key": "sees_rider",
-   "back": "What the rider sees",
-   "overlap": 1.0,
-   "flagged": false
-  },
-  {
-   "lang": "mr",
    "key": "sees_customer",
    "back": "What the customer sees.",
    "overlap": 1.0,
@@ -3312,13 +3249,6 @@
    "key": "nothing_sent",
    "back": "Nothing has been sent yet.",
    "overlap": 1.0,
-   "flagged": false
-  },
-  {
-   "lang": "mr",
-   "key": "sent_card_has_details",
-   "back": "sent to. The delivery card contains the details.",
-   "overlap": 0.86,
    "flagged": false
   },
   {
@@ -4051,13 +3981,6 @@
   },
   {
    "lang": "pa",
-   "key": "sees_rider",
-   "back": "What the rider sees",
-   "overlap": 1.0,
-   "flagged": false
-  },
-  {
-   "lang": "pa",
    "key": "sees_customer",
    "back": "What the customer sees.",
    "overlap": 1.0,
@@ -4068,13 +3991,6 @@
    "key": "nothing_sent",
    "back": "Nothing has been sent yet.",
    "overlap": 1.0,
-   "flagged": false
-  },
-  {
-   "lang": "pa",
-   "key": "sent_card_has_details",
-   "back": "sent The delivery card contains the details.",
-   "overlap": 0.86,
    "flagged": false
   },
   {
@@ -4807,13 +4723,6 @@
   },
   {
    "lang": "ta",
-   "key": "sees_rider",
-   "back": "What the rider sees",
-   "overlap": 1.0,
-   "flagged": false
-  },
-  {
-   "lang": "ta",
    "key": "sees_customer",
    "back": "What the customer is looking at",
    "overlap": 0.75,
@@ -4823,13 +4732,6 @@
    "lang": "ta",
    "key": "nothing_sent",
    "back": "Nothing has been sent yet.",
-   "overlap": 1.0,
-   "flagged": false
-  },
-  {
-   "lang": "ta",
-   "key": "sent_card_has_details",
-   "back": "He sent. The delivery card has the details.",
    "overlap": 1.0,
    "flagged": false
   },
