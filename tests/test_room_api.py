@@ -561,7 +561,7 @@ async def test_catalog_endpoints_list_languages_and_quick_replies(
 ) -> None:
     languages = (await client.get("/languages")).json()
     assert len(languages) == 10
-    assert {"code": "ta", "name": "Tamil", "tier": "beta"} in languages
+    assert {"code": "ta", "name": "Tamil", "native": "தமிழ்", "tier": "beta"} in languages
     table = (await client.get("/quick-replies")).json()
     assert table["ids"] == {
         "rider": ["reached_gate", "which_floor", "coming_2_min"],
@@ -1071,3 +1071,14 @@ async def test_quick_replies_are_limited_too_and_share_the_budget_with_chip_repl
 
         assert over.status_code == 429
         assert queue.empty()
+
+
+async def test_chrome_endpoint_serves_every_string_in_every_language(
+    client: httpx.AsyncClient,
+) -> None:
+    table = (await client.get("/chrome")).json()["languages"]
+
+    assert set(table) == set(LANGUAGES)
+    assert len({len(strings) for strings in table.values()}) == 1
+    assert table["en"]["create_room"] == {"text": "Create room", "review_status": "source"}
+    assert table["hi"]["create_room"]["review_status"] == "pending"
