@@ -7,7 +7,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 
 from saathi.facts import Fact, extract_facts
-from saathi.gnani import GnaniClient
+from saathi.gnani import GnaniClient, GnaniError
 from saathi.guard import has_repeated_phrase
 from saathi.landmarks import localize_landmarks
 from saathi.languages import LANGUAGES
@@ -22,6 +22,11 @@ AUDIO_FILENAME = "turn.wav"  # the browser always uploads WAV, so the name is fi
 
 class TurnInputError(ValueError):
     """The requested language pair is not supported."""
+
+
+class RecordingRejectedError(Exception):
+    """Prisma refused this audio (a 4xx other than rate limiting): re-recording is the fix, a
+    retry of the same bytes cannot work."""
 
 
 class NoSpeechError(Exception):
@@ -80,7 +85,12 @@ async def run_turn(
     src_lang, tgt_lang = LANGUAGES[src], LANGUAGES[tgt]
 
     t0 = time.perf_counter()
-    transcript = (await gnani.transcribe(audio, AUDIO_FILENAME, src_lang.gnani_code)).strip()
+    try:
+        transcript = (await gnani.transcribe(audio, AUDIO_FILENAME, src_lang.gnani_code)).strip()
+    except GnaniError as exc:
+        if 400 <= exc.status < 500 and exc.status != 429:
+            raise RecordingRejectedError from exc
+        raise
     t1 = time.perf_counter()
     if not transcript:
         raise NoSpeechError

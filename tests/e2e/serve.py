@@ -22,6 +22,9 @@ from saathi.config import Settings
 from saathi.gnani import GnaniClient
 from saathi.languages import LANGUAGES
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # tests/ for the shared wavs.py
+from wavs import require_speech_audio  # noqa: E402
+
 PORT = 8765
 DEMO_PORT = 8766  # `--demo`: demo input mode on, clips from a temp folder
 JOURNEY_PORT = 8767  # `--journey`: script-aware fake translator, every language alternates the gate
@@ -47,6 +50,7 @@ class FakeGnani:
         self._calls: dict[str, int] = {}
 
     async def transcribe(self, audio: bytes, filename: str, language: str) -> str:
+        require_speech_audio(audio)
         if self._alternate_all or language == CHANGING_LANGUAGE:
             self._calls[language] = self._calls.get(language, 0) + 1
             if self._calls[language] % 2 == 0:

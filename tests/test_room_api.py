@@ -10,6 +10,7 @@ from pydantic import SecretStr
 from placeholders import carry
 from saathi.app import create_app
 from saathi.audio import MAX_AUDIO_BYTES
+from saathi.chrome import CHROME
 from saathi.config import Settings
 from saathi.gnani import GnaniClient, GnaniError
 from saathi.labels import chip_label
@@ -18,7 +19,7 @@ from saathi.quickreplies import IDS_BY_ROLE, QUICK_REPLIES
 from saathi.repeatprompts import REPEAT_PROMPTS
 from saathi.rooms import Event, Role, RoomManager, other
 from saathi.unavailable import UNAVAILABLE
-from wavs import make_wav
+from wavs import make_wav, require_speech_audio
 
 TRANSCRIPT = "gate number 2 near the blue temple"  # synthetic
 TRANSLATION = "kannada text"
@@ -32,6 +33,7 @@ class FakeGnani:
 
     async def transcribe(self, audio: bytes, filename: str, language: str) -> str:
         self.stt_calls += 1
+        require_speech_audio(audio)
         if self.error:
             raise self.error
         return self.transcript
@@ -397,11 +399,25 @@ async def test_every_ordered_language_pair_works_for_both_speakers(
     [
         (b"not a wav file", "audio/wav", 400),
         (make_wav(61, rate=8000), "audio/wav", 400),
+        (make_wav(0), "audio/wav", 400),
+        (b"", "audio/wav", 400),
+        (make_wav(0.1), "audio/wav", 400),
+        (make_wav(1, rate=1000), "audio/wav", 400),
         (b"RIFF" + b"\x00" * MAX_AUDIO_BYTES, "audio/wav", 413),
         (make_wav(), "text/plain", 415),
         (make_wav(), "application/octet-stream", 415),
     ],
-    ids=["not-wav", "too-long", "too-large", "text-type", "octet-type"],
+    ids=[
+        "not-wav",
+        "too-long",
+        "no-frames",
+        "empty-body",
+        "too-short",
+        "odd-sample-rate",
+        "too-large",
+        "text-type",
+        "octet-type",
+    ],
 )
 async def test_bad_audio_is_rejected_before_any_paid_call(
     client: httpx.AsyncClient, gnani: FakeGnani, audio: bytes, content_type: str, status: int
@@ -410,6 +426,44 @@ async def test_bad_audio_is_rejected_before_any_paid_call(
     response = await post_turn(client, room, audio=audio, content_type=content_type)
     assert response.status_code == status
     assert gnani.stt_calls == 0
+
+
+async def test_a_speech_service_400_asks_for_a_new_recording_in_the_speakers_language(
+    client: httpx.AsyncClient, gnani: FakeGnani
+) -> None:
+    room = await make_room(client, src="kn", tgt="hi")
+    gnani.error = GnaniError("secret upstream body", status=400)
+
+    response = await post_turn(client, room, who="customer")
+
+    assert response.status_code == 400
+    assert response.json()["detail"] == {
+        "code": "bad_recording",
+        "message": CHROME["kn"]["bad_recording"].text,
+    }
+    assert "secret" not in response.text
+    assert gnani.stt_calls == 1  # no retry of bytes the service already refused
+
+
+async def test_a_400_from_speech_synthesis_is_not_blamed_on_the_recording(
+    client: httpx.AsyncClient, gnani: FakeGnani
+) -> None:
+    async def refusing(text: str, language: str, voice: str) -> bytes:
+        raise GnaniError("bad text", 400)
+
+    gnani.synthesize = refusing  # type: ignore[method-assign]
+    room = await make_room(client, src="kn", tgt="hi")
+
+    response = await post_turn(client, room, who="customer")
+
+    assert response.status_code == 502
+
+
+async def test_the_fake_speech_service_refuses_unusable_audio_like_the_real_one() -> None:
+    for audio in (b"", b"not a wav", make_wav(0)):
+        with pytest.raises(GnaniError) as info:
+            await FakeGnani().transcribe(audio, "turn.wav", "kn-IN")
+        assert info.value.status == 400
 
 
 async def test_turn_rate_limit_applies_before_paid_calls(
@@ -445,7 +499,11 @@ async def test_upstream_failure_is_reported_in_the_speakers_language(
     spoke = (await post_turn(client, room, who="customer")).json()["detail"]
     answered = (await post_turn(client, room, who="rider")).json()["detail"]
 
-    assert spoke == {"code": "speech_unavailable", "message": UNAVAILABLE["kn"].text}
+    assert spoke == {
+        "code": "speech_unavailable",
+        "message": UNAVAILABLE["kn"].text,
+        "message_en": UNAVAILABLE["en"].text,
+    }
     assert answered["message"] == UNAVAILABLE["hi"].text
 
 
@@ -561,7 +619,14 @@ async def test_catalog_endpoints_list_languages_and_quick_replies(
 ) -> None:
     languages = (await client.get("/languages")).json()
     assert len(languages) == 10
-    assert {"code": "ta", "name": "Tamil", "native": "தமிழ்", "tier": "beta"} in languages
+    tamil = next(item for item in languages if item["code"] == "ta")
+    assert {k: tamil[k] for k in ("name", "native", "tier")} == {
+        "name": "Tamil",
+        "native": "தமிழ்",
+        "tier": "beta",
+    }
+    assert tamil["names"]["hi"] == "तमिल"
+    assert tamil["names"]["ta"] == "தமிழ்"
     table = (await client.get("/quick-replies")).json()
     assert table["ids"] == {
         "rider": ["reached_gate", "which_floor", "coming_2_min"],

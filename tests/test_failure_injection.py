@@ -20,7 +20,7 @@ from saathi.config import Settings
 from saathi.gnani import GnaniClient, GnaniError
 from saathi.rooms import Event, Role, Room, RoomManager
 from saathi.unavailable import translation_unavailable_text, unavailable_text
-from wavs import make_wav
+from wavs import make_wav, require_speech_audio
 
 SEED_TRANSCRIPT = "gate number 2 near the blue temple"  # synthetic
 NEW_TRANSCRIPT = "gate number 9 near the red shop"  # what a failing turn would have said
@@ -37,6 +37,7 @@ class FakeGnani:
 
     async def transcribe(self, audio: bytes, filename: str, language: str) -> str:
         self.stt_calls += 1
+        require_speech_audio(audio)
         if self.stt_error:
             raise self.stt_error
         return self.transcript
@@ -139,7 +140,11 @@ async def test_a_gnani_failure_is_reported_and_the_room_is_untouched(
     if code:
         detail = response.json()["detail"]
         speaker_language = env.room.participants[who].language
-        assert detail == {"code": code, "message": unavailable_text(speaker_language)}
+        assert detail == {
+            "code": code,
+            "message": unavailable_text(speaker_language),
+            "message_en": unavailable_text("en"),
+        }
     assert env.untouched() == before
     assert env.gnani.stt_calls == 1
 
@@ -197,6 +202,7 @@ async def test_a_translation_exception_is_a_localized_502_and_the_room_is_untouc
     assert response.json()["detail"] == {
         "code": "translation_unavailable",
         "message": translation_unavailable_text(speaker_language),
+        "message_en": translation_unavailable_text("en"),
     }
     assert env.untouched() == before
     assert env.gnani.tts_calls == 0  # nothing was spoken for a sentence that never existed

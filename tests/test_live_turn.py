@@ -11,6 +11,7 @@ from placeholders import carry
 from saathi.evaluation import liveturn
 from saathi.evaluation.calls import GNANI_CALL_CAP, CallLedger, SlidingWindowLimiter
 from saathi.gnani import GnaniClient, GnaniError
+from wavs import require_speech_audio
 
 KN_TEXT = "ನಮ್ಮ ಮನೆ ಎರಡನೇ ಕ್ರಾಸ್, ಮೂರನೇ ಮೇನ್, ಗೇಟ್ ನಂಬರ್ ಎರಡು ಹತ್ತಿರ, ಆಪೋಸಿಟ್ ಗಣೇಶ ದೇವಸ್ಥಾನ"
 SECRET_TRANSLATION = "synthetic translation that must never be printed"
@@ -45,6 +46,7 @@ class FakeGnani:
 
     async def transcribe(self, audio: bytes, filename: str, language_code: str) -> str:
         self._count(f"stt:{language_code}")
+        require_speech_audio(audio)
         return KN_TEXT
 
     async def aclose(self) -> None:

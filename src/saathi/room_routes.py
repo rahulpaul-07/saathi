@@ -17,12 +17,14 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from saathi.audio import MAX_AUDIO_BYTES, AudioError, AudioTooLargeError, wav_duration_s
 from saathi.card import ChipAction
+from saathi.chrome import CHROME
 from saathi.facts import Fact, FactKind
 from saathi.gnani import GnaniClient, GnaniError
 from saathi.labels import chip_label
 from saathi.languages import LANGUAGES
 from saathi.pipeline import (
     NoSpeechError,
+    RecordingRejectedError,
     TranslationUnavailableError,
     UnreliableTranslationError,
     run_turn,
@@ -314,16 +316,30 @@ def room_router(
             raise HTTPException(
                 422, {"code": "unreliable_translation", "message": "could not translate reliably"}
             ) from exc
+        except RecordingRejectedError as exc:
+            raise HTTPException(
+                400,
+                {"code": "bad_recording", "message": CHROME[src]["bad_recording"].text},
+            ) from exc
         except GnaniError as exc:
             if exc.status == 429:
                 raise HTTPException(503, "speech service busy, retry shortly") from exc
             raise HTTPException(
-                502, {"code": "speech_unavailable", "message": unavailable_text(src)}
+                502,
+                {
+                    "code": "speech_unavailable",
+                    "message": unavailable_text(src),
+                    "message_en": unavailable_text("en"),
+                },
             ) from exc
         except TranslationUnavailableError as exc:
             raise HTTPException(
                 502,
-                {"code": "translation_unavailable", "message": translation_unavailable_text(src)},
+                {
+                    "code": "translation_unavailable",
+                    "message": translation_unavailable_text(src),
+                    "message_en": translation_unavailable_text("en"),
+                },
             ) from exc
 
         if not manager.is_live(room):  # closed or expired while the paid calls ran

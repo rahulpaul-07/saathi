@@ -21,6 +21,7 @@ from saathi.gnani import GnaniClient, GnaniError
 from saathi.languages import LANGUAGES
 from saathi.pipeline import (
     NoSpeechError,
+    RecordingRejectedError,
     TranslationUnavailableError,
     TurnInputError,
     UnreliableTranslationError,
@@ -159,6 +160,10 @@ def create_app(
                     "message": "could not translate reliably",
                     "transcript": exc.transcript,
                 },
+            ) from exc
+        except RecordingRejectedError as exc:
+            raise HTTPException(
+                400, {"code": "bad_recording", "message": "the recording cannot be used"}
             ) from exc
         except GnaniError as exc:
             if exc.status == 429:
