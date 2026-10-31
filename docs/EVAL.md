@@ -438,9 +438,10 @@ What this says, and does not:
 
 `scripts/analyze_masking_reversal.py` (`collect`, `report`, `examples`), summary in
 `eval/results/masking_reversal.json`, per-sentence checkpoint in `eval/state/` (gitignored).
-Coverage is partial: 46 of the 90 pairs (sources bn, en, gu, hi, kn and most of ml) because the
-power guard stopped the run on battery; mr, pa, ta, te sources were not collected. Nothing below
-was changed in the app. Synthetic addresses only.
+Coverage is complete: all 90 pairs, 20 sentences each (finished on AC power on 2026-10-31; the
+first run covered 46 pairs and was stopped by the power guard, and the numbers below replace the
+earlier partial figures). Nothing below was changed in the app. Synthetic
+addresses only.
 
 Hypothesis tested first: the matrix source is machine-translated, so numbers are digits, unlike the
 number words STT returns, and masking only helps number words. Not supported:
@@ -453,39 +454,46 @@ number words STT returns, and masking only helps number words. Not supported:
 | hi | 40 | 0.35 | 0.65 | 1.6 |
 | kn | 25 | 0.48 | 0.52 | 1.1 |
 | ml | 17 | 0.65 | 0.35 | 1.4 |
+| mr | 11 | 0.64 | 0.36 | 1.0 |
+| pa | 22 | 0.50 | 0.50 | 1.6 |
+| ta | 6 | 1.00 | 0.00 | 0.6 |
+| te | 15 | 0.53 | 0.47 | 1.2 |
 
-The sources are about half digits and half words, and no source writes native-script digits. Recall
+Apart from Tamil (6 numbers, all digits) the sources are about half digits and half words, and no source writes native-script digits. Recall
 by how the sentence writes its numbers (non-en targets, "back" = the matrix score, "direct" = the
 target-language extractor on the translated text, the A/B style of scoring):
 
 | class | back plain | back masked | direct plain | direct masked |
 |---|---|---|---|---|
-| digits | 0.86 | 0.76 | 0.53 | 0.63 |
-| words | 0.64 | 0.46 | 0.27 | 0.46 |
-| mixed | 0.89 | 0.81 | 0.48 | 0.68 |
-| no numbers | 0.63 | 0.65 | 0.22 | 0.23 |
+| digits | 0.85 | 0.80 | 0.53 | 0.56 |
+| words | 0.66 | 0.48 | 0.29 | 0.41 |
+| mixed | 0.90 | 0.79 | 0.50 | 0.67 |
+| no numbers | 0.65 | 0.66 | 0.23 | 0.24 |
 
-Masking hurts the back-translated score in every class, and hurts word sentences most (so the
-hypothesis points the wrong way). On the direct score masking helps in every class. Target en has
-no back-translation and is neutral (plain 0.81, masked 0.80). Over all collected pairs: back
-plain 0.76 vs masked 0.67; direct plain 0.37 vs masked 0.51. So the reversal is mostly a
-difference between two scoring routes, not between two kinds of source text.
+Masking hurts the back-translated score in every class that has numbers, and hurts word sentences
+most (so the hypothesis points the wrong way). On the direct score masking helps most for words
+(+0.12) and mixed (+0.17), little for digits (+0.03) and not at all for sentences without numbers.
+Target en has no back-translation and is neutral (plain 0.80, masked 0.79). Over all 90 pairs: back
+plain 0.75 vs masked 0.68; direct plain 0.37 vs masked 0.44 (non-en targets only: back 0.74 vs
+0.67, direct 0.32 vs 0.40). So the reversal is mostly a difference between two scoring routes, not
+between two kinds of source text.
 
-Where the masked loss comes from (facts masked lost beyond plain: 342; facts masked found that
-plain missed: 100; net -242), by the first cause that applies:
-- 164: the masked text itself lacks the fact by the target-language extractor.
-- 122: the masked text is fine, but the back-translation lost it.
-- 38: fallback, a placeholder was dropped (verified false; the app would speak the summary).
+Where the masked loss comes from (facts masked lost beyond plain: 527; facts masked found that
+plain missed: 170; net -357), by the first cause that applies:
+- 257: the masked text itself lacks the fact by the target-language extractor.
+- 162: the masked text is fine, but the back-translation lost it.
+- 81: fallback, a placeholder was dropped (verified false; the app would speak the summary).
+- 13: verified true, but the source digit is absent.
 - 11: verified true, but placeholder residue (`<ID4]`, "I. D. 3") is left in the text.
-- 7: verified true, but the source digit is absent.
+- 3: the masked translation failed.
 
-Fallback rate per source: bn 0.03, en 0.01, gu 0.02, hi 0.03, kn 0.07, ml 0.01. So fallbacks and
-corrupted placeholders explain about 49 of 342 lost facts; most of the loss is verified,
-well-formed output.
+Fallback rate per source: bn 0.03, en 0.01, gu 0.02, hi 0.03, kn 0.07, ml 0.01, mr 0.07, pa 0.06,
+ta 0.02, te 0.03. So fallbacks and corrupted placeholders explain about 92 of 527 lost facts; most
+of the loss is verified, well-formed output.
 
-By fact kind (masked lost while plain found / the reverse): floor 134 / 17, gate 88 / 39,
-cross 86 / 11, main 55 / 11, flat 11 / 52, block 5 / 7. Flat numbers are the only kind where
-masking is net positive. The ordinal kinds lose most. In the examples the restore writes a bare
+By fact kind (masked lost while plain found / the reverse): gate 165 / 61, floor 147 / 19,
+cross 126 / 18, main 79 / 22, flat 49 / 68, block 14 / 35. Flat and block numbers are the only
+kinds where masking is net positive. The ordinal kinds lose most. In the examples the restore writes a bare
 digit, so "fourth floor" becomes "4 floors" (bn "4 মেঝে", gu "2 ફ્લોર"), "second cross" becomes
 "2 crosses", and the back-translation reads a quantity, not an ordinal.
 
@@ -509,7 +517,7 @@ above now carry the current-code rerun; the first recorded file is in commit 8e2
 Cause, as far as the evidence goes: masking replaces ordinal words and numbers with a bare digit,
 which the second translation reads as a quantity; the strict English extractor then misses it; a
 smaller share is placeholder corruption by the toolkit's entity wrapper (verified can still be true
-with residue left). Still unknown: the 0.808 figure; mr, pa, ta, te sources; whether a listener
+with residue left). Still unknown: the 0.808 figure; whether a listener
 would understand "2 crosses" in context; and how real STT number words behave (no recorded speech
 in this test).
 

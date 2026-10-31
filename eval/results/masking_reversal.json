@@ -1,6 +1,6 @@
 {
-  "commit": "a5c79bf",
-  "sentences": 980,
+  "commit": "a3e4aa8",
+  "sentences": 1800,
   "forms_by_source": {
     "bn": {
       "numbers": 29,
@@ -37,207 +37,231 @@
       "ascii": 0.6470588235294118,
       "native": 0.0,
       "word": 0.35294117647058826
+    },
+    "mr": {
+      "numbers": 11,
+      "ascii": 0.6363636363636364,
+      "native": 0.0,
+      "word": 0.36363636363636365
+    },
+    "pa": {
+      "numbers": 22,
+      "ascii": 0.5,
+      "native": 0.0,
+      "word": 0.5
+    },
+    "ta": {
+      "numbers": 6,
+      "ascii": 1.0,
+      "native": 0.0,
+      "word": 0.0
+    },
+    "te": {
+      "numbers": 15,
+      "ascii": 0.5333333333333333,
+      "native": 0.0,
+      "word": 0.4666666666666667
     }
   },
   "by_class": {
     "digits": {
       "back_plain": [
-        494,
-        577
+        1130,
+        1332
       ],
       "back_masked": [
-        439,
-        577
+        1067,
+        1332
       ],
       "direct_plain": [
-        304,
-        577
+        702,
+        1332
       ],
       "direct_masked": [
-        365,
-        577
+        745,
+        1332
       ]
     },
     "digits, target en": {
       "back_plain": [
-        58,
-        65
+        121,
+        135
       ],
       "back_masked": [
-        58,
-        65
+        124,
+        135
       ],
       "direct_plain": [
-        58,
-        65
+        121,
+        135
       ],
       "direct_masked": [
-        58,
-        65
+        124,
+        135
       ]
     },
     "words": {
       "back_plain": [
-        480,
-        749
+        786,
+        1197
       ],
       "back_masked": [
-        348,
-        749
+        573,
+        1197
       ],
       "direct_plain": [
-        203,
-        749
+        343,
+        1197
       ],
       "direct_masked": [
-        347,
-        749
+        496,
+        1197
       ]
     },
     "words, target en": {
       "back_plain": [
-        54,
-        74
+        91,
+        116
       ],
       "back_masked": [
-        53,
-        74
+        82,
+        116
       ],
       "direct_plain": [
-        54,
-        74
+        91,
+        116
       ],
       "direct_masked": [
-        53,
-        74
+        82,
+        116
       ]
     },
     "mixed": {
       "back_plain": [
-        735,
-        822
+        846,
+        945
       ],
       "back_masked": [
-        668,
-        822
+        747,
+        945
       ],
       "direct_plain": [
-        394,
-        822
+        469,
+        945
       ],
       "direct_masked": [
-        556,
-        822
+        634,
+        945
       ]
     },
     "mixed, target en": {
       "back_plain": [
-        65,
-        66
+        77,
+        78
       ],
       "back_masked": [
-        65,
-        66
+        76,
+        78
       ],
       "direct_plain": [
-        65,
-        66
+        77,
+        78
       ],
       "direct_masked": [
-        65,
-        66
+        76,
+        78
       ]
     },
     "none": {
       "back_plain": [
-        406,
-        645
+        1077,
+        1656
       ],
       "back_masked": [
-        418,
-        645
+        1095,
+        1656
       ],
       "direct_plain": [
-        142,
-        645
+        385,
+        1656
       ],
       "direct_masked": [
-        149,
-        645
+        391,
+        1656
       ]
     },
     "none, target en": {
       "back_plain": [
-        53,
-        80
+        120,
+        184
       ],
       "back_masked": [
-        53,
-        80
+        123,
+        184
       ],
       "direct_plain": [
-        53,
-        80
+        120,
+        184
       ],
       "direct_masked": [
-        53,
-        80
+        123,
+        184
       ]
     }
   },
   "overall": {
     "all pairs": {
       "back_plain": [
-        2115,
-        2793
+        3839,
+        5130
       ],
       "back_masked": [
-        1873,
-        2793
+        3482,
+        5130
       ],
       "direct_plain": [
-        1043,
-        2793
+        1899,
+        5130
       ],
       "direct_masked": [
-        1417,
-        2793
+        2266,
+        5130
       ]
     },
     "target en": {
       "back_plain": [
-        230,
-        285
+        409,
+        513
       ],
       "back_masked": [
-        229,
-        285
+        405,
+        513
       ],
       "direct_plain": [
-        230,
-        285
+        409,
+        513
       ],
       "direct_masked": [
-        229,
-        285
+        405,
+        513
       ]
     },
     "target not en": {
       "back_plain": [
-        1885,
-        2508
+        3430,
+        4617
       ],
       "back_masked": [
-        1644,
-        2508
+        3077,
+        4617
       ],
       "direct_plain": [
-        813,
-        2508
+        1490,
+        4617
       ],
       "direct_masked": [
-        1188,
-        2508
+        1861,
+        4617
       ]
     }
   },
@@ -247,30 +271,35 @@
     "gu": 0.022222222222222223,
     "hi": 0.03333333333333333,
     "kn": 0.07222222222222222,
-    "ml": 0.0125
+    "ml": 0.005555555555555556,
+    "mr": 0.06666666666666667,
+    "pa": 0.05555555555555555,
+    "ta": 0.016666666666666666,
+    "te": 0.027777777777777776
   },
   "lost_by_kind": {
-    "floor": 134,
-    "gate": 88,
-    "cross": 86,
-    "main": 55,
-    "block": 5,
-    "flat": 11
+    "floor": 147,
+    "gate": 165,
+    "cross": 126,
+    "main": 79,
+    "block": 14,
+    "flat": 49
   },
   "gained_by_kind": {
-    "main": 11,
-    "floor": 17,
-    "flat": 52,
-    "gate": 39,
-    "block": 7,
-    "cross": 11
+    "main": 22,
+    "floor": 19,
+    "flat": 68,
+    "gate": 61,
+    "block": 35,
+    "cross": 18
   },
   "loss_by_cause": {
-    "masked text itself lacks the fact (target-language extractor)": 164,
-    "fallback: slot dropped": 38,
-    "back-translation lost it (masked text is fine)": 122,
+    "masked text itself lacks the fact (target-language extractor)": 257,
+    "fallback: slot dropped": 81,
+    "back-translation lost it (masked text is fine)": 162,
     "verified, but placeholder residue is left in the text": 11,
-    "verified, but a source digit is absent": 7
+    "verified, but a source digit is absent": 13,
+    "masked translation failed": 3
   },
-  "facts_masked_found_that_plain_missed": 100
+  "facts_masked_found_that_plain_missed": 170
 }
