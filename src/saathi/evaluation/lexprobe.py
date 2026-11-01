@@ -1,7 +1,7 @@
 """Probe sentences for building a language's number and trigger lexicon from real STT output.
 
 Each sentence is generated from word tables, so the intended value of every position is known.
-The words below are written by Claude from general knowledge of the language; they only decide
+The words below are machine-drafted, then verified against Gnani STT output; they only decide
 what the TTS speaks. What goes into the lexicon is the spelling the STT writes back, never these
 strings. Entries built this way are "machine-verified, not native-reviewed".
 """

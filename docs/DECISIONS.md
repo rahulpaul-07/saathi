@@ -184,7 +184,7 @@ are an existence proof, not a distribution; slice 5 measures p50/p95 properly.
   IndicXlit; rider has quick replies only (no free speech); no public tunnel, demo is a recorded
   LAN video; RNNoise and the local-LLM comparison are out.
 - Any-to-any over the 10 languages Gnani supports for both STT and TTS. Odia is in neither (docs
-  checked 2026-10-11). Tiers: kn en hi bn verified, te reviewed, gu ml mr pa ta beta.
+  checked 2026-10-11). Tiers: kn en hi bn core, gu ml mr pa ta te beta (te was "reviewed" until 2026-11-01; no speaker had checked it).
 - Fact extraction: universal layer (digits, English direction words) for all languages, native
   rules for the verified core only.
 - Quick replies: English source, offline machine translation, static table, per-language review
@@ -303,7 +303,7 @@ are an existence proof, not a distribution; slice 5 measures p50/p95 properly.
   ambiguous fact shows the words heard plus "could be 14"; low confidence gets a dashed border and
   "check this". English labels only; localized labels were not done (cut first, per plan).
 - Language picker: `GET /languages` (new, public, read-only) from `languages.py`; labels add
-  "(reviewed)" for te and "(beta)" for the beta tier, none for the verified core.
+  "(beta)" for the beta tier, none for the core (te carried "(reviewed)" until 2026-11-01).
 - Quick replies (contract change, strictly needed): the rider's POST must reach the customer as words
   and audio, so the table now exists. `quickreplies.py` holds 3 phrases for en (source), hi, bn, kn
   (machine output supplied by the author, `review_status: "pending"`, shown to the customer as
@@ -404,7 +404,7 @@ are an existence proof, not a distribution; slice 5 measures p50/p95 properly.
 - Product rule: the customer and the rider can each use any of the 10 languages, in both
   directions. No code, default, fixture or doc may tie a role to a language. Language pairs in
   tests, demos and the eval live-turn fixture (`evaluation/liveturn.py`, kn to bn) are examples
-  only; demo casting is undecided. Both screens offer all 10 languages with no preselected choice
+  only. Both screens offer all 10 languages with no preselected choice
   (placeholder option; buttons stay disabled until chosen). The solo page has two pickers with the
   same rule.
 - Either role may POST a turn. The source language is the speaker's, the target is the other
@@ -698,7 +698,7 @@ the customer said it, in their script.
   accessible names at 360 px, AA contrast of the token pairs in light and dark). No new
   dependency. The "Back" link in the page header (33x21 px) fails the size check; the look is
   frozen before the rehearsal, so `.sub` is skipped in the size check only, with a comment, and
-  the issue is listed in HANDOFF.md.
+  the issue was logged at the time.
 - Threat model and path-to-production are documents only. The limiter key table never shrinks;
   recorded as an open gap with no mitigation and no test rather than fixed late in a frozen batch.
 - The Gnani key test asserts the key is absent from the settings repr and from failure logs.

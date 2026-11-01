@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Literal
 
-Tier = Literal["core", "reviewed", "beta"]
+Tier = Literal["core", "beta"]
 
 
 @dataclass(frozen=True)
@@ -10,7 +10,7 @@ class Language:
     gnani_code: str  # BCP-47, used by Prisma STT and Timbre TTS
     indictrans_code: str  # FLORES-style code used by IndicTrans2
     tts_voice: str
-    tier: Tier  # core: fully evaluated; reviewed: checked by a speaker; beta: path smoke-tested
+    tier: Tier  # core: evaluated on the synthetic gold set; beta: machine-verified only
     native: str  # the language's name in its own script, for the other person's screen
 
 
@@ -21,7 +21,7 @@ LANGUAGES: dict[str, Language] = {
     "en": Language("English", "en-IN", "eng_Latn", "Kaveri", "core", "English"),
     "hi": Language("Hindi", "hi-IN", "hin_Deva", "Nalini", "core", "हिन्दी"),
     "kn": Language("Kannada", "kn-IN", "kan_Knda", "Saanvi", "core", "ಕನ್ನಡ"),
-    "te": Language("Telugu", "te-IN", "tel_Telu", "Suhana", "reviewed", "తెలుగు"),
+    "te": Language("Telugu", "te-IN", "tel_Telu", "Suhana", "beta", "తెలుగు"),
     "gu": Language("Gujarati", "gu-IN", "guj_Gujr", "Falak", "beta", "ગુજરાતી"),
     "ml": Language("Malayalam", "ml-IN", "mal_Mlym", "Reshma", "beta", "മലയാളം"),
     "mr": Language("Marathi", "mr-IN", "mar_Deva", "Zahira", "beta", "मराठी"),

@@ -1,7 +1,7 @@
 # Threat model
 
 Scope: the app as built today, one process on one host, used by two people in a short-lived room.
-It is a portfolio project that has not been deployed publicly (AGENTS.md rules that out), so this
+It is a portfolio project that has not been deployed publicly (a design rule rules that out), so this
 document describes what the code defends against, how that is tested, and what it does not
 defend against. Test references are `file::test name`. "No test" is written where there is none.
 

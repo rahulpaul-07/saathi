@@ -1,0 +1,49 @@
+# Changelog
+
+User-facing changes, newest first. Evaluation numbers live in [`docs/EVAL.md`](docs/EVAL.md) and
+the reasons for design choices in [`docs/DECISIONS.md`](docs/DECISIONS.md).
+
+## 2026-11-01
+
+- Telugu is now beta. No speaker has checked it. Tiers are two: core (kn, en, hi, bn, evaluated on the
+  synthetic gold set) and beta (gu, ml, mr, pa, ta, te, machine-verified only). "Reviewed by the author"
+  applies only to bn and hi: all interface strings, quick replies, repeat prompts and the clip prompt.
+- Phone layout: the delivery card sits directly under the header, the room status is one compact line,
+  and the demo split page uses a larger base font and a four-column chip grid.
+- Optional `SAATHI_MASKING_MODE=conditional` (default `current`, unchanged). The comparison is in
+  `docs/EVAL.md`; the recommendation is to keep `current`.
+- The English fact extractor now reads "Gate No. 2", "No. 2 cross" and "4 floors". Every published
+  fact-recall number uses the fixed extractor; old values are kept in dated notes.
+- Latency study rerun on AC power: p50 2.9 s, p95 4.0 s over 20 turns, no retries.
+- README rewritten; MIT licence, third-party notices, architecture overview and design FAQ added.
+  The run command now binds 127.0.0.1; LAN use is in `docs/LAN_CHECK.md` (the server has no login).
+
+## 2026-10-31
+
+- Bilingual interface: every string shows the viewer's language and an English line. Language names
+  appear in the viewer's script ("कन्नड़ (Kannada)" on a Hindi page).
+- Recordings that are empty, not WAV, shorter than 0.3 s or at an unsupported sample rate are refused
+  before any Gnani call. A Gnani 4xx shows a localized "that recording can't be used" message.
+- Interface loanwords ("room", "rider", "gate") are consistent across all ten languages.
+- Phone-first customer and rider screens (the design proposal) implemented.
+- Back link tap target raised to 44 px.
+
+## 2026-10-30
+
+- Translator failures fall back to a fact summary instead of an error.
+- Fact extraction for gu, ml, mr, pa, ta and te, built from real Gnani STT output
+  (`docs/LEXICON_EVIDENCE.md`), with an evaluation across all ten languages.
+- Translation-safety matrix across 90 language pairs, and the masking diagnosis.
+- Load test for rooms; `/healthz`; failure-injection tests; optional Playwright job in CI.
+- Rehearsal fixes: one retry on Gnani timeouts and 5xx, a "Gate 4 then gate 2" demo correction clip,
+  old landmark shown in "changed, was".
+
+## 2026-10-29
+
+- Pinned delivery card with a "changed, was X" marker; the rider can confirm a chip or ask about it.
+- "Please repeat" prompts, per-stage timings on the turn response, reconnect after a reload or a
+  dropped connection (stored in `sessionStorage`, backoff with jitter), and a Content-Security-Policy on
+  every response.
+- Quick replies (3 phrases per role, all ten languages) with a review status per phrase.
+- Roles are independent of languages: either person can use any of the ten.
+- CI workflow and README badge.

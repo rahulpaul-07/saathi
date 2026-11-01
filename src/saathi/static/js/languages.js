@@ -22,7 +22,7 @@ export function nameForViewer(language, viewer, fallback) {
 }
 
 /** @type {Record<string, string>} */
-const TIER_SUFFIX = { core: "", reviewed: " (reviewed)", beta: " (beta)" };
+const TIER_SUFFIX = { core: "", beta: " (beta)" };
 
 /**
  * @param {Language} language

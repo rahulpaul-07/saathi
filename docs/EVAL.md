@@ -178,27 +178,27 @@ Caveats:
   never asserts a wrong chip.
 - All lexicons for these six languages are machine-verified, not native-reviewed.
 
-## Turn latency, bn to kn (AC power, run 2026-10-30)
+## Turn latency, bn to kn (AC power, run 2026-11-01)
 
 `scripts/latency_study.py --yes`: 20 turns of STT (Gnani), local IndicTrans2 translation and TTS
 (Gnani), 40 calls, `eval/results/latency.json`. Source audio: 4 synthetic Gnani TTS clips of
-Bengali gold sentences cycled over the turns. 19 of 20 turns completed cleanly; one failed with a
-Gnani 504 and is excluded.
+Bengali gold sentences cycled over the turns. All 20 turns completed with no retries or failures.
 
 | Stage | p50 | p95 | max |
 |---|---|---|---|
-| STT (Gnani) | 1.4 s | 8.2 s | 8.5 s |
-| Translate (local) | 0.6 s | 0.8 s | 0.8 s |
-| TTS (Gnani) | 1.8 s | 5.5 s | 8.9 s |
-| Total | 4.2 s | 11.3 s | 18.1 s |
+| STT (Gnani) | 0.9 s | 1.1 s | 1.4 s |
+| Translate (local) | 0.9 s | 1.8 s | 13.5 s |
+| TTS (Gnani) | 1.1 s | 1.3 s | 1.3 s |
+| Total | 2.9 s | 4.0 s | 16.2 s |
+
+Superseded run, 2026-10-30 (AC power, n=19, during a stretch of Gnani 504s): p50 4.2 s, p95 11.3 s.
+That tail measured the bad service stretch, not typical use.
 
 Caveats:
 
-- n=19: the p95 is close to the maximum, so quote the p50 and say the tail is long.
-- The run happened while Gnani returned intermittent 504s on /stt/v3 (the client retried each
-  once, and the log shows about a dozen retries). Retry time is inside the stage times, so the
-  tail mostly measures that bad stretch of service, not typical use. The p50 is the more stable
-  figure; a rerun at another time of day would show whether the tail moves.
+- n=20: the p95 is close to the second-largest value, so quote the p50 and say the tail is long.
+- One translation took 13.5 s (the max); the cause was not investigated, so the total max of 16.2 s
+  is a single outlier, not a pattern.
 - Synthetic, clean, short clips from one voice: real phone audio is longer and noisier, and
   longer clips take longer to transcribe.
 - One pair, one machine (the author's laptop), the translator already loaded. A cold start adds
@@ -336,9 +336,8 @@ set; the reader may deviate from the printed text, which counts as an STT error.
 
 ## How to record the real-speech set
 
-Superseded: no one is recorded for this project (see "Audio sources and labels" below). The
-scripts in `docs/recording/` are optional leftovers; nothing in the evaluation or the demo
-depends on them. The old `eval_turns.py sentences` / `stt-real` steps no longer exist.
+Superseded: no one is recorded for this project (see "Audio sources and labels" below).
+Recording scripts were removed on 2026-11-01. The old `eval_turns.py sentences` / `stt-real` steps no longer exist.
 
 ## Load test (fake Gnani)
 
