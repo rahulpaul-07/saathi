@@ -111,6 +111,7 @@ def create_app(
             settings.turn_rate_limit_per_minute,
             settings.reply_rate_limit_per_minute,
             demo_input=settings.demo_input,
+            masking_mode=settings.masking_mode,
         )
     )
 
@@ -146,7 +147,7 @@ def create_app(
             raise HTTPException(400, str(exc)) from exc
 
         try:
-            result = await run_turn(data, src, tgt, gnani, translator)
+            result = await run_turn(data, src, tgt, gnani, translator, settings.masking_mode)
         except NoSpeechError as exc:
             raise HTTPException(
                 422, {"code": "no_speech", "message": "no speech detected"}

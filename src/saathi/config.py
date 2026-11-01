@@ -1,5 +1,6 @@
 from functools import lru_cache
 from pathlib import Path
+from typing import Literal
 
 from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -26,6 +27,11 @@ class Settings(BaseSettings):
     warm_tts: bool = Field(default=False, validation_alias="SAATHI_WARM_TTS")
     # Demo input lets a participant send a prepared clip instead of the microphone (off by default).
     demo_input: bool = Field(default=False, validation_alias="SAATHI_DEMO_INPUT")
+    # "conditional" restores floor, cross and main as ordinals where the target lexicon has the word
+    # (docs/EVAL.md). It is an experiment: "current" stays the default until it is measured better.
+    masking_mode: Literal["current", "conditional"] = Field(
+        default="current", validation_alias="SAATHI_MASKING_MODE"
+    )
     demo_clips_dir: Path = Field(
         default=Path("demo/clips"), validation_alias="SAATHI_DEMO_CLIPS_DIR"
     )

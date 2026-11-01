@@ -111,3 +111,17 @@ async def test_result_carries_facts_from_the_source_transcript_and_is_verified()
     result = await run_turn(make_wav(), "en", "kn", gnani, FixedTranslator("ಬೇಗ ಬೇಗ"))  # type: ignore[arg-type]
     assert [(f.kind, f.value) for f in result.facts] == [("gate", "2")]
     assert result.verified is True
+
+
+async def test_masking_mode_reaches_the_translation_and_defaults_to_current() -> None:
+    transcript = "second cross gate number 5"  # synthetic
+    plain = await run_turn(
+        make_wav(), "en", "hi", FakeGnani(transcript), FixedTranslator("")  # type: ignore[arg-type]
+    )
+    conditional = await run_turn(
+        make_wav(), "en", "hi", FakeGnani(transcript), FixedTranslator(""),  # type: ignore[arg-type]
+        masking_mode="conditional",
+    )
+    assert "दूसरा" not in plain.translation and "2" in plain.translation
+    assert "दूसरा" in conditional.translation and "2" not in conditional.translation
+    assert plain.verified and conditional.verified

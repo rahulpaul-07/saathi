@@ -22,6 +22,7 @@ from saathi.facts import Fact, FactKind
 from saathi.gnani import GnaniClient, GnaniError
 from saathi.labels import chip_label
 from saathi.languages import LANGUAGES
+from saathi.masking import MaskingMode
 from saathi.pipeline import (
     NoSpeechError,
     RecordingRejectedError,
@@ -196,6 +197,7 @@ def room_router(
     turn_limit_per_minute: int,
     reply_limit_per_minute: int,
     demo_input: bool = False,
+    masking_mode: MaskingMode = "current",
 ) -> APIRouter:
     router = APIRouter()
     create_limiter = SlidingWindowLimiter(room_limit_per_minute)
@@ -307,7 +309,7 @@ def room_router(
         data = await _read_wav(audio)
         src, tgt = room.participants[speaker].language, peer.language
         try:
-            result = await run_turn(data, src, tgt, gnani, translator)
+            result = await run_turn(data, src, tgt, gnani, translator, masking_mode)
         except NoSpeechError as exc:
             raise HTTPException(
                 422, {"code": "no_speech", "message": "no speech detected"}

@@ -11,7 +11,7 @@ from saathi.gnani import GnaniClient, GnaniError
 from saathi.guard import has_repeated_phrase
 from saathi.landmarks import localize_landmarks
 from saathi.languages import LANGUAGES
-from saathi.masking import MaskedTranslation, translate_masked
+from saathi.masking import MaskedTranslation, MaskingMode, translate_masked
 from saathi.summary import fact_summary
 from saathi.translate import DegenerateTranslationError, Translator
 
@@ -79,7 +79,12 @@ def _ms(start: float, end: float) -> float:
 
 
 async def run_turn(
-    audio: bytes, src: str, tgt: str, gnani: GnaniClient, translator: Translator
+    audio: bytes,
+    src: str,
+    tgt: str,
+    gnani: GnaniClient,
+    translator: Translator,
+    masking_mode: MaskingMode = "current",
 ) -> TurnResult:
     validate_pair(src, tgt)
     src_lang, tgt_lang = LANGUAGES[src], LANGUAGES[tgt]
@@ -98,7 +103,9 @@ async def run_turn(
     # Facts come from the source text, so they survive whatever the translation does. The model is
     # blocking and GPU-bound; keep it off the event loop.
     facts = tuple(extract_facts(transcript, src))
-    translated = await _in_thread(_translate_checked, translator, transcript, src, tgt, facts, True)
+    translated = await _in_thread(
+        _translate_checked, translator, transcript, src, tgt, facts, True, masking_mode
+    )
     facts = await _in_thread(localize_landmarks, facts, src, tgt, translator)
     translation, verified = translated.text, translated.verified
     if not verified:
@@ -147,11 +154,12 @@ def _translate_checked(
     tgt: str,
     facts: tuple[Fact, ...],
     use_mask: bool,
+    masking_mode: MaskingMode = "current",
 ) -> MaskedTranslation:
     """Blocking. Translate (masked or plain) and refuse a runaway loop."""
     try:
         if use_mask:
-            result = translate_masked(translator, transcript, src, tgt, facts)
+            result = translate_masked(translator, transcript, src, tgt, facts, masking_mode)
         else:
             text = translator.translate(transcript, src, tgt)
             result = MaskedTranslation(text, verified=False, raw=text)

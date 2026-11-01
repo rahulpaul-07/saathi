@@ -5,7 +5,7 @@ from saathi.facts import extract_facts
 from saathi.facts.text import key
 from saathi.languages import LANGUAGES
 from saathi.loanwords import CONCEPTS, SPOKEN_CONCEPTS, concept_of, written
-from saathi.masking import FIRST_SLOT, mask, restore, translate_masked
+from saathi.masking import FIRST_SLOT, mask, ordinal_word, restore, translate_masked
 from saathi.quickreplies import QUICK_REPLIES
 
 EN = "second cross third main gate number 5"  # synthetic
@@ -113,3 +113,57 @@ def test_ambiguous_readings_are_not_masked() -> None:
 def test_unknown_source_language_is_rejected() -> None:
     with pytest.raises(ValueError):
         translate_masked(Replay("x"), "gate 5", "xx", "kn")
+
+
+# --- conditional masking -----------------------------------------------------------------------
+
+
+def test_default_mode_masks_every_value_as_a_plain_value() -> None:
+    masked = mask(EN, "en", extract_facts(EN, "en"), tgt="hi")
+    assert {slot.kind for slot in masked.slots} == {"loanword", "value"}
+
+
+def test_conditional_masks_ordinal_kinds_as_ordinal_slots_and_gate_as_a_value() -> None:
+    masked = mask(EN, "en", extract_facts(EN, "en"), tgt="hi", mode="conditional")
+    assert {slot.text for slot in masked.slots if slot.kind == "ordinal"} == {"2", "3"}
+    assert {slot.text for slot in masked.slots if slot.kind == "value"} == {"5"}
+
+
+def test_conditional_restores_the_ordinal_word_in_the_target_language() -> None:
+    result = translate_masked(_Carry(), EN, "en", "hi", mode="conditional")
+    assert result.verified is True
+    for value in ("2", "3"):
+        word = ordinal_word(value, "hi")
+        assert word is not None and word in result.text
+    assert "2" not in result.text and "3" not in result.text  # no bare digit: the ordinal is spoken
+    assert "5" in result.text  # the gate stays a digit
+
+
+def test_conditional_leaves_the_value_unmasked_where_the_target_has_no_ordinal_word() -> None:
+    assert ordinal_word("2", "bn") is None  # Bengali is excluded: the lexicon spelling is folded
+    masked = mask(EN, "en", extract_facts(EN, "en"), tgt="bn", mode="conditional")
+    assert not [slot for slot in masked.slots if slot.kind == "ordinal"]
+    assert masked.text.startswith("second ") or " second " in masked.text
+
+
+def test_conditional_leaves_values_without_an_ordinal_word_unmasked() -> None:
+    text = "35th floor"  # beyond the 20 ordinals most lexicons list
+    masked = mask(text, "en", extract_facts(text, "en"), tgt="gu", mode="conditional")
+    assert masked.text == "35th #L51"
+    assert [slot.kind for slot in masked.slots] == ["loanword"]
+
+
+def test_conditional_needs_a_target_language() -> None:
+    with pytest.raises(ValueError, match="target"):
+        mask(EN, "en", extract_facts(EN, "en"), mode="conditional")
+
+
+def test_conditional_still_flags_a_lost_ordinal_slot() -> None:
+    result = translate_masked(Replay("#L51 only"), EN, "en", "hi", mode="conditional")
+    assert result.verified is False
+
+
+def test_ordinal_word_rejects_non_numeric_values() -> None:
+    assert ordinal_word("5B", "en") is None
+    assert ordinal_word("2", "en") == "second"
+    assert ordinal_word("99", "en") is None
