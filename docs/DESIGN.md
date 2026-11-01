@@ -234,17 +234,17 @@ Build days Oct 12-16; away Oct 17-18 (hackathon); Oct 19 to Nov 6; submit Nov 7.
 
 | # | Dates | Delivers | Status |
 |---|---|---|---|
-| 0 | Oct 12 | Day-one probe (dry run reviewed, then run) and its findings; 10-language data table; three-model routing; VRAM with all three loaded; en-to-hi/bn and a rider-side route working locally | in progress (probe built) |
-| 1 | Oct 13-14 | Fact extractor: universal layer and kn/en native rules, synthetic gold set with dev/test split, text-only scores (no Gnani); Kannada and Telugu recording scripts (due Oct 13) | |
-| 2 | Oct 14-15 | Room backend: create/join, tokens, TTL, SSE, in-memory turn audio, rate limits; pipeline returns translation, facts, verified; fakes in tests | |
-| 3 | Oct 15-16 | Rider and customer screens: chips, auto-play, Repeat, language picker for 10 languages, two-context Playwright test; quick replies (3 phrases per role, all 10 languages) are CORE; localized labels only if time (cut first) | |
-| 4 | Oct 16 | Demo core integrated: real Gnani turn (few calls), TTS loudness normalization, LAN two-phone check; buffer for slips | |
+| 0 | Oct 12 | Day-one probe (dry run reviewed, then run) and its findings; 10-language data table; three-model routing; VRAM with all three loaded; en-to-hi/bn and a rider-side route working locally | done: probe run and routing working; findings in docs/DECISIONS.md |
+| 1 | Oct 13-14 | Fact extractor: universal layer and kn/en native rules, synthetic gold set with dev/test split, text-only scores (no Gnani); Kannada and Telugu recording scripts (due Oct 13) | | changed: extractor and gold set done; recording scripts dropped, no one is recorded |
+| 2 | Oct 14-15 | Room backend: create/join, tokens, TTL, SSE, in-memory turn audio, rate limits; pipeline returns translation, facts, verified; fakes in tests | | done: rooms, SSE, tokens, rate limits and fakes |
+| 3 | Oct 15-16 | Rider and customer screens: chips, auto-play, Repeat, language picker for 10 languages, two-context Playwright test; quick replies (3 phrases per role, all 10 languages) are CORE; localized labels only if time (cut first) | | changed: screens, quick replies and localized labels done; later redesigned phone-first and bilingual |
+| 4 | Oct 16 | Demo core integrated: real Gnani turn (few calls), TTS loudness normalization, LAN two-phone check; buffer for slips | | changed: real Gnani turn and loudness done; LAN check with real phones not done |
 | - | Oct 17-18 | away | |
-| 5 | Oct 19-21 | Number and landmark masking, restore, fact-summary fallback; 3-arm text A/B; hi and bn native extraction rules | |
-| 6 | Oct 22-24 | Quick-reply table in 10 languages (machine-translated, reviews requested), localized labels, noise mixer (seeded SNR), eval harness replacing `eval_turns.py`, dry run | |
-| 7 | Oct 25-28 | Recordings in; Gnani main eval (clean, 20, 10, 5 dB), Kannada synthetic condition, te human smoke, 5 beta smokes, latency | |
-| 8 | Oct 29-Nov 2 | Error analysis, extractor fixes re-scored on the frozen test split, outdoor audibility check, README beta/odia statements | |
-| 9 | Nov 3-5 | EVAL.md, README, demo video on LAN, final checks | |
+| 5 | Oct 19-21 | Number and landmark masking, restore, fact-summary fallback; 3-arm text A/B; hi and bn native extraction rules | | done: masking, restore, fallback, A/B; native rules for hi, bn and later all 10 |
+| 6 | Oct 22-24 | Quick-reply table in 10 languages (machine-translated, reviews requested), localized labels, noise mixer (seeded SNR), eval harness replacing `eval_turns.py`, dry run | | done: quick replies, labels, noise mixer and eval harness; reviews only by the author for bn and hi |
+| 7 | Oct 25-28 | Recordings in; Gnani main eval (clean, 20, 10, 5 dB), Kannada synthetic condition, te human smoke, 5 beta smokes, latency | | changed: recordings dropped, public FLEURS data and synthetic speech used instead; te human smoke dropped, no speaker; latency done |
+| 8 | Oct 29-Nov 2 | Error analysis, extractor fixes re-scored on the frozen test split, outdoor audibility check, README beta/odia statements | | changed: error analysis and extractor fixes done; outdoor audibility not done |
+| 9 | Nov 3-5 | EVAL.md, README, demo video on LAN, final checks | | done: EVAL.md and README; demo video still to record |
 | - | Nov 6-7 | buffer, submit | |
 
 What moved after Oct 19 compared with the first plan, because of the 10-language scope: hi and bn

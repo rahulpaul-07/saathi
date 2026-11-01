@@ -174,7 +174,7 @@ curl.exe -L -C - -o torch-2.9.1+cu128-cp312-cp312-win_amd64.whl https://download
 
 SHA256 must be `3a01f0b64c10a82d444d9fd06b3e8c567b1158b76b2764b8f51bfd8f535064b0`
 (`Get-FileHash <file> -Algorithm SHA256`). Then `uv sync --inexact --no-install-package torch` and
-`uv pip install <path-to>	orch-2.9.1+cu128-cp312-cp312-win_amd64.whl`. A plain `uv sync` tries to
+`uv pip install <path-to>\torch-2.9.1+cu128-cp312-cp312-win_amd64.whl`. A plain `uv sync` tries to
 download torch again, and `--no-install-package torch` without `--inexact` uninstalls it.
 
 Checks:
