@@ -1,0 +1,75 @@
+{
+  "commit": "525afbb",
+  "split": "all",
+  "targets": [
+    "bn",
+    "hi",
+    "kn",
+    "en"
+  ],
+  "pairs": 90,
+  "unverified": {
+    "current": "9/90",
+    "conditional": "8/90"
+  },
+  "scorers": {
+    "new": "extractor as of 2026-11-01",
+    "legacy": "extractor before it"
+  },
+  "arms": {
+    "new": {
+      "A_plain": {
+        "recall": 0.701,
+        "wrong_extras": 66,
+        "all_correct": "11/90"
+      },
+      "B_current": {
+        "recall": 0.759,
+        "wrong_extras": 65,
+        "all_correct": "13/90"
+      },
+      "B_conditional": {
+        "recall": 0.751,
+        "wrong_extras": 66,
+        "all_correct": "13/90"
+      },
+      "C_current": {
+        "recall": 0.854,
+        "wrong_extras": 60,
+        "all_correct": "21/90"
+      },
+      "C_conditional": {
+        "recall": 0.831,
+        "wrong_extras": 62,
+        "all_correct": "20/90"
+      }
+    },
+    "legacy": {
+      "A_plain": {
+        "recall": 0.674,
+        "wrong_extras": 67,
+        "all_correct": "9/90"
+      },
+      "B_current": {
+        "recall": 0.755,
+        "wrong_extras": 65,
+        "all_correct": "13/90"
+      },
+      "B_conditional": {
+        "recall": 0.747,
+        "wrong_extras": 66,
+        "all_correct": "13/90"
+      },
+      "C_current": {
+        "recall": 0.851,
+        "wrong_extras": 60,
+        "all_correct": "21/90"
+      },
+      "C_conditional": {
+        "recall": 0.828,
+        "wrong_extras": 62,
+        "all_correct": "20/90"
+      }
+    }
+  }
+}

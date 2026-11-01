@@ -1,0 +1,96 @@
+{
+  "commit": "525afbb",
+  "pairs": 90,
+  "power_states": [
+    "battery",
+    "ac"
+  ],
+  "new": {
+    "sentences": 1800,
+    "facts": 5130,
+    "recall": {
+      "back_conditional": 0.812,
+      "back_masked": 0.784,
+      "back_plain": 0.796,
+      "direct_conditional": 0.447,
+      "direct_masked": 0.445,
+      "direct_plain": 0.374
+    },
+    "found": {
+      "back_conditional": 4165,
+      "back_masked": 4022,
+      "back_plain": 4083,
+      "direct_conditional": 2295,
+      "direct_masked": 2284,
+      "direct_plain": 1920
+    },
+    "back_missed_by_kind": {
+      "conditional:block": 60,
+      "conditional:cross": 104,
+      "conditional:flat": 309,
+      "conditional:floor": 55,
+      "conditional:gate": 342,
+      "conditional:main": 95,
+      "masked:block": 62,
+      "masked:cross": 198,
+      "masked:flat": 315,
+      "masked:floor": 67,
+      "masked:gate": 346,
+      "masked:main": 120,
+      "plain:block": 83,
+      "plain:cross": 122,
+      "plain:flat": 326,
+      "plain:floor": 22,
+      "plain:gate": 399,
+      "plain:main": 95
+    },
+    "verified": {
+      "masked": 1740,
+      "conditional": 1744
+    }
+  },
+  "legacy": {
+    "sentences": 1800,
+    "facts": 5130,
+    "recall": {
+      "back_conditional": 0.745,
+      "back_masked": 0.679,
+      "back_plain": 0.748,
+      "direct_conditional": 0.444,
+      "direct_masked": 0.442,
+      "direct_plain": 0.37
+    },
+    "found": {
+      "back_conditional": 3821,
+      "back_masked": 3482,
+      "back_plain": 3839,
+      "direct_conditional": 2276,
+      "direct_masked": 2266,
+      "direct_plain": 1899
+    },
+    "back_missed_by_kind": {
+      "conditional:block": 60,
+      "conditional:cross": 119,
+      "conditional:flat": 385,
+      "conditional:floor": 55,
+      "conditional:gate": 577,
+      "conditional:main": 113,
+      "masked:block": 62,
+      "masked:cross": 241,
+      "masked:flat": 390,
+      "masked:floor": 162,
+      "masked:gate": 628,
+      "masked:main": 165,
+      "plain:block": 83,
+      "plain:cross": 133,
+      "plain:flat": 409,
+      "plain:floor": 34,
+      "plain:gate": 524,
+      "plain:main": 108
+    },
+    "verified": {
+      "masked": 1740,
+      "conditional": 1744
+    }
+  }
+}
