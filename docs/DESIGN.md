@@ -13,7 +13,7 @@ traffic on a bike.
 
 Roles are independent of languages. The customer and the rider can each use any of the 10
 languages in either direction, and either can speak a turn or send a quick reply. Every language
-pair named in this document, in tests or in demos is an example only; demo casting is TBD.
+pair named in this document, in tests or in demos is an example only.
 
 ## 2. Goals and non-goals
 - Goals:
@@ -38,9 +38,10 @@ Kannada-English mixing works is measured by the day-one probe (`scripts/probe_co
 
 | Tier | Languages | What backs it |
 |---|---|---|
-| Verified core | kn, en, hi, bn | full evaluation, native-word extraction rules (applied to whoever speaks that language), partly reviewed quick replies |
-| Reviewed | te | quick replies checked by a speaker, small human-speech smoke test (not in the main metric) |
-| Beta | gu, ml, mr, pa, ta | labelled "beta" in the UI and README; one TTS-generated smoke test each proving the path works, not quality |
+| Core | kn, en, hi, bn | evaluated on the synthetic gold set, native-word extraction rules (applied to whoever speaks that language) |
+| Beta | gu, ml, mr, pa, ta, te | machine-verified only; labelled "beta" in the UI and README; one TTS-generated smoke test each proving the path works, not quality |
+
+Revised 2026-11-01: Telugu was planned as "reviewed" (quick replies checked by a speaker). No speaker has checked it, so it is beta. "Reviewed by the author" applies only to bn and hi: all interface strings, quick replies, repeat prompts and the clip prompt.
 
 Language support is data, not code: one table (`languages.py`) holds, per language, the Gnani
 code and voice, the IndicTrans2 code, the tier, the localized UI labels and the extraction
@@ -182,8 +183,7 @@ vs beam, guard) stays as is (docs/EVAL.md).
   Split 10 dev / 20 test; the test split is frozen before extractor tuning on it, and only test
   numbers are reported. Their audio is Gnani TTS (`scripts/make_gold_tts.py`), labelled "clean
   synthetic", then clean and street noise at 20/10/5 dB. No person is recorded; Kannada address
-  audio is synthetic. Recording scripts in `docs/recording/` are optional and nothing depends on
-  them (`eval_noise.py --audio-dir` still accepts consented recordings).
+  audio is synthetic. `eval_noise.py --audio-dir` still accepts consented recordings.
 - Real human speech: FLEURS test split (CC BY 4.0), 10 clips for each of the 10 languages, first
   eligible clips in archive order, pinned by SHA-256. Scored by character error rate on clean and
   street noise at 20/10/5 dB (`scripts/eval_speech.py`). This is read speech, not addresses.

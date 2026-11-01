@@ -1,6 +1,6 @@
 # Design proposal: phone-first customer and rider screens
 
-**Status: proposal only. Nothing here is implemented.** It was written on 2026-10-30 from reading
+**Status: implemented on 2026-10-31.** The text below is the original proposal. It was written on 2026-10-30 from reading
 `customer.html`, `rider.html` and `app.css` on the `features` branch. The look was frozen for the
 rehearsal and recording, so this is for after that. Effort is for one developer: S under 2 hours,
 M half a day, L a day or more. Test risk names what could break among the 61 JS unit tests, the 22
@@ -146,8 +146,8 @@ Each change is independent unless stated. Suggested order: 1, 2, 3 together, the
 - A new framework, CSS framework or component library: the page is 2.7k lines of plain modules and
   the constraint is that dependencies must earn their place.
 - Animations: none carry meaning here.
-- Localizing the UI labels beyond what exists: tracked separately (cut order in AGENTS.md puts
-  localized labels first to cut).
+- Localizing the UI labels beyond what exists: tracked separately (localized labels were first in the
+  cut order).
 - Any change to the quick-reply phrases or the card's content.
 
 ## Suggested rollout

@@ -2,8 +2,8 @@
 
 **Status: design, not built.** Nothing in this document exists in the code. It describes how the
 current app could grow into a service a delivery partner calls, which numbers it would be sized
-from, and what is still missing. The shipped app is a single-process portfolio demo (see
-AGENTS.md "Out of scope": no accounts, no public deployment). Numbers marked MEASURED come from
+from, and what is still missing. The shipped app is a single-process portfolio demo (no accounts, no public
+deployment; see README "Scope"). Numbers marked MEASURED come from
 this repo's docs; everything else is an ASSUMPTION or a PLACEHOLDER and is labelled as such.
 
 ## 1. Integration with a delivery partner
@@ -68,7 +68,7 @@ translation model is local, so its cost is the GPU instance, not a per-call pric
 MEASURED (Gnani dashboard, 31 Oct 2026): 92 credits were spent across 867 ledger calls (all
 development, evaluation and rehearsal), which is about 0.106 credits per call, and 4,907 credits
 were left. The dashboard states that 4,907 credits is about 10.9k STT minutes or about 18.2 lakh
-TTS characters. The ledger (docs/HANDOFF.md) counts calls, not seconds or characters, and the
+TTS characters. The ledger (`evaluation/calls.py`) counts calls, not seconds or characters, and the
 calls were a mix of short STT clips and short TTS sentences, so 0.106 is a blended rate for this
 project's mix, not a price. It is not a rupee cost: no rupee price per credit is recorded here.
 Credits are therefore not the constraint on evaluation; the call cap (1500) and the rate limiter
@@ -93,8 +93,9 @@ The model, with every assumption stated so it can be changed:
 | A | audio seconds sent to STT per turn | ASSUMPTION: 8 s (the cap is 60 s; short directions are a few sentences) |
 | C | characters sent to TTS per turn | ASSUMPTION: 70 (about one translated direction, in line with the 40 to 80 character translator test sentences) |
 | Q | uncached quick-reply TTS calls per conversation | ASSUMPTION: 0 once the phrase audio is warm; up to 3 cold |
-| P_stt | Gnani STT price per audio minute | PLACEHOLDER: `<GNANI_STT_PRICE_PER_MINUTE>`, take it from the contract, not from this document |
-| P_tts | Gnani TTS price per character | PLACEHOLDER: `<GNANI_TTS_PRICE_PER_CHARACTER>`, take it from the contract |
+| P_stt | Gnani STT cost per audio minute | MEASURED (dashboard, 2026-10-31): about 0.45 credits |
+| P_tts | Gnani TTS cost per character | MEASURED (dashboard, 2026-10-31): about 0.0027 credits |
+| R | rupees per credit | PLACEHOLDER: `<INR_PER_CREDIT>`, take it from the contract |
 | G | GPU instance cost per hour, divided by conversations per hour | PLACEHOLDER: `<GPU_COST_PER_HOUR>` |
 
 Formulas, which hold whatever the prices are:
@@ -102,13 +103,13 @@ Formulas, which hold whatever the prices are:
 - Gnani calls per conversation = 2 x T + Q (12 with the assumptions above).
 - STT audio minutes per conversation = T x A / 60 (0.8 min).
 - TTS characters per conversation = T x C (420).
-- Gnani cost per conversation = (T x A / 60) x P_stt + (T x C) x P_tts + Q x C_phrase x P_tts.
+- Gnani cost per conversation, in credits = (T x A / 60) x P_stt + (T x C) x P_tts + Q x C_phrase x P_tts (about 1.5 credits with the assumptions above); in rupees, multiply by R.
 - Translation cost per conversation = G / (conversations a GPU handles per hour). At about 4
   translations a second (above) and T translations per conversation, one card handles far more
   conversations than a city has deliveries per hour, so this term is expected to be small, but
   it is not measured end to end.
 
-No price appears here because none was supplied, and guessing would make the table look more
+The only missing price is the rupee value of a credit; guessing it would make the table look more
 certain than it is. Two things would cut the Gnani term without losing quality: ending silence
 early on the client so A shrinks, and caching TTS for repeated sentences (quick replies already
 do this).
@@ -128,7 +129,7 @@ service would not replace that. It would sit beside it:
   the call. No audio from the call is touched.
 - Option B, bridge: the telephony provider forks the call audio to this service over a media
   stream; the service transcribes each side, translates, and plays the translation as a third
-  voice on the call. This needs streaming interpretation, which is out of scope today (AGENTS.md)
+  voice on the call. This needs streaming interpretation, which is out of scope today (see README)
   and would need a streaming STT contract, barge-in handling and echo control. It changes the
   latency budget from "turn-based, a few seconds" to "conversational".
 - Option C, IVR: the customer is asked once, by a phone prompt, to say the address; the service
@@ -184,9 +185,9 @@ An honest list of what is missing or unproven today:
 - Real-world latency and accuracy are only partly measured. The Gnani latency study and the
   noise and real-voice STT results are not run (docs/EVAL.md). Phone-quality (8 kHz) audio has
   not been tested at all.
-- Quality tiers: kn, en, hi, bn verified; te reviewed; gu, ml, mr, pa, ta are beta and labelled so
-  in the UI. A production launch would need native review of those five and of the quick-reply
-  phrases per language.
+- Quality tiers: kn, en, hi, bn are core (evaluated on the synthetic gold set); gu, ml, mr, pa, ta, te are
+  beta (machine-verified only) and labelled so in the UI. A production launch would need native
+  review of those six and of the quick-reply phrases per language.
 - Facts come from rule-based extraction, so a direction that does not fit the rules gives no chip
   and a please-repeat prompt, never a guess. Coverage on real, unscripted speech is unknown.
 - Accessibility is checked only for tap targets, names and contrast on the room pages at 360 px;

@@ -45,7 +45,7 @@ data in `languages.py`, so adding a language is a table row, not a branch.
 **8. Why do roles not tie to languages?**
 Any customer language can meet any rider language, and either side can speak or send a quick reply.
 Hard-coding "customer speaks Kannada, rider speaks Hindi" would make the demo look good and the
-product wrong. Pairs in tests and demos are examples only, and a rule in `AGENTS.md` forbids tying
+product wrong. Pairs in tests and demos are examples only, and the design rule in `docs/DESIGN.md` forbids tying
 them.
 
 **9. How does masking work and why placeholders like `#L51`?**
@@ -121,7 +121,8 @@ call, and a Gnani 4xx becomes a localized "that recording can't be used" that th
 retry. I could not reproduce why the demo clip was not fetched and say so in the handoff.
 
 **20. What would you do next?**
-Re-measure latency on a quiet day (the p95 of 11.3 s was taken during a stretch of Gnani 504s); get
+Re-measure latency at other times of day (the 2026-11-01 run gave p95 4.0 s, an earlier one 11.3 s
+during a stretch of Gnani 504s); get
 native speakers to review the bn and hi phrases beyond the ones done and the beta languages; test on
 two real phones over a LAN; collect consented real address speech; and decide conditional masking
 from a larger evaluation.

@@ -2,6 +2,10 @@
 
 [![CI](https://github.com/rahulpaul-07/saathi/actions/workflows/ci.yml/badge.svg)](https://github.com/rahulpaul-07/saathi/actions/workflows/ci.yml)
 
+Built for the Gnani.ai Great Indian AI Internship Challenge.
+
+Demo video: (link added after recording)
+
 **A customer speaks delivery directions in their language; the rider, in another Indian language,
 gets the gate, floor, cross, main and landmark as big chips plus translated audio.**
 
@@ -72,7 +76,7 @@ Safety layers, in the order a wrong fact would have to get past them:
 | Fact recall under street noise | 0.84 clean, 0.64 at 5 dB; drop 0.20, 95% CI 0.09 to 0.31 | n=20 test utterances, synthetic speech with one real street recording | [noise_summary_synth.md](eval/results/noise_summary_synth.md) |
 | Speech error rate, real speech | pooled CER 0.067 clean, 0.101 at 5 dB | 100 FLEURS clips, 10 per language; en and te noisy at n=10 | [speech_summary.md](eval/results/speech_summary.md) |
 | Fact extraction, ta te gu ml mr pa | 19 of 24 sentences fully right on the first run (recall 0.93, precision 1.00); 24 of 24 after the five missed spellings were added, which is not a held-out result | 4 synthetic sentences per language; the result file holds the 24 of 24 rerun, the first-run table is in EVAL.md | [facts_extra.json](eval/results/facts_extra.json), first run in [EVAL.md](docs/EVAL.md#fact-extraction-on-ta-te-gu-ml-mr-pa-held-out-synthetic-speech-run-2026-10-30) |
-| Turn latency, bn to kn | p50 4.2 s, p95 11.3 s | n=19, AC power, one machine, during a stretch of Gnani 504s | [latency.json](eval/results/latency.json) |
+| Turn latency, bn to kn | p50 2.9 s, p95 4.0 s | n=20, AC power, one machine, run 2026-11-01, no retries or failures | [latency.json](eval/results/latency.json) |
 | Live smoke through the HTTP API | passed, 6 Gnani calls | one kn to hi pair (an example), two prepared clips | [live_smoke.json](eval/results/live_smoke.json) |
 | Journey tests | 10 language-pair journeys plus the split-screen journey, all passing | fake Gnani and translator, Playwright, two browser contexts | [`tests/e2e/journeys.spec.js`](tests/e2e/journeys.spec.js) |
 | Translation-safety matrix, 10x10, back-translation score | 0.796 plain, 0.784 masked, 0.812 conditional masking | 90 pairs, 20 machine-generated sentences per pair, 5130 facts, local model, fixed scorer | [masking_conditional_matrix.json](eval/results/masking_conditional_matrix.json) |
@@ -93,15 +97,14 @@ the interface text. Language support is one table, [`languages.py`](src/saathi/l
 
 | Tier | Languages | What backs it |
 |---|---|---|
-| Verified | kn, en, hi, bn | native-word extraction rules and the synthetic gold set; rider quick replies in bn and hi reviewed by the author |
-| Reviewed | te | extraction lexicon machine-verified; quick replies to be checked by a speaker |
-| Beta | gu, ml, mr, pa, ta | extraction lexicons machine-verified; labelled "beta" in the UI |
+| Core | kn, en, hi, bn | evaluated on the synthetic gold set |
+| Beta | gu, ml, mr, pa, ta, te | machine-verified only; labelled "beta" in the UI |
 
 "Machine-verified" means each number word and trigger is a spelling the real Gnani STT wrote when it
-heard Gnani TTS speech ([`docs/LEXICON_EVIDENCE.md`](docs/LEXICON_EVIDENCE.md)). No one who reads
-these languages has checked the beta ones. "Reviewed by a native speaker" currently applies only to
-the author's review of the rider's bn and hi phrases; every other translation is machine output and is marked
-unreviewed in the UI. Odia, Assamese and Urdu are not offered: Gnani supports none of them for both
+heard Gnani TTS speech ([`docs/LEXICON_EVIDENCE.md`](docs/LEXICON_EVIDENCE.md)). No speaker
+has checked the beta languages, and none has checked kn. "Reviewed by the author" applies only to bn and hi
+and covers exactly: all bn and hi interface strings, quick replies, repeat prompts and the clip prompt.
+Every other translation is machine output and is marked unreviewed in the UI. Odia, Assamese and Urdu are not offered: Gnani supports none of them for both
 speech input and output.
 
 ## Security
@@ -145,8 +148,10 @@ Each live turn spends Gnani credit; the tests and the e2e suite use fakes and sp
 
 ```
 uv sync
-uv run --no-sync uvicorn saathi.app:create_app --factory --host 0.0.0.0 --port 8000
+uv run --no-sync uvicorn saathi.app:create_app --factory --host 127.0.0.1 --port 8000
 ```
+
+To use it from a phone on the same network you must bind `0.0.0.0`; see [`docs/LAN_CHECK.md`](docs/LAN_CHECK.md). The server has no login, so anyone on that network with a room code can join.
 
 Open `http://localhost:8000/customer.html` and `/rider.html` in two tabs (or `/demo.html` with
 `SAATHI_DEMO_INPUT=1` and prepared clips, see [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md)).
