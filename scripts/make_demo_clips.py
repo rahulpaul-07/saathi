@@ -3,6 +3,7 @@
   --dry-run   list the clips and the ledger total; sends nothing, needs no key
   (default)   one TTS call per clip through the ledger, then mix and write demo/clips/
   --only ID.. generate just those clips (1 call each); other clips and the manifest are kept
+  --manifest-only  rewrite manifest.json (labels) for the clips already on disk; no calls, no key
 
 Synthetic speech only. Needs eval/audio/noise/street.wav from scripts/fetch_noise.py. Real runs
 only while the author is awake, after reviewing --dry-run.
@@ -28,6 +29,7 @@ from saathi.evaluation.democlips import (
     LEDGER_LABEL,
     build_clips,
     planned_calls,
+    rebuild_manifest,
     select_specs,
 )
 from saathi.gnani import GnaniError
@@ -41,6 +43,7 @@ LEDGER = ROOT / "eval" / "state" / "gnani_ledger.json"
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--manifest-only", action="store_true")
     parser.add_argument(
         "--only",
         nargs="+",
@@ -54,6 +57,10 @@ def main() -> int:
     parser.add_argument("--seed", type=int, default=DEFAULT_SEED)
     args = parser.parse_args()
 
+    if args.manifest_only:
+        written = rebuild_manifest(args.out_dir)
+        print(f"wrote manifest for {len(written)} clips in {args.out_dir}: {', '.join(written)}")
+        return 0
     ledger = CallLedger(args.ledger)
     specs = select_specs(args.only)
     calls = planned_calls(specs)

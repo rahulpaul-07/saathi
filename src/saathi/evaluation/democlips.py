@@ -179,10 +179,25 @@ async def build_clips(
         (out_dir / f"{spec.id}.wav").write_bytes(mix_clip(tts_wav, noise, seed, spec.id))
     # A partial run (--only) must not drop the clips it did not regenerate.
     entries = _kept_manifest_entries(out_dir, {s.id for s in specs})
-    entries += [
-        {"id": s.id, "lang": s.lang, "label": s.label, "label_local": s.label_local} for s in specs
-    ]
+    _write_manifest(out_dir, entries + [_entry(s) for s in specs])
+
+
+def _entry(spec: ClipSpec) -> dict[str, str]:
+    return {"id": spec.id, "lang": spec.lang, "label": spec.label, "label_local": spec.label_local}
+
+
+def _write_manifest(out_dir: Path, entries: list[dict[str, str]]) -> None:
     order = {s.id: i for i, s in enumerate(CLIP_SPECS)}
     entries.sort(key=lambda e: order.get(e["id"], len(order)))
-    manifest = {"clips": entries}
-    (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+    body = json.dumps({"clips": entries}, indent=2)
+    (out_dir / "manifest.json").write_text(body, encoding="utf-8")
+
+
+def rebuild_manifest(out_dir: Path, specs: tuple[ClipSpec, ...] = CLIP_SPECS) -> list[str]:
+    """Rewrite the manifest from the specs for clips whose wav already exists. No Gnani calls.
+
+    Returns the ids written. Used when only the labels changed, so the audio is still right.
+    """
+    present = [s for s in specs if (out_dir / f"{s.id}.wav").is_file()]
+    _write_manifest(out_dir, [_entry(s) for s in present])
+    return [s.id for s in present]

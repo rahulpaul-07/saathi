@@ -14,6 +14,7 @@ from saathi.evaluation.democlips import (
     ClipSpec,
     build_clips,
     planned_calls,
+    rebuild_manifest,
     select_specs,
 )
 from saathi.languages import LANGUAGES
@@ -132,3 +133,18 @@ def test_the_correction_clip_changes_only_the_gate_after_the_bakery_clip() -> No
     correction = {f.kind: f.value for f in extract_facts(by_id["kn-gate-correction"].text, "kn")}
     assert bakery["gate"] == "4"
     assert correction == {"gate": "2"}
+
+
+def test_rebuild_manifest_uses_existing_wavs_and_adds_local_labels(tmp_path: Path) -> None:
+    kept = CLIP_SPECS[0]
+    (tmp_path / f"{kept.id}.wav").write_bytes(_tone(16000))
+    assert rebuild_manifest(tmp_path) == [kept.id]
+    clips = json.loads((tmp_path / "manifest.json").read_text("utf-8"))["clips"]
+    assert clips == [
+        {"id": kept.id, "lang": kept.lang, "label": kept.label, "label_local": kept.label_local}
+    ]
+
+
+def test_rebuild_manifest_writes_nothing_for_missing_audio(tmp_path: Path) -> None:
+    assert rebuild_manifest(tmp_path) == []
+    assert json.loads((tmp_path / "manifest.json").read_text("utf-8"))["clips"] == []
