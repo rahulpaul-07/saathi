@@ -765,3 +765,21 @@ docs/PATH_TO_PRODUCTION.md section 3.
   pages must not show untranslated words, and a new interface string would mark every language
   as unreviewed again.
 - Tiles animate with a translate, not a scale, so tap targets never measure under 44 px mid-animation.
+
+## Conditional masking (2026-11-01)
+
+- Added behind `SAATHI_MASKING_MODE=current|conditional`; the default stays `current` because the
+  gold-turn A/B did not show a gain. Result and recommendation are in `docs/EVAL.md`.
+- Ordinal words come from the language's own lexicon (first variant), not a new table, so language
+  support stays data in one place. Bengali is excluded from ordinal restore because lexicon keys are
+  normalised (nukta, ZWJ, trailing virama folded) and are unsafe as display text; bn ordinals stay
+  unmasked. A value with no ordinal word is left unmasked instead of guessed.
+- Cost accepted: values left unmasked are not checked by the slot verifier.
+- English extractor: a full stop after `no`, `nos`, `nr`, `num` joins the value ("Gate No. 2"), and
+  `floors`/`storeys` are floor triggers. `scripts/legacy_extractor.py` keeps the old behaviour so
+  old and new scores can be shown side by side; evaluation only.
+- `make_demo_clips.py --manifest-only` rebuilds the manifest (labels) from clips already on disk,
+  so a label change costs no Gnani call.
+- The room-line (item 5) shows the demo banner as one ellipsised line with the peer and status lines
+  tight below it. A true single line would need a new translated "Demo mode" string, which marks
+  every language's interface text unreviewed again; left for the author to decide.

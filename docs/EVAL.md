@@ -6,6 +6,16 @@ on real public speech (FLEURS), the fact extractor on all ten languages and the 
 are in `eval/results/`; the generated tables are in `eval/results/translation_summary.md`,
 `noise_summary_synth.md` and `speech_summary.md`.
 
+> **Scorer note, 2026-11-01.** Every fact-recall number in this file and in the README is scored with
+> the current extractor, which reads "Gate No. 2", "No. 2 cross" and "4 floors"; before that date
+> the English layer missed them. The old values, kept for comparison only: masking A/B 0.674 plain,
+> 0.747 masked, 0.843 with fallback (`eval/results/masking_ab.json`, which still holds the old
+> scoring); matrix back-translation score 0.75 plain, 0.68 masked (`eval/results/translation_matrix.json`,
+> old scoring). Re-scoring changed nothing else: the noise and speech summaries regenerate
+> byte-identical and `facts_extra.json` is unchanged. The per-pair tables and the diagnosis in the
+> matrix sections below keep the old scoring and are labelled where they appear; the new-scorer
+> matrix totals are in "Conditional masking and the English scorer fix" at the end.
+
 ## Method
 
 - Data: FLORES-200 devtest (1012 sentences, 4 languages), CC BY-SA 4.0, Meta AI (NLLB team).
@@ -274,17 +284,19 @@ No recordings of either phone case exist, so no audio-level check was possible.
 ## Masking A/B (slice 5, text only, `scripts/eval_masking.py`)
 
 All 90 gold turns (30 synthetic utterances x 3 target languages), real IndicTrans2, greedy,
-`eval/results/masking_ab.json`. A fact counts as recalled when its class and value appear in the
+`eval/results/masking_modes.json` (arms A_plain, B_current, C_current, scorer "new"; rerun 2026-11-01 with the fixed extractor; `masking_ab.json` holds the earlier scoring). A fact counts as recalled when its class and value appear in the
 text the listener would get. No STT or TTS is involved, and the gold text is ours, not recorded
 speech, so these numbers are optimistic about the front half of the pipeline.
 
 | arm | what it is | fact recall | wrong extras | all facts correct | loanwords kept |
 |---|---|---|---|---|---|
-| A | toolkit default: translate the raw sentence | 0.674 | 67 | 9/90 | 128/255 |
-| B | masked: numbers and address words become placeholders, restored in plain digits and the listener's script | 0.747 | 65 | 12/90 | 153/255 |
-| C | B plus the fallback: if a placeholder is lost or invented, speak the templated fact summary | 0.843 | 60 | 20/90 | 166/255 |
+| A | toolkit default: translate the raw sentence | 0.701 | 66 | 11/90 | 128/255 |
+| B | masked: numbers and address words become placeholders, restored in plain digits and the listener's script | 0.759 | 65 | 13/90 | 153/255 |
+| C | B plus the fallback: if a placeholder is lost or invented, speak the templated fact summary | 0.854 | 60 | 21/90 | 166/255 |
 
-- Correction, 2026-10-31: this table was regenerated from a rerun of the script on current code
+- Old scoring of this table (pre-2026-11-01 extractor): A 0.674, B 0.747, C 0.843; the 2026-11-01 rerun
+  scored with that extractor gives A 0.674, B 0.755, C 0.851 (see the last section).
+- Correction, 2026-10-31 (figures in this bullet use the old scoring): this table was regenerated from a rerun of the script on current code
   (`eval/results/masking_ab.json`). The first recorded run, in commit 8e2d64d, showed B 0.808 with
   4/90 failed checks and C 0.851. It did not reproduce on current code or on the 8e2d64d sources
   (B 0.747, 9 to 10 of 90 failed; C 0.843 current, 0.851 on 8e2d64d). Cause unknown. A is
@@ -369,6 +381,11 @@ How to read this:
 
 ## Translation-safety matrix, 10 x 10 (local model, no Gnani, run 2026-10-30 to 31)
 
+Scoring note: the per-pair tables and averages in this section and in the diagnosis below use the
+extractor from before 2026-11-01 (plain 0.75, masked 0.68 averaged over pairs). With the current
+extractor the same 90 pairs score back 0.796 plain, 0.784 masked, direct 0.374 plain, 0.445 masked;
+see the last section. Per-pair figures were not recomputed.
+
 `scripts/eval_translation_matrix.py`, results in `eval/results/translation_matrix.json`. For each of
 the 90 ordered pairs X to Y: the gold sentence in English is machine-translated to X (the source
 text), translated X to Y two ways (plain, and masked as the app does), back-translated Y to English,
@@ -435,6 +452,9 @@ What this says, and does not:
 - Marathi is the weakest target for plain translation and Bengali the weakest source.
 
 ### Why masking lost in the matrix: diagnosis (text only, no Gnani, 2026-10-31)
+
+All figures in this diagnosis use the pre-2026-11-01 extractor, which is the cause it found; with the
+current extractor the back-route gap between plain and masked is 0.012, not 0.07.
 
 `scripts/analyze_masking_reversal.py` (`collect`, `report`, `examples`), summary in
 `eval/results/masking_reversal.json`, per-sentence checkpoint in `eval/state/` (gitignored).
@@ -527,3 +547,80 @@ translator writes them, or restore them with an ordinal marker in the target lan
 the English extractor "No. 2" and "4 Floors" forms so the metric stops penalising them. Digits
 need not be treated differently from words: the digit/word split showed no effect. Any change
 should be re-measured on the full 90 pairs and on the gold-turn A/B before it ships.
+
+## Conditional masking and the English scorer fix (text only, no Gnani, 2026-11-01)
+
+Two changes, measured separately so a number can be attributed to the right one.
+
+1. **The English extractor** now reads "Gate No. 2" / "No. 2 cross" (a full stop after `no`, `nos`,
+   `nr`, `num` no longer ends the phrase) and "4 floors" (`floors`, `storeys`). This is the scorer
+   used on the English target of the A/B and for the back-translation score of the matrix. It also
+   runs in the app for English speakers, which is the point of the fix.
+2. **`SAATHI_MASKING_MODE=conditional`** (default `current`, unchanged). Cardinal kinds (gate, flat,
+   block) and loanwords are masked as before. For the ordinal kinds (floor, cross, main) the number is
+   masked and restored as the target language's ordinal word taken from the lexicon, or left
+   unmasked where the lexicon has no such word. Bengali is deliberately excluded from ordinal
+   restore (the lexicon spellings are normalised keys, not display text), so bn ordinals stay
+   unmasked. Known limits: ordinal gender and case agreement is not handled (the first lexicon
+   variant is used, e.g. Hindi masculine), values left unmasked are not covered by the slot check,
+   and the extractor reads a spelled "fifty fifth" as 5.
+
+`legacy` below is the same stored output scored with the extractor as it was before 2026-11-01
+(`scripts/legacy_extractor.py`); `new` is the current one. Re-scoring changed no other published
+result: the noise and speech summaries regenerate byte-identical, `facts_extra.json` and
+`phone_cases.json` are unchanged, and the gold-set dev text score is unchanged (R=0.94, P=1.00).
+
+### Gold-turn A/B, 90 turns (targets bn, hi, kn, en), `eval/results/masking_modes.json`
+
+Recall, landmarks excluded; "+ summary" adds the fact-summary fallback when the slot check failed.
+
+| arm | legacy scorer | new scorer | all facts right (new) |
+|---|---|---|---|
+| plain | 0.674 | 0.701 | 11/90 |
+| current masking | 0.755 | 0.759 | 13/90 |
+| conditional masking | 0.747 | 0.751 | 13/90 |
+| current + summary | 0.851 | 0.854 | 21/90 |
+| conditional + summary | 0.828 | 0.831 | 20/90 |
+
+Failed slot checks: 9 of 90 current, 8 of 90 conditional. The scorer fix lifts the plain arm most
+(+0.027, only the English target has "No." and "floors" forms). Conditional masking is not better
+than current here: -0.008 recall, -0.023 with the fallback, about one to three facts on this sample.
+The plain arm (0.674, 67 wrong extras) reproduces `masking_ab.json` exactly. The current-masking arm
+gives 0.755 under the legacy scorer against the published 0.747 (13 vs 12 turns right); masking code
+and lexicons changed between the two runs and I did not isolate which change moved one turn.
+
+### Translation-safety matrix, all 90 pairs, 20 sentences, 5130 facts, `eval/results/masking_conditional_matrix.json`
+
+"back" is the matrix score (translate, back-translate to English, English extractor); "direct" is
+the target-language extractor on the translated text, as in the A/B.
+
+| route | scorer | plain | masked (current) | conditional |
+|---|---|---|---|---|
+| back | legacy | 0.748 | 0.679 | 0.745 |
+| back | new | 0.796 | 0.784 | 0.812 |
+| direct | legacy | 0.370 | 0.442 | 0.444 |
+| direct | new | 0.374 | 0.445 | 0.447 |
+
+The legacy back row reproduces the published 0.75 / 0.68. About two thirds of the masked loss on the
+back route was the scorer: the new extractor lifts masked from 0.679 to 0.784, and plain only from
+0.748 to 0.796. With the fixed scorer conditional masking is the best arm on the back route (+0.016
+over plain, +0.028 over current) and level with current on the direct route (both about 0.07 above
+plain). Slot checks passed on 1740 of 1800 (current) and 1744 of 1800 (conditional) sentences.
+
+Facts missed on the back route by kind (new scorer, plain / current / conditional): gate
+399 / 346 / 342, flat 326 / 315 / 309, cross 122 / 198 / 104, main 95 / 120 / 95, block 83 / 62 / 60,
+floor 22 / 67 / 55. Conditional repairs cross and main but not floor, where plain is still best; the
+floor cause was not isolated.
+
+Power: the collection ran partly on battery (`power_states` in the result file); the outputs are
+deterministic greedy decoding, so battery affects time only. Timings were not used.
+
+### Recommendation
+
+Keep the default at `current`. The one test closest to the app (the gold-turn A/B with the fallback)
+shows no gain from conditional masking, the matrix gain is on a route that is a proxy, and both
+differences are small for these sample sizes. Conditional is the better candidate to switch to: it
+removes the "fourth floor reads as 4 floors" failure and wins the matrix, but before it becomes the
+default it needs (a) a native speaker to check the restored ordinal forms in each language, since
+gender and case agreement are not handled, (b) a floor-specific look at why plain still wins there,
+and (c) a run on real recorded speech. The scorer fix should ship regardless.

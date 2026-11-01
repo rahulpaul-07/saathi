@@ -1,5 +1,128 @@
 # Handoff
 
+## Overnight 1 Nov
+
+Nothing is committed, pushed, merged or switched; branch `features`. No new dependencies. All Gnani
+use: 0 calls (item 7 needed none). Ledger unchanged at 873 of the 1500 cap.
+
+### End-of-run report
+
+What changed:
+- README rewritten for judges (hero image, before/after, Mermaid, results table linked to result files,
+  tiers, security, production path, honest limits, local run, licences). Outdated lines removed.
+- MIT LICENSE, THIRD_PARTY_NOTICES.md, docs/ARCHITECTURE.md, docs/DESIGN_FAQ.md (25 questions).
+- Phone layout: delivery card directly under the header; one compact room line; the demo split page
+  uses a raised base font and a 4-column chip grid. All 16 after/ screenshots regenerated.
+- `SAATHI_MASKING_MODE=current|conditional` (default current, unchanged), plus an English scorer fix
+  ("Gate No. 2", "No. 2 cross", "4 floors"). Old and new scores side by side in docs/EVAL.md.
+- `make_demo_clips.py --manifest-only`; demo/clips/manifest.json now carries `label_local` (gitignored).
+
+Look at first: `docs/media/design/after/split-1920-4-confirm-and-ask.png`, then
+`phone-360-rider-4-confirm-and-ask.png`, `phone-360-customer-4-confirm-and-ask.png`,
+`split-1920-dark-4-confirm-and-ask.png`. The previous set is in the gitignored `scratch/after_prev/`.
+In the split screenshot the rider pane looked scrolled to the top; I judged it the scripted scroll and
+did not change it, so confirm by eye.
+
+Verification (item 8): the full set was run twice in a row on an idle machine and was identical both
+times: pytest 1045 passed (10 model-marked deselected), ruff clean, mypy clean (155 files),
+typecheck clean, npm test 71 pass, e2e 45 passed. No test failed or flaked in those runs. During
+item 5, with the GPU evals running and competing for CPU, `rooms.spec.js:219` (confirm/ask) failed
+once and passed alone, and the two `journeys.spec.js:338` no-English-interface-text tests were
+suspect; I did not reproduce any of them on an idle machine, so treat them as load-sensitive, not
+proven flaky. Stale servers on ports 8765 and 8766 block e2e reruns; kill them first.
+
+Scorer unification (2026-11-01): every fact-recall number in the README and in the new EVAL.md section uses
+the fixed English extractor; old values are kept in dated notes. The older per-pair matrix tables and the
+reversal diagnosis in EVAL.md keep the old scoring and say so; they were not recomputed.
+
+Results (docs/EVAL.md, "Conditional masking and the English scorer fix"): the scorer fix lifts plain
+A/B recall 0.674 to 0.701 and masked-matrix back recall 0.679 to 0.784. Conditional masking: A/B
+0.751 vs current 0.759 (0.831 vs 0.854 with the fallback); matrix back 0.812 vs 0.784 current vs
+0.796 plain; direct 0.447 vs 0.445. Recommendation: keep `current` as the default.
+
+Decisions for you:
+1. Whether to switch the default to conditional (my recommendation: not yet; needs native review of
+   ordinal forms, a look at why plain still wins on floor, and real speech).
+2. A true single-line demo banner plus status needs a new translated "Demo mode" string, which would
+   mark every language's interface text unreviewed again. I kept one ellipsised banner line instead.
+3. The current-masking arm now scores 0.755 under the old scorer against the published 0.747
+   (one more turn right). Masking code and lexicons changed between the runs; I did not isolate which.
+4. Ordinal gender and case agreement is not handled in conditional mode; Bengali ordinals stay unmasked.
+
+Files touched per item:
+1. README.md
+2. LICENSE, THIRD_PARTY_NOTICES.md
+3. docs/ARCHITECTURE.md
+4. docs/DESIGN_FAQ.md
+5. src/saathi/static/customer.html, rider.html, app.css; docs/media/design/after/*.png (16)
+6. src/saathi/facts/text.py, facts/lexicons.py, masking.py, config.py, pipeline.py, room_routes.py,
+   app.py, .env.example; scripts/legacy_extractor.py, eval_masking_modes.py (now resumable, state in
+   eval/state/), eval_conditional_matrix.py, screenshot_server.py (signature follow-up);
+   tests/test_facts.py, test_masking.py, test_pipeline.py, test_demo.py;
+   eval/results/masking_modes.json, masking_conditional_matrix.json; docs/EVAL.md, docs/DECISIONS.md
+7. scripts/make_demo_clips.py, src/saathi/evaluation/democlips.py, tests/test_democlips.py
+8. none (verification only); this log
+
+### Commit groups (48 files, equal to `git status --short -uall` once phone_cases.json is restored)
+
+1. `fix(facts): read "No. 2" and "4 floors" in the English extractor`
+   - src/saathi/facts/text.py
+   - src/saathi/facts/lexicons.py
+   - tests/test_facts.py
+2. `feat(masking): add SAATHI_MASKING_MODE with conditional ordinal restore`
+   - src/saathi/masking.py
+   - src/saathi/config.py
+   - src/saathi/pipeline.py
+   - src/saathi/room_routes.py
+   - src/saathi/app.py
+   - .env.example
+   - scripts/screenshot_server.py
+   - tests/test_masking.py
+   - tests/test_pipeline.py
+   - tests/test_demo.py
+3. `feat(eval): compare masking modes and re-score with the fixed extractor`
+   - scripts/legacy_extractor.py
+   - scripts/eval_masking_modes.py
+   - scripts/eval_conditional_matrix.py
+   - eval/results/masking_modes.json
+   - eval/results/masking_conditional_matrix.json
+4. `feat(demo): rebuild the clip manifest without Gnani calls`
+   - scripts/make_demo_clips.py
+   - src/saathi/evaluation/democlips.py
+   - tests/test_democlips.py
+5. `feat(ui): put the delivery card first and compact the room status lines`
+   - src/saathi/static/customer.html
+   - src/saathi/static/rider.html
+   - src/saathi/static/app.css
+6. `docs(media): regenerate the after screenshots`
+   - docs/media/design/after/phone-360-customer-1-empty-room.png
+   - docs/media/design/after/phone-360-customer-2-first-clip.png
+   - docs/media/design/after/phone-360-customer-3-correction.png
+   - docs/media/design/after/phone-360-customer-4-confirm-and-ask.png
+   - docs/media/design/after/phone-360-customer-5-quick-reply.png
+   - docs/media/design/after/phone-360-rider-1-empty-room.png
+   - docs/media/design/after/phone-360-rider-2-first-clip.png
+   - docs/media/design/after/phone-360-rider-3-correction.png
+   - docs/media/design/after/phone-360-rider-4-confirm-and-ask.png
+   - docs/media/design/after/phone-360-rider-5-quick-reply.png
+   - docs/media/design/after/split-1920-1-empty-room.png
+   - docs/media/design/after/split-1920-2-first-clip.png
+   - docs/media/design/after/split-1920-3-correction.png
+   - docs/media/design/after/split-1920-4-confirm-and-ask.png
+   - docs/media/design/after/split-1920-5-quick-reply.png
+   - docs/media/design/after/split-1920-dark-4-confirm-and-ask.png
+7. `docs: add judge README, licence, architecture, design FAQ and the masking results`
+   - README.md
+   - LICENSE
+   - THIRD_PARTY_NOTICES.md
+   - docs/ARCHITECTURE.md
+   - docs/DESIGN_FAQ.md
+   - docs/EVAL.md
+   - docs/DECISIONS.md
+   - docs/HANDOFF.md
+
+Commit order: 1, 2, 3, 4, 5, 6, 7 (the screenshots in 6 come from the layout in 5).
+
 ## Overnight build 31 Oct
 
 Nothing is committed by this run. Branch `features`, started from a3e4aa8 with a clean tree.
