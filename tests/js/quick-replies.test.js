@@ -51,9 +51,8 @@ test("a malformed table is rejected", () => {
   assert.throws(() => parseQuickReplyTable({ ids: { rider: "x" }, languages: {} }));
 });
 
-test("tier labels: core none, reviewed and beta marked", () => {
+test("tier labels: core none, beta marked", () => {
   assert.equal(languageLabel({ code: "kn", name: "Kannada", tier: "core" }), "Kannada");
-  assert.equal(languageLabel({ code: "te", name: "Telugu", tier: "reviewed" }), "Telugu (reviewed)");
   assert.equal(languageLabel({ code: "ta", name: "Tamil", tier: "beta" }), "Tamil (beta)");
 });
 

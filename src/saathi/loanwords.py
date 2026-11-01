@@ -11,7 +11,7 @@ written, the others are variants recognised in a transcript. The Latin English w
 recognised, in any source language. These spellings were written by hand from general knowledge of
 each language and are NOT reviewed by a speaker (bn and hi: the author may review; the beta
 languages gu, ml, mr, pa, ta most likely carry mistakes). A wrong spelling here is spoken to a
-rider, so reviews belong in docs/HANDOFF.md before any claim of quality.
+rider, so a review is needed before any claim of quality.
 """
 
 from saathi.facts.text import key

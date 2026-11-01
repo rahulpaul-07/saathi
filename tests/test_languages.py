@@ -11,11 +11,10 @@ def test_table_covers_the_ten_gnani_languages_with_unique_codes() -> None:
 def test_tiers_match_the_design() -> None:
     by_tier = {
         tier: {key for key, lang in LANGUAGES.items() if lang.tier == tier}
-        for tier in ("core", "reviewed", "beta")
+        for tier in ("core", "beta")
     }
     assert by_tier["core"] == {"kn", "en", "hi", "bn"}
-    assert by_tier["reviewed"] == {"te"}
-    assert by_tier["beta"] == {"gu", "ml", "mr", "pa", "ta"}
+    assert by_tier["beta"] == {"gu", "ml", "mr", "pa", "ta", "te"}
 
 
 def test_translation_evaluation_languages_are_in_the_table() -> None:
