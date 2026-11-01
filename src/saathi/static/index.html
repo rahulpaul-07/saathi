@@ -7,22 +7,48 @@
     <title>Saathi</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="app.css" />
+    <script src="js/theme.js"></script>
   </head>
   <body>
-    <main>
-      <header>
-        <h1>Saathi</h1>
-        <p class="sub">
-          The customer speaks the directions. The delivery rider gets the gate, floor and landmark
-          in big letters, and hears them in their own language. Both pick any language, and
-          either can answer by voice or with a quick reply.
-        </p>
+    <main class="landing">
+      <header class="brand">
+        <svg class="logo" viewBox="0 0 32 32" aria-hidden="true">
+          <rect class="logo-a" x="2" y="3" width="19" height="14" rx="4" />
+          <path class="logo-a" d="M6 16v6l6-6z" />
+          <rect class="logo-b" x="11" y="13" width="19" height="14" rx="4" />
+          <path class="logo-b" d="M26 26v5l-6-5z" />
+        </svg>
+        <span class="wordmark">Saathi</span>
+        <button type="button" class="theme-toggle" data-theme-toggle aria-label="Dark theme"></button>
       </header>
+      <h1 class="headline">Say the directions your way. The rider gets them theirs.</h1>
+      <p class="pitch">
+        A customer speaks in their language; the delivery rider sees the gate, floor and landmark as
+        big coloured tiles and hears them in theirs.
+      </p>
+      <ul class="kind-strip" id="kind-strip" aria-label="The facts on the tiles"></ul>
+      <p class="problem">
+        Directions are the part of a delivery that goes wrong when two people do not share a language.
+        A rider who misses one number or one landmark loses minutes at the wrong gate.
+      </p>
       <nav class="entry" aria-label="Choose your role">
-        <a class="big-btn" href="customer.html">I am the customer</a>
-        <a class="big-btn secondary" href="rider.html">I am the delivery rider</a>
+        <a class="big-btn role-customer" href="customer.html">I am the customer</a>
+        <a class="big-btn role-rider" href="rider.html">I am the delivery rider</a>
       </nav>
-      <p class="sub"><a href="solo.html">Single-phone test page</a></p>
+      <p class="sub">
+        <a href="demo.html">Both screens side by side (demo)</a> &middot;
+        <a href="solo.html">Single-phone test page</a>
+      </p>
+      <section class="notes" aria-labelledby="honest-heading">
+        <h2 id="honest-heading">What to know</h2>
+        <ul>
+          <li>Ten languages, any to any: Bengali, English, Gujarati, Hindi, Kannada, Malayalam, Marathi, Punjabi, Tamil, Telugu.</li>
+          <li>Kannada, English, Hindi and Bengali are checked by a speaker; Telugu is reviewed; the other five are beta and marked as such on screen.</li>
+          <li>The facts on the tiles are read from the speech by rules, then shown for the rider to confirm or question. Check anything marked &ldquo;check this&rdquo;.</li>
+          <li>Rooms live in memory and expire. Transcripts are not stored.</li>
+        </ul>
+      </section>
     </main>
+    <script type="module" src="js/landing.js"></script>
   </body>
 </html>

@@ -1,46 +1,62 @@
 // @ts-check
 // Retry policy for POST /turn (docs/DESIGN.md section 8). Pure, so it runs under node --test.
 
+import { tb } from "./i18n.js";
+
 export const MAX_AUTO_RETRIES = 3;
 const BASE_DELAY_MS = 1000;
 
 /**
  * @typedef {"ok" | "transient" | "rate_limited" | "upstream" | "no_speech" | "unreliable_translation" | "bad_input"} Outcome
- * @typedef {{outcome: Exclude<Outcome, "ok">, message: string, keepRecording: boolean}} Verdict
+ * @typedef {{outcome: Exclude<Outcome, "ok">, message: import("./i18n.js").Bi,
+ *   keepRecording: boolean}} Verdict
  */
 
-/** @type {Record<Exclude<Outcome, "ok">, Verdict>} */
-const VERDICTS = {
+/**
+ * Outcome to the text id, the English text and whether the recording is kept. The text is looked up
+ * when a verdict is made, so it follows the viewer's language.
+ * @type {Record<Exclude<Outcome, "ok">, {key: string, english: string, keepRecording: boolean}>}
+ */
+const SPECS = {
   // 503 (Gnani is rate limiting us) and network errors: retried automatically, then manually.
-  transient: { outcome: "transient", message: "Still busy. Try again.", keepRecording: true },
+  transient: { key: "still_busy", english: "Still busy. Try again.", keepRecording: true },
   // Our own per-IP limit can take up to 60 s to free, so no automatic retry.
   rate_limited: {
-    outcome: "rate_limited",
-    message: "Too many turns, wait a moment, then try again.",
+    key: "too_many_turns",
+    english: "Too many turns, wait a moment, then try again.",
     keepRecording: true,
   },
   upstream: {
-    outcome: "upstream",
-    message: "The speech service is unavailable. Try again.",
+    key: "speech_unavailable",
+    english: "The speech service is unavailable. Try again.",
     keepRecording: true,
   },
   no_speech: {
-    outcome: "no_speech",
-    message: "Didn't catch that, please try again.",
+    key: "no_speech",
+    english: "Didn't catch that, please try again.",
     keepRecording: false,
   },
   // The message is built in turn-client.js, which has the transcript; this is the fallback text.
   unreliable_translation: {
-    outcome: "unreliable_translation",
-    message: "I couldn't translate that reliably. Please try again.",
+    key: "unreliable",
+    english: "I couldn't translate that reliably. Please try again.",
     keepRecording: false,
   },
   bad_input: {
-    outcome: "bad_input",
-    message: "That recording can't be used. Please record again.",
+    key: "bad_recording",
+    english: "That recording can't be used. Please record again.",
     keepRecording: false,
   },
 };
+
+/**
+ * @param {Exclude<Outcome, "ok">} outcome
+ * @returns {Verdict}
+ */
+function verdict(outcome) {
+  const spec = SPECS[outcome];
+  return { outcome, message: tb(spec.key, spec.english), keepRecording: spec.keepRecording };
+}
 
 /**
  * Map an HTTP status (null for a network error or timeout) to what the UI should do.
@@ -50,15 +66,15 @@ const VERDICTS = {
  */
 export function classify(status, code = null) {
   if (status !== null && status >= 200 && status < 300) return { outcome: "ok" };
-  if (status === null || status === 503) return VERDICTS.transient;
-  if (status === 429) return VERDICTS.rate_limited;
+  if (status === null || status === 503) return verdict("transient");
+  if (status === 429) return verdict("rate_limited");
   if (status === 422) {
     // An unknown code falls back to the generic message rather than failing.
-    return code === "unreliable_translation" ? VERDICTS.unreliable_translation : VERDICTS.no_speech;
+    return code === "unreliable_translation" ? verdict("unreliable_translation") : verdict("no_speech");
   }
-  if (status === 400 || status === 413) return VERDICTS.bad_input;
+  if (status === 400 || status === 413) return verdict("bad_input");
   // 502 and anything unexpected on the server side: keep the recording. Other 4xx: it is our bug.
-  return status >= 500 ? VERDICTS.upstream : VERDICTS.bad_input;
+  return status >= 500 ? verdict("upstream") : verdict("bad_input");
 }
 
 /**

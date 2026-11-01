@@ -1,0 +1,1220 @@
+{
+ "meta": {
+  "seed": 20261029,
+  "noise": {
+   "street": "street.wav",
+   "pink": "seeded synthetic 1/f noise (not a recording of any place)"
+  },
+  "snr_definition": "speech-active RMS / whole-clip noise RMS",
+  "activity": {
+   "frame_s": 0.02,
+   "relative_db": -20.0,
+   "floor_dbfs": -60.0,
+   "percentile": 95.0
+  },
+  "bootstrap_resamples": 2000,
+  "git_commit": "933992b"
+ },
+ "rows": {
+  "g01|clean": {
+   "id": "g01",
+   "condition": "clean",
+   "transcript": "2nd cross 3rd main gate number two opposite the ganesha temple",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "g02|clean": {
+   "id": "g02",
+   "condition": "clean",
+   "transcript": "ನಮ್ಮ ಮನೆ ಎರಡನೇ ಕ್ರಾಸ್ ಮೂರನೇ ಮೇನ್ ಗೇಟ್ ನಂಬರ್ ಎರಡು ಹತ್ತಿರ ಆಪೋಸಿಟ್ ಗಣೇಶ ದೇವಸ್ಥಾನ",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "g03|clean": {
+   "id": "g03",
+   "condition": "clean",
+   "transcript": "block c flat 402 1/4 floor near the blue building",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "g04|clean": {
+   "id": "g04",
+   "condition": "clean",
+   "transcript": "2nd क्रॉस और 3rd मेन पर गेट नंबर दो, गणेश मंदिर के सामने।",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "g05|clean": {
+   "id": "g05",
+   "condition": "clean",
+   "transcript": "take the 2nd cross and then 5th main gate three is next to the bakery",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "g06|clean": {
+   "id": "g06",
+   "condition": "clean",
+   "transcript": "ಬ್ಲೂ ಬಿಲ್ಡಿಂಗ್ ಥರ್ಡ್ ಫ್ಲೋರ್ ಫ್ಲ್ಯಾಟ್ ಮುನ್ನೂರ ನಾಲ್ಕು ಲಿಫ್ಟ್ ಇಲ್ಲ",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "g07|clean": {
+   "id": "g07",
+   "condition": "clean",
+   "transcript": "দুই নম্বর ক্রস তিন নম্বর মেইন গেট নম্বর দুই গণেশ মন্দিরের সামনে",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "g08|clean": {
+   "id": "g08",
+   "condition": "clean",
+   "transcript": "i am in tower b flat 1,205 12th floor near the water tank",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "g09|clean": {
+   "id": "g09",
+   "condition": "clean",
+   "transcript": "gate number two 3rd floor flat 304 opposite the petrol bunk",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "g10|clean": {
+   "id": "g10",
+   "condition": "clean",
+   "transcript": "ಟವರ್ ಬಿ ಬ್ಲಾಕ್ ಫೋರ್ ಗೇಟ್ ನಂಬರ್ ಎರಡು ಹತ್ತಿರ ಬನ್ನಿ",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "g11|clean": {
+   "id": "g11",
+   "condition": "clean",
+   "transcript": "ब्लॉक सी, फ्लैट 300 चार, 4th मंजिल, नीली बिल्डिंग के पास।",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "g12|clean": {
+   "id": "g12",
+   "condition": "clean",
+   "transcript": "ಸೈಕಲ್ ಅಂಗಡಿ ಪಕ್ಕ ಲೆಫ್ಟ್ ತಗೊಳ್ಳಿ ಹೌಸ್ ನಂಬರ್ ಒಂದು ನಾಲ್ಕು ಹಸಿರು ಗೇಟ್",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "g13|clean": {
+   "id": "g13",
+   "condition": "clean",
+   "transcript": "flat 12 one by four floor gate one behind the school",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "g14|clean": {
+   "id": "g14",
+   "condition": "clean",
+   "transcript": "ফ্ল্যাট তিনশো চার তৃতীয় তলা ব্লক সি নীল বিল্ডিংয়ের পাশে",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "g15|clean": {
+   "id": "g15",
+   "condition": "clean",
+   "transcript": "5वीं मंज़िल फ्लैट 502 गेट नंबर 3 पेट्रोल पंप के सामने",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "g16|clean": {
+   "id": "g16",
+   "condition": "clean",
+   "transcript": "ಅಪಾರ್ಟ್ಮೆಂಟ್ ಹೆಸರು ಸನ್ ರೈಸ್ ರೆಸಿಡೆನ್ಸಿ ಫ್ಲಾಟ್ ಫೈವ್ ಬಿ ಎರಡನೇ ಮಹಡಿ",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "g17|clean": {
+   "id": "g17",
+   "condition": "clean",
+   "transcript": "house number one four 3rd cross 2nd main near the green gate",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "g18|clean": {
+   "id": "g18",
+   "condition": "clean",
+   "transcript": "গেট নম্বর চার পাঁচতলা ফ্ল্যাট পাঁচ বি স্কুলের পেছনে",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "g19|clean": {
+   "id": "g19",
+   "condition": "clean",
+   "transcript": "ಗೇಟ್ ನಂಬರ್ ಮೂರು ನಾಲ್ಕನೇ ಮಹಡಿ ಫ್ಲ್ಯಾಟ್ ನಾನ್ನೂರ ಐದು ಮೆಡಿಕಲ್ ಶಾಪ್ ಎದುರು",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "g20|clean": {
+   "id": "g20",
+   "condition": "clean",
+   "transcript": "flat five b 2nd floor gate number four behind the cycle shop",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "g21|clean": {
+   "id": "g21",
+   "condition": "clean",
+   "transcript": "our house is the one with the red door 3rd main 7th cross",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "g22|clean": {
+   "id": "g22",
+   "condition": "clean",
+   "transcript": "ಐದನೇ ಕ್ರಾಸ್ ಎರಡು ನೇ ಮೇನ್ ಗೇಟ್ ನಂಬರ್ ಒಂದು ಶಾಲೆ ಹತ್ತಿರ",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "g23|clean": {
+   "id": "g23",
+   "condition": "clean",
+   "transcript": "टावर बी, फ्लैट 1 4 दो, सेकेंड फ्लोर, स्कूल के पीछे।",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "g24|clean": {
+   "id": "g24",
+   "condition": "clean",
+   "transcript": "ಮೂರನೇ ಕ್ರಾಸ್ ಹದಿನೈದನೇ ಮೇನ್ ಫ್ಲೋರ್ ಟು ಗೇಟ್ ನಂಬರ್ ಇಪ್ಪತ್ತೈದು",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "g25|clean": {
+   "id": "g25",
+   "condition": "clean",
+   "transcript": "gate 20 one 1st floor flat 102 near the mango tree",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "g26|clean": {
+   "id": "g26",
+   "condition": "clean",
+   "transcript": "চার নম্বর গেট দ্বিতীয় তলা ফ্ল্যাট একশো দুই মন্দিরের কাছে",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "g27|clean": {
+   "id": "g27",
+   "condition": "clean",
+   "transcript": "tower a flat 1,101 11th floor gate five opposite the pharmacy",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "g28|clean": {
+   "id": "g28",
+   "condition": "clean",
+   "transcript": "ನೀಲಿ ಬಣ್ಣದ ಮನೆ ಮೊದಲನೇ ಮಹಡಿ ಮೂರನೇ ಮೇನ್ ಬೇಕರಿ ಪಕ್ಕದಲ್ಲಿ",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "g29|clean": {
+   "id": "g29",
+   "condition": "clean",
+   "transcript": "ground floor flat 204 gate number one beside the temple road",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "g30|clean": {
+   "id": "g30",
+   "condition": "clean",
+   "transcript": "ಟವರೆ ಫ್ಲ್ಯಾಟ್ ಒಂದು ಸೊನ್ನೆ ಎರಡು ಥರ್ಡ್ ಫ್ಲೋರ್ ಗೇಟ್ ನಂಬರ್ ಎಂಟು ಎದುರು",
+   "retries": 0,
+   "measured_snr_db": null,
+   "active_fraction": null
+  },
+  "g01|street_20": {
+   "id": "g01",
+   "condition": "street_20",
+   "transcript": "2nd cross 3rd main gate number two opposite the ganesha temple",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.5
+  },
+  "g02|street_20": {
+   "id": "g02",
+   "condition": "street_20",
+   "transcript": "ನಮ್ಮ ಮನೆ ಎರಡನೇ ಕ್ರಾಸ್ ಮೂರನೇ ಮೇನ್ ಗೇಟ್ ನಂಬರ್ ಎರಡು ಹತ್ತಿರ ಆಪೋಸಿಟ್ ಗಣೇಶ ದೇವಸ್ಥಾನ",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.6597222222222222
+  },
+  "g03|street_20": {
+   "id": "g03",
+   "condition": "street_20",
+   "transcript": "block c flat 402 1/4 floor near the blue building",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.4583333333333333
+  },
+  "g04|street_20": {
+   "id": "g04",
+   "condition": "street_20",
+   "transcript": "2nd क्रॉस और 3rd मेन पर गेट नंबर 2 गणेश मंदिर के सामने",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.6730769230769231
+  },
+  "g05|street_20": {
+   "id": "g05",
+   "condition": "street_20",
+   "transcript": "take the 2nd cross and then 5th main gate three is next to the bakery",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.505
+  },
+  "g06|street_20": {
+   "id": "g06",
+   "condition": "street_20",
+   "transcript": "ಬ್ಲೂ ಬಿಲ್ಡಿಂಗ್ ಥರ್ಡ್ ಫ್ಲೋರ್ ಫ್ಲ್ಯಾಟ್ ಮುನ್ನೂರ ನಾಲ್ಕು ಲಿಫ್ಟ್ ಇಲ್ಲ",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.575
+  },
+  "g07|street_20": {
+   "id": "g07",
+   "condition": "street_20",
+   "transcript": "দুই নম্বর ক্রস তিন নম্বর মেইন গেট নম্বর দুই গণেশ মন্দিরের সামনে",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.7113095238095238
+  },
+  "g08|street_20": {
+   "id": "g08",
+   "condition": "street_20",
+   "transcript": "i am in tower b flat 1,205 12th floor near the water tank",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.4921875
+  },
+  "g09|street_20": {
+   "id": "g09",
+   "condition": "street_20",
+   "transcript": "gate number two 3rd floor flat 304 opposite the petrol bunk",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.49038461538461536
+  },
+  "g10|street_20": {
+   "id": "g10",
+   "condition": "street_20",
+   "transcript": "ಟವರ್ ಬಿ ಬ್ಲಾಕ್ ಫೋರ್ ಗೇಟ್ ನಂಬರ್ ಎರಡು ಹತ್ತಿರ ಬನ್ನಿ",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.592391304347826
+  },
+  "g11|street_20": {
+   "id": "g11",
+   "condition": "street_20",
+   "transcript": "ब्लॉक सी फ्लैट 304 4th मंज़िल, नीली बिल्डिंग के पास",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.5120967741935484
+  },
+  "g12|street_20": {
+   "id": "g12",
+   "condition": "street_20",
+   "transcript": "ಸೈಕಲ್ ಅಂಗಡಿ ಪಕ್ಕ ಲೆಫ್ಟ್ ತಗೊಳ್ಳಿ ಹೌಸ್ ನಂಬರ್ ಒಂದು ನಾಲ್ಕು ಹಸಿರು ಗೇಟ್",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.605
+  },
+  "g13|street_20": {
+   "id": "g13",
+   "condition": "street_20",
+   "transcript": "flat 12 one by four floor gate one behind the school",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.4375
+  },
+  "g14|street_20": {
+   "id": "g14",
+   "condition": "street_20",
+   "transcript": "ফ্ল্যাট তিনশো চার তৃতীয় তলা ব্লক সি নীল বিল্ডিংয়ের পাশে",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.6057692307692307
+  },
+  "g15|street_20": {
+   "id": "g15",
+   "condition": "street_20",
+   "transcript": "पांचवी मंजिल फ्लैट 502 गेट नंबर 3 पेट्रोल पंप के सामने",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.58203125
+  },
+  "g16|street_20": {
+   "id": "g16",
+   "condition": "street_20",
+   "transcript": "ಅಪಾರ್ಟ್ಮೆಂಟ್ ಹೆಸರು ಸನ್ ರೈಸ್ ರೆಸಿಡೆನ್ಸಿ ಫ್ಲಾಟ್ ಫೈವ್ ಬಿ ಎರಡನೇ ಮಹಡಿ",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.6116071428571429
+  },
+  "g17|street_20": {
+   "id": "g17",
+   "condition": "street_20",
+   "transcript": "house number one four 3rd cross 2nd main near the green gate",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.545
+  },
+  "g18|street_20": {
+   "id": "g18",
+   "condition": "street_20",
+   "transcript": "গেট নম্বর চার পাঁচতলা ফ্ল্যাট পাঁচ বি স্কুলের পেছনে",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.5857142857142857
+  },
+  "g19|street_20": {
+   "id": "g19",
+   "condition": "street_20",
+   "transcript": "ಗೇಟ್ ನಂಬರ್ ಮೂರು ನಾಲ್ಕನೇ ಮಹಡಿ ಫ್ಲ್ಯಾಟ್ ನಾನ್ನೂರ ಐದು ಮೆಡಿಕಲ್ ಶಾಪ್ ಎದುರು",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.6854838709677419
+  },
+  "g20|street_20": {
+   "id": "g20",
+   "condition": "street_20",
+   "transcript": "flat five b 2nd floor gate number four behind the cycle shop",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.4519230769230769
+  },
+  "g21|street_20": {
+   "id": "g21",
+   "condition": "street_20",
+   "transcript": "our house is the one with the red door 3rd main 7th cross",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.5654761904761905
+  },
+  "g22|street_20": {
+   "id": "g22",
+   "condition": "street_20",
+   "transcript": "ಐದನೇ ಕ್ರಾಸ್ ಎರಡು ನೇ ಮೇನ್ ಗೇಟ್ ನಂಬರ್ ಒಂದು ಶಾಲೆ ಹತ್ತಿರ",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.6666666666666666
+  },
+  "g23|street_20": {
+   "id": "g23",
+   "condition": "street_20",
+   "transcript": "टावर बी फ्लैट 1 4 दो, 2 फ्लोर, स्कूल के पीछे",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.49537037037037035
+  },
+  "g24|street_20": {
+   "id": "g24",
+   "condition": "street_20",
+   "transcript": "ಮೂರನೇ ಕ್ರಾಸ್ ಹದಿನೈದನೇ ಮೇನ್ ಫ್ಲೋರ್ ಟು ಗೇಟ್ ನಂಬರ್ ಇಪ್ಪತ್ತೈದು",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.6111111111111112
+  },
+  "g25|street_20": {
+   "id": "g25",
+   "condition": "street_20",
+   "transcript": "gate 20 one 1st floor flat 102 near the mango tree",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.5432692307692307
+  },
+  "g26|street_20": {
+   "id": "g26",
+   "condition": "street_20",
+   "transcript": "চার নম্বর গেট দ্বিতীয় তলা ফ্ল্যাট একশো দুই মন্দিরের কাছে",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.5777027027027027
+  },
+  "g27|street_20": {
+   "id": "g27",
+   "condition": "street_20",
+   "transcript": "tower a flat 1,101 11th floor gate five opposite the pharmacy",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.546875
+  },
+  "g28|street_20": {
+   "id": "g28",
+   "condition": "street_20",
+   "transcript": "ನೀಲಿ ಬಣ್ಣದ ಮನೆ ಮೊದಲನೇ ಮಹಡಿ ಮೂರನೇ ಮೇನ್ ಬೇಕರಿ ಪಕ್ಕದಲ್ಲಿ",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.6896551724137931
+  },
+  "g29|street_20": {
+   "id": "g29",
+   "condition": "street_20",
+   "transcript": "ground floor flat 204 gate number one beside the temple road",
+   "retries": 0,
+   "measured_snr_db": 19.999999999999996,
+   "active_fraction": 0.5555555555555556
+  },
+  "g30|street_20": {
+   "id": "g30",
+   "condition": "street_20",
+   "transcript": "ಠವರೆ ಫ್ಲ್ಯಾಟ್ ಒಂದು ಸೊನ್ನೆ ಎರಡು ಥರ್ಡ್ ಫ್ಲೋರ್ ಗೇಟ್ ನಂಬರ್ ಎಂಟು ಎದುರು",
+   "retries": 0,
+   "measured_snr_db": 20.0,
+   "active_fraction": 0.6206896551724138
+  },
+  "g01|street_10": {
+   "id": "g01",
+   "condition": "street_10",
+   "transcript": "2nd cross 3rd main gate number two opposite the ganesha temple",
+   "retries": 0,
+   "measured_snr_db": 10.000000000000002,
+   "active_fraction": 0.5
+  },
+  "g02|street_10": {
+   "id": "g02",
+   "condition": "street_10",
+   "transcript": "ನಮ್ಮ ಮನೆ ಎರಡನೇ ಕ್ರಾಸ್ ಮೂರನೇ ಮೇಲ್ ಗೇಟ್ ನಂಬರ್ ಎರಡು ಹತ್ತಿರ ಆಪೋಸಿಟ್ ಗಣೇಶ ದೇವಸ್ಥಾನ",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.6597222222222222
+  },
+  "g03|street_10": {
+   "id": "g03",
+   "condition": "street_10",
+   "transcript": "block c flat 402 1/4 floor near the blue building",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.4583333333333333
+  },
+  "g04|street_10": {
+   "id": "g04",
+   "condition": "street_10",
+   "transcript": "2nd क्रॉस और 3rd मेन पर गेट नंबर 2 गणेश मंदिर के सामने",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.6730769230769231
+  },
+  "g05|street_10": {
+   "id": "g05",
+   "condition": "street_10",
+   "transcript": "take the 2nd cross and then 5th main gate three is next to the bakery",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.505
+  },
+  "g06|street_10": {
+   "id": "g06",
+   "condition": "street_10",
+   "transcript": "ಬ್ಲೂ ಬಿಲ್ಡಿಂಗ್ ಥರ್ಡ್ ಫ್ಲೋರ್ ಫ್ಲ್ಯಾಟ್ ಮುನ್ನೂರ ನಾಲ್ಕು ಲಿಫ್ಟ್ ಇಲ್ಲ",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.575
+  },
+  "g07|street_10": {
+   "id": "g07",
+   "condition": "street_10",
+   "transcript": "দুই নম্বর ক্রস তিন নম্বর মেইন গেট নম্বর দুই গণেশ মন্দিরের সামনে",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.7113095238095238
+  },
+  "g08|street_10": {
+   "id": "g08",
+   "condition": "street_10",
+   "transcript": "i am in tower b flat 1,205 12th floor near the water tank",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.4921875
+  },
+  "g09|street_10": {
+   "id": "g09",
+   "condition": "street_10",
+   "transcript": "gate number two 3rd floor flat 304 opposite the petrol bunk",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.49038461538461536
+  },
+  "g10|street_10": {
+   "id": "g10",
+   "condition": "street_10",
+   "transcript": "ಟವರ್ ಬಿ ಬ್ಲಾಕ್ ಫೋರ್ ಗೇಟ್ ನಂಬರ್ ಎರಡು ಹತ್ತಿರ ಬನ್ನಿ",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.592391304347826
+  },
+  "g11|street_10": {
+   "id": "g11",
+   "condition": "street_10",
+   "transcript": "ब्लॉक सी फ्लैट 304 4th मंजिल नीली बिल्डिंग के पास",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.5120967741935484
+  },
+  "g12|street_10": {
+   "id": "g12",
+   "condition": "street_10",
+   "transcript": "ಸೈಕಲ್ ಅಂಗಡಿ ಪಕ್ಕ ಲೆಫ್ಟ್ ತಗೊಳ್ಳಿ ಹೌಸ್ ನಂಬರ್ ಒಂದು ನಾಲ್ಕು ಹಸಿರು ಗೇಟ್",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.605
+  },
+  "g13|street_10": {
+   "id": "g13",
+   "condition": "street_10",
+   "transcript": "flat 12 one by four floor gate one behind the screen",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.4375
+  },
+  "g14|street_10": {
+   "id": "g14",
+   "condition": "street_10",
+   "transcript": "ফ্ল্যাট তিনশো চার তৃতীয় তলা ব্লক সি নীল বিল্ডিংয়ের পাশে",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.6057692307692307
+  },
+  "g15|street_10": {
+   "id": "g15",
+   "condition": "street_10",
+   "transcript": "पांचवी मंजिल फ्लैट 502 गेट नंबर 3 पेट्रोल पंप के सामने",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.58203125
+  },
+  "g16|street_10": {
+   "id": "g16",
+   "condition": "street_10",
+   "transcript": "ಅಪಾರ್ಟ್ಮೆಂಟ್ ಹೆಸರು ಸನ್ ರೈಸ್ ರೆಸಿಡೆನ್ಸಿ ಫ್ಲಾಟ್ ಫೈವ್ ಬಿ ಎರಡನೇ ಮಹಡಿ",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.6116071428571429
+  },
+  "g17|street_10": {
+   "id": "g17",
+   "condition": "street_10",
+   "transcript": "house number one four 3rd cross 2nd main near the green gate",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.545
+  },
+  "g18|street_10": {
+   "id": "g18",
+   "condition": "street_10",
+   "transcript": "গেট নম্বর চার পাঁচতলা ফ্ল্যাট পাঁচ বি স্কুলের পেছনে",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.5857142857142857
+  },
+  "g19|street_10": {
+   "id": "g19",
+   "condition": "street_10",
+   "transcript": "ಗೇಟ್ ನಂಬರ್ ಮೂರು ನಾಲ್ಕನೇ ಮಹಡಿ ಫ್ಲ್ಯಾಟ್ ನಾನ್ನೂರ ಐದು ಮೆಡಿಕಲ್ ಶಾಪ್ ಎದುರು",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.6854838709677419
+  },
+  "g20|street_10": {
+   "id": "g20",
+   "condition": "street_10",
+   "transcript": "flat five b 2nd floor gate number four behind the cycle shop",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.4519230769230769
+  },
+  "g21|street_10": {
+   "id": "g21",
+   "condition": "street_10",
+   "transcript": "our house is the one with the red door 3rd moon 7th cross",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.5654761904761905
+  },
+  "g22|street_10": {
+   "id": "g22",
+   "condition": "street_10",
+   "transcript": "ಐದನೇ ಕ್ರಾಸ್ ಎರಡು ನೇ ಮೇನ್ ಗೇಟ್ ನಂಬರ್ ಒಂದು ಶಾಲೆ ಹತ್ತಿರ",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.6666666666666666
+  },
+  "g23|street_10": {
+   "id": "g23",
+   "condition": "street_10",
+   "transcript": "टावर बी फ्लैट 1 4 2 2 फ्लोर स्कूल के पीछे",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.49537037037037035
+  },
+  "g24|street_10": {
+   "id": "g24",
+   "condition": "street_10",
+   "transcript": "ಮೂರನೇ ಕ್ರಾಸ್ ಹದಿನೈದನೇ ಮೇನ್ ಫ್ಲೋರ್ ಟು ಗೇಟ್ ನಂಬರ್ ಇಪ್ಪತ್ತೈದು",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.6111111111111112
+  },
+  "g25|street_10": {
+   "id": "g25",
+   "condition": "street_10",
+   "transcript": "k 20 one 1st floor flat 102 near the mango tree",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.5432692307692307
+  },
+  "g26|street_10": {
+   "id": "g26",
+   "condition": "street_10",
+   "transcript": "চার নম্বর গেট দ্বিতীয় তলা ফ্ল্যাট একশো দুই মন্দিরের কাছে",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.5777027027027027
+  },
+  "g27|street_10": {
+   "id": "g27",
+   "condition": "street_10",
+   "transcript": "tower eight flat 1,101 11th floor gate five opposite the pharmacy",
+   "retries": 0,
+   "measured_snr_db": 10.000000000000002,
+   "active_fraction": 0.546875
+  },
+  "g28|street_10": {
+   "id": "g28",
+   "condition": "street_10",
+   "transcript": "ನೀಲಿ ಬಣ್ಣದ ಮನೆ ಮೊದಲನೇ ಮಹಡಿ ಮೂರನೇ ಮೇಲ್ ಬೇಕರಿ ಪಕ್ಕದಲ್ಲಿ",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.6896551724137931
+  },
+  "g29|street_10": {
+   "id": "g29",
+   "condition": "street_10",
+   "transcript": "ground floor flat 204 gate number one beside the temple road",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.5555555555555556
+  },
+  "g30|street_10": {
+   "id": "g30",
+   "condition": "street_10",
+   "transcript": "ತವರೆ ಫ್ಲ್ಯಾಟ್ ಒಂದು ಸೊನ್ನೆ ಎರಡು ಥರ್ಡ್ ಫ್ಲೋರ್ ಗೇಟ್ ನಂಬರ್ ಎಂಟು ಎದುರು",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.6206896551724138
+  },
+  "g01|street_5": {
+   "id": "g01",
+   "condition": "street_5",
+   "transcript": "2nd cross 3rd main gate number two opposite the ganesha temple",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000002,
+   "active_fraction": 0.5
+  },
+  "g02|street_5": {
+   "id": "g02",
+   "condition": "street_5",
+   "transcript": "ನಮ್ಮ ಮನೆ ಎರಡನೇ ಕ್ರಾಸ್ ಮೂರನೇ ಮೇಲ್ ಗೇಟ್ ನಂಬರ್ ಎರಡು ಹತ್ತಿರ ಆಪೋಸಿಟ್ ಗಣೇಶ ದೇವಸ್ಥಾನ",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000001,
+   "active_fraction": 0.6597222222222222
+  },
+  "g03|street_5": {
+   "id": "g03",
+   "condition": "street_5",
+   "transcript": "near the blue building",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000001,
+   "active_fraction": 0.4583333333333333
+  },
+  "g04|street_5": {
+   "id": "g04",
+   "condition": "street_5",
+   "transcript": "2nd क्रॉस और 3rd मेल पर गेट नंबर 2 गणेश मंदिर के सामने",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000002,
+   "active_fraction": 0.6730769230769231
+  },
+  "g05|street_5": {
+   "id": "g05",
+   "condition": "street_5",
+   "transcript": "take the 2nd cross and then 5th main gate three is next to the bakery",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000002,
+   "active_fraction": 0.505
+  },
+  "g06|street_5": {
+   "id": "g06",
+   "condition": "street_5",
+   "transcript": "ಬ್ಲೂ ಬಿಲ್ಡಿಂಗ್ ಥರ್ಡ್ ಫ್ಲೋರ್ ಫ್ಲ್ಯಾಟ್ ಮುನ್ನೂರ ನಾಲ್ಕು ಲಿಫ್ಟ್ ಇಲ್ಲ",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000001,
+   "active_fraction": 0.575
+  },
+  "g07|street_5": {
+   "id": "g07",
+   "condition": "street_5",
+   "transcript": "দুই নম্বর ক্রস তিন নম্বর মেইন গেট নম্বর দুই গণেশ মন্দিরের সামনে",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.7113095238095238
+  },
+  "g08|street_5": {
+   "id": "g08",
+   "condition": "street_5",
+   "transcript": "i am in tower beef flat 1,205 12th floor near the waterway",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000001,
+   "active_fraction": 0.4921875
+  },
+  "g09|street_5": {
+   "id": "g09",
+   "condition": "street_5",
+   "transcript": "gate number two 3rd floor flat 300 floor opposite the petrol pump",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.49038461538461536
+  },
+  "g10|street_5": {
+   "id": "g10",
+   "condition": "street_5",
+   "transcript": "ಟವರ್ ಬಿ ಬ್ಲಾಕ್ ಫೋರ್ ಗೇಟ್ ನಂಬರ್ ಎರಡು ಹತ್ತಿರ ಬನ್ನಿ",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000001,
+   "active_fraction": 0.592391304347826
+  },
+  "g11|street_5": {
+   "id": "g11",
+   "condition": "street_5",
+   "transcript": "ब्लॉक से फ्लैट 304 4th मंजिल नीली बिल्डिंग के पास",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.5120967741935484
+  },
+  "g12|street_5": {
+   "id": "g12",
+   "condition": "street_5",
+   "transcript": "ಸೈಕಲ್ ಅಂಗಡಿ ಪಕ್ಕ ಲೆಫ್ಟ್ ತಗೊಳ್ಳಿ ಹೌಸ್ ನಂಬರ್ ಒಂದು ನಾಲ್ಕು ಹಸಿರು ಗೇಟ್",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.605
+  },
+  "g13|street_5": {
+   "id": "g13",
+   "condition": "street_5",
+   "transcript": "flat 12 one by four floor gate one behind school",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.4375
+  },
+  "g14|street_5": {
+   "id": "g14",
+   "condition": "street_5",
+   "transcript": "ফ্ল্যাট তিনশো চার তৃতীয় তলা লক্সি নীল বিল্ডিংয়ের পাশে",
+   "retries": 0,
+   "measured_snr_db": 4.999999999999999,
+   "active_fraction": 0.6057692307692307
+  },
+  "g15|street_5": {
+   "id": "g15",
+   "condition": "street_5",
+   "transcript": "पांचवी मंजिल फ्लैट 502 गेट नंबर 3 पेट्रोल पंप के सामने",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.58203125
+  },
+  "g16|street_5": {
+   "id": "g16",
+   "condition": "street_5",
+   "transcript": "ಅಪಾರ್ಟ್ಮೆಂಟ್ ಹೆಸರು ಸನ್ ರೈಸ್ ರೆಸಿಡೆನ್ಸಿ ಫ್ಲಾಟ್ ಫೈವ್ ಬಿ ಎರಡನೇ ಮಹಡಿ",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.6116071428571429
+  },
+  "g17|street_5": {
+   "id": "g17",
+   "condition": "street_5",
+   "transcript": "house number one four 3rd cross 2nd nearby",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.545
+  },
+  "g18|street_5": {
+   "id": "g18",
+   "condition": "street_5",
+   "transcript": "গেট নম্বর চার পাঁচতলা ফ্ল্যাট পাঁচ বি স্কুলের পেছনে",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000001,
+   "active_fraction": 0.5857142857142857
+  },
+  "g19|street_5": {
+   "id": "g19",
+   "condition": "street_5",
+   "transcript": "ಗೇಟ್ ನಂಬರ್ ಮೂರು ನಾಲ್ಕನೇ ಮಹಡಿ ಫ್ಲ್ಯಾಟ್ ನಾನ್ನೂರ ಐದು ಮೆಡಿಕಲ್ ಶಾಪ್ ಎದುರು",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000002,
+   "active_fraction": 0.6854838709677419
+  },
+  "g20|street_5": {
+   "id": "g20",
+   "condition": "street_5",
+   "transcript": "flat five b 2nd floor gate number four behind the cycle shop",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.4519230769230769
+  },
+  "g21|street_5": {
+   "id": "g21",
+   "condition": "street_5",
+   "transcript": "our house is the one with the red door 3rd May the 7th cross",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000001,
+   "active_fraction": 0.5654761904761905
+  },
+  "g22|street_5": {
+   "id": "g22",
+   "condition": "street_5",
+   "transcript": "ಐದನೇ ಕ್ರಾಸ್ ಎರಡನೇ ಮೇಲ್ ಗೇಟ್ ನಂಬರ್ ಒಂದು ಶಾಲೆ ಹತ್ತಿರ",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.6666666666666666
+  },
+  "g23|street_5": {
+   "id": "g23",
+   "condition": "street_5",
+   "transcript": "टावर भी फ्लैट 1 4 2 2 फ्लोर स्कूल के पीछे",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.49537037037037035
+  },
+  "g24|street_5": {
+   "id": "g24",
+   "condition": "street_5",
+   "transcript": "ಮೂರನೇ ಕ್ರಾಸ್ ಹದಿನೈದನೇ ಮೇಲ್ ಫ್ಲೋರ್ ಟು ಗೇಟ್ ನಂಬರ್ ಇಪ್ಪತ್ತೈದು",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.6111111111111112
+  },
+  "g25|street_5": {
+   "id": "g25",
+   "condition": "street_5",
+   "transcript": "gate 20 one 1st floor flat 102 near the mango tree",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000001,
+   "active_fraction": 0.5432692307692307
+  },
+  "g26|street_5": {
+   "id": "g26",
+   "condition": "street_5",
+   "transcript": "চার নম্বর গেট দ্বিতীয় তলা ফ্ল্যাট একশো দুই মন্দিরের কাছে",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.5777027027027027
+  },
+  "g27|street_5": {
+   "id": "g27",
+   "condition": "street_5",
+   "transcript": "tower a flat 1,101 11th floor gate five opposite the pharmacy",
+   "retries": 0,
+   "measured_snr_db": 5.000000000000002,
+   "active_fraction": 0.546875
+  },
+  "g28|street_5": {
+   "id": "g28",
+   "condition": "street_5",
+   "transcript": "ನೀಲಿ ಬಣ್ಣದ ಮನೆ ಮೊದಲನೇ ಮಹಡಿ ಮೂರನೇ ಮೇಲ್ ಬೇಕರಿ ಪಕ್ಕದಲ್ಲಿ",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.6896551724137931
+  },
+  "g29|street_5": {
+   "id": "g29",
+   "condition": "street_5",
+   "transcript": "gate number one",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.5555555555555556
+  },
+  "g30|street_5": {
+   "id": "g30",
+   "condition": "street_5",
+   "transcript": "ಟವರ್ ಫ್ಲ್ಯಾಟ್ ಒಂದು ಸೊನ್ನೆ ಎರಡು ಥರ್ಡ್ ಫ್ಲೋರ್ ಗೇಟ್ ನಂಬರ್ ಎಂಟು ಎದುರು",
+   "retries": 0,
+   "measured_snr_db": 5.0,
+   "active_fraction": 0.6206896551724138
+  },
+  "g01|pink_10": {
+   "id": "g01",
+   "condition": "pink_10",
+   "transcript": "2nd cross 3rd main gate number two opposite the ganesha temple",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.5
+  },
+  "g02|pink_10": {
+   "id": "g02",
+   "condition": "pink_10",
+   "transcript": "ನಮ್ಮ ಮನೆ ಎರಡನೇ ಕ್ರಾಸ್ ಮೂರನೇ ಮೇನ್ ಗೇಟ್ ನಂಬರ್ ಎರಡು ಹತ್ತಿರ ಆಪೋಸಿಟ್ ಗಣೇಶ ದೇವಸ್ಥಾನ",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.6597222222222222
+  },
+  "g03|pink_10": {
+   "id": "g03",
+   "condition": "pink_10",
+   "transcript": "block three flat 402 1/4 floor near the blue building",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.4583333333333333
+  },
+  "g04|pink_10": {
+   "id": "g04",
+   "condition": "pink_10",
+   "transcript": "2nd क्रॉस और 3rd मेन पर गेट नंबर 2 गणेश मंदिर के सामने",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.6730769230769231
+  },
+  "g05|pink_10": {
+   "id": "g05",
+   "condition": "pink_10",
+   "transcript": "take the 2nd cross and then 5th name gate three is next to the bakery",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.505
+  },
+  "g06|pink_10": {
+   "id": "g06",
+   "condition": "pink_10",
+   "transcript": "ಬ್ಲೂ ಬಿಲ್ಡಿಂಗ್ ಥರ್ಡ್ ಫ್ಲೋರ್ ಫ್ಲ್ಯಾಟ್ ಮುನ್ನೂರ ನಾಲ್ಕು ಲಿಫ್ಟ್ ಇಲ್ಲ",
+   "retries": 0,
+   "measured_snr_db": 10.000000000000002,
+   "active_fraction": 0.575
+  },
+  "g07|pink_10": {
+   "id": "g07",
+   "condition": "pink_10",
+   "transcript": "দুই নম্বর ক্রস তিন নম্বর মেইন গেট নম্বর দুই গণেশ মন্দিরের সামনে",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.7113095238095238
+  },
+  "g08|pink_10": {
+   "id": "g08",
+   "condition": "pink_10",
+   "transcript": "i am in tower beach flat 1,205 12th floor near the water tank",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.4921875
+  },
+  "g09|pink_10": {
+   "id": "g09",
+   "condition": "pink_10",
+   "transcript": "gate number two 3rd floor flat 304 opposite the petrol bunk",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.49038461538461536
+  },
+  "g10|pink_10": {
+   "id": "g10",
+   "condition": "pink_10",
+   "transcript": "ಟವರ್ ಬಿ ಬ್ಲಾಕ್ ಫೋರ್ ಗೇಟ್ ನಂಬರ್ ಎರಡು ಹತ್ತಿರ ಬನ್ನಿ",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.592391304347826
+  },
+  "g11|pink_10": {
+   "id": "g11",
+   "condition": "pink_10",
+   "transcript": "ब्लॉक सी फ्लैट 304 4th मंजिल नीली बिल्डिंग के पास",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.5120967741935484
+  },
+  "g12|pink_10": {
+   "id": "g12",
+   "condition": "pink_10",
+   "transcript": "ಸೈಕಲ್ ಅಂಗಡಿ ಪಕ್ಕ ಲೆಫ್ಟ್ ತಗೊಳ್ಳಿ ಹೌಸ್ ನಂಬರ್ ಒಂದು ನಾಲ್ಕು ಹಸಿರು ಗೇಟ್",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.605
+  },
+  "g13|pink_10": {
+   "id": "g13",
+   "condition": "pink_10",
+   "transcript": "flat 12 one by four floor gate one behind the screen",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.4375
+  },
+  "g14|pink_10": {
+   "id": "g14",
+   "condition": "pink_10",
+   "transcript": "ফ্ল্যাট তিনশো চার তৃতীয় তলা ব্লক সি নীল বিল্ডিংয়ের পাশে",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.6057692307692307
+  },
+  "g15|pink_10": {
+   "id": "g15",
+   "condition": "pink_10",
+   "transcript": "पाँचवी मंजिल फ्लैट 502 गेट नंबर 3 पेट्रोल पंप के सामने",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.58203125
+  },
+  "g16|pink_10": {
+   "id": "g16",
+   "condition": "pink_10",
+   "transcript": "ಅಪಾರ್ಟ್ಮೆಂಟ್ ಹೆಸರು ಸನ್ ರೈಸ್ ರೆಸಿಡೆನ್ಸಿ ಪ್ಲಾಟ್ ಫೈವ್ ಬಿ ಎರಡನೇ ಮಹಡಿ",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.6116071428571429
+  },
+  "g17|pink_10": {
+   "id": "g17",
+   "condition": "pink_10",
+   "transcript": "house number one four 3rd cross 2nd main near the green gate",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.545
+  },
+  "g18|pink_10": {
+   "id": "g18",
+   "condition": "pink_10",
+   "transcript": "গেট নম্বর চার পাঁচতলা ফ্ল্যাট পাঁচ বি স্কুলের পেছনে",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.5857142857142857
+  },
+  "g19|pink_10": {
+   "id": "g19",
+   "condition": "pink_10",
+   "transcript": "ಗೇಟ್ ನಂಬರ್ ಮೂರು ನಾಲ್ಕನೇ ಮಹಡಿ ಫ್ಲ್ಯಾಟ್ ನಾನ್ನೂರ ಐದು ಮೆಡಿಕಲ್ ಶಾಪ್ ಎದುರು",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.6854838709677419
+  },
+  "g20|pink_10": {
+   "id": "g20",
+   "condition": "pink_10",
+   "transcript": "flat five b 2nd floor gate number four behind the cycle shop",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.4519230769230769
+  },
+  "g21|pink_10": {
+   "id": "g21",
+   "condition": "pink_10",
+   "transcript": "our house is the one with the red do 3rd name 7th cross",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.5654761904761905
+  },
+  "g22|pink_10": {
+   "id": "g22",
+   "condition": "pink_10",
+   "transcript": "ಐದನೇ ಕ್ರಾಸ್ ಎರಡು ನೇ ಮೇನ್ ಗೇಟ್ ನಂಬರ್ ಒಂದು ಶಾಲೆ ಹತ್ತಿರ",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.6666666666666666
+  },
+  "g23|pink_10": {
+   "id": "g23",
+   "condition": "pink_10",
+   "transcript": "टावर बी, फ्लैट 1 4 2 2 फ्लोर स्कूल के पीछे",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.49537037037037035
+  },
+  "g24|pink_10": {
+   "id": "g24",
+   "condition": "pink_10",
+   "transcript": "ಮೂರನೇ ಕ್ರಾಸ್ ಹದಿನೈದನೇ ಮೇನ್ ಫ್ಲೋರ್ ಟು ಗೇಟ್ ನಂಬರ್ ಇಪ್ಪತ್ತೈದು",
+   "retries": 0,
+   "measured_snr_db": 10.0,
+   "active_fraction": 0.6111111111111112
+  },
+  "g25|pink_10": {
+   "id": "g25",
+   "condition": "pink_10",
+   "transcript": "k 20 one 1st floor flat 102 near the mango tree",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.5432692307692307
+  },
+  "g26|pink_10": {
+   "id": "g26",
+   "condition": "pink_10",
+   "transcript": "চার নম্বর গেট দ্বিতীয় তলা ফ্ল্যাট একশো দুই মন্দিরের কাছে",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.5777027027027027
+  },
+  "g27|pink_10": {
+   "id": "g27",
+   "condition": "pink_10",
+   "transcript": "tower a flat 1,101 11th floor gate five opposite the pharmacy",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.546875
+  },
+  "g28|pink_10": {
+   "id": "g28",
+   "condition": "pink_10",
+   "transcript": "ನೀಲಿ ಬಣ್ಣದ ಮನೆ ಮೊದಲನೇ ಮಹಡಿ ಮೂರನೇ ಮೇಲ್ ಬೇಕರಿ ಪಕ್ಕದಲ್ಲಿ",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.6896551724137931
+  },
+  "g29|pink_10": {
+   "id": "g29",
+   "condition": "pink_10",
+   "transcript": "ground floor flat 204 gate number one beside the temple road",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.5555555555555556
+  },
+  "g30|pink_10": {
+   "id": "g30",
+   "condition": "pink_10",
+   "transcript": "ಟವರೆ ಫ್ಲ್ಯಾಟ್ ಒಂದು ಸೊನ್ನೆ ಎರಡು ಥರ್ಡ್ ಫ್ಲೋರ್ ಗೇಟ್ ನಂಬರ್ ಎಂಟು ಎದುರು",
+   "retries": 0,
+   "measured_snr_db": 9.999999999999998,
+   "active_fraction": 0.6206896551724138
+  }
+ }
+}

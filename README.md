@@ -2,172 +2,201 @@
 
 [![CI](https://github.com/rahulpaul-07/saathi/actions/workflows/ci.yml/badge.svg)](https://github.com/rahulpaul-07/saathi/actions/workflows/ci.yml)
 
-A delivery-directions interpreter. A customer gives directions by voice; a rider who uses another
-Indian language gets the critical facts (gate, floor, cross/main, landmark) as big chips plus
-translated audio, in a short-lived room. A rider cannot wait for a perfect sentence, so the chips
-are the fast, redundant channel and the audio is the backup.
+**A customer speaks delivery directions in their language; the rider, in another Indian language,
+gets the gate, floor, cross, main and landmark as big chips plus translated audio.**
 
-Roles are independent of languages: the customer and the rider can each use any of the 10
-languages, in either direction, and either can answer by voice or with a quick reply. Any language
-pair shown in demos or tests is only an example; the demo casting is not decided.
+![Rider and customer screens side by side: the delivery card, a changed gate marked, and a confirm-or-ask prompt](docs/media/design/after/split-1920-4-confirm-and-ask.png)
 
-Pipeline per turn: Gnani Prisma (speech to text) -> fact extraction (native-script rules per
-language) -> IndicTrans2 (translation, runs locally) -> Gnani Timbre (text to speech, loudness
-normalized for outdoor playback). No hosted LLM.
+Why this matters:
 
-Status: portfolio project, work in progress. The room backend, both screens and the offline
-evaluation tooling are built and tested with fakes. The real-voice evaluation has not been run yet,
-so this README makes no accuracy claim; results will be in `docs/EVAL.md` when they exist.
+- A fluent translation can still send a rider to the wrong gate: numbers and local words are the
+  parts machine translation rewrites without anyone noticing.
+- So the chips come from what the customer said, never from the translation, and the audio is only
+  the backup.
+- Any of 10 languages for either person, a short-lived room, no accounts and no stored transcripts.
 
-## Languages and support tiers
+Portfolio project, LAN only. Every number below comes from a run described in
+[`docs/EVAL.md`](docs/EVAL.md); anything not measured is said to be not measured.
 
-Any-to-any across the 10 languages Gnani supports for both speech input and output:
-Bengali, English, Gujarati, Hindi, Kannada, Malayalam, Marathi, Punjabi, Tamil, Telugu.
+## See it
 
-| Tier | Languages | What backs it |
-|---|---|---|
-| Verified core | kn, en, hi, bn | native-word fact extraction rules and a synthetic gold set; quick replies in bn and hi partly author-reviewed (see below) |
-| Reviewed | te | quick replies to be checked by a speaker |
-| Beta | gu, ml, mr, pa, ta | the path is wired through the language table; labelled "beta" in the UI; quality is not evaluated |
+| Before (earlier layout) | After (current) |
+|---|---|
+| ![Split screen before](docs/media/design/before/split-1920-4-confirm-and-ask.png) | ![Split screen after](docs/media/design/after/split-1920-4-confirm-and-ask.png) |
 
-Odia, Assamese and Urdu are not offered: Gnani supports none of them for both speech input and
-output, and a translation-only language cannot be spoken or heard here.
+The same moment on a 360 px phone, rider side, with the delivery card directly under the header:
 
-Quick replies exist for both roles in all 10 languages and are sent in the recipient's language.
-Rider: "I'm at the gate", "Which floor?", "Coming in 2 minutes". Customer: "Come to the gate",
-"I'm coming down", "Leave it at the security desk". They are fixed phrases, not free speech.
-Review is tracked per phrase: only the rider's bn and hi phrases are author-reviewed; every other
-translation is machine output, marked unreviewed in the UI until a speaker checks it. The fixed
-"Come to the gate" cannot carry a number, so a customer who needs to name a gate says it by voice.
+![Rider on a 360 px phone: the card first, then the translated audio and the confirm or ask prompt](docs/media/design/after/phone-360-rider-4-confirm-and-ask.png)
+
+All five steps for both roles are in [`docs/media/design/after/`](docs/media/design/after/). The
+people and addresses in them are synthetic; the clips are labelled demo clips.
 
 ## How it works
 
-1. The customer creates a room and shares the 6-character code; the rider joins with it. Each
-   participant gets a random 128-bit token, sent as a Bearer header.
-2. Either person taps the talk button, speaks, and taps again. The server runs speech to text,
-   fact extraction (on the speaker's language), translation and text to speech.
-3. The other person's phone shows chips (gate, floor, cross/main, landmark) and auto-plays the
-   audio. Repeat replays the audio locally with no network call. The speaker sees chips of what
-   they said.
-4. Either person can tap a quick reply; the other sees it as text and hears it. On the rider
-   screen the talk button is secondary ("use when stopped") and the quick replies come first.
+```mermaid
+flowchart LR
+    A[Speaker taps talk] --> B[Gnani STT]
+    B --> C[Facts from the<br/>speaker's own words]
+    B --> D[Mask numbers and<br/>address words]
+    D --> E[IndicTrans2, local]
+    E --> F[Restore and verify<br/>every slot back once]
+    F -->|verified| G[Gnani TTS: translation]
+    F -->|slot lost| H[Gnani TTS: fact summary]
+    C --> I[Chips on the other screen]
+    G --> J[Audio]
+    H --> J
+```
 
-Privacy: addresses are personal data. Rooms are in memory and expire (30 min idle, 2 h hard).
-Transcripts are never logged or stored. Tests, evaluation and demos use synthetic addresses only.
+Gnani Prisma does speech to text, IndicTrans2 translates on the local GPU, Gnani Timbre does text to
+speech. No hosted LLM. Layer by layer: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md); why each
+choice was made: [`docs/DESIGN_FAQ.md`](docs/DESIGN_FAQ.md) and [`docs/DECISIONS.md`](docs/DECISIONS.md).
 
-Honest limits: values the speech recognizer renders ambiguously (for example digit-by-digit flat
-numbers) are shown as heard, not guessed; a "1/N" floor is shown with low confidence.
+Safety layers, in the order a wrong fact would have to get past them:
 
-Two safety layers, independent of each other. First, numbers and address words (cross, main, gate)
-are masked as placeholders before translation and restored after, in plain digits 0-9, so the
-translation model cannot rewrite them; a translation that loses or invents a placeholder is not
-spoken, and a fact summary is spoken instead. Second, the chips are extracted from the source
-transcript, not from the translation, so even a wrong translation sits next to correct chips. On
-the 90-turn text A/B, masking raised fact recall from 0.674 to 0.808 (0.851 with the summary
-fallback), but it does not fix every turn: see `docs/EVAL.md`.
+1. **Chips from the source.** Facts are extracted from the transcript in the speaker's language. A
+   wrong translation still sits next to correct chips.
+2. **Fallback summary.** A translation that loses or duplicates a masked slot, or runs away, is not
+   spoken; a short fact summary is spoken instead.
+3. **Confirm or ask.** The rider can confirm a value or ask about one they doubt with one tap, and
+   the customer sees which.
+4. **Changed marker.** When a later turn changes a fact (gate 2 becomes gate 4), the card marks it
+   instead of silently replacing it.
 
-## Requirements
+## Results
 
-- Windows, Python 3.12 (managed by `uv`), and an NVIDIA GPU (all three translation models together
-  use about 1.4 GB of VRAM in fp16 on an RTX 3050 6 GB; the code falls back to CPU, which I have not
-  tested)
-- Microsoft C++ Build Tools ("Desktop development with C++"): IndicTransToolkit compiles a
-  Cython extension on install
-- A Hugging Face account that has accepted the terms for the three gated models
-  `ai4bharat/indictrans2-indic-indic-dist-320M`, `ai4bharat/indictrans2-en-indic-dist-200M` and
-  `ai4bharat/indictrans2-indic-en-dist-200M`, then `uv run hf auth login`
-- ffmpeg (only to convert evaluation recordings)
-- A Gnani API key in `.env` as `GNANI_API_KEY` (copy `.env.example`)
+"Synthetic" means Gnani TTS speech. Sample sizes are small and the caveats are in the linked file.
 
-## Setup
+| What | Result | n and conditions | Data |
+|---|---|---|---|
+| Fact recall, masking A/B (text) | 0.701 plain, 0.759 masked, 0.854 masked with summary fallback | 90 turns; 9 of 90 masked translations failed the check; fixed scorer | [masking_modes.json](eval/results/masking_modes.json) |
+| Fact recall under street noise | 0.84 clean, 0.64 at 5 dB; drop 0.20, 95% CI 0.09 to 0.31 | n=20 test utterances, synthetic speech with one real street recording | [noise_summary_synth.md](eval/results/noise_summary_synth.md) |
+| Speech error rate, real speech | pooled CER 0.067 clean, 0.101 at 5 dB | 100 FLEURS clips, 10 per language; en and te noisy at n=10 | [speech_summary.md](eval/results/speech_summary.md) |
+| Fact extraction, ta te gu ml mr pa | 19 of 24 sentences fully right on the first run (recall 0.93, precision 1.00); 24 of 24 after the five missed spellings were added, which is not a held-out result | 4 synthetic sentences per language; the result file holds the 24 of 24 rerun, the first-run table is in EVAL.md | [facts_extra.json](eval/results/facts_extra.json), first run in [EVAL.md](docs/EVAL.md#fact-extraction-on-ta-te-gu-ml-mr-pa-held-out-synthetic-speech-run-2026-10-30) |
+| Turn latency, bn to kn | p50 4.2 s, p95 11.3 s | n=19, AC power, one machine, during a stretch of Gnani 504s | [latency.json](eval/results/latency.json) |
+| Live smoke through the HTTP API | passed, 6 Gnani calls | one kn to hi pair (an example), two prepared clips | [live_smoke.json](eval/results/live_smoke.json) |
+| Journey tests | 10 language-pair journeys plus the split-screen journey, all passing | fake Gnani and translator, Playwright, two browser contexts | [`tests/e2e/journeys.spec.js`](tests/e2e/journeys.spec.js) |
+| Translation-safety matrix, 10x10, back-translation score | 0.796 plain, 0.784 masked, 0.812 conditional masking | 90 pairs, 20 machine-generated sentences per pair, 5130 facts, local model, fixed scorer | [masking_conditional_matrix.json](eval/results/masking_conditional_matrix.json) |
+| Same matrix, target-language score | 0.374 plain, 0.445 masked, 0.447 conditional | as above | [masking_conditional_matrix.json](eval/results/masking_conditional_matrix.json) |
+
+Scorer note, 2026-11-01: the English fact extractor was fixed to read "Gate No. 2" and "4 floors", and every fact-recall number above uses the fixed one. Before the fix the same outputs scored 0.674 / 0.747 / 0.843 (A/B, kept in [masking_ab.json](eval/results/masking_ab.json)) and 0.748 plain / 0.679 masked (matrix back score, [translation_matrix.json](eval/results/translation_matrix.json)). The noise, speech and extraction rows are identical under both scorers. Default masking stays `current`; the comparison is in `docs/EVAL.md`.
+
+Not measured: real phone audio, real delivery customers, a native-speaker review of any lexicon or
+quick reply, more than one process, a long soak, and anything in production conditions. The gold-set
+extraction scores are optimistic because the gold texts are written in forms the recognizer was
+observed to produce.
+
+## What works in all 10 languages
+
+Bengali, English, Gujarati, Hindi, Kannada, Malayalam, Marathi, Punjabi, Tamil and Telugu work as
+either role: speaking a turn, chips, translated audio, quick replies (3 phrases per role) and
+the interface text. Language support is one table, [`languages.py`](src/saathi/languages.py).
+
+| Tier | Languages | What backs it |
+|---|---|---|
+| Verified | kn, en, hi, bn | native-word extraction rules and the synthetic gold set; rider quick replies in bn and hi reviewed by the author |
+| Reviewed | te | extraction lexicon machine-verified; quick replies to be checked by a speaker |
+| Beta | gu, ml, mr, pa, ta | extraction lexicons machine-verified; labelled "beta" in the UI |
+
+"Machine-verified" means each number word and trigger is a spelling the real Gnani STT wrote when it
+heard Gnani TTS speech ([`docs/LEXICON_EVIDENCE.md`](docs/LEXICON_EVIDENCE.md)). No one who reads
+these languages has checked the beta ones. "Reviewed by a native speaker" currently applies only to
+the author's review of the rider's bn and hi phrases; every other translation is machine output and is marked
+unreviewed in the UI. Odia, Assamese and Urdu are not offered: Gnani supports none of them for both
+speech input and output.
+
+## Security
+
+Addresses are personal data. Rooms are in memory and expire (30 min idle, 2 h hard); transcripts are
+never logged or stored; tests, evaluation and demos use synthetic addresses only; the API key never
+reaches logs or settings output (tested). Per-IP and per-room rate limits, bounded uploads and
+queues, strict input schemas, generic error messages and a strict content security policy. The full
+model, including what it does not cover, is [`docs/THREAT_MODEL.md`](docs/THREAT_MODEL.md). It has
+had no external review.
+
+## Path to production
+
+Not production-ready. [`docs/PATH_TO_PRODUCTION.md`](docs/PATH_TO_PRODUCTION.md) covers integration
+with a delivery partner, scale, cost per conversation, telephony beside masked calling, India's DPDP
+Act obligations and what is missing. This repo is LAN only: no accounts, no history, no public
+deployment.
+
+## Honest limits
+
+- Translation is machine output and no human has reviewed the renderings. A wrong but fluent
+  translation is possible; the chips and the masking exist because of that.
+- Masking helped on speech-style text in one test and lost in another (matrix row above, diagnosis
+  in `docs/EVAL.md`). It is a modest improvement, not a guarantee.
+- Synthetic speech is clean and one voice per language; it cannot reproduce phone microphones.
+- Small samples are small: 4 sentences per language in the held-out set, 20 utterances in the noise
+  test.
+- The translation models need a GPU for comfortable speed (an RTX 3050 6 GB here). The CPU fallback
+  exists but is untested.
+- The Gnani STT endpoint returned intermittent 504 errors in the long runs; the scripts are
+  resumable.
+- iOS Safari is untested, and the microphone needs localhost or HTTPS.
+
+## Try it locally
+
+You need Python 3.12 (managed by `uv`), Node 24 for the UI checks, an NVIDIA GPU for speed, a
+Hugging Face account that has accepted the terms for the three gated models
+`ai4bharat/indictrans2-indic-indic-dist-320M`, `-en-indic-dist-200M` and `-indic-en-dist-200M`
+(then `uv run hf auth login`), and a Gnani API key as `GNANI_API_KEY` in `.env` (copy `.env.example`).
+Each live turn spends Gnani credit; the tests and the e2e suite use fakes and spend none.
 
 ```
 uv sync
+uv run --no-sync uvicorn saathi.app:create_app --factory --host 0.0.0.0 --port 8000
 ```
 
-`uv.lock` takes torch from the official PyTorch `cu128` index, so this works on any machine with a
-reasonable connection.
+Open `http://localhost:8000/customer.html` and `/rider.html` in two tabs (or `/demo.html` with
+`SAATHI_DEMO_INPUT=1` and prepared clips, see [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md)).
+Startup loads the models and runs warm-up translations (about 12 s per model).
 
-## Slow connection
+| Platform | Notes |
+|---|---|
+| Windows | Install "Desktop development with C++" build tools first: IndicTransToolkit compiles a Cython extension. Commands above run in PowerShell. |
+| macOS, Linux | The code is not Windows-specific, but only Windows was tested. You need a C compiler for the same extension. Torch comes from the CUDA index in `uv.lock`; on a machine without NVIDIA hardware, install a CPU torch and expect slow translation. |
 
-torch is a single 2.7 GB download and `uv sync` cannot resume it. If it keeps stalling, download
-the wheel with a resumable tool, check its hash, and install it by hand:
+Two phones on a LAN: [`docs/LAN_CHECK.md`](docs/LAN_CHECK.md).
+
+**Slow connection.** torch is a single 2.7 GB download and `uv sync` cannot resume it. Download the
+wheel with a resumable tool, check its hash, install it by hand, and from then on run commands with
+`uv run --no-sync` and sync with `uv sync --inexact --no-install-package torch`:
 
 ```
 curl.exe -L -C - -o torch-2.9.1+cu128-cp312-cp312-win_amd64.whl https://download-r2.pytorch.org/whl/cu128/torch-2.9.1%2Bcu128-cp312-cp312-win_amd64.whl
 ```
 
-The SHA256 must be `3a01f0b64c10a82d444d9fd06b3e8c567b1158b76b2764b8f51bfd8f535064b0`
-(`Get-FileHash <file> -Algorithm SHA256`). Then:
+SHA256 must be `3a01f0b64c10a82d444d9fd06b3e8c567b1158b76b2764b8f51bfd8f535064b0`
+(`Get-FileHash <file> -Algorithm SHA256`). Then `uv sync --inexact --no-install-package torch` and
+`uv pip install <path-to>	orch-2.9.1+cu128-cp312-cp312-win_amd64.whl`. A plain `uv sync` tries to
+download torch again, and `--no-install-package torch` without `--inexact` uninstalls it.
+
+Checks:
 
 ```
-uv sync --inexact --no-install-package torch
-uv pip install <path-to>\torch-2.9.1+cu128-cp312-cp312-win_amd64.whl
-```
-
-After that, use the flags below, because uv sees the hand-installed torch as a different source
-from the locked one:
-
-- `uv run --no-sync <command>` (or set `UV_NO_SYNC=1`) to run without syncing.
-- `uv sync --inexact --no-install-package torch` for any later sync. A plain `uv sync` or
-  `uv run` tries to download torch again, and `--no-install-package torch` without `--inexact`
-  uninstalls it.
-
-Once, on a fast connection, run a plain `uv sync`. It fills the uv cache with the locked torch
-wheel, and from then on the flags are not needed.
-
-## Run
-
-```
-uv run --no-sync uvicorn saathi.app:create_app --factory --host 0.0.0.0 --port 8000
-```
-
-Startup loads the models and runs warm-up translations (about 12 s per model). Pages:
-
-- `/customer.html` creates a room, shows what the rider says and sends quick replies.
-- `/rider.html` joins with the code, shows chips, plays audio and sends quick replies; it can also
-  record a turn.
-- Neither page preselects a language.
-- `/solo.html` is the original single-phone page (one device, both directions).
-
-The microphone only works on localhost or HTTPS. On a laptop, use `http://localhost:8000`. For two
-phones on a LAN, follow `docs/LAN_CHECK.md` (Android Chrome flag, hotspot, firewall rule and
-cleanup). iOS Safari has no such flag; an iPhone can only be the rider, and that is untested.
-This is a LAN-only project: no accounts, no history, no public deployment or tunnels.
-
-Each turn spends Gnani credit. Real evaluation calls go through a persisted ledger with a hard cap,
-and every evaluation script has a `--dry-run` that shows the planned calls first.
-
-## Tests and checks
-
-```
-uv run --no-sync pytest              # fast tests, no GPU or network (fakes)
-uv run --no-sync pytest -m model     # real IndicTrans2 models on the GPU (needs the cached weights)
+uv run --no-sync pytest                      # fast tests, fakes only
+uv run --no-sync pytest -m model             # the real IndicTrans2 models
 uv run --no-sync ruff check . ; uv run --no-sync mypy src tests scripts
-npm ci                               # once; dev tooling only
-npm run typecheck                    # tsc --noEmit, strict
-npm test                             # node --test for the UI logic
-npm run e2e                          # Playwright, two browser contexts, fake Gnani and translator
+npm ci                                       # once; dev tooling only
+npm run typecheck ; npm test ; npm run e2e
 ```
 
-Text-only fact extraction scores on the synthetic gold set: `uv run --no-sync python scripts/score_facts.py`.
-Those scores are optimistic (the gold texts are written in the forms the recognizer was observed to
-produce, not real recognizer output); the real test is the recorded-speech evaluation.
+Evaluation scripts live in [`scripts/`](scripts/); each prints its plan with `--dry-run` before any
+Gnani call and goes through a persisted call ledger with a hard cap. Recordings of people, if ever
+added, stay in `eval/audio/` (gitignored) and are reported as consented human speech.
 
-## Evaluation
+## Credits and licences
 
-- `docs/EVAL.md`: translation quality and the masking A/B (done, text only) and the speech
-  evaluation (pending real results).
-- `scripts/eval_noise.py run --dry-run`: the noise evaluation plan. The 30 gold sentences (Gnani TTS,
-  "clean synthetic", made by `scripts/make_gold_tts.py`) are played clean and mixed with licensed
-  street-traffic noise at 20, 10 and 5 dB SNR, plus a pink-noise stressor; critical-fact precision
-  and recall are reported with bootstrap confidence intervals.
-- `scripts/eval_speech.py run --dry-run`: character error rate on real human speech, FLEURS
-  (CC BY 4.0), 10 clips for each of the 10 languages, same noise conditions.
-- Demo: `SAATHI_DEMO_INPUT=1` enables prepared clips (`scripts/make_demo_clips.py`) and the
-  split-screen page `/demo.html`. No people appear in the demo; see `docs/DEMO_SCRIPT.md`.
-- `docs/DESIGN.md` (architecture and plan) and `docs/DECISIONS.md` (why things are the way they are).
-- Nobody is recorded for this project. If someone's recording is ever added it stays in
-  `eval/audio/` (gitignored) and is reported as consented human speech.
-- Attribution: FLEURS (Google, CC BY 4.0) and "College Street" by Calcuttan (Freesound 181026,
-  CC BY 4.0); details in `docs/EVAL.md`.
+The code is MIT, see [`LICENSE`](LICENSE). Third-party components, data and their licences are in
+[`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md); in short:
+
+- **Gnani** Prisma (speech to text) and Timbre (text to speech): commercial APIs used under the
+  author's own key; nothing of Gnani's is redistributed.
+- **IndicTrans2** and **IndicTransToolkit** (AI4Bharat): run locally; the models are gated on
+  Hugging Face and their terms apply. Weights are not in this repo.
+- **FLEURS** (Google), CC BY 4.0: real speech for the CER evaluation, downloaded, not committed.
+- **FLORES-200** devtest (Meta AI, NLLB team), CC BY-SA 4.0: the translation evaluation. Result
+  files holding model outputs for FLORES inputs carry the same licence.
+- **"College Street"** by Calcuttan, Freesound sound 181026, CC BY 4.0: the street-noise recording
+  mixed into the noise evaluation.

@@ -9,6 +9,8 @@ import pytest
 from saathi.evaluation.lexprobe import (
     LANGS,
     RECHECK_MAX_CALLS,
+    ROUND2_LANGS,
+    ROUND2_MAX_CALLS,
     ProbeBudgetError,
     ProbeSentence,
     all_sentences,
@@ -68,6 +70,25 @@ def test_sentences_cover_all_six_triggers_and_four_landmark_cues(lang: str) -> N
         "gate", "cross", "main", "floor", "block", "flat"
     }  # fmt: skip
     assert {s.cue for s in sentences} == {"", "opposite", "near", "next_to", "behind"}
+
+
+@pytest.mark.parametrize("lang", ROUND2_LANGS)
+def test_round2_languages_have_the_same_coverage(lang: str) -> None:
+    sentences = probe_sentences(lang)
+    assert len(sentences) == 8
+    for ordinal in (False, True):
+        values = sorted(
+            item.value for s in sentences for item in s.items if item.ordinal is ordinal
+        )
+        assert values == list(range(1, 21))
+    assert {s.cue for s in sentences} == {"", "opposite", "near", "next_to", "behind"}
+
+
+def test_round2_is_64_calls_within_its_limit_and_uses_supported_languages() -> None:
+    sentences = all_sentences(ROUND2_LANGS)
+    assert all(s.lang in LANGUAGES for s in sentences)
+    assert len({s.id for s in sentences}) == len({s.text for s in sentences}) == 32
+    assert planned_calls(ROUND2_LANGS) == 64 < ROUND2_MAX_CALLS
 
 
 def test_ordinal_5_recheck_is_one_short_tamil_sentence_within_its_two_call_cap() -> None:

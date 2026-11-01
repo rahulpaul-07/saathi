@@ -21,6 +21,8 @@ _TRAILING_VIRAMAS = "्্್"
 
 _TOKEN = re.compile(r"[^\s,.;:!?।|\-–—\"()]+")
 _BREAK_CHARS = frozenset(",.;:!?।|()\n")
+# "Gate No. 2": the full stop after an abbreviated "number" does not end the phrase.
+_ABBREVIATIONS = frozenset({"no", "nos", "nr", "num"})
 
 
 def ascii_digits(text: str) -> str:
@@ -53,5 +55,7 @@ def tokenize(text: str) -> list[Token]:
         else:
             has_break = True
         word = match.group()
+        if has_break and index + 1 < len(matches):
+            has_break = not (gap.strip() == "." and key(word) in _ABBREVIATIONS)
         tokens.append(Token(word, match.start(), match.end(), key(word), has_break))
     return tokens

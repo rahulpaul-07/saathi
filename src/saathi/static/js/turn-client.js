@@ -1,4 +1,5 @@
 // @ts-check
+import { bi, tb } from "./i18n.js";
 import { MAX_AUTO_RETRIES, backoffDelayMs, classify } from "./retry.js";
 
 const REQUEST_TIMEOUT_MS = 45_000;
@@ -8,7 +9,7 @@ const REQUEST_TIMEOUT_MS = 45_000;
  * @typedef {{src: string, tgt: string, transcript: string, translation: string,
  *   audio_base64: string, audio_format: string, timings: Timings}} TurnResult
  * @typedef {{ok: true, data: TurnResult}
- *   | {ok: false, message: string, keepRecording: boolean, code?: string, transcript?: string}
+ *   | {ok: false, message: import("./i18n.js").Bi, keepRecording: boolean, code?: string, transcript?: string}
  * } TurnOutcome
  * @typedef {{code: string | null, transcript: string | null}} ErrorDetail
  * @typedef {{fetchFn?: typeof fetch, sleep?: (ms: number) => Promise<void>,
@@ -83,7 +84,7 @@ export async function sendTurn(wav, src, tgt, deps = {}) {
     if (verdict.outcome === "unreliable_translation" && error.transcript !== null) {
       return {
         ok: false,
-        message: `I heard: ${error.transcript}. ${verdict.message}`,
+        message: bi`${tb("i_heard", "I heard")}: ${error.transcript}. ${verdict.message}`,
         keepRecording: verdict.keepRecording,
         code: "unreliable_translation",
         transcript: error.transcript,

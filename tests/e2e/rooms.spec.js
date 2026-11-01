@@ -1,5 +1,13 @@
 // @ts-check
 import { expect, test } from "@playwright/test";
+import { loadUi, makeUi } from "./chrome-text.js";
+
+/** The interface text a viewer in a language sees. @type {(language: string, key: string) => string} */
+/** @type {ReturnType<typeof makeUi>} */
+let ui = makeUi({});
+test.beforeAll(async ({ playwright }) => {
+  ui = await loadUi(playwright, "http://127.0.0.1:8765");
+});
 
 /**
  * Collect console errors and page errors; any entry fails the test.
@@ -36,7 +44,7 @@ test("both roles speak and reply in ta and ml: chips, audio, repeat, quick repli
   await expect(customer.locator("#language option")).toHaveCount(11);
   await expect(customer.locator("#language option", { hasText: "Tamil (beta)" })).toHaveCount(1);
   await customer.locator("#language").selectOption("ta");
-  await customer.getByRole("button", { name: "Create room" }).click();
+  await customer.getByRole("button", { name: ui("ta", "create_room") }).click();
   await expect(customer.locator("#code")).toHaveText(/^[A-Z0-9]{6}$/);
   const code = (await customer.locator("#code").textContent()) ?? "";
   await expect(customer.locator("#talk")).toBeDisabled();
@@ -46,21 +54,20 @@ test("both roles speak and reply in ta and ml: chips, audio, repeat, quick repli
   expect(link).toContain(`/rider.html?code=${code}`);
   await rider.goto(`/rider.html?code=${code}`);
   await rider.locator("#language").selectOption("ml");
-  await rider.getByRole("button", { name: /Join/ }).click();
+  await rider.getByRole("button", { name: ui("ml", "join_and_sound") }).click();
   await expect(rider.locator("#room")).toBeVisible();
-  await expect(customer.locator("#peer")).toContainText("Rider joined");
+  await expect(customer.locator("#peer")).toContainText(ui.has("ta", "rider_joined"));
   await expect(customer.locator("#talk")).toBeEnabled();
 
   // Customer speaks (fake microphone); both screens show the same chips.
   await customer.locator("#talk").click();
-  await expect(customer.locator("#status")).toContainText("Recording");
+  await expect(customer.locator("#status")).toContainText(ui.has("ta", "recording"));
   await customer.waitForTimeout(1500); // let the fake microphone produce some audio
   await customer.locator("#talk").click();
   await expect(rider.locator("#translation")).toContainText("<b>ml</b>");
   // A customer turn has no per-turn chips on either screen: the card below is the one place the
   // facts appear, so no value shows twice.
-  await expect(customer.locator("#sent-chips .chip")).toHaveCount(0);
-  await expect(customer.locator("#sent-empty")).toHaveText("Sent. The delivery card has the details.");
+  await expect(customer.locator("#sent")).toHaveCount(0); // the customer's page has no echo block
   await expect(rider.locator("#chips .chip")).toHaveCount(0);
   // The pinned card collects the customer's facts on both screens, with no "changed" marker yet.
   for (const page of [customer, rider]) {
@@ -71,10 +78,10 @@ test("both roles speak and reply in ta and ml: chips, audio, repeat, quick repli
   }
   // Only the speaker sees the stage timings of the turn they sent.
   await expect(customer.locator("#timings dt")).toHaveText([
-    "Speech to text",
-    "Translation",
-    "Text to speech",
-    "Server total",
+    ui("ta", "time_stt"),
+    ui("ta", "time_translate"),
+    ui("ta", "time_tts"),
+    ui("ta", "time_total"),
   ]);
   await expect(customer.locator("#timings dd")).toHaveText([/^\d+ ms$/, /^\d+ ms$/, /^\d+ ms$/, /^\d+ ms$/]);
   await expect(rider.locator("#timings")).toBeHidden();
@@ -99,7 +106,7 @@ test("both roles speak and reply in ta and ml: chips, audio, repeat, quick repli
 
   // The rider speaks too: the customer gets the translation and chips, the rider sees their own.
   await rider.locator("#talk").click();
-  await expect(rider.locator("#status")).toContainText("Recording");
+  await expect(rider.locator("#status")).toContainText(ui.has("ml", "recording"));
   await rider.waitForTimeout(1500);
   await rider.locator("#talk").click();
   await expect(rider.locator("#sent-chips .chip-gate .chip-value")).toHaveText("2");
@@ -119,11 +126,11 @@ test("both roles speak and reply in ta and ml: chips, audio, repeat, quick repli
 
   await rider.getByRole("button", { name: text("ml", "which_floor") }).click();
   await expect(customer.locator("#reply-text")).toHaveText(text("ta", "which_floor"));
-  await expect(customer.locator("#reply-note")).toContainText("Unreviewed machine translation");
+  await expect(customer.locator("#reply-note")).toContainText(ui.has("ta", "unreviewed_translation"));
 
   await customer.getByRole("button", { name: text("ta", "come_to_gate") }).click();
   await expect(rider.locator("#reply-text")).toHaveText(text("ml", "come_to_gate"));
-  await expect(rider.locator("#reply-note")).toContainText("Unreviewed machine translation");
+  await expect(rider.locator("#reply-note")).toContainText(ui.has("ml", "unreviewed_translation"));
 
   expect(problems).toEqual([]);
 });
@@ -140,12 +147,12 @@ test("a repeat request shows in the speaker's language and clears on the next se
 
   await speaker.goto("/customer.html");
   await speaker.locator("#language").selectOption("hi");
-  await speaker.getByRole("button", { name: "Create room" }).click();
+  await speaker.getByRole("button", { name: ui("hi", "create_room") }).click();
   await expect(speaker.locator("#code")).toHaveText(/^[A-Z0-9]{6}$/);
   const code = (await speaker.locator("#code").textContent()) ?? "";
   await listener.goto(`/rider.html?code=${code}`);
   await listener.locator("#language").selectOption("bn");
-  await listener.getByRole("button", { name: /Join/ }).click();
+  await listener.getByRole("button", { name: ui("bn", "join_and_sound") }).click();
   await expect(speaker.locator("#talk")).toBeEnabled();
 
   // The server's answer is replaced by one that asks for a repeat.
@@ -166,7 +173,7 @@ test("a repeat request shows in the speaker's language and clears on the next se
   await speaker.locator("#talk").click();
   await expect(speaker.locator("#repeat-text")).toHaveText(prompt);
   await expect(speaker.locator("#repeat-text")).toHaveAttribute("lang", "hi");
-  await expect(speaker.locator("#repeat-note")).toContainText("Unreviewed machine translation");
+  await expect(speaker.locator("#repeat-note")).toContainText(ui.has("hi", "unreviewed_translation"));
   await expect(speaker.locator("#talk")).toBeEnabled(); // asking to repeat never blocks sending
 
   // A normal turn goes through the real server and the prompt disappears.
@@ -174,7 +181,7 @@ test("a repeat request shows in the speaker's language and clears on the next se
   await speaker.locator("#talk").click();
   await speaker.waitForTimeout(1500);
   await speaker.locator("#talk").click();
-  await expect(speaker.locator("#status")).toContainText("Sent");
+  await expect(speaker.locator("#status")).toContainText(ui.has("hi", "sent"));
   await expect(speaker.locator("#card-chips .chip-gate .chip-value")).toHaveText("2");
   await expect(speaker.locator("#repeat-prompt")).toBeHidden();
   expect(problems).toEqual([]);
@@ -185,11 +192,11 @@ test("rider cannot join with a wrong code and sees a safe message", async ({ pag
   await page.goto("/rider.html");
   await page.locator("#language").selectOption("ml");
   await page.locator("#code-input").fill("ABC");
-  await page.getByRole("button", { name: /Join/ }).click();
-  await expect(page.locator("#join-status")).toContainText("6-character");
+  await page.getByRole("button", { name: ui("ml", "join_and_sound") }).click();
+  await expect(page.locator("#join-status")).toHaveText(ui("ml", "enter_code"));
   await page.locator("#code-input").fill("ZZZZZZ");
-  await page.getByRole("button", { name: /Join/ }).click();
-  await expect(page.locator("#join-status")).toContainText("not found");
+  await page.getByRole("button", { name: ui("ml", "join_and_sound") }).click();
+  await expect(page.locator("#join-status")).toHaveText(ui("ml", "room_not_found"));
   // The 404 is an expected response; Chromium logs it, nothing else may appear.
   expect(problems.filter((text) => !/status of 404/.test(text))).toEqual([]);
 });
@@ -198,14 +205,14 @@ test("neither screen preselects a language and both offer all 10", async ({ page
   await page.goto("/customer.html");
   await expect(page.locator("#language")).toHaveValue("");
   await expect(page.locator("#language option")).toHaveCount(11); // placeholder + 10
-  await expect(page.getByRole("button", { name: "Create room" })).toBeDisabled();
+  await expect(page.getByRole("button", { name: ui("en", "create_room") })).toBeDisabled();
   await page.locator("#language").selectOption("gu");
-  await expect(page.getByRole("button", { name: "Create room" })).toBeEnabled();
+  await expect(page.getByRole("button", { name: ui("gu", "create_room") })).toBeEnabled();
 
   await page.goto("/rider.html");
   await expect(page.locator("#language")).toHaveValue("");
   await expect(page.locator("#language option")).toHaveCount(11);
-  await expect(page.getByRole("button", { name: /Join/ })).toBeDisabled();
+  await expect(page.getByRole("button", { name: ui("en", "join_and_sound") })).toBeDisabled();
 });
 
 // The fake STT alternates gate 2 and gate 4 for a Punjabi speaker, so the second turn changes a value.
@@ -221,17 +228,17 @@ test("the rider confirms or asks on card chips; a changed value stays marked unt
 
   await customer.goto("/customer.html");
   await customer.locator("#language").selectOption("pa");
-  await customer.getByRole("button", { name: "Create room" }).click();
+  await customer.getByRole("button", { name: ui("pa", "create_room") }).click();
   await expect(customer.locator("#code")).toHaveText(/^[A-Z0-9]{6}$/);
   const code = (await customer.locator("#code").textContent()) ?? "";
   await rider.goto(`/rider.html?code=${code}`);
   await rider.locator("#language").selectOption("hi");
-  await rider.getByRole("button", { name: /Join/ }).click();
+  await rider.getByRole("button", { name: ui("hi", "join_and_sound") }).click();
   await expect(customer.locator("#talk")).toBeEnabled();
 
   const speak = async () => {
     await customer.locator("#talk").click();
-    await expect(customer.locator("#status")).toContainText("Recording");
+    await expect(customer.locator("#status")).toContainText(ui.has("pa", "recording"));
     await customer.waitForTimeout(1500);
     await customer.locator("#talk").click();
   };
@@ -248,16 +255,18 @@ test("the rider confirms or asks on card chips; a changed value stays marked unt
   await speak();
   for (const page of [customer, rider]) {
     await expect(gate(page).locator(".chip-value")).toHaveText("4");
-    await expect(gate(page).locator(".chip-note")).toHaveText("changed, was 2");
+    await expect(gate(page).locator(".chip-note")).toHaveText(
+      ui.with(page === customer ? "pa" : "hi", "changed_was", "2"),
+    );
   }
 
   // Ask: the customer sees the question in their own language; the marker stays.
   const askButton = gate(rider).locator(".chip-ask");
-  const riderQuestion = (await askButton.textContent()) ?? "";
+  const riderQuestion = (await askButton.getAttribute("aria-label")) ?? "";
   expect(riderQuestion.endsWith("?")).toBe(true);
   await askButton.click();
   await expect(gate(customer).locator(".chip-question")).toHaveText(/\?$/);
-  await expect(gate(customer).locator(".chip-note")).toHaveText("changed, was 2");
+  await expect(gate(customer).locator(".chip-note")).toHaveText(ui.with("pa", "changed_was", "2"));
 
   // Confirm: the marker and the question go, the customer sees a check.
   await gate(rider).locator(".chip-confirm").click();
@@ -270,7 +279,7 @@ test("the rider confirms or asks on card chips; a changed value stays marked unt
   // is covered by the API test: a reload leaves the room.)
   await speak();
   await expect(gate(customer).locator(".chip-value")).toHaveText("2");
-  await expect(gate(customer).locator(".chip-note")).toHaveText("changed, was 4");
+  await expect(gate(customer).locator(".chip-note")).toHaveText(ui.with("pa", "changed_was", "4"));
   await expect(gate(customer).locator(".icon-check")).toHaveCount(0);
 
   expect(problems).toEqual([]);
@@ -289,20 +298,23 @@ async function openRoom(browser) {
   const problems = [...watchConsole(customer), ...watchConsole(rider)];
   await customer.goto("/customer.html");
   await customer.locator("#language").selectOption("ta");
-  await customer.getByRole("button", { name: "Create room" }).click();
+  await customer.getByRole("button", { name: ui("ta", "create_room") }).click();
   await expect(customer.locator("#code")).toHaveText(/^[A-Z0-9]{6}$/);
   const code = (await customer.locator("#code").textContent()) ?? "";
   await rider.goto(`/rider.html?code=${code}`);
   await rider.locator("#language").selectOption("ml");
-  await rider.getByRole("button", { name: /Join/ }).click();
+  await rider.getByRole("button", { name: ui("ml", "join_and_sound") }).click();
   await expect(customer.locator("#talk")).toBeEnabled();
   return { customer, rider, problems };
 }
 
-/** @param {import("@playwright/test").Page} page */
-async function speak(page) {
+/**
+ * @param {import("@playwright/test").Page} page
+ * @param {string} language the language of this page
+ */
+async function speak(page, language) {
   await page.locator("#talk").click();
-  await expect(page.locator("#status")).toContainText("Recording");
+  await expect(page.locator("#status")).toContainText(ui.has(language, "recording"));
   await page.waitForTimeout(1500);
   await page.locator("#talk").click();
 }
@@ -322,7 +334,7 @@ test("a reload rejoins the room and catches up the last message without playing 
   expect(page.headers()["content-security-policy"]).toContain("script-src 'self'");
   expect(page.headers()["content-security-policy"]).toContain("frame-ancestors 'none'");
 
-  await speak(customer);
+  await speak(customer, "ta");
   await expect(rider.locator("#card-chips .chip-gate .chip-value")).toHaveText("2");
   await expect(rider.locator("#translation")).not.toBeEmpty();
   expect(played).toHaveLength(1);
@@ -330,17 +342,17 @@ test("a reload rejoins the room and catches up the last message without playing 
   await rider.reload();
   await expect(rider.locator("#room")).toBeVisible();
   await expect(rider.locator("#setup")).toBeHidden();
-  await expect(rider.locator("#peer")).toContainText("Customer joined");
+  await expect(rider.locator("#peer")).toContainText(ui.has("ml", "customer_joined"));
   await expect(rider.locator("#card-chips .chip-gate .chip-value")).toHaveText("2");
   await expect(rider.locator("#translation")).not.toBeEmpty();
-  await expect(rider.locator("#incoming-status")).toContainText("Last message");
+  await expect(rider.locator("#incoming-status")).toContainText(ui.has("ml", "last_message_customer"));
   await expect(rider.locator("#repeat")).toBeEnabled();
   expect(played).toHaveLength(2); // fetched to be ready for Repeat, but not auto-played
 
   // The customer reloads too and is still in the same room.
   await customer.reload();
   await expect(customer.locator("#room")).toBeVisible();
-  await expect(customer.locator("#peer")).toContainText("Rider joined");
+  await expect(customer.locator("#peer")).toContainText(ui.has("ta", "rider_joined"));
   await expect(customer.locator("#talk")).toBeEnabled();
 
   expect(problems).toEqual([]);
@@ -354,7 +366,7 @@ test("a dropped stream shows Reconnecting and recovers by itself", async ({ brow
 
   await rider.unroute("**/events");
   await expect(rider.locator("#reconnecting")).toBeHidden({ timeout: 15_000 });
-  await expect(rider.locator("#peer")).toContainText("Customer joined");
+  await expect(rider.locator("#peer")).toContainText(ui.has("ml", "customer_joined"));
   // Failed fetches are logged by the browser as console errors; nothing else may be.
   expect(problems.filter((text) => !text.includes("ERR_FAILED"))).toEqual([]);
 });
@@ -363,10 +375,10 @@ test("when the room ends the other side returns to the join screen with a messag
   browser,
 }) => {
   const { customer, rider, problems } = await openRoom(browser);
-  await customer.getByRole("button", { name: /End|Close/ }).click();
+  await customer.getByRole("button", { name: ui("ta", "end_room") }).click();
 
   await expect(rider.locator("#setup")).toBeVisible();
-  await expect(rider.locator("#join-status")).toHaveText("The room has ended.");
+  await expect(rider.locator("#join-status")).toHaveText(ui("ml", "room_ended"));
   await expect(rider.locator("#room")).toBeHidden();
   // The stored session is gone, so another reload stays on the join screen.
   await rider.reload();
@@ -397,14 +409,14 @@ test("on a phone, ask and confirm on different chips each send exactly one chip-
   });
   await customer.goto("/customer.html");
   await customer.locator("#language").selectOption("pa");
-  await customer.getByRole("button", { name: "Create room" }).click();
+  await customer.getByRole("button", { name: ui("pa", "create_room") }).click();
   await expect(customer.locator("#code")).toHaveText(/^[A-Z0-9]{6}$/);
   const code = (await customer.locator("#code").textContent()) ?? "";
   await rider.goto(`/rider.html?code=${code}`);
   await rider.locator("#language").selectOption("hi");
-  await rider.getByRole("button", { name: /Join/ }).click();
+  await rider.getByRole("button", { name: ui("hi", "join_and_sound") }).click();
   await expect(customer.locator("#talk")).toBeEnabled();
-  await speak(customer);
+  await speak(customer, "pa");
   await expect(rider.locator("#card-chips .chip-floor")).toBeVisible();
   posts.length = 0;
 
@@ -429,25 +441,26 @@ test("on a phone, ask and confirm on different chips each send exactly one chip-
   // elements afterwards, so a tap in progress on them would not be lost.
   await expect(rider.locator("#card-chips .chip-floor .chip-question")).toHaveText(/\?$/); // echo done
   const floorAsk = await rider.locator("#card-chips .chip-floor .chip-ask").elementHandle();
-  await speak(customer);
+  await speak(customer, "pa");
   await expect(rider.locator("#card-chips .chip-gate .chip-value")).toHaveText("4");
   expect(await floorAsk?.evaluate((el) => el.isConnected)).toBe(true);
   expect(problems).toEqual([]);
 });
 
-test("the customer's 'nothing received' placeholder goes away once a reply arrives", async ({
+test("the customer's 'From the rider' block appears only once the rider has spoken", async ({
   browser,
 }) => {
   const { customer, rider, problems } = await openRoom(browser);
-  await expect(customer.locator("#incoming-status")).toHaveText("Nothing received yet.");
+  // Nothing from the rider yet: the whole "From the rider" block stays out of the way.
+  await expect(customer.locator("#incoming")).toBeHidden();
 
   const catalog = await (await customer.request.get("/quick-replies")).json();
   await rider.getByRole("button", { name: catalog.languages.ml.which_floor.text }).click();
   await expect(customer.locator("#reply")).toBeVisible();
-  await expect(customer.locator("#incoming-status")).toBeHidden();
+  await expect(customer.locator("#incoming")).toBeHidden();
 
-  // A later spoken turn brings the status line back with its own message.
-  await speak(rider);
-  await expect(customer.locator("#incoming-status")).toContainText("New message");
+  // A later spoken turn shows the block with its own message.
+  await speak(rider, "ml");
+  await expect(customer.locator("#incoming-status")).toContainText(ui.has("ta", "new_message_rider"));
   expect(problems).toEqual([]);
 });

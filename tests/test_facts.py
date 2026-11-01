@@ -66,10 +66,22 @@ def test_english_digits_without_commas_do_not_steal_each_others_numbers() -> Non
         ("house number 14", ("flat", "14")),
         ("eleventh floor", ("floor", "11")),
         ("12th floor", ("floor", "12")),
+        ("Gate No. 2", ("gate", "2")),
+        ("Gate No 2", ("gate", "2")),
+        ("No. 2 cross", ("cross", "2")),
+        ("4 floors", ("floor", "4")),
     ],
 )
 def test_english_values(text: str, expected: tuple[str, str]) -> None:
     assert pairs(text, "en") == [expected]
+
+
+def test_a_full_stop_after_no_joins_the_value_but_other_full_stops_still_break() -> None:
+    assert pairs("Flat No. 12 block B", "en") == [("flat", "12"), ("block", "B")]
+    # "no" ending a sentence is a word, not "number": the next sentence starts new.
+    assert pairs("Gate. No. 2 is closed", "en") == []
+    assert [t.break_after for t in tokenize("gate no. 2")] == [False, False, True]
+    assert [t.break_after for t in tokenize("gate yes. 2")] == [False, True, True]
 
 
 def test_one_over_n_floor_is_read_as_floor_n_with_low_confidence() -> None:
@@ -268,9 +280,11 @@ def test_bengali_landmark_and_failure() -> None:
 # --- Other languages and the boundary ----------------------------------------------------------
 
 
-def test_languages_without_native_rules_get_only_the_universal_layer() -> None:
+def test_every_language_keeps_the_universal_english_layer_beside_its_native_one() -> None:
+    # Gujarati used to have no native layer (this test then asserted the native words were a
+    # stated limit); all ten languages have one now, so the check is that both layers apply.
     assert pairs("gate number 2, 3rd main", "gu") == [("gate", "2"), ("main", "3")]
-    assert pairs("ગેટ નંબર બે", "gu") == []  # native words are a stated limit
+    assert pairs("ગેટ નંબર બે", "gu") == [("gate", "2")]
 
 
 def test_unsupported_language_and_oversized_text_are_rejected() -> None:

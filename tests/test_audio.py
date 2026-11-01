@@ -13,6 +13,17 @@ def test_rejects_zero_frames() -> None:
         wav_duration_s(make_wav(0))
 
 
+def test_rejects_a_clip_too_short_to_hold_speech() -> None:
+    with pytest.raises(AudioError, match="shorter"):
+        wav_duration_s(make_wav(0.1))
+
+
+@pytest.mark.parametrize("rate", [1000, 96000])
+def test_rejects_a_sample_rate_no_browser_produces(rate: int) -> None:
+    with pytest.raises(AudioError, match="sample rate"):
+        wav_duration_s(make_wav(1.0, rate=rate))
+
+
 def test_rejects_truncated_header() -> None:
     with pytest.raises(AudioError):
         wav_duration_s(make_wav()[:10])

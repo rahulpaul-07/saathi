@@ -21,7 +21,7 @@ from saathi.app import create_app
 from saathi.config import Settings
 from saathi.facts import Fact
 from saathi.gnani import GnaniClient
-from saathi.masking import MaskedTranslation
+from saathi.masking import MaskedTranslation, MaskingMode
 from saathi.translate import Translator
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tests" / "e2e"))
@@ -61,7 +61,7 @@ def main() -> None:
 
         def plain(
             translator: Translator, transcript: str, src: str, tgt: str,
-            facts: tuple[Fact, ...], use_mask: bool,
+            facts: tuple[Fact, ...], use_mask: bool, masking_mode: MaskingMode = "current",
         ) -> MaskedTranslation:
             text = translator.translate(transcript, src, tgt)
             return MaskedTranslation(text, verified=True, raw=text)

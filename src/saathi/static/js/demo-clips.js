@@ -1,7 +1,7 @@
 // @ts-check
 // Demo input mode: the list of prepared clips the server offers (only when SAATHI_DEMO_INPUT is on).
 
-/** @typedef {{id: string, lang: string, label: string}} DemoClip */
+/** @typedef {{id: string, lang: string, label: string, labelLocal: string}} DemoClip */
 
 /**
  * Keep only well-formed entries; anything else from the server is ignored, never rendered.
@@ -20,10 +20,20 @@ export function parseDemoClips(body) {
       typeof item.lang === "string" &&
       typeof item.label === "string"
     ) {
-      clips.push({ id: item.id, lang: item.lang, label: item.label });
+      const local = typeof item.label_local === "string" ? item.label_local : "";
+      clips.push({ id: item.id, lang: item.lang, label: item.label, labelLocal: local });
     }
   }
   return clips;
+}
+
+/**
+ * An <option> holds text only, so the two lines go on one: "local / English".
+ * @param {string} local
+ * @param {string} english
+ */
+export function oneLine(local, english) {
+  return local === "" || local === english ? english : `${local} / ${english}`;
 }
 
 /**

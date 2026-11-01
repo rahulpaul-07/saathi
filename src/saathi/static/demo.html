@@ -6,15 +6,28 @@
     <meta name="color-scheme" content="light dark" />
     <title>Saathi demo</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="app.css" />
     <link rel="stylesheet" href="demo.css" />
+    <script src="js/theme.js"></script>
   </head>
   <body>
     <div class="stage">
-      <section class="pane" aria-labelledby="customer-title">
+      <header class="bar">
+        <svg class="logo" viewBox="0 0 32 32" aria-hidden="true">
+          <rect class="logo-a" x="2" y="3" width="19" height="14" rx="4" />
+          <path class="logo-a" d="M6 16v6l6-6z" />
+          <rect class="logo-b" x="11" y="13" width="19" height="14" rx="4" />
+          <path class="logo-b" d="M26 26v5l-6-5z" />
+        </svg>
+        <span class="wordmark">Saathi</span>
+        <span class="tag">Demo: prepared clips, synthetic addresses</span>
+        <button type="button" class="theme-toggle" data-theme-toggle aria-label="Dark theme"></button>
+      </header>
+      <section class="pane pane-customer" aria-labelledby="customer-title">
         <h1 id="customer-title">Customer</h1>
         <iframe id="customer-frame" title="Customer screen" src="customer.html" allow="microphone"></iframe>
       </section>
-      <section class="pane" aria-labelledby="rider-title">
+      <section class="pane pane-rider" aria-labelledby="rider-title">
         <h1 id="rider-title">Rider</h1>
         <iframe id="rider-frame" title="Rider screen" src="rider.html" allow="microphone"></iframe>
       </section>

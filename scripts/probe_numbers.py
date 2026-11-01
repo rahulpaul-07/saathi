@@ -23,9 +23,12 @@ from saathi.evaluation.calls import (
     SlidingWindowLimiter,
 )
 from saathi.evaluation.lexprobe import (
+    LANGS,
     LEDGER_LABEL,
     MAX_CALLS,
     RECHECK_MAX_CALLS,
+    ROUND2_LANGS,
+    ROUND2_MAX_CALLS,
     ProbeBudgetError,
     ProbeSentence,
     all_sentences,
@@ -40,6 +43,7 @@ ROOT = Path(__file__).resolve().parent.parent
 LEDGER = ROOT / "eval" / "state" / "gnani_ledger.json"
 OUT = ROOT / "eval" / "state" / "lexicon_probe.json"
 OUT_RECHECK = ROOT / "eval" / "state" / "lexicon_probe_ordinal5.json"
+OUT_ROUND2 = ROOT / "eval" / "state" / "lexicon_probe_round2.json"
 
 
 def numbers_in(english: str) -> set[int]:
@@ -61,10 +65,10 @@ def missing_values(sentence: ProbeSentence, english: str) -> list[int]:
     return [item.value for item in sentence.items if item.value not in stated]
 
 
-def show_table() -> int:
+def show_table(langs: tuple[str, ...]) -> int:
     translator = RoutingTranslator()
     flagged = 0
-    for sentence in all_sentences():
+    for sentence in all_sentences(langs):
         english = translator.translate(sentence.text, sentence.lang, "en")
         lost = missing_values(sentence, english)
         flagged += bool(lost)
@@ -76,7 +80,7 @@ def show_table() -> int:
         form = "ordinal" if first.ordinal else "cardinal"
         print(f"  intended: {first.kind} {form} {wanted}")
         print(f"  verdict:  {'FLAG, missing ' + str(lost) if lost else 'ok'}\n")
-    print(f"{flagged} of {len(all_sentences())} sentences flagged")
+    print(f"{flagged} of {len(all_sentences(langs))} sentences flagged")
     return 0
 
 
@@ -87,14 +91,20 @@ def main() -> int:
     parser.add_argument(
         "--ordinal5", action="store_true", help="only the Tamil fifth-ordinal recheck (2 calls)"
     )
+    parser.add_argument(
+        "--round2", action="store_true", help="gu, ml, mr and pa instead of ta and te (64 calls)"
+    )
     args = parser.parse_args()
+    langs = ROUND2_LANGS if args.round2 else LANGS
     if args.table:
-        return show_table()
+        return show_table(langs)
 
     ledger = CallLedger(LEDGER)
-    sentences = (ta_ordinal_5_recheck(),) if args.ordinal5 else all_sentences()
-    out = OUT_RECHECK if args.ordinal5 else OUT
-    max_calls = RECHECK_MAX_CALLS if args.ordinal5 else MAX_CALLS
+    sentences = (ta_ordinal_5_recheck(),) if args.ordinal5 else all_sentences(langs)
+    out = OUT_RECHECK if args.ordinal5 else OUT_ROUND2 if args.round2 else OUT
+    max_calls = (
+        RECHECK_MAX_CALLS if args.ordinal5 else ROUND2_MAX_CALLS if args.round2 else MAX_CALLS
+    )
     calls = 2 * len(sentences)
     for sentence in sentences:
         print(f"  {sentence.id:14} TTS x1, STT x1  {sentence.text}")

@@ -65,7 +65,7 @@ async def test_demo_lists_and_serves_only_manifest_clips_with_a_file(
 ) -> None:
     assert (await on.get("/features")).json() == {"demo_input": True}
     listed = (await on.get("/demo/clips")).json()
-    assert listed == [{"id": "kn-gate", "lang": "kn", "label": "Gate 2"}]
+    assert listed == [{"id": "kn-gate", "lang": "kn", "label": "Gate 2", "label_local": ""}]
     audio = await on.get("/demo/clips/kn-gate.wav")
     assert audio.status_code == 200 and audio.headers["content-type"] == "audio/wav"
     assert audio.content == make_wav()
@@ -110,3 +110,9 @@ async def test_listener_is_told_a_turn_was_a_demo_clip_only_when_demo_is_on(
     manager = RoomManager(max_rooms=3)
     async with make_client(manager, None) as client:
         assert await send_turn(client, manager, "1") is False  # header ignored when off
+
+
+def test_masking_mode_defaults_to_current_and_rejects_unknown_values() -> None:
+    assert Settings(gnani_api_key=SecretStr("k")).masking_mode == "current"
+    with pytest.raises(ValueError):
+        Settings(gnani_api_key=SecretStr("k"), SAATHI_MASKING_MODE="sometimes")  # type: ignore[call-arg]

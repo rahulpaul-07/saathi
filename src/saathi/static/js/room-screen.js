@@ -5,8 +5,9 @@
 // or on any language.
 import { AudioPlayer } from "./audio-player.js";
 import { cardChips, chipsFromFacts } from "./chips.js";
-import { clipsForLanguage, parseDemoClips } from "./demo-clips.js";
-import { languageLabel } from "./languages.js";
+import { clipsForLanguage, oneLine, parseDemoClips } from "./demo-clips.js";
+import { nameForViewer } from "./languages.js";
+import { applyChrome, Bi, bi, renderText, setLanguage, tb } from "./i18n.js";
 import { parseQuickReplyTable, quickReplyOptions } from "./quick-replies.js";
 import { followStream } from "./reconnect.js";
 import { RecorderError, startRecording, toWav } from "./recorder.js";
@@ -19,10 +20,7 @@ import {
   sendChipReply,
   sendQuickReply,
 } from "./room-client.js";
-import { byId, renderChips, renderTimings, setStatus } from "./ui.js";
-
-/** @param {string} text */
-const capitalize = (text) => text.charAt(0).toUpperCase() + text.slice(1);
+import { byId, renderChips, renderTimings, setStatus, timingsSummary } from "./ui.js";
 
 /**
  * @param {import("./room-client.js").RoomInfo} room
@@ -33,6 +31,9 @@ const capitalize = (text) => text.charAt(0).toUpperCase() + text.slice(1);
  */
 export function enterRoom(room, languages, players, onEnded) {
   const [turnPlayer, replyPlayer] = players;
+  // The page speaks the viewer's language from here on; this runs before the idle label is read.
+  setLanguage(room.language);
+  applyChrome();
   const peerRole = room.role === "customer" ? "rider" : "customer";
 
   const peerEl = byId("peer", HTMLElement);
@@ -45,8 +46,15 @@ export function enterRoom(room, languages, players, onEnded) {
   const discardButton = byId("discard", HTMLButtonElement);
   const cardChipsEl = byId("card-chips", HTMLElement);
   const cardEmptyEl = byId("card-empty", HTMLElement);
-  const sentChipsEl = byId("sent-chips", HTMLElement);
-  const sentEmptyEl = byId("sent-empty", HTMLElement);
+  // The rider's page echoes what the customer received; the customer's page has no such block
+  // because its delivery card already shows every fact.
+  const sentEl = document.getElementById("sent");
+  const sentChipsEl = document.getElementById("sent-chips");
+  const sentEmptyEl = document.getElementById("sent-empty");
+  const incomingEl = document.getElementById("incoming");
+  const codeBoxEl = document.getElementById("code-box");
+  const timingsBoxEl = byId("timings-box", HTMLDetailsElement);
+  const timingsSummaryEl = byId("timings-summary", HTMLElement);
   const timingsEl = byId("timings", HTMLElement);
   const repeatEl = byId("repeat-prompt", HTMLElement);
   const repeatTextEl = byId("repeat-text", HTMLElement);
@@ -69,7 +77,8 @@ export function enterRoom(room, languages, players, onEnded) {
   const demoBadgeEl = byId("demo-badge", HTMLElement);
   const sentDemoBadgeEl = byId("sent-demo-badge", HTMLElement);
 
-  const idleLabel = talkLabel.textContent ?? "";
+  // applyChrome has stored the page's English text on the element, so the idle label keeps both lines.
+  const idleLabel = tb(String(talkLabel.dataset.i18n), talkLabel.dataset.en ?? "");
   /** @type {{recording: import("./recorder.js").Recording | null, busy: boolean,
    *   peerJoined: boolean, pending: Blob | null, pendingDemo: boolean}} */
   const state = {
@@ -90,21 +99,60 @@ export function enterRoom(room, languages, players, onEnded) {
   let shownTurnId = "";
   let shownReplyKey = "";
 
+  /** The status line for an incoming turn: live or caught up, from the other role. */
+  function incomingHeading(/** @type {boolean} */ live) {
+    if (peerRole === "rider") {
+      return live
+        ? tb("new_message_rider", "New message from the rider.")
+        : tb("last_message_rider", "Last message from the rider.");
+    }
+    return live
+      ? tb("new_message_customer", "New message from the customer.")
+      : tb("last_message_customer", "Last message from the customer.");
+  }
+
+  /**
+   * What the sender is told after a send.
+   * @param {boolean} demoClip
+   * @param {boolean} verified
+   */
+  function sentMessage(demoClip, verified) {
+    if (!verified) {
+      return demoClip
+        ? tb("sent_demo_check_translation", "Sent demo clip, but check the translation.")
+        : tb("sent_check_translation", "Sent, but check the translation.");
+    }
+    if (peerRole === "rider") {
+      return demoClip
+        ? tb("sent_demo_rider_has_details", "Sent demo clip. The rider has these details.")
+        : tb("sent_rider_has_details", "Sent. The rider has these details.");
+    }
+    return demoClip
+      ? tb("sent_demo_customer_has_details", "Sent demo clip. The customer has these details.")
+      : tb("sent_customer_has_details", "Sent. The customer has these details.");
+  }
+
   /** @param {string} code */
   function languageName(code) {
-    const language = languages.find((item) => item.code === code);
-    return language ? languageLabel(language) : code;
+    return nameForViewer(
+      languages.find((item) => item.code === code),
+      room.language,
+      code,
+    );
   }
 
   function render() {
     const recording = state.recording !== null;
     talkButton.setAttribute("aria-pressed", String(recording));
     talkButton.disabled = !state.peerJoined || state.busy || state.pending !== null;
-    talkLabel.textContent = recording ? "Tap to stop and send" : idleLabel;
+    renderText(talkLabel, recording ? tb("tap_to_stop", "Tap to stop and send") : idleLabel);
     actionsEl.hidden = state.pending === null || state.busy;
-    sentEmptyEl.hidden = sentChipsEl.childElementCount > 0;
     demoSendButton.disabled =
-      !state.peerJoined || state.busy || state.pending !== null || demoClips.length === 0;
+      !state.peerJoined ||
+      state.busy ||
+      state.pending !== null ||
+      demoClips.length === 0 ||
+      demoSelect.value === "";
     renderQuickReplies();
   }
 
@@ -119,15 +167,27 @@ export function enterRoom(room, languages, players, onEnded) {
     }
     demoBannerEl.hidden = false; // demo mode is on for the room even if this person has no clips
     if (demoClips.length === 0) return; // an empty picker would only be noise
+    // Start on a placeholder so a clip is never sent unless the presenter picked it.
+    const placeholder = document.createElement("option");
+    const choose = tb("choose_a_clip", "Choose a clip");
+    placeholder.value = "";
+    placeholder.textContent = oneLine(choose.local, choose.english);
+    placeholder.dataset.i18n = "choose_a_clip";
+    placeholder.disabled = true;
+    placeholder.selected = true;
     demoSelect.replaceChildren(
+      placeholder,
       ...demoClips.map((clip) => {
         const option = document.createElement("option");
         option.value = clip.id;
-        option.textContent = clip.label;
+        option.textContent = oneLine(clip.labelLocal, clip.label);
         return option;
       }),
     );
     demoEl.hidden = false;
+    // With a clip to send, the clip is the main action and the microphone steps back.
+    document.body.classList.add("demo-on");
+    talkButton.classList.add("minor");
     render();
   }
 
@@ -136,9 +196,9 @@ export function enterRoom(room, languages, players, onEnded) {
     state.busy = true;
     render();
     try {
-      setStatus(statusEl, "Loading demo clip...");
+      setStatus(statusEl, tb("loading_demo_clip", "Loading demo clip..."));
       const clip = await fetchDemoClip(demoSelect.value);
-      if (!clip) setStatus(statusEl, "Could not load the demo clip.", true);
+      if (!clip) setStatus(statusEl, tb("demo_clip_failed", "Could not load the demo clip."), true);
       else await submit(clip, true);
     } finally {
       state.busy = false;
@@ -159,27 +219,32 @@ export function enterRoom(room, languages, players, onEnded) {
         const button = document.createElement("button");
         button.type = "button";
         button.className = "reply-btn";
-        button.textContent = label;
+        renderText(button, label);
         button.disabled = !options.enabled;
         button.addEventListener("click", () => void onReply(id, label));
         return button;
       }),
     );
-    repliesNoteEl.textContent = state.peerJoined ? (options.reason ?? "") : "";
+    renderText(repliesNoteEl, state.peerJoined && options.reason ? options.reason : "");
   }
 
-  /** @param {string} id @param {string} label */
+  /** @param {string} id @param {Bi} label */
   async function onReply(id, label) {
     const result = await sendQuickReply(room, id);
-    setStatus(statusEl, result.ok ? `Sent: ${label}` : result.message, !result.ok);
+    setStatus(statusEl, result.ok ? bi`${tb("sent", "Sent")}: ${label}` : result.message, !result.ok);
   }
 
   /** @param {string} code */
   function showPeer(code) {
     peerLanguage = code;
     state.peerJoined = true;
-    const name = capitalize(peerRole);
-    peerEl.textContent = `${name} joined. ${name} language: ${languageName(code)}.`;
+    const joined =
+      peerRole === "rider"
+        ? tb("rider_joined", "The rider joined.")
+        : tb("customer_joined", "The customer joined.");
+    renderText(peerEl, bi`${joined} ${tb("their_language", "Their language")}: ${languageName(code)}.`);
+    // The code has done its job; keep it as a small line in case the rider has to rejoin.
+    codeBoxEl?.classList.add("compact");
   }
 
   /**
@@ -243,31 +308,38 @@ export function enterRoom(room, languages, players, onEnded) {
   async function showIncomingTurn(data, live) {
     shownTurnId = turnKey(data);
     incomingStatusEl.hidden = false;
+    if (incomingEl) incomingEl.hidden = false;
     // The customer's facts live on the delivery card; repeating them per turn showed every value twice.
     const chips = peerRole === "customer" ? [] : chipsFromFacts(data.facts, true);
     renderChips(chipsEl, chips);
-    chipsNoteEl.textContent = [
-      chips.some((chip) => chip.labelPending) && "Some labels are unreviewed machine spellings.",
+    const notes = [
+      chips.some((chip) => chip.labelPending) &&
+        tb("labels_unreviewed", "Some labels are unreviewed machine spellings."),
       chips.some((chip) => chip.machineTranslated) &&
-        "The landmark is machine-translated; the original is in brackets.",
-    ]
-      .filter(Boolean)
-      .join(" ");
+        tb("landmark_machine", "The landmark is machine-translated; the original is in brackets."),
+    ].filter((note) => note !== false);
+    renderText(
+      chipsNoteEl,
+      new Bi(
+        notes.map((note) => note.local).join(" "),
+        notes.map((note) => note.english).join(" "),
+      ),
+    );
     translationEl.textContent = typeof data.translation === "string" ? data.translation : "";
     demoBadgeEl.hidden = data.demo_clip !== true;
-    const heading = live ? "New message" : "Last message";
+    const heading = incomingHeading(live);
     setStatus(
       incomingStatusEl,
       data.verified
-        ? `${heading} from the ${peerRole}.`
-        : `${heading} from the ${peerRole}. The translation could not be fully checked; trust the facts above.`,
+        ? heading
+        : bi`${heading} ${tb("translation_unchecked", "The translation could not be fully checked; trust the facts above.")}`,
     );
     if (typeof data.audio_path !== "string") return;
     const url = await fetchAudioUrl(room, data.audio_path);
     if (!url) {
       // Audio is kept for about a minute, so a late catch-up legitimately has none.
       if (live) {
-        setStatus(incomingStatusEl, "Could not load the audio. The facts above are still correct.", true);
+        setStatus(incomingStatusEl, tb("audio_failed", "Could not load the audio. The facts above are still correct."), true);
       }
       return;
     }
@@ -278,7 +350,7 @@ export function enterRoom(room, languages, players, onEnded) {
     }
     const played = await turnPlayer.play(url);
     repeatButton.disabled = false;
-    if (!played) setStatus(incomingStatusEl, "Tap Repeat to hear it.", true);
+    if (!played) setStatus(incomingStatusEl, tb("tap_repeat", "Tap Repeat to hear it."), true);
   }
 
   /**
@@ -292,8 +364,12 @@ export function enterRoom(room, languages, players, onEnded) {
     // contradict the reply shown below it.
     if (shownTurnId === "") incomingStatusEl.hidden = true;
     replyTextEl.textContent = data.text;
-    replyNoteEl.textContent =
-      data.review_status === "pending" ? "Unreviewed machine translation." : "";
+    renderText(
+      replyNoteEl,
+      data.review_status === "pending"
+        ? tb("unreviewed_translation", "Unreviewed machine translation.")
+        : "",
+    );
     replyEl.hidden = false;
     if (typeof data.audio_path !== "string") return;
     const url = await fetchAudioUrl(room, data.audio_path);
@@ -325,10 +401,10 @@ export function enterRoom(room, languages, players, onEnded) {
     render();
     try {
       state.recording = await startRecording(() => void finishRecording());
-      setStatus(statusEl, "Recording. Tap again when you are done (60 s maximum).");
+      setStatus(statusEl, tb("recording", "Recording. Tap again when you are done (60 s maximum)."));
     } catch (error) {
       if (!(error instanceof RecorderError)) throw error;
-      setStatus(statusEl, error.message, true);
+      setStatus(statusEl, error.text, true);
     } finally {
       state.busy = false;
       render();
@@ -341,12 +417,12 @@ export function enterRoom(room, languages, players, onEnded) {
     state.recording = null;
     state.busy = true;
     render();
-    setStatus(statusEl, "Preparing audio...");
+    setStatus(statusEl, tb("preparing_audio", "Preparing audio..."));
     try {
       await submit(await toWav(await recording.stop()));
     } catch (error) {
       if (!(error instanceof RecorderError)) throw error;
-      setStatus(statusEl, error.message, true);
+      setStatus(statusEl, error.text, true);
     } finally {
       state.busy = false;
       render();
@@ -362,8 +438,12 @@ export function enterRoom(room, languages, players, onEnded) {
     repeatEl.hidden = text === "";
     repeatTextEl.textContent = text;
     repeatTextEl.lang = room.language;
-    repeatNoteEl.textContent =
-      text !== "" && repeat?.review_status === "pending" ? "Unreviewed machine translation." : "";
+    renderText(
+      repeatNoteEl,
+      text !== "" && repeat?.review_status === "pending"
+        ? tb("unreviewed_translation", "Unreviewed machine translation.")
+        : "",
+    );
   }
 
   /**
@@ -374,7 +454,7 @@ export function enterRoom(room, languages, players, onEnded) {
   async function submit(wav, demoClip = false) {
     state.pending = wav;
     state.pendingDemo = demoClip;
-    setStatus(statusEl, "Sending...");
+    setStatus(statusEl, tb("sending", "Sending..."));
     showRepeatPrompt(null);
     const result = await postTurn(room, wav, demoClip);
     if (!result.ok) {
@@ -383,21 +463,23 @@ export function enterRoom(room, languages, players, onEnded) {
       return;
     }
     state.pending = null;
-    const customerSpoke = room.role === "customer"; // see showIncomingTurn: the card has the facts
-    renderChips(sentChipsEl, customerSpoke ? [] : chipsFromFacts(result.data.facts));
-    sentEmptyEl.textContent = customerSpoke ? "Sent. The delivery card has the details." : "Nothing sent yet.";
-    sentEmptyEl.hidden = sentChipsEl.childElementCount > 0;
+    if (sentEl && sentChipsEl && sentEmptyEl) {
+      renderChips(sentChipsEl, chipsFromFacts(result.data.facts));
+      sentEmptyEl.hidden = sentChipsEl.childElementCount > 0;
+      sentEl.hidden = false;
+    }
     sentDemoBadgeEl.hidden = !demoClip;
     renderTimings(timingsEl, result.data.timings);
-    timingsEl.hidden = false;
-    showRepeatPrompt(result.data.repeat);
-    const sent = demoClip ? "Sent demo clip" : "Sent";
-    setStatus(
-      statusEl,
-      result.data.verified
-        ? `${sent}. The ${peerRole} has these details.`
-        : `${sent}, but check the translation.`,
+    // In demo mode the one-line summary is the readout; elsewhere the detail sits behind a toggle.
+    const demoMode = document.body.classList.contains("demo-on");
+    renderText(
+      timingsSummaryEl,
+      demoMode ? timingsSummary(result.data.timings) : tb("time_taken", "Time taken by your last message"),
     );
+    timingsBoxEl.open = demoMode;
+    timingsBoxEl.hidden = false;
+    showRepeatPrompt(result.data.repeat);
+    setStatus(statusEl, sentMessage(demoClip, result.data.verified === true));
   }
 
   talkButton.addEventListener("click", () => {
@@ -417,12 +499,13 @@ export function enterRoom(room, languages, players, onEnded) {
   });
   discardButton.addEventListener("click", () => {
     state.pending = null;
-    setStatus(statusEl, "Recording discarded. Ready.");
+    setStatus(statusEl, tb("recording_discarded", "Recording discarded. Ready."));
     render();
   });
   repeatButton.addEventListener("click", () => void turnPlayer.replay());
   replyReplayButton.addEventListener("click", () => void replyPlayer.replay());
   demoSendButton.addEventListener("click", () => void sendDemoClip());
+  demoSelect.addEventListener("change", render);
 
   if (room.peer_language) showPeer(room.peer_language);
   render();
@@ -435,7 +518,7 @@ export function enterRoom(room, languages, players, onEnded) {
       quickReplies = parseQuickReplyTable(await getJson("/quick-replies"));
       render();
     } catch {
-      repliesNoteEl.textContent = "Quick replies could not be loaded.";
+      renderText(repliesNoteEl, tb("quick_replies_failed", "Quick replies could not be loaded."));
     }
   }
 

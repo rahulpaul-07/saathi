@@ -47,10 +47,14 @@ async def client(translator: FakeTranslator) -> AsyncIterator[httpx.AsyncClient]
 
 @pytest.fixture
 def upstream() -> Iterator[respx.MockRouter]:
+    def stt(request: httpx.Request) -> httpx.Response:
+        # Like the real service: audio that is not a WAV gets a 400, never a transcript.
+        if b"RIFF" not in request.content or b"WAVE" not in request.content:
+            return httpx.Response(400, text="bad audio")
+        return httpx.Response(200, json={"success": True, "transcript": "namaskar"})
+
     with respx.mock(assert_all_called=False) as router:
-        router.post(f"{BASE}{STT_PATH}").mock(
-            return_value=httpx.Response(200, json={"success": True, "transcript": "namaskar"})
-        )
+        router.post(f"{BASE}{STT_PATH}").mock(side_effect=stt)
         router.post(f"{BASE}{TTS_PATH}").mock(
             return_value=httpx.Response(200, content=make_streaming_wav())
         )
@@ -168,6 +172,19 @@ async def test_upstream_failure_returns_generic_502(
     assert "secret" not in response.text
 
 
+async def test_upstream_400_asks_for_a_new_recording_and_is_not_retried(
+    client: httpx.AsyncClient, upstream: respx.MockRouter
+) -> None:
+    route = upstream.post(f"{BASE}{STT_PATH}").mock(
+        return_value=httpx.Response(400, text="secret upstream body")
+    )
+    response = await post_turn(client, make_wav())
+    assert response.status_code == 400
+    assert response.json()["detail"]["code"] == "bad_recording"
+    assert "secret" not in response.text
+    assert route.call_count == 1
+
+
 async def test_upstream_rate_limit_is_reported_as_retryable_503(
     client: httpx.AsyncClient, upstream: respx.MockRouter
 ) -> None:
@@ -201,3 +218,12 @@ async def test_static_mount_does_not_serve_files_outside_the_static_dir(
 ) -> None:
     assert (await client.get("/js/../../app.py")).status_code == 404
     assert (await client.get("/%2e%2e/app.py")).status_code == 404
+
+
+async def test_healthz_needs_no_auth_and_no_upstream(
+    client: httpx.AsyncClient, upstream: respx.MockRouter
+) -> None:
+    response = await client.get("/healthz")
+    assert response.status_code == 200
+    assert response.json() == {"status": "ok"}
+    assert not upstream.calls  # a probe must never reach Gnani

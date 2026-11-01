@@ -1,6 +1,7 @@
 """Send the demo clips through Gnani STT and show what chips the transcripts give (spends credits).
 
   --dry-run   list the clips and the ledger total; sends nothing, needs no key
+  --only ID.. check just those clips
   (default)   one STT call per clip through the ledger; prints each raw transcript, the chips
               extracted from it and the intended facts; exit 1 if any clip yields no chips
 
@@ -21,7 +22,7 @@ from saathi.evaluation.calls import (
     MeteredGnani,
     SlidingWindowLimiter,
 )
-from saathi.evaluation.democlips import CLIP_SPECS, clips_without_chips
+from saathi.evaluation.democlips import CLIP_SPECS, clips_without_chips, select_specs
 from saathi.facts import extract_facts
 from saathi.gnani import GnaniError
 from saathi.languages import LANGUAGES
@@ -38,13 +39,21 @@ def main() -> int:
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--clip-dir", type=Path, default=CLIP_DIR)
     parser.add_argument("--ledger", type=Path, default=LEDGER)
+    parser.add_argument(
+        "--only",
+        nargs="+",
+        metavar="CLIP_ID",
+        choices=[s.id for s in CLIP_SPECS],
+        help="check only these clips (1 call each)",
+    )
     args = parser.parse_args()
 
     ledger = CallLedger(args.ledger)
-    missing = [s.id for s in CLIP_SPECS if not (args.clip_dir / f"{s.id}.wav").is_file()]
-    for spec in CLIP_SPECS:
+    specs = select_specs(args.only)
+    missing = [s.id for s in specs if not (args.clip_dir / f"{s.id}.wav").is_file()]
+    for spec in specs:
         print(f"  {spec.id:22} {spec.lang}  STT x1")
-    calls = len(CLIP_SPECS)
+    calls = len(specs)
     print(f"Calls: {calls} (max {MAX_CALLS}); ledger {ledger.total}/{ledger.cap} -> "
           f"{ledger.total + calls}")
     if missing:
@@ -63,7 +72,7 @@ def main() -> int:
     async def go() -> None:
         limiter = SlidingWindowLimiter()
         try:
-            for spec in CLIP_SPECS:
+            for spec in specs:
                 await limiter.acquire(1)
                 audio = (args.clip_dir / f"{spec.id}.wav").read_bytes()
                 code = LANGUAGES[spec.lang].gnani_code
@@ -81,7 +90,7 @@ def main() -> int:
         print(f"stopped by Gnani error {exc.status}", file=sys.stderr)
         return 1
 
-    for spec in CLIP_SPECS:
+    for spec in specs:
         text = transcripts[spec.id]
         chips = ", ".join(f"{f.kind} {f.value}" for f in extract_facts(text, spec.lang))
         intended = ", ".join(f"{kind} {value}" for kind, value, _ in spec.facts)
