@@ -98,7 +98,14 @@ async function designShots(set) {
     await rider.locator("#language").selectOption("hi");
     await rider.locator("#join:not([disabled])").click();
     await customer.locator("#talk").waitFor({ state: "visible" });
-    await scenario(customer, rider, (state) => page.screenshot({ path: `${out}/split-1920-${state}.png` }).then(() => {}));
+    // Both panes at the top, so the delivery card is in view whatever the scenario scrolled to.
+    const toTop = (/** @type {import('@playwright/test').FrameLocator} */ pane) =>
+      pane.locator("body").evaluate(() => window.scrollTo(0, 0));
+    await scenario(customer, rider, async (state) => {
+      await toTop(customer);
+      await toTop(rider);
+      await page.screenshot({ path: `${out}/split-1920-${state}.png` });
+    });
     await context.close();
   } finally {
     stopServer(server);
