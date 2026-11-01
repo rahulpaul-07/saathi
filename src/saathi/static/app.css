@@ -317,3 +317,28 @@ main:has(#room) h2 { margin: 0.5rem 0 0.15rem; }
 .big-btn:has(> .l-en) { flex-direction: column; gap: 0; }
 button .l-main, button .l-en, .reply-btn .l-main, .reply-btn .l-en { text-align: inherit; }
 button:has(.l-en) { padding-top: 0.4rem; padding-bottom: 0.4rem; }
+
+/* Once a room is active the demo banner and the status lines share one compact, wrapping line under
+   the delivery card. */
+.room-line { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.1rem 0.9rem; margin: 0.25rem 0; }
+main:has(#room) .room-line > p { margin: 0; min-height: 0; font-size: 0.85rem; }
+main:has(#room) .room-line > .demo-banner { padding: 0 0.5rem; border-width: 1px; border-radius: 0.4rem; font-size: 0.8rem; }
+main:has(#room) .room-line > .status.error { font-weight: 600; }
+
+/* The demo split shows each page in a half-screen frame filmed at 1080p and watched on a phone:
+   use the whole pane width and a larger base size, so text stays readable when the video shrinks. */
+:root.in-frame { font-size: 125%; }
+.in-frame body { font-size: 1rem; }
+.in-frame main { max-width: none; padding: 0.75rem 1.25rem; }
+/* Wide pane: all four fact tiles in one row, so the card stays above the fold at the larger size. */
+.in-frame .chips { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.in-frame .chip-landmark:nth-child(odd) { grid-column: auto; }
+
+/* The banner is one line, the local and English text side by side and cut with an ellipsis; the
+   demo bar says the same thing on the split page, and the clip picker below is the real cue. */
+main:has(#room) .room-line > .demo-banner:not([hidden]) {
+  display: flex; gap: 0.5rem; flex: 1 1 100%; min-width: 0; white-space: nowrap;
+}
+main:has(#room) .room-line > .demo-banner > span { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+main:has(#room) .room-line > .demo-banner > .l-main { flex: 1 1 auto; }
+main:has(#room) .room-line > .demo-banner > .l-en { flex: 0 1 auto; font-weight: 400; }

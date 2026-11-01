@@ -15,10 +15,6 @@
         <h1 data-i18n="role_customer">Customer</h1>
         <p class="sub"><a href="index.html" data-i18n="back">Back</a></p>
       </header>
-      <p id="demo-banner" class="demo-banner" data-i18n="demo_banner" hidden>
-        Demo mode: this screen can send prepared clips instead of live speech.
-      </p>
-
       <section id="setup" aria-label="Start a room" data-i18n-aria-label="start_a_room">
         <label for="language" data-i18n="your_language">Your language</label>
         <select id="language"></select>
@@ -27,21 +23,26 @@
       </section>
 
       <section id="room" hidden aria-label="Room" data-i18n-aria-label="room">
+        <section class="card" aria-labelledby="card-heading">
+          <h2 id="card-heading" data-i18n="delivery_card">Delivery card</h2>
+          <p id="card-empty" class="small" data-i18n="card_empty_customer">No address details yet. They collect here as you speak.</p>
+          <ul id="card-chips" class="chips" aria-labelledby="card-heading" aria-live="polite"></ul>
+        </section>
+
+        <div class="room-line">
+          <p id="demo-banner" class="demo-banner" data-i18n="demo_banner" hidden>
+            Demo mode: this screen can send prepared clips instead of live speech.
+          </p>
+          <p id="reconnecting" class="status error" role="status" aria-live="polite" hidden data-i18n="reconnecting">Reconnecting...</p>
+          <p id="peer" class="status quiet" role="status" aria-live="polite" data-i18n="waiting_for_rider">Waiting for the rider to join.</p>
+        </div>
+
         <div id="code-box" class="code-box">
           <p class="small" data-i18n="give_code_to_rider">Room code. Give it to the rider.</p>
           <p id="code" class="code" aria-label="Room code" data-i18n-aria-label="room_code"></p>
           <p class="small" data-i18n="rider_link">Rider link</p>
           <p class="small"><span id="link" class="mono"></span></p>
         </div>
-
-        <p id="reconnecting" class="status error" role="status" aria-live="polite" hidden data-i18n="reconnecting">Reconnecting...</p>
-        <p id="peer" class="status quiet" role="status" aria-live="polite" data-i18n="waiting_for_rider">Waiting for the rider to join.</p>
-
-        <section class="card" aria-labelledby="card-heading">
-          <h2 id="card-heading" data-i18n="delivery_card">Delivery card</h2>
-          <p id="card-empty" class="small" data-i18n="card_empty_customer">No address details yet. They collect here as you speak.</p>
-          <ul id="card-chips" class="chips" aria-labelledby="card-heading" aria-live="polite"></ul>
-        </section>
 
         <section id="demo" class="demo" hidden aria-label="Demo clip" data-i18n-aria-label="demo_clip">
           <label for="demo-clip" data-i18n="demo_clip_in_language">Demo clip in your language</label>
