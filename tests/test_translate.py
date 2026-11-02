@@ -1,4 +1,5 @@
 import itertools
+import re
 from typing import Any
 
 import pytest
@@ -343,3 +344,11 @@ def test_real_model_long_legitimate_sentence_is_not_flagged(
 ) -> None:
     result = real_translator.translate(text, src, tgt)
     assert script_share(result, tgt) > 0.9
+
+
+def test_every_route_model_is_pinned_to_a_full_commit() -> None:
+    # The models execute Hub-hosted code, so a branch name ("main") is not an acceptable pin.
+    from saathi.translate import MODEL_REVISIONS
+
+    assert set(MODEL_REVISIONS) == set(ROUTE_MODELS.values())
+    assert all(re.fullmatch(r"[0-9a-f]{40}", rev) for rev in MODEL_REVISIONS.values())
