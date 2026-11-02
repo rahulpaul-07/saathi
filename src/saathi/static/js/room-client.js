@@ -182,6 +182,24 @@ export async function fetchAudioUrl(room, audioPath) {
 }
 
 /**
+ * Fetch the room's QR code (needs the token, like turn audio).
+ * @param {RoomInfo} room
+ * @returns {Promise<string | null>} an object URL for an <img>, or null if it could not load
+ */
+export async function fetchQrUrl(room) {
+  try {
+    const response = await fetch(`/rooms/${room.code}/qr.svg`, {
+      headers: bearer(room.token),
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+    });
+    if (!response.ok) return null;
+    return URL.createObjectURL(await response.blob());
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Read the event stream until it ends, errors or `signal` aborts. "closed" means the server ended
  * the room, "gone" that it no longer exists (404: expired, closed or a stale token), and neither
  * is worth reconnecting to; "dropped" is anything else.

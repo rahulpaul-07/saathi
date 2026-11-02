@@ -49,6 +49,11 @@ test("both roles speak and reply in ta and ml: chips, audio, repeat, quick repli
   const code = (await customer.locator("#code").textContent()) ?? "";
   await expect(customer.locator("#talk")).toBeDisabled();
 
+  // The QR code loads under the page's CSP (a blocked image would also land in `problems`).
+  const qr = customer.locator("#qr");
+  await expect(qr).toBeVisible();
+  await expect.poll(() => qr.evaluate((img) => /** @type {HTMLImageElement} */ (img).naturalWidth)).toBeGreaterThan(0);
+
   // Rider joins in Malayalam with the code, via the link the customer sees.
   const link = (await customer.locator("#link").textContent()) ?? "";
   expect(link).toContain(`/rider.html?code=${code}`);
