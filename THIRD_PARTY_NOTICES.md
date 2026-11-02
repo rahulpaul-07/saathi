@@ -11,14 +11,24 @@ state a licence, the entry says "to verify" instead of guessing.
   `ai4bharat/indictrans2-indic-en-dist-200M`, run locally.
 - Included in this repo: no. Weights are downloaded from Hugging Face by the user; the models are
   gated, and the user must accept their terms there.
-- Licence: to verify. The repository records only that the models are gated and "their terms apply"
-  (README). Read the licence on each model card before redistributing anything derived from them.
+- Licence: MIT. Checked on 2026-11-02 against the licence field of each of the three model cards
+  (https://huggingface.co/ai4bharat/indictrans2-indic-indic-dist-320M,
+  https://huggingface.co/ai4bharat/indictrans2-en-indic-dist-200M,
+  https://huggingface.co/ai4bharat/indictrans2-indic-en-dist-200M) and the licence table of the
+  repository, which lists the model checkpoints as MIT. The Hugging Face repositories are gated
+  (access needs accepting the Hub's information-sharing condition); that gate is an access
+  condition, not a different licence. The text of the LICENSE file itself was not read, only
+  the declarations above.
 - Reference: https://github.com/AI4Bharat/IndicTrans2
 
-### IndicTransToolkit (AI4Bharat)
+### IndicTransToolkit
 - Used: pre- and post-processing for IndicTrans2, installed as `IndicTransToolkit==1.1.1`.
 - Included in this repo: no (a pinned dependency).
-- Licence: to verify (not recorded in this repository).
+- Licence: MIT, as declared by the repository https://github.com/VarunGumma/IndicTransToolkit
+  (checked 2026-11-02; the LICENSE text was not read). That the PyPI package
+  `IndicTransToolkit` is published from this repository is taken from the repository README, not
+  checked on PyPI. The repository is maintained by an individual contributor, not under the
+  AI4Bharat organisation, so the "(AI4Bharat)" label used earlier was dropped.
 
 ### Other Python and JavaScript dependencies
 - Pinned in `pyproject.toml`, `uv.lock`, `package.json` and `package-lock.json`, each under its own

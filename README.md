@@ -19,7 +19,8 @@ Why this matters:
   the backup.
 - Any of 10 languages for either person, a short-lived room, no accounts and no stored transcripts.
 
-Portfolio project, LAN only. Every number below comes from a run described in
+Portfolio project. It runs on a LAN by default; an opt-in public mode with spending guards exists
+(see [Public hosting](#public-hosting)). Every number below comes from a run described in
 [`docs/EVAL.md`](docs/EVAL.md); anything not measured is said to be not measured.
 
 ## See it
@@ -120,8 +121,28 @@ had no external review.
 
 Not production-ready. [`docs/PATH_TO_PRODUCTION.md`](docs/PATH_TO_PRODUCTION.md) covers integration
 with a delivery partner, scale, cost per conversation, telephony beside masked calling, India's DPDP
-Act obligations and what is missing. This repo is LAN only: no accounts, no history, no public
-deployment.
+Act obligations and what is missing. There are no accounts and no history.
+
+## Public hosting
+
+Off unless `SAATHI_PUBLIC=1`; unset, the app behaves exactly as for local use. When on, it adds:
+
+- **Client IP only from trusted proxies.** `X-Forwarded-For` is believed only when the connection
+  comes from an address in `SAATHI_TRUSTED_PROXIES`, so a client cannot spoof its way past the
+  per-IP limits (tested).
+- **A daily Gnani call budget** (UTC day, saved to disk, so a restart does not reset it) and a
+  **kill switch** (a file, checked on every call, no restart). Every HTTP attempt is counted,
+  retries included; when spent, live turns return a clear 503 and nothing is sent to Gnani.
+- **Caps** on rooms, room lifetime, room creations per IP per hour and upload size.
+- **A guided demo** that replays 5 stored turns (recorded once with real calls) through the real
+  screens with zero Gnani calls. A clip outside the bundle is refused, never sent live.
+- A CPU container image, a QR code for the rider link, and translation models pinned to full
+  commits because they run Hub-hosted code.
+
+Deployment steps and exactly what was and was not tested: [`docs/DEPLOY.md`](docs/DEPLOY.md). On
+CPU with 2 cores, translation alone took a median of about 3 s (p95 about 5.5 to 5.8 s) in two runs
+on a laptop ([`eval/results/cpu_latency.json`](eval/results/cpu_latency.json)); a cloud host was not
+measured.
 
 ## Honest limits
 
@@ -132,8 +153,9 @@ deployment.
 - Synthetic speech is clean and one voice per language; it cannot reproduce phone microphones.
 - Small samples are small: 4 sentences per language in the held-out set, 20 utterances in the noise
   test.
-- The translation models need a GPU for comfortable speed (an RTX 3050 6 GB here). The CPU fallback
-  exists but is untested.
+- The translation models are comfortable on a GPU (an RTX 3050 6 GB here). On 2 CPU cores the
+  translation step alone measured about 3 s at the median in a container on that laptop, so a
+  CPU-only host feels slower than the GPU latency figures above; a cloud host was not measured.
 - The Gnani STT endpoint returned intermittent 504 errors in the long runs; the scripts are
   resumable.
 - iOS Safari is untested, and the microphone needs localhost or HTTPS.
