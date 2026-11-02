@@ -27,3 +27,8 @@ node_modules/
 test-results/
 playwright-report/
 scratch/
+# Gnani daily budget counter (public mode)
+data/
+# Guided demo bundle: Gnani audio, rebuilt by scripts/build_demo_bundle.py
+demo/bundle/
+.claude/settings.local.json
