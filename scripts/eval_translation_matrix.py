@@ -161,8 +161,10 @@ def estimate(translator: RoutingTranslator, items: list[GoldUtterance], per_pair
     seconds = (time.perf_counter() - started) / (len(sample) * per_pair)
     total = seconds * len(items) * len(pairs())
     print(f"scorable utterances: {len(items)}; timed on {per_pair} per pair")
-    print(f"{seconds:.1f} s per sentence per pair (source text included) -> "
-          f"{len(pairs())} pairs = {total / 3600:.1f} h")
+    print(
+        f"{seconds:.1f} s per sentence per pair (source text included) -> "
+        f"{len(pairs())} pairs = {total / 3600:.1f} h"
+    )
 
 
 def report(items: list[GoldUtterance], state: dict[str, Any], per_pair: int) -> None:
@@ -188,8 +190,10 @@ def report(items: list[GoldUtterance], state: dict[str, Any], per_pair: int) -> 
         for lang, cell in group.items():
             assert cell.plain is not None and cell.masked is not None
             rate = cell.fallbacks / cell.utterances if cell.utterances else float("nan")
-            print(f"  {label} {lang}: plain {cell.plain.recall} masked {cell.masked.recall} "
-                  f"fallback {rate:.2f}")
+            print(
+                f"  {label} {lang}: plain {cell.plain.recall} masked {cell.masked.recall} "
+                f"fallback {rate:.2f}"
+            )
     print(f"\nwrote {RESULT}")
 
 
@@ -232,9 +236,11 @@ def main() -> int:
         state["cells"][f"{src}>{tgt}"] = cell.to_json()
         save_state(state)
         assert cell.plain is not None and cell.masked is not None
-        print(f"{src}>{tgt}  plain {cell.plain.recall}  masked {cell.masked.recall}  "
-              f"fallbacks {cell.fallbacks}/{cell.utterances}  {time.perf_counter() - started:.0f}s",
-              flush=True)
+        print(
+            f"{src}>{tgt}  plain {cell.plain.recall}  masked {cell.masked.recall}  "
+            f"fallbacks {cell.fallbacks}/{cell.utterances}  {time.perf_counter() - started:.0f}s",
+            flush=True,
+        )
     return 0
 
 

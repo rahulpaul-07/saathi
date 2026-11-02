@@ -90,8 +90,10 @@ def collect(max_hours: float, allow_battery: bool) -> int:
                 pass
             back = None
             if output is not None:
-                back = output if tgt == "en" else reversal.translate_or_none(
-                    translator, output, tgt, "en"
+                back = (
+                    output
+                    if tgt == "en"
+                    else reversal.translate_or_none(translator, output, tgt, "en")
                 )
             out.append({"id": rec["id"], "output": output, "back": back, "verified": verified})
         state["pairs"][key] = out
@@ -178,7 +180,8 @@ def main() -> int:
     parser.add_argument("mode", choices=["collect", "report"])
     parser.add_argument("--max-hours", type=float, default=2.0)
     parser.add_argument(
-        "--allow-battery", action="store_true",
+        "--allow-battery",
+        action="store_true",
         help="accuracy does not depend on power; the state is recorded in the result",
     )
     args = parser.parse_args()

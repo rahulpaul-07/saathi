@@ -206,15 +206,21 @@ async def main_async(rooms: int, turns: int, gnani_ms: float) -> int:
     after_close = process_memory_mb()
 
     print(f"rooms={rooms} turns/room={turns} fake gnani={gnani_ms:g} ms per call (2 calls/turn)")
-    print(f"requests={result.requests} errors={result.errors} wall={elapsed:.2f}s "
-          f"({result.requests / elapsed:.0f} turns/s)")
+    print(
+        f"requests={result.requests} errors={result.errors} wall={elapsed:.2f}s "
+        f"({result.requests / elapsed:.0f} turns/s)"
+    )
     if result.server_ms:
-        print(f"server time per turn (excluding fake Gnani): "
-              f"p50={statistics.median(result.server_ms):.1f} ms "
-              f"p95={percentile(result.server_ms, 0.95):.1f} ms "
-              f"max={max(result.server_ms):.1f} ms")
-    print(f"process memory: before={before:.0f} MB, rooms alive={loaded:.0f} MB, "
-          f"after close={after_close:.0f} MB")
+        print(
+            f"server time per turn (excluding fake Gnani): "
+            f"p50={statistics.median(result.server_ms):.1f} ms "
+            f"p95={percentile(result.server_ms, 0.95):.1f} ms "
+            f"max={max(result.server_ms):.1f} ms"
+        )
+    print(
+        f"process memory: before={before:.0f} MB, rooms alive={loaded:.0f} MB, "
+        f"after close={after_close:.0f} MB"
+    )
     return 1 if result.errors else 0
 
 

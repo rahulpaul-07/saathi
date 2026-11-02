@@ -54,8 +54,10 @@ def main() -> int:
     for spec in specs:
         print(f"  {spec.id:22} {spec.lang}  STT x1")
     calls = len(specs)
-    print(f"Calls: {calls} (max {MAX_CALLS}); ledger {ledger.total}/{ledger.cap} -> "
-          f"{ledger.total + calls}")
+    print(
+        f"Calls: {calls} (max {MAX_CALLS}); ledger {ledger.total}/{ledger.cap} -> "
+        f"{ledger.total + calls}"
+    )
     if missing:
         print(f"Missing clips: {', '.join(missing)}; run scripts/make_demo_clips.py")
         return 1

@@ -411,9 +411,7 @@ def main(
     parser.add_argument(
         "--ledger", type=Path, default=root / "eval" / "state" / "gnani_ledger.json"
     )
-    parser.add_argument(
-        "--out", type=Path, default=root / "eval" / "results" / "live_smoke.json"
-    )
+    parser.add_argument("--out", type=Path, default=root / "eval" / "results" / "live_smoke.json")
     args = parser.parse_args(argv)
 
     try:

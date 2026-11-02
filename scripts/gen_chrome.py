@@ -68,13 +68,29 @@ def main() -> int:
             back = translator.translate(text, code, SOURCE)
             score = round(word_overlap(english, back), 2)
             table[code][key] = (text, "pending")
-            rows.append({"lang": code, "key": key, "back": back, "overlap": score,
-                         "flagged": score < DRIFT_BELOW})
+            rows.append(
+                {
+                    "lang": code,
+                    "key": key,
+                    "back": back,
+                    "overlap": score,
+                    "flagged": score < DRIFT_BELOW,
+                }
+            )
     write_data(apply_overrides(table, OVERRIDES))
     flagged = [r for r in rows if r["flagged"]]
     REPORT.write_text(
-        json.dumps({"drift_below": DRIFT_BELOW, "strings": len(rows), "flagged": len(flagged),
-                    "rows": rows}, ensure_ascii=False, indent=1) + "\n",
+        json.dumps(
+            {
+                "drift_below": DRIFT_BELOW,
+                "strings": len(rows),
+                "flagged": len(flagged),
+                "rows": rows,
+            },
+            ensure_ascii=False,
+            indent=1,
+        )
+        + "\n",
         encoding="utf-8",
     )
     print(f"{len(rows)} strings, {len(flagged)} flagged for drift (overlap < {DRIFT_BELOW})")

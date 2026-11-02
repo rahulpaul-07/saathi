@@ -172,6 +172,4 @@ def test_a_probe_transcript_of_ordinal_floors_gives_floors_and_the_landmark() ->
         ("landmark", "பேக்கரி")
     ]
     heard = "ఆరవ ఫ్లోర్ ఏడవ ఫ్లోర్ ఎనిమిదవ ఫ్లోర్ తొమ్మిదవ ఫ్లోర్ పదవ ఫ్లోర్ బేకరీ దగ్గర"
-    assert pairs(heard, "te") == [("floor", str(n)) for n in range(6, 11)] + [
-        ("landmark", "బేకరీ")
-    ]
+    assert pairs(heard, "te") == [("floor", str(n)) for n in range(6, 11)] + [("landmark", "బేకరీ")]

@@ -38,9 +38,7 @@ def make_gnani(
     return livesmoke.GuardedGnani(settings(), ledger, SlidingWindowLimiter(1000), ceiling)
 
 
-async def run(
-    ledger: CallLedger, ceiling: int = livesmoke.CALLS_CEILING
-) -> livesmoke.SmokeReport:
+async def run(ledger: CallLedger, ceiling: int = livesmoke.CALLS_CEILING) -> livesmoke.SmokeReport:
     clips = {livesmoke.FIRST_CLIP: make_wav(), livesmoke.CORRECTION_CLIP: make_wav()}
     return await livesmoke.run_live(
         settings(),

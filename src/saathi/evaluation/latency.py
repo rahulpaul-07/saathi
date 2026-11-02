@@ -124,9 +124,7 @@ def main(
     parser.add_argument(
         "--ledger", type=Path, default=root / "eval" / "state" / "gnani_ledger.json"
     )
-    parser.add_argument(
-        "--out", type=Path, default=root / "eval" / "results" / "latency.json"
-    )
+    parser.add_argument("--out", type=Path, default=root / "eval" / "results" / "latency.json")
     args = parser.parse_args(argv)
 
     try:
