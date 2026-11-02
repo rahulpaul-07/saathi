@@ -4,7 +4,7 @@ import asyncio
 import base64
 import logging
 import mimetypes
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Annotated
@@ -17,7 +17,8 @@ from saathi.audio import MAX_AUDIO_BYTES, AudioError, AudioTooLargeError, wav_du
 from saathi.catalog_routes import catalog_router
 from saathi.config import Settings, get_settings
 from saathi.demo import demo_router
-from saathi.gnani import GnaniClient, GnaniError
+from saathi.demobundle import load_bundle
+from saathi.gnani import GnaniClient, GnaniError, LiveSpeechUnavailable
 from saathi.languages import LANGUAGES
 from saathi.pipeline import (
     NoSpeechError,
@@ -28,8 +29,9 @@ from saathi.pipeline import (
     run_turn,
     validate_pair,
 )
+from saathi.publicmode import GnaniBudget, LiveGate, ip_resolver, parse_trusted_proxies
 from saathi.ratelimit import SlidingWindowLimiter
-from saathi.room_routes import TimingsOut, room_router
+from saathi.room_routes import TimingsOut, live_paused_detail, room_router
 from saathi.rooms import RoomManager
 from saathi.security_headers import CspMiddleware, content_security_policy
 from saathi.translate import RoutingTranslator, Translator
@@ -59,6 +61,10 @@ async def warm_up_tts(gnani: GnaniClient) -> None:
         log.info("TTS warmed up")
 
 
+def _socket_peer(request: Request) -> str:
+    return request.client.host if request.client else "unknown"
+
+
 class TurnResponse(BaseModel):
     src: str
     tgt: str
@@ -78,7 +84,20 @@ def create_app(
     """Build the app. Dependencies are injectable so tests need no network, GPU or model."""
     logging.basicConfig(level=logging.INFO)  # uvicorn only configures its own loggers
     settings = settings or get_settings()
-    gnani = gnani or GnaniClient(settings)
+    public = settings.public_mode
+    gate: LiveGate | None = None
+    resolve_ip: Callable[[Request], str] = _socket_peer
+    if public:
+        gate = LiveGate(
+            GnaniBudget(settings.budget_file, settings.daily_gnani_budget),
+            settings.kill_switch,
+            settings.kill_file,
+        )
+        resolve_ip = ip_resolver(parse_trusted_proxies(settings.trusted_proxies))
+    gnani = gnani or GnaniClient(settings, before_attempt=gate)
+    bundle = load_bundle(settings.demo_bundle_dir) if public else None
+    # The guided demo reuses the demo-clip screen, so a loaded bundle turns that screen on.
+    demo_input = settings.demo_input or bundle is not None
     default_translator = translator is None
     translator = translator or RoutingTranslator(num_beams=settings.translator_num_beams)
     limiter = SlidingWindowLimiter(settings.turn_rate_limit_per_minute)
@@ -99,9 +118,18 @@ def create_app(
 
     app = FastAPI(title="Saathi", lifespan=lifespan)
     app.add_middleware(
-        CspMiddleware, policy=content_security_policy(allow_same_origin_frames=settings.demo_input)
+        CspMiddleware, policy=content_security_policy(allow_same_origin_frames=demo_input)
     )
-    rooms = rooms or RoomManager(max_rooms=settings.max_rooms)
+    if rooms is None:
+        rooms = (
+            RoomManager(
+                max_rooms=settings.public_max_rooms,
+                idle_ttl_s=settings.room_idle_ttl_s,
+                hard_ttl_s=settings.room_hard_ttl_s,
+            )
+            if public
+            else RoomManager(max_rooms=settings.max_rooms)
+        )
     app.include_router(
         room_router(
             rooms,
@@ -110,20 +138,28 @@ def create_app(
             settings.room_rate_limit_per_minute,
             settings.turn_rate_limit_per_minute,
             settings.reply_rate_limit_per_minute,
-            demo_input=settings.demo_input,
+            demo_input=demo_input,
             masking_mode=settings.masking_mode,
+            client_ip=resolve_ip,
+            hourly_create_limit=settings.room_creates_per_hour if public else None,
+            max_upload_bytes=settings.max_upload_bytes if public else MAX_AUDIO_BYTES,
+            bundle=bundle,
+            public_base_url=settings.public_base_url,
         )
     )
 
-    app.include_router(catalog_router(settings.demo_input))
-    if settings.demo_input:
+    app.include_router(catalog_router(demo_input))
+    if demo_input:
         app.include_router(demo_router(settings.demo_clips_dir))
 
     @app.get("/healthz")
-    async def healthz() -> dict[str, str]:
+    async def healthz() -> dict[str, str | bool]:
         # Liveness only: it touches no dependency (not Gnani, not the translator) so a probe
-        # cannot spend credits or fail because an upstream is down.
-        return {"status": "ok"}
+        # cannot spend credits or fail because an upstream is down. In public mode it also says
+        # whether live calls are on, read from local state only.
+        if gate is None:
+            return {"status": "ok"}
+        return {"status": "ok", "live": gate.live()}
 
     @app.post("/turn")
     async def turn(
@@ -132,8 +168,7 @@ def create_app(
         src: Annotated[str, Form(max_length=8)],
         tgt: Annotated[str, Form(max_length=8)],
     ) -> TurnResponse:
-        client_ip = request.client.host if request.client else "unknown"
-        if not limiter.allow(client_ip):
+        if not limiter.allow(resolve_ip(request)):
             raise HTTPException(429, "too many requests")
 
         # Everything below up to run_turn is free; reject bad input before any paid call.
@@ -166,6 +201,8 @@ def create_app(
             raise HTTPException(
                 400, {"code": "bad_recording", "message": "the recording cannot be used"}
             ) from exc
+        except LiveSpeechUnavailable as exc:
+            raise HTTPException(503, live_paused_detail(exc)) from exc
         except GnaniError as exc:
             if exc.status == 429:
                 raise HTTPException(503, "speech service busy, retry shortly") from exc

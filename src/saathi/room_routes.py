@@ -8,7 +8,7 @@ translations are never logged; log lines carry language codes, timings and count
 import asyncio
 import json
 import logging
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Callable
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, File, Header, HTTPException, Path, Request, UploadFile
@@ -18,8 +18,9 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from saathi.audio import MAX_AUDIO_BYTES, AudioError, AudioTooLargeError, wav_duration_s
 from saathi.card import ChipAction
 from saathi.chrome import CHROME
+from saathi.demobundle import DemoBundle, NoDemoMatchError
 from saathi.facts import Fact, FactKind
-from saathi.gnani import GnaniClient, GnaniError
+from saathi.gnani import GnaniClient, GnaniError, LiveSpeechUnavailable
 from saathi.labels import chip_label
 from saathi.languages import LANGUAGES
 from saathi.masking import MaskingMode
@@ -30,6 +31,7 @@ from saathi.pipeline import (
     UnreliableTranslationError,
     run_turn,
 )
+from saathi.qr import join_qr_svg
 from saathi.quickreplies import IDS_BY_ROLE, QuickReplyId, ReviewStatus, phrase_for
 from saathi.ratelimit import SlidingWindowLimiter
 from saathi.repeatprompts import RepeatReason, repeat_prompt, repeat_reason
@@ -185,6 +187,14 @@ def _client_ip(request: Request) -> str:
     return request.client.host if request.client else "unknown"
 
 
+LIVE_PAUSED_MESSAGE = "Live translation is paused. The guided demo clips still work."
+
+
+def live_paused_detail(exc: LiveSpeechUnavailable) -> dict[str, str]:
+    """The 503 body when live Gnani calls are off. `reason` is for the operator, not the user."""
+    return {"code": "live_paused", "message_en": LIVE_PAUSED_MESSAGE, "reason": exc.reason}
+
+
 def _sse(event: Event) -> str:
     return f"event: {event.name}\ndata: {json.dumps(event.data, ensure_ascii=False)}\n\n"
 
@@ -198,9 +208,22 @@ def room_router(
     reply_limit_per_minute: int,
     demo_input: bool = False,
     masking_mode: MaskingMode = "current",
+    *,
+    client_ip: Callable[[Request], str] = _client_ip,
+    hourly_create_limit: int | None = None,
+    max_upload_bytes: int = MAX_AUDIO_BYTES,
+    bundle: DemoBundle | None = None,
+    public_base_url: str | None = None,
 ) -> APIRouter:
     router = APIRouter()
     create_limiter = SlidingWindowLimiter(room_limit_per_minute)
+    # Public hosting only: a slow per-IP cap on top of the per-minute one, so one address cannot
+    # hold the room cap by creating rooms steadily.
+    hourly_create_limiter = (
+        SlidingWindowLimiter(hourly_create_limit, window_s=3600.0)
+        if hourly_create_limit is not None
+        else None
+    )
     join_limiter = SlidingWindowLimiter(room_limit_per_minute)
     turn_limiter = SlidingWindowLimiter(turn_limit_per_minute)
     reply_limiter = SlidingWindowLimiter(reply_limit_per_minute)
@@ -226,7 +249,10 @@ def room_router(
 
     @router.post("/rooms", status_code=201)
     async def create_room(body: LanguageIn, request: Request) -> RoomOut:
-        if not create_limiter.allow(_client_ip(request)):
+        ip = client_ip(request)
+        if not create_limiter.allow(ip) or (
+            hourly_create_limiter is not None and not hourly_create_limiter.allow(ip)
+        ):
             raise HTTPException(429, "too many requests")
         try:
             room, token = manager.create(body.language)
@@ -237,7 +263,7 @@ def room_router(
     @router.post("/rooms/{code}/join")
     async def join_room(code: CodePath, body: LanguageIn, request: Request) -> RoomOut:
         # Counted before the lookup, so guessing codes is limited whether or not a guess hits.
-        if not join_limiter.allow(_client_ip(request)):
+        if not join_limiter.allow(client_ip(request)):
             raise HTTPException(429, "too many requests")
         try:
             room, token = manager.join(code, body.language)
@@ -254,6 +280,14 @@ def room_router(
             language=body.language,
             peer_language=room.participants["customer"].language,
         )
+
+    @router.get("/rooms/{code}/qr.svg")
+    async def room_qr(session: Authed, request: Request) -> Response:
+        # Needs a room token, so the route cannot be used to test which codes exist. The QR holds
+        # only the rider page and the room code, never a token.
+        origin = (public_base_url or str(request.base_url)).rstrip("/")
+        svg = join_qr_svg(f"{origin}/rider.html?code={session.room.code}")
+        return Response(svg, media_type="image/svg+xml", headers={"Cache-Control": "no-store"})
 
     @router.delete("/rooms/{code}", status_code=204)
     async def close_room(session: Authed) -> None:
@@ -302,14 +336,23 @@ def room_router(
         peer = room.participants.get(listener)
         if peer is None:
             raise HTTPException(409, f"waiting for the {listener} to join")
-        if not turn_limiter.allow(_client_ip(request)):
+        if not turn_limiter.allow(client_ip(request)):
             raise HTTPException(429, "too many requests")
 
         # Everything up to run_turn is free; reject bad input before any paid call.
-        data = await _read_wav(audio)
+        data = await _read_wav(audio, max_upload_bytes)
         src, tgt = room.participants[speaker].language, peer.language
         try:
-            result = await run_turn(data, src, tgt, gnani, translator, masking_mode)
+            if bundle is not None and demo_input and x_demo_clip == "1":
+                # Guided demo: a stored turn is replayed and Gnani is never touched. A clip that
+                # is not in the bundle is refused, never sent on to the live pipeline.
+                result = await bundle.replay(data, src, tgt, translator)
+            else:
+                result = await run_turn(data, src, tgt, gnani, translator, masking_mode)
+        except NoDemoMatchError as exc:
+            raise HTTPException(
+                422, {"code": "demo_no_match", "message": "that clip is not in the guided demo"}
+            ) from exc
         except NoSpeechError as exc:
             raise HTTPException(
                 422, {"code": "no_speech", "message": "no speech detected"}
@@ -323,6 +366,8 @@ def room_router(
                 400,
                 {"code": "bad_recording", "message": CHROME[src]["bad_recording"].text},
             ) from exc
+        except LiveSpeechUnavailable as exc:
+            raise HTTPException(503, live_paused_detail(exc)) from exc
         except GnaniError as exc:
             if exc.status == 429:
                 raise HTTPException(503, "speech service busy, retry shortly") from exc
@@ -449,12 +494,14 @@ def room_router(
     return router
 
 
-async def _read_wav(upload: UploadFile) -> bytes:
+async def _read_wav(upload: UploadFile, max_bytes: int = MAX_AUDIO_BYTES) -> bytes:
     """Read and validate an uploaded WAV. Raises HTTPException with a generic message."""
     content_type = (upload.content_type or "").split(";")[0].strip().lower()
     if content_type not in WAV_CONTENT_TYPES:
         raise HTTPException(415, "audio must be a WAV file")
-    data = await upload.read(MAX_AUDIO_BYTES + 1)
+    data = await upload.read(max_bytes + 1)
+    if len(data) > max_bytes:
+        raise HTTPException(413, "audio file too large")
     try:
         wav_duration_s(data)
     except AudioTooLargeError as exc:
