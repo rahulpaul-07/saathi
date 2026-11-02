@@ -158,9 +158,7 @@ async def test_a_tts_failure_happens_after_a_successful_stt_and_translation(env:
 
 
 @pytest.mark.parametrize("transcript", ["", "   \n"])
-async def test_an_empty_transcript_is_no_speech_and_costs_no_tts(
-    env: Env, transcript: str
-) -> None:
+async def test_an_empty_transcript_is_no_speech_and_costs_no_tts(env: Env, transcript: str) -> None:
     env.gnani.transcript = transcript
     before = env.untouched()
 

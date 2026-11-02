@@ -11,7 +11,8 @@ def content_security_policy(allow_same_origin_frames: bool) -> str:
     """The policy for the UI.
 
     `media-src` adds `blob:` because turn audio is fetched with the bearer token and played from an
-    object URL; script and style stay `'self'` only (no inline code, no `unsafe-inline`).
+    object URL, and `img-src` adds it for the room QR code, fetched the same way. Script and style
+    stay `'self'` only (no inline code, no `unsafe-inline`).
     `frame-ancestors` is `'none'` except in demo mode, where /demo.html frames the two room pages.
     """
     ancestors = "'self'" if allow_same_origin_frames else "'none'"
@@ -23,6 +24,7 @@ def content_security_policy(allow_same_origin_frames: bool) -> str:
             "base-uri 'none'",
             f"frame-ancestors {ancestors}",
             "media-src 'self' blob:",
+            "img-src 'self' blob:",
         ]
     )
 

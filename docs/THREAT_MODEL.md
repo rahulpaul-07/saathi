@@ -1,8 +1,7 @@
 # Threat model
 
 Scope: the app as built today, one process on one host, used by two people in a short-lived room.
-It is a portfolio project that has not been deployed publicly (a design rule rules that out), so this
-document describes what the code defends against, how that is tested, and what it does not
+It is a portfolio project that has not been deployed publicly yet; public hosting is opt-in (see DEPLOY.md), so this document describes what the code defends against, how that is tested, and what it does not
 defend against. Test references are `file::test name`. "No test" is written where there is none.
 
 ## Assets
@@ -222,7 +221,52 @@ Mitigations and tests:
 
 Residual: with demo mode on, the clip list and clip audio are served without a token. The clips
 are synthetic speech about invented addresses, so nothing private is exposed, but the mode must
-not be switched on for a deployment that other people can reach.
+not be switched on for a deployment that other people can reach. The one exception is the guided
+demo of public mode, which is designed for that and replays only a fixed bundle (next section).
+
+### Public mode (`SAATHI_PUBLIC=1`)
+
+Public hosting changes who can reach the app and who pays for it: strangers can create rooms, and
+every turn spends the owner's Gnani credits. All guards below are off unless public mode is set.
+
+Mitigations and tests:
+- Client IP is read from `X-Forwarded-For` only when the connection comes from a listed proxy, and
+  walked from the right so entries a client prepended are skipped; a forged header from anyone else
+  does not move a client into a fresh rate-limit bucket:
+  `test_publicmode.py::test_spoofed_left_entries_are_skipped_in_favour_of_what_our_proxy_appended`,
+  `test_public_app.py::test_forged_forwarded_header_from_an_untrusted_peer_does_not_dodge_the_limit`,
+  `test_local_mode_ignores_the_forwarded_header_even_from_loopback`.
+- A daily Gnani budget counts every HTTP attempt, retries included, before it is sent; the counter
+  is a file that survives restarts, rolls over on the UTC day, and a corrupt or unwritable file
+  counts as spent: `test_publicmode.py::test_gate_counts_every_attempt_including_the_retry`,
+  `test_exhausted_budget_sends_no_request`, `test_corrupt_budget_file_fails_closed`,
+  `test_unwritable_budget_location_fails_closed`.
+- Kill switch: a file checked on every call (no restart) and an environment flag (restart):
+  `test_kill_file_takes_effect_without_a_restart`.
+- Room count, room lifetime, room creations per IP per hour and upload size are capped; an oversize
+  upload is rejected before any paid call: `test_public_app.py::test_public_room_cap_is_enforced`,
+  `test_hourly_room_creation_cap_per_ip`, `test_public_upload_cap_rejects_before_any_paid_call`.
+- The guided demo makes zero Gnani calls (the test replaces the client with one that fails on any
+  use), refuses a clip that is not in the bundle instead of sending it live, and does not match a
+  different language pair: `test_guided_demo_replays_a_stored_turn_with_zero_gnani_calls`,
+  `test_guided_demo_refuses_an_unknown_clip_instead_of_going_live`,
+  `test_guided_demo_does_not_match_the_wrong_language_pair`.
+- The room QR code needs a room token, so it cannot be used to test which room codes exist, and it
+  encodes only the rider page and code: `test_qr_needs_a_room_token_so_it_cannot_probe_codes`,
+  `test_qr_encodes_the_public_origin_and_the_rider_page_only`.
+- Translation models run Hub-hosted code, so each is pinned to a full commit:
+  `test_translate.py::test_every_route_model_is_pinned_to_a_full_commit`.
+
+Residual:
+- A bundle makes the demo-clip list and clip audio available without a token (as in demo mode).
+  The clips are synthetic speech about invented addresses, so nothing private is exposed; the
+  spoken audio in the bundle is Gnani text-to-speech output, and whether it may be redistributed is
+  not verified (see THIRD_PARTY_NOTICES.md).
+- The budget stops spend but not abuse of the free guided demo or of the CPU, and rate limits are
+  per process: run one instance. A visitor can exhaust the day's budget for everyone else; that is
+  the intended failure (the demo keeps working), not a prevented attack.
+- The pinned model commits were not audited, and the remote model code was not reviewed.
+- No external review, no load test, and the first-start model download path is untested.
 
 ### Framing (clickjacking)
 

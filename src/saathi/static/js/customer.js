@@ -2,7 +2,7 @@
 import { AudioPlayer } from "./audio-player.js";
 import { applyChrome, decodeBi, encodeBi, setChromeTable, setLanguage, tb } from "./i18n.js";
 import { parseLanguages } from "./languages.js";
-import { createRoom, getJson } from "./room-client.js";
+import { createRoom, fetchQrUrl, getJson } from "./room-client.js";
 import { enterRoom } from "./room-screen.js";
 import { clearSession, loadSession, saveSession, setNotice, takeNotice } from "./session.js";
 import { byId, fillLanguageSelect, requireChoice, setStatus } from "./ui.js";
@@ -14,6 +14,7 @@ const setupStatusEl = byId("setup-status", HTMLElement);
 const roomEl = byId("room", HTMLElement);
 const codeEl = byId("code", HTMLElement);
 const linkEl = byId("link", HTMLElement);
+const qrEl = byId("qr", HTMLImageElement);
 const closeButton = byId("close", HTMLButtonElement);
 
 /** @type {import("./languages.js").Language[]} */
@@ -33,7 +34,19 @@ function showRoom(info, players) {
   roomEl.hidden = false;
   codeEl.textContent = info.code;
   linkEl.textContent = `${location.origin}/rider.html?code=${info.code}`;
+  void showQr(info);
   screen = enterRoom(info, languages, players, onEnded);
+}
+
+/**
+ * The QR code is a convenience: the code and link above it stay, so a failed load shows nothing.
+ * @param {import("./room-client.js").RoomInfo} info
+ */
+async function showQr(info) {
+  const url = await fetchQrUrl(info);
+  if (url === null) return;
+  qrEl.src = url;
+  qrEl.hidden = false;
 }
 
 /** @param {"closed" | "gone"} end */

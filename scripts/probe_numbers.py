@@ -108,8 +108,10 @@ def main() -> int:
     calls = 2 * len(sentences)
     for sentence in sentences:
         print(f"  {sentence.id:14} TTS x1, STT x1  {sentence.text}")
-    print(f"Calls: {calls} (max {max_calls}); ledger {ledger.total}/{ledger.cap} -> "
-          f"{ledger.total + calls}")
+    print(
+        f"Calls: {calls} (max {max_calls}); ledger {ledger.total}/{ledger.cap} -> "
+        f"{ledger.total + calls}"
+    )
     if calls > max_calls or ledger.total + calls > ledger.cap:
         print("REFUSED: over the call limit or the cap.")
         return 2
@@ -133,8 +135,11 @@ def main() -> int:
         print(f"refused: {exc}", file=sys.stderr)
         return 2
     except GnaniError as exc:
-        print(f"stopped by Gnani error {exc.status} (after the one retry); saved progress is kept "
-              f"in {out}; ledger now {ledger.total}/{ledger.cap}", file=sys.stderr)
+        print(
+            f"stopped by Gnani error {exc.status} (after the one retry); saved progress is kept "
+            f"in {out}; ledger now {ledger.total}/{ledger.cap}",
+            file=sys.stderr,
+        )
         return 1
     for sentence in sentences:
         print(f"\n{sentence.id}\n  sent:  {sentence.text}\n  heard: {transcripts[sentence.id]}")

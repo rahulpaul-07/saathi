@@ -102,8 +102,13 @@ def main() -> int:
             for fact in localize_landmarks(facts, utterance.lang, tgt, translator):
                 if fact.kind == "landmark":
                     landmarks.append(
-                        {"id": utterance.id, "src": utterance.lang, "tgt": tgt,
-                         "value": fact.value, "local": fact.local}
+                        {
+                            "id": utterance.id,
+                            "src": utterance.lang,
+                            "tgt": tgt,
+                            "value": fact.value,
+                            "local": fact.local,
+                        }
                     )
 
     summary_rows = {}

@@ -45,8 +45,10 @@ def run(dry_run: bool) -> int:
     calls = planned_calls(gold)
     for item in gold:
         print(f"  {item.id:8} TTS x1, STT x1  {item.text}")
-    print(f"Calls: {calls} (max {MAX_CALLS}); ledger {ledger.total}/{ledger.cap} -> "
-          f"{ledger.total + calls}")
+    print(
+        f"Calls: {calls} (max {MAX_CALLS}); ledger {ledger.total}/{ledger.cap} -> "
+        f"{ledger.total + calls}"
+    )
     if calls > MAX_CALLS or ledger.total + calls > ledger.cap:
         print("REFUSED: over the call limit or the cap.")
         return 2
@@ -69,8 +71,11 @@ def run(dry_run: bool) -> int:
         print(f"refused: {exc}", file=sys.stderr)
         return 2
     except GnaniError as exc:
-        print(f"stopped by Gnani error {exc.status}; progress kept in {TRANSCRIPTS}; "
-              f"ledger now {ledger.total}/{ledger.cap}", file=sys.stderr)
+        print(
+            f"stopped by Gnani error {exc.status}; progress kept in {TRANSCRIPTS}; "
+            f"ledger now {ledger.total}/{ledger.cap}",
+            file=sys.stderr,
+        )
         return 1
     print(f"done; ledger now {ledger.total}/{ledger.cap}")
     return 0
@@ -107,8 +112,10 @@ def report() -> int:
         tp, fp, fn = row["tp"], row["fp"], row["fn"]
         recall = tp / (tp + fn) if tp + fn else float("nan")
         precision = tp / (tp + fp) if tp + fp else float("nan")
-        print(f"{lang:5} {row['sentences']:>3} {row['all_correct']:>9} {recall:>7.2f} "
-              f"{precision:>9.2f}")
+        print(
+            f"{lang:5} {row['sentences']:>3} {row['all_correct']:>9} {recall:>7.2f} "
+            f"{precision:>9.2f}"
+        )
     print(f"wrote {RESULTS}")
     return 0
 

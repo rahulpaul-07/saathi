@@ -29,6 +29,15 @@ class GnaniError(Exception):
         self.status = status
 
 
+class LiveSpeechUnavailable(GnaniError):
+    """Live Gnani calls are switched off (kill switch or exhausted daily budget) and no request
+    was sent. `reason` is a short machine-readable word for logs and the response code."""
+
+    def __init__(self, reason: str) -> None:
+        super().__init__(f"live speech unavailable: {reason}")
+        self.reason = reason
+
+
 class GnaniClient:
     def __init__(
         self,
@@ -37,9 +46,13 @@ class GnaniClient:
         *,
         sleep: Callable[[float], Awaitable[None]] = asyncio.sleep,
         retry_wait_s: float = RETRY_WAIT_S,
+        before_attempt: Callable[[], None] | None = None,
     ) -> None:
         self._sleep = sleep
         self._retry_wait_s = retry_wait_s
+        # Called before every HTTP attempt, retries included; it raises LiveSpeechUnavailable to
+        # stop the call. None (the default) keeps the client exactly as it was.
+        self._before_attempt = before_attempt
         self._client = client or httpx.AsyncClient(
             base_url=settings.gnani_base_url,
             timeout=settings.gnani_timeout_s,
@@ -100,6 +113,8 @@ class GnaniClient:
         A 429 is not retried: that is Gnani's rate limit and the caller backs off. Only the status
         is logged; the response body may echo what was said."""
         for attempt in range(2):
+            if self._before_attempt is not None:
+                self._before_attempt()
             try:
                 response = await self._client.post(path, **kwargs)  # type: ignore[arg-type]
             except httpx.TimeoutException as exc:

@@ -157,9 +157,7 @@ def _kept_manifest_entries(out_dir: Path, regenerated: set[str]) -> list[dict[st
 
 def mix_clip(tts_wav: bytes, noise: noisemix.Samples, seed: int, clip_id: str) -> bytes:
     speech = noisemix.read_wav(resample_to_16k(tts_wav))
-    return noisemix.mix_at_snr(
-        speech, noise, DEMO_SNR_DB, noisemix.derive_seed(seed, clip_id)
-    ).wav
+    return noisemix.mix_at_snr(speech, noise, DEMO_SNR_DB, noisemix.derive_seed(seed, clip_id)).wav
 
 
 async def build_clips(

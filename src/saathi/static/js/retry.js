@@ -7,7 +7,7 @@ export const MAX_AUTO_RETRIES = 3;
 const BASE_DELAY_MS = 1000;
 
 /**
- * @typedef {"ok" | "transient" | "rate_limited" | "upstream" | "no_speech" | "unreliable_translation" | "bad_input"} Outcome
+ * @typedef {"ok" | "transient" | "rate_limited" | "upstream" | "no_speech" | "unreliable_translation" | "bad_input" | "live_paused"} Outcome
  * @typedef {{outcome: Exclude<Outcome, "ok">, message: import("./i18n.js").Bi,
  *   keepRecording: boolean}} Verdict
  */
@@ -47,6 +47,14 @@ const SPECS = {
     english: "That recording can't be used. Please record again.",
     keepRecording: false,
   },
+  // Public hosting only: the daily call budget is spent or the kill switch is on. Retrying cannot
+  // help, so there is no automatic retry; the demo clips (no live calls) still work. It reuses the
+  // upstream text so no new untranslated string enters the interface table.
+  live_paused: {
+    key: "speech_unavailable",
+    english: "The speech service is unavailable. Try again.",
+    keepRecording: false,
+  },
 };
 
 /**
@@ -66,6 +74,7 @@ function verdict(outcome) {
  */
 export function classify(status, code = null) {
   if (status !== null && status >= 200 && status < 300) return { outcome: "ok" };
+  if (status === 503 && code === "live_paused") return verdict("live_paused");
   if (status === null || status === 503) return verdict("transient");
   if (status === 429) return verdict("rate_limited");
   if (status === 422) {

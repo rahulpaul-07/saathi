@@ -60,8 +60,13 @@ def main() -> None:
     if mode == "unmasked":
 
         def plain(
-            translator: Translator, transcript: str, src: str, tgt: str,
-            facts: tuple[Fact, ...], use_mask: bool, masking_mode: MaskingMode = "current",
+            translator: Translator,
+            transcript: str,
+            src: str,
+            tgt: str,
+            facts: tuple[Fact, ...],
+            use_mask: bool,
+            masking_mode: MaskingMode = "current",
         ) -> MaskedTranslation:
             text = translator.translate(transcript, src, tgt)
             return MaskedTranslation(text, verified=True, raw=text)

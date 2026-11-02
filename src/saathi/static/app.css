@@ -236,6 +236,10 @@ button.secondary { min-height: 2.75rem; padding: 0 1rem; border-radius: 0.6rem; 
 .demo-on .talk-btn { margin-top: 0.25rem; }
 
 /* The code box is the first thing the customer needs; once the rider is in it shrinks to one line. */
+/* A white quiet zone keeps the code scannable in the dark theme. */
+.qr { display: block; margin: 0.5rem auto; background: #fff; padding: 0.5rem; border-radius: 0.5rem; max-width: 100%; height: auto; }
+.qr[hidden] { display: none; }
+.code-box.compact .qr { display: none; }
 .code-box.compact { display: flex; align-items: baseline; gap: 0.75rem; padding: 0.25rem 0.75rem; }
 .code-box.compact .small, .code-box.compact #link { display: none; }
 .code-box.compact .code { font-size: 1.1rem; letter-spacing: 0.2em; }

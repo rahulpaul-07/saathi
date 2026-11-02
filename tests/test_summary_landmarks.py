@@ -41,8 +41,10 @@ def test_summary_skips_a_landmark_without_a_local_name() -> None:
 
 
 def test_summary_includes_a_localized_landmark() -> None:
-    facts = [dataclasses.replace(f, local="ದೇವಸ್ಥಾನ") if f.kind == "landmark" else f
-             for f in extract_facts(TEXT, "en")]
+    facts = [
+        dataclasses.replace(f, local="ದೇವಸ್ಥಾನ") if f.kind == "landmark" else f
+        for f in extract_facts(TEXT, "en")
+    ]
     assert fact_summary(facts, "kn").endswith("ದೇವಸ್ಥಾನ")
 
 

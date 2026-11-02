@@ -70,8 +70,9 @@ def value_forms(text: str, src: str) -> list[str]:
             continue
         span = text[fact.value_start : fact.value_end]
         digits = [c for c in span if c.isdecimal()]
-        forms.append("word" if not digits else "ascii" if all(c.isascii() for c in digits)
-                     else "native")
+        forms.append(
+            "word" if not digits else "ascii" if all(c.isascii() for c in digits) else "native"
+        )
     return forms
 
 
@@ -163,8 +164,9 @@ def collect(max_hours: float) -> int:
                 records.append(collect_record(translator, item, text, src, tgt))
         state["pairs"][f"{src}>{tgt}"] = records
         save(state)
-        print(f"{src}>{tgt} {len(records)} sentences {time.perf_counter() - started:.0f}s",
-              flush=True)
+        print(
+            f"{src}>{tgt} {len(records)} sentences {time.perf_counter() - started:.0f}s", flush=True
+        )
     return 0
 
 
@@ -243,28 +245,39 @@ def report(state: dict[str, Any]) -> dict[str, Any]:
         total = sum(c.values())
         share = {k: (c[k] / total if total else 0.0) for k in ("ascii", "native", "word")}
         result["forms_by_source"][src] = {"numbers": total, **share}
-        print(f"| {src} | {total} | {share['ascii']:.2f} | {share['native']:.2f} | "
-              f"{share['word']:.2f} | {loan_by_src[src] / sent_by_src[src]:.1f} |")
+        print(
+            f"| {src} | {total} | {share['ascii']:.2f} | {share['native']:.2f} | "
+            f"{share['word']:.2f} | {loan_by_src[src] / sent_by_src[src]:.1f} |"
+        )
 
-    print("\n2. Fact recall by how the source writes its numbers (all targets; en target has no "
-          "back-translation step)")
+    print(
+        "\n2. Fact recall by how the source writes its numbers (all targets; en target has no "
+        "back-translation step)"
+    )
     print("| class | sentence-pairs | back plain | back masked | direct plain | direct masked |")
     print("|---|---|---|---|---|---|")
     result["by_class"] = {}
     for label in ("digits", "words", "mixed", "none"):
         for scope, subset in (
             (label, [r for r in rows if sentence_class(r[2]) == label]),
-            (f"{label}, target en", [r for r in rows
-                                      if sentence_class(r[2]) == label and r[1] == "en"]),
+            (
+                f"{label}, target en",
+                [r for r in rows if sentence_class(r[2]) == label and r[1] == "en"],
+            ),
         ):
             if not subset:
                 continue
-            cells = {f"{how}_{arm}": recall(subset, arm, how)
-                     for how in ("back", "direct") for arm in ARMS}
+            cells = {
+                f"{how}_{arm}": recall(subset, arm, how)
+                for how in ("back", "direct")
+                for arm in ARMS
+            }
             result["by_class"][scope] = {k: list(v) for k, v in cells.items()}
-            print(f"| {scope} | {len(subset)} | {pct(cells['back_plain'])} | "
-                  f"{pct(cells['back_masked'])} | {pct(cells['direct_plain'])} | "
-                  f"{pct(cells['direct_masked'])} |")
+            print(
+                f"| {scope} | {len(subset)} | {pct(cells['back_plain'])} | "
+                f"{pct(cells['back_masked'])} | {pct(cells['direct_plain'])} | "
+                f"{pct(cells['direct_masked'])} |"
+            )
 
     print("\n   All pairs, then by target kind:")
     for label, subset in (
@@ -272,12 +285,15 @@ def report(state: dict[str, Any]) -> dict[str, Any]:
         ("target en", [r for r in rows if r[1] == "en"]),
         ("target not en", [r for r in rows if r[1] != "en"]),
     ):
-        cells = {f"{how}_{arm}": recall(subset, arm, how)
-                 for how in ("back", "direct") for arm in ARMS}
+        cells = {
+            f"{how}_{arm}": recall(subset, arm, how) for how in ("back", "direct") for arm in ARMS
+        }
         result.setdefault("overall", {})[label] = {k: list(v) for k, v in cells.items()}
-        print(f"   {label}: back plain {pct(cells['back_plain'])}, "
-              f"masked {pct(cells['back_masked'])}; direct plain {pct(cells['direct_plain'])}, "
-              f"masked {pct(cells['direct_masked'])}")
+        print(
+            f"   {label}: back plain {pct(cells['back_plain'])}, "
+            f"masked {pct(cells['back_masked'])}; direct plain {pct(cells['direct_plain'])}, "
+            f"masked {pct(cells['direct_masked'])}"
+        )
 
     print("\n3. Fallback rate per source, and where the masked loss comes from")
     by_src: dict[str, list[bool]] = defaultdict(list)
@@ -307,8 +323,10 @@ def report(state: dict[str, Any]) -> dict[str, Any]:
     total_lost = sum(lost.values())
     result["loss_by_cause"] = dict(lost)
     result["facts_masked_found_that_plain_missed"] = gained
-    print(f"   facts masked lost beyond plain: {total_lost}; facts masked found that plain "
-          f"missed: {gained}; net {gained - total_lost}")
+    print(
+        f"   facts masked lost beyond plain: {total_lost}; facts masked found that plain "
+        f"missed: {gained}; net {gained - total_lost}"
+    )
     for name, count in lost.most_common():
         print(f"   {count:>4}  {name}")
     print(f"RESULT {RESULT.name}")
@@ -325,12 +343,15 @@ def pick(
     With `wrong_only` keep only sentences where the masked text itself is fine (the target-language
     extractor finds more of the facts than the back-translation does).
     """
+
     def artefact(rec: dict[str, Any]) -> bool:
         return len(rec["masked"]["direct_missed"]) < len(rec["masked"]["back_missed"])
 
     pool = [
-        r for r in rows
-        if not r[2]["plain"]["back_missed"] and r[2]["masked"]["back_missed"]
+        r
+        for r in rows
+        if not r[2]["plain"]["back_missed"]
+        and r[2]["masked"]["back_missed"]
         and (not wrong_only or artefact(r[2]))
     ]
     chosen: list[tuple[str, str, dict[str, Any]]] = []
@@ -346,11 +367,15 @@ def pick(
 
 def examples(state: dict[str, Any], out: Path) -> None:
     rows = records(state)
-    lines = ["# Masking reversal: examples (synthetic addresses)", "",
-             "## 10 sentences where plain was right and masked was wrong (back-translated score)"]
+    lines = [
+        "# Masking reversal: examples (synthetic addresses)",
+        "",
+        "## 10 sentences where plain was right and masked was wrong (back-translated score)",
+    ]
     for number, (src, tgt, rec) in enumerate(pick(rows, 10, wrong_only=False), 1):
         lines += [
-            "", f"### {number}. {src} to {tgt}, {rec['id']}, {cause(rec)}",
+            "",
+            f"### {number}. {src} to {tgt}, {rec['id']}, {cause(rec)}",
             f"- source: {rec['source']}",
             f"- plain: {rec['plain']['output']}",
             f"- masked: {rec['masked']['output']}",
@@ -362,7 +387,8 @@ def examples(state: dict[str, Any], out: Path) -> None:
     lines += ["", "## 5 scoring checks: masked text is fine, the back-translation lost the fact"]
     for number, (src, tgt, rec) in enumerate(pick(rows, 5, wrong_only=True), 1):
         lines += [
-            "", f"### {number}. {src} to {tgt}, {rec['id']}",
+            "",
+            f"### {number}. {src} to {tgt}, {rec['id']}",
             f"- masked text: {rec['masked']['output']}",
             f"- extractor in {tgt} finds all gold facts here: {not rec['masked']['direct_missed']}",
             f"- masked back: {rec['masked']['back']}",

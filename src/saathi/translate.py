@@ -20,6 +20,14 @@ ROUTE_MODELS: dict[str, str] = {
     "en-indic": "ai4bharat/indictrans2-en-indic-dist-200M",
     "indic-en": "ai4bharat/indictrans2-indic-en-dist-200M",
 }
+# Commit of each repository, pinned because the models run Hub-hosted code (trust_remote_code):
+# a later push to the repository must not change what a deployment executes. These are the
+# commits the author's Hugging Face cache held when the evaluation numbers were produced.
+MODEL_REVISIONS: dict[str, str] = {
+    "ai4bharat/indictrans2-indic-indic-dist-320M": "ffb7582b6d43791f1fb26b2153fc065f2e9ea575",
+    "ai4bharat/indictrans2-en-indic-dist-200M": "2cfd0a20057756d756bf3e53528f492afc52f91a",
+    "ai4bharat/indictrans2-indic-en-dist-200M": "d66a2122ad6d28184f3dc3797b652bd80ae3f65f",
+}
 MAX_INPUT_CHARS = 2000  # a 60 s STT clip is well under this
 MAX_BEAMS = 10
 # Normal output is 0.9-1.2x the input in tokens (measured); a runaway loop is ~8x. 2x plus slack
@@ -124,10 +132,13 @@ class IndicTrans2Translator:
 
         device = "cuda" if torch.cuda.is_available() else "cpu"
         dtype = torch.float16 if device == "cuda" else torch.float32
-        tokenizer = AutoTokenizer.from_pretrained(self._model_name, trust_remote_code=True)
+        revision = MODEL_REVISIONS.get(self._model_name)
+        tokenizer = AutoTokenizer.from_pretrained(
+            self._model_name, trust_remote_code=True, revision=revision
+        )
         # transformers 4.46 spells this `torch_dtype`; the newer `dtype` alias does not exist yet.
         model = AutoModelForSeq2SeqLM.from_pretrained(
-            self._model_name, trust_remote_code=True, torch_dtype=dtype
+            self._model_name, trust_remote_code=True, torch_dtype=dtype, revision=revision
         )
         model = model.to(device).eval()
         return _Loaded(model, tokenizer, IndicProcessor(inference=True), device)

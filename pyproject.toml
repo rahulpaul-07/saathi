@@ -21,6 +21,7 @@ dependencies = [
     "sacrebleu==2.6.0",
     # WAV loudness normalization and the noise mixer; was only a transitive dependency before.
     "numpy==2.5.3",
+    "segno==1.6.6",
 ]
 
 [tool.uv.sources]

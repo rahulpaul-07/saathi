@@ -1,0 +1,23 @@
+{
+  "note": "Translation only (no speech service), local IndicTrans2 in the CPU image, docker run --cpus 2 on the author's Windows laptop (Docker Desktop). 4 sentences x 5 repeats after one warm-up pass. Not a cloud host: a hosting provider's vCPUs may be slower or faster. Produced by scripts/cpu_latency.py. Two runs are kept because they differ (the hi->kn route moved from 3.9 s to 5.6 s median); the second ran with the model revisions pinned.",
+  "device": "cpu",
+  "machine": "x86_64",
+  "runs": [
+    {
+      "load_all_models_s": 37.0,
+      "n": 20,
+      "p50_ms": 2898,
+      "p95_ms": 5498,
+      "max_ms": 5498,
+      "per_route_median_ms": {"kn->hi": 2501, "hi->kn": 3901, "en->hi": 3007, "hi->en": 2395}
+    },
+    {
+      "load_all_models_s": 34.0,
+      "n": 20,
+      "p50_ms": 2952,
+      "p95_ms": 5800,
+      "max_ms": 5800,
+      "per_route_median_ms": {"kn->hi": 2702, "hi->kn": 5610, "en->hi": 2793, "hi->en": 2995}
+    }
+  ]
+}

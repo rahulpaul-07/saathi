@@ -37,8 +37,21 @@ def main() -> None:
         source = Path(tmp) / "street.mp3"
         source.write_bytes(response.content)
         subprocess.run(
-            ["ffmpeg", "-y", "-loglevel", "error", "-i", str(source),
-             "-ac", "1", "-ar", "16000", "-sample_fmt", "s16", str(OUTPUT)],
+            [
+                "ffmpeg",
+                "-y",
+                "-loglevel",
+                "error",
+                "-i",
+                str(source),
+                "-ac",
+                "1",
+                "-ar",
+                "16000",
+                "-sample_fmt",
+                "s16",
+                str(OUTPUT),
+            ],
             check=True,
         )
     print(f"wrote {OUTPUT} from {SOURCE_PAGE}")

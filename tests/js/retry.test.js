@@ -14,6 +14,8 @@ test("classify maps each status to the documented behaviour", () => {
   assert.equal(classify(422, "unreliable_translation").outcome, "unreliable_translation");
   assert.equal(classify(422, "something_new").outcome, "no_speech");
   assert.equal(classify(503, "unreliable_translation").outcome, "transient");
+  assert.equal(classify(503, "live_paused").outcome, "live_paused");
+  assert.equal(classify(502, "live_paused").outcome, "upstream");
   assert.equal(classify(400).outcome, "bad_input");
   assert.equal(classify(413).outcome, "bad_input");
   assert.equal(classify(502).outcome, "upstream");
