@@ -1,15 +1,19 @@
+from collections.abc import Callable
 from pathlib import Path
 
 import httpx
 import pytest
+from pydantic import SecretStr
 
 from saathi.config import Settings
 from saathi.evaluation.calls import (
     BudgetExceededError,
     CallLedger,
     MeteredGnani,
+    SingleAttemptGnani,
     SlidingWindowLimiter,
 )
+from saathi.gnani import GnaniError
 
 
 class FakeClock:
@@ -92,4 +96,78 @@ async def test_metered_client_counts_each_call_and_blocks_at_the_cap(tmp_path: P
     with pytest.raises(BudgetExceededError):
         await client.transcribe(b"wav", "a.wav", "bn-IN")
     assert len(sent) == 1  # the second call never left the machine
+    await client.aclose()
+
+
+def _single_attempt(
+    tmp_path: Path, handler: Callable[[httpx.Request], httpx.Response], clock: FakeClock, cap: int
+) -> tuple[SingleAttemptGnani, CallLedger]:
+    http = httpx.AsyncClient(transport=httpx.MockTransport(handler), base_url="https://x.test")
+    ledger = CallLedger(tmp_path / "ledger.json", cap=cap)
+    client = SingleAttemptGnani(
+        Settings(gnani_api_key=SecretStr("test-key")),
+        ledger,
+        "demo-set",
+        client=http,
+        clock=clock,
+        sleep=clock.sleep,
+    )
+    return client, ledger
+
+
+async def test_single_attempt_client_never_retries_a_server_error(tmp_path: Path) -> None:
+    sent: list[int] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        sent.append(1)
+        return httpx.Response(504)
+
+    client, ledger = _single_attempt(tmp_path, handler, FakeClock(), cap=10)
+    with pytest.raises(GnaniError) as raised:
+        await client.transcribe(b"wav", "a.wav", "bn-IN")
+    assert raised.value.status == 504
+    assert len(sent) == 1 and ledger.spent("demo-set") == 1  # one attempt, one counted call
+    await client.aclose()
+
+
+async def test_single_attempt_client_never_retries_a_timeout(tmp_path: Path) -> None:
+    sent: list[int] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        sent.append(1)
+        raise httpx.ReadTimeout("slow", request=request)
+
+    client, ledger = _single_attempt(tmp_path, handler, FakeClock(), cap=10)
+    with pytest.raises(GnaniError):
+        await client.transcribe(b"wav", "a.wav", "bn-IN")
+    assert len(sent) == 1 and ledger.spent("demo-set") == 1
+    await client.aclose()
+
+
+async def test_single_attempt_client_keeps_three_seconds_between_calls(tmp_path: Path) -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json={"success": True, "transcript": "hello"})
+
+    clock = FakeClock()
+    client, _ = _single_attempt(tmp_path, handler, clock, cap=10)
+    await client.transcribe(b"wav", "a.wav", "bn-IN")
+    assert clock.slept == []  # the first call has nothing to wait for
+    await client.transcribe(b"wav", "a.wav", "bn-IN")
+    await client.transcribe(b"wav", "a.wav", "bn-IN")
+    assert clock.slept == [3.0, 3.0]
+    await client.aclose()
+
+
+async def test_single_attempt_client_stops_at_the_cap_before_sending(tmp_path: Path) -> None:
+    sent: list[int] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        sent.append(1)
+        return httpx.Response(200, json={"success": True, "transcript": "hello"})
+
+    client, _ = _single_attempt(tmp_path, handler, FakeClock(), cap=1)
+    await client.transcribe(b"wav", "a.wav", "bn-IN")
+    with pytest.raises(BudgetExceededError):
+        await client.transcribe(b"wav", "a.wav", "bn-IN")
+    assert len(sent) == 1
     await client.aclose()

@@ -19,6 +19,7 @@ from pydantic import SecretStr
 
 from saathi.app import create_app
 from saathi.config import Settings
+from saathi.demobundle import BUNDLE_NAME, BUNDLE_VERSION, clip_digest
 from saathi.gnani import GnaniClient
 from saathi.languages import LANGUAGES
 
@@ -28,6 +29,7 @@ from wavs import require_speech_audio  # noqa: E402
 PORT = 8765
 DEMO_PORT = 8766  # `--demo`: demo input mode on, clips from a temp folder
 JOURNEY_PORT = 8767  # `--journey`: script-aware fake translator, every language alternates the gate
+REPLAY_PORT = 8768  # `--replay`: public mode, guided demo replayed from a stored bundle
 TRANSCRIPT = "gate number 2 third floor near the blue temple"  # synthetic address
 
 
@@ -94,15 +96,45 @@ class ScriptFakeTranslator:
         return f"{word} {text}" if "#" in text else word
 
 
-def demo_clips_dir() -> Path:
-    """A throwaway clip folder: one synthetic 2 s tone clip per supported language."""
-    directory = Path(tempfile.mkdtemp(prefix="saathi-e2e-demo-"))
+def tone_clip() -> bytes:
     buf = io.BytesIO()
     with wave.open(buf, "wb") as wav:
         wav.setnchannels(1)
         wav.setsampwidth(2)
         wav.setframerate(16000)
         wav.writeframes(struct.pack("<h", 3000) * 32000)
+    return buf.getvalue()
+
+
+class NoGnani:
+    """The replay server must never reach Gnani: any use fails the request loudly."""
+
+    def __getattr__(self, name: str) -> object:
+        raise AssertionError(f"Gnani was touched: {name}")
+
+
+def replay_bundle_dir(clip: bytes) -> Path:
+    """A bundle holding one stored turn, kn speaker -> hi listener, for the tone clip."""
+    directory = Path(tempfile.mkdtemp(prefix="saathi-e2e-bundle-"))
+    (directory / "turn.wav").write_bytes(silent_wav())
+    turn = {
+        "clip_sha256": clip_digest(clip),
+        "src": "kn",
+        "tgt": "hi",
+        "transcript": TRANSCRIPT,
+        "translation": "stored translation",
+        "verified": True,
+        "audio": "turn.wav",
+    }
+    body = {"version": BUNDLE_VERSION, "turns": [turn]}
+    (directory / BUNDLE_NAME).write_text(json.dumps(body), encoding="utf-8")
+    return directory
+
+
+def demo_clips_dir() -> Path:
+    """A throwaway clip folder: one synthetic 2 s tone clip per supported language."""
+    directory = Path(tempfile.mkdtemp(prefix="saathi-e2e-demo-"))
+    tone = tone_clip()
     clips = [
         {
             "id": f"clip-{code}",
@@ -113,7 +145,7 @@ def demo_clips_dir() -> Path:
         for code in LANGUAGES
     ]
     for clip in clips:
-        (directory / f"{clip['id']}.wav").write_bytes(buf.getvalue())
+        (directory / f"{clip['id']}.wav").write_bytes(tone)
     (directory / "manifest.json").write_text(json.dumps({"clips": clips}), encoding="utf-8")
     return directory
 
@@ -121,6 +153,7 @@ def demo_clips_dir() -> Path:
 if __name__ == "__main__":
     demo = "--demo" in sys.argv
     journey = "--journey" in sys.argv
+    replay = "--replay" in sys.argv
     # Every spec shares one client IP and one server, so the production per-minute limits would make
     # a test fail depending on how fast the suite ran. The limits themselves are covered by pytest.
     open_limit = 10_000
@@ -139,10 +172,24 @@ if __name__ == "__main__":
             demo_input=True,
             demo_clips_dir=demo_clips_dir(),
         )
+    gnani: object = FakeGnani(alternate_all=journey)
+    if replay:
+        # Public mode with a stored bundle: the guided demo replays, so Gnani must stay untouched.
+        gnani = NoGnani()
+        settings = Settings(
+            gnani_api_key=SecretStr("dummy"),
+            public_mode=True,
+            budget_file=Path(tempfile.mkdtemp(prefix="saathi-e2e-budget-")) / "budget.json",
+            demo_bundle_dir=replay_bundle_dir(tone_clip()),
+            demo_clips_dir=demo_clips_dir(),
+            room_rate_limit_per_minute=open_limit,
+            turn_rate_limit_per_minute=open_limit,
+            reply_rate_limit_per_minute=open_limit,
+        )
     app = create_app(
         settings,
-        gnani=cast(GnaniClient, FakeGnani(alternate_all=journey)),
+        gnani=cast(GnaniClient, gnani),
         translator=ScriptFakeTranslator() if journey else FakeTranslator(),
     )
-    port = JOURNEY_PORT if journey else DEMO_PORT if demo else PORT
+    port = REPLAY_PORT if replay else JOURNEY_PORT if journey else DEMO_PORT if demo else PORT
     uvicorn.run(app, host="127.0.0.1", port=port, log_level="warning")

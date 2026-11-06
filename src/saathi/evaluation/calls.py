@@ -13,7 +13,7 @@ from pathlib import Path
 import httpx
 
 from saathi.config import Settings
-from saathi.gnani import GnaniClient
+from saathi.gnani import GnaniClient, GnaniError
 
 GNANI_CALL_CAP = 1500  # across every eval command, persisted in the ledger (see docs/DESIGN.md 11)
 
@@ -93,6 +93,53 @@ class CallLedger:
         temporary = self._path.with_suffix(".tmp")
         temporary.write_text(json.dumps(self._spent, indent=2))
         os.replace(temporary, self._path)
+
+
+MIN_GAP_S = 3.0
+
+
+class SingleAttemptGnani(GnaniClient):
+    """Metered like `MeteredGnani`, but one HTTP attempt per call and a minimum gap between calls.
+
+    The stock client retries once after a timeout or a 5xx, which would spend a second paid call
+    the caller never asked for. Here a failure is raised as it happened and the caller decides.
+    """
+
+    def __init__(
+        self,
+        settings: Settings,
+        ledger: CallLedger,
+        label: str,
+        *,
+        min_gap_s: float = MIN_GAP_S,
+        client: httpx.AsyncClient | None = None,
+        clock: Callable[[], float] = time.monotonic,
+        sleep: Callable[[float], Awaitable[None]] = asyncio.sleep,
+    ) -> None:
+        super().__init__(settings, client)
+        self._ledger = ledger
+        self._label = label
+        self._min_gap_s = min_gap_s
+        self._clock = clock
+        self._pause = sleep
+        self._last_call: float | None = None
+
+    async def _post(self, path: str, **kwargs: object) -> httpx.Response:
+        if self._last_call is not None:
+            wait = self._last_call + self._min_gap_s - self._clock()
+            if wait > 0:
+                await self._pause(wait)
+        self._ledger.spend(self._label)  # counted before it is sent, so a crash never undercounts
+        self._last_call = self._clock()
+        try:
+            response = await self._client.post(path, **kwargs)  # type: ignore[arg-type]
+        except httpx.TimeoutException as exc:
+            raise GnaniError("speech service timed out") from exc
+        except httpx.HTTPError as exc:
+            raise GnaniError("speech service unreachable") from exc
+        if response.status_code != 200:
+            raise GnaniError(f"speech service error {response.status_code}", response.status_code)
+        return response
 
 
 class MeteredGnani(GnaniClient):

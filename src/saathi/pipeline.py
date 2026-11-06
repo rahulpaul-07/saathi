@@ -100,6 +100,36 @@ async def run_turn(
     if not transcript:
         raise NoSpeechError
 
+    facts, translation, verified = await translate_transcript(
+        transcript, src, tgt, translator, masking_mode
+    )
+    t2 = time.perf_counter()
+
+    speech = await gnani.synthesize(translation, tgt_lang.gnani_code, tgt_lang.tts_voice)
+    t3 = time.perf_counter()
+
+    return TurnResult(
+        transcript,
+        translation,
+        speech,
+        Timings(_ms(t0, t1), _ms(t1, t2), _ms(t2, t3), _ms(t0, t3)),
+        facts=facts,
+        verified=verified,
+    )
+
+
+async def translate_transcript(
+    transcript: str,
+    src: str,
+    tgt: str,
+    translator: Translator,
+    masking_mode: MaskingMode = "current",
+) -> tuple[tuple[Fact, ...], str, bool]:
+    """Facts, the text to speak and whether it was verified, for a transcript already in hand.
+
+    The part of a turn that needs no Gnani call; the guided demo reuses it for a listener language
+    that has no stored audio.
+    """
     # Facts come from the source text, so they survive whatever the translation does. The model is
     # blocking and GPU-bound; keep it off the event loop.
     facts = tuple(extract_facts(transcript, src))
@@ -118,19 +148,7 @@ async def run_turn(
                 _translate_checked, translator, transcript, src, tgt, facts, False
             )
             translation = plain.text
-    t2 = time.perf_counter()
-
-    speech = await gnani.synthesize(translation, tgt_lang.gnani_code, tgt_lang.tts_voice)
-    t3 = time.perf_counter()
-
-    return TurnResult(
-        transcript,
-        translation,
-        speech,
-        Timings(_ms(t0, t1), _ms(t1, t2), _ms(t2, t3), _ms(t0, t3)),
-        facts=facts,
-        verified=verified,
-    )
+    return facts, translation, verified
 
 
 async def _in_thread[**P, R](fn: Callable[P, R], *args: P.args, **kwargs: P.kwargs) -> R:

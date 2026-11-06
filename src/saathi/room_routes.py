@@ -8,6 +8,7 @@ translations are never logged; log lines carry language codes, timings and count
 import asyncio
 import json
 import logging
+import secrets
 from collections.abc import AsyncIterator, Callable
 from typing import Annotated, Any
 
@@ -392,7 +393,12 @@ def room_router(
         if not manager.is_live(room):  # closed or expired while the paid calls ran
             raise HTTPException(404, "room not found")
         manager.touch(room)
-        turn_id = manager.store_audio(room, result.audio)
+        # A guided-demo turn in a listener language that was never recorded has no audio: it still
+        # gets an id (the screens key turns on it) but nothing is stored or offered for playback.
+        has_audio = bool(result.audio)
+        turn_id = (
+            manager.store_audio(room, result.audio) if has_audio else secrets.token_urlsafe(16)
+        )
         # Each side reads the labels in its own language; the facts themselves are the same.
         facts = [_fact_out(fact, src) for fact in result.facts]
         heard_facts = [_fact_out(fact, tgt) for fact in result.facts]
@@ -410,7 +416,9 @@ def room_router(
                     "verified": result.verified,
                     # Lets the listener's screen say this was a prepared clip, not live speech.
                     "demo_clip": demo_input and x_demo_clip == "1",
-                    "audio_path": f"/rooms/{room.code}/turns/{turn_id}/audio",
+                    "audio_path": (
+                        f"/rooms/{room.code}/turns/{turn_id}/audio" if has_audio else None
+                    ),
                 },
             ),
         )
