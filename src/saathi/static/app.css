@@ -1,164 +1,214 @@
-/* Tokens. Light is the default (easier to read outdoors); theme.js sets data-theme from the person's
-   choice or the system setting. Every colour a page uses is defined here, and a11y.spec.js checks
-   each text pair in both themes. */
+/* Design tokens: the one source of truth. Light is the default (easier to read outdoors); theme.js sets
+   data-theme from the person's choice or the system setting. Every colour a page uses is defined here.
+   The neutrals are slate, and there is ONE brand accent (--accent). The seven fact kinds, "ok" and
+   "ask" come from a single recipe: a tinted tile and a border/icon colour at fixed lightness and
+   chroma steps in OKLCH (light: tile L 96.5%, mark L 46%; dark: tile L 27%, mark L 80%), so they read
+   as one family and each keeps a contrast of about 6:1 (light) or 8:1 (dark) on its own tile.
+   tests/js/contrast.test.js checks every pair in both themes; a11y.spec.js checks them in a browser. */
 :root {
   color-scheme: light;
-  --bg: #fffaf0;
+  /* neutrals */
+  --bg: #f8fafc;
   --surface: #ffffff;
-  --text: #211b16;
-  --muted: #5e5348;
-  --border: #e5d8c4;
-  --brand: #f5a524;
-  --brand-on: #2a1a00;
-  --customer: #4338ca;
-  --customer-on: #ffffff;
-  --rider: #0f766e;
+  --text: #0f172a;
+  --muted: #475569;
+  --border: #cbd5e1;          /* card edges: decoration, the content carries the meaning */
+  --control-border: #64748b;  /* inputs and outlined buttons: a UI boundary, 3:1 */
+  /* brand */
+  --accent: #1e59cd;
+  --accent-text: #ffffff;
+  --accent-text-muted: #dbe5ff;
+  --brand: var(--accent);
+  --brand-on: var(--accent-text);
+  /* the two people, two hues of the one palette: customer blue (the accent), rider teal */
+  --customer: var(--accent);
+  --customer-on: var(--accent-text);
+  --rider: #02736e;
   --rider-on: #ffffff;
-  --danger: #c62828;
+  /* states */
+  --danger: #b91c1c;
   --danger-on: #ffffff;
-  --warn-bg: #fff1cc;
-  --warn-text: #5c3b00;
-  --warn-border: #b36b00;
-  --ok: #15803d;
-  --ok-bg: #e2f5e7;
-  --ask: #1d4ed8;
-  --ask-bg: #e3edff;
+  --warn-bg: #fef3c7;
+  --warn-text: #713f12;
+  --warn-border: #a16207;
+  /* ok, ask and the seven fact kinds: --x is the border/icon, --x-bg the tile */
+  --ok: #026a2e;
+  --ok-bg: #e6fae9;
+  --ask: #1e55a4;
+  --ask-bg: #edf4ff;
   --ask-text: #1e3a8a;
-  --gate: #c2410c;
-  --gate-bg: #ffefe3;
-  --floor: #4338ca;
-  --floor-bg: #ecebfd;
-  --cross: #be185d;
-  --cross-bg: #fde8f2;
-  --main: #0f766e;
-  --main-bg: #def4f0;
-  --block: #475569;
-  --block-bg: #eaeef3;
-  --flat: #0e7490;
-  --flat-bg: #dff3f8;
-  --landmark: #a21caf;
-  --landmark-bg: #fae8ff;
-  --accent: var(--customer);
-  --accent-text: var(--customer-on);
-  --fs-label: 0.8rem;
-  --fs-value: 1.9rem;
+  --gate: #913900;
+  --gate-bg: #fff0ea;
+  --floor: #5f439c;
+  --floor-bg: #f4f1ff;
+  --cross: #952c46;
+  --cross-bg: #feeff1;
+  --main: #026565;
+  --main-bg: #ddfafa;
+  --block: #505964;
+  --block-bg: #edf4fe;
+  --flat: #695701;
+  --flat-bg: #faf4dd;
+  --landmark: #81347c;
+  --landmark-bg: #ffedfd;
+  /* type scale (five steps) and spacing grid (8 px, with a 4 px half step) */
+  --fs-1: 0.875rem;
+  --fs-2: 1rem;
+  --fs-3: 1.25rem;
+  --fs-4: 1.5rem;
+  --fs-5: 2rem;
+  --fs-label: var(--fs-1);
+  --fs-value: var(--fs-5);
+  --sp-0: 0.25rem;
+  --sp-1: 0.5rem;
+  --sp-2: 1rem;
+  --sp-3: 1.5rem;
+  --sp-4: 2rem;
+  --radius: 0.75rem;
+  --tap: 3rem; /* 48 px: the smallest tap target */
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --bg: #17130f;
-  --surface: #221c16;
-  --text: #f5ede3;
-  --muted: #bfb2a2;
-  --border: #4a3f33;
-  --brand: #fbbf24;
-  --brand-on: #2a1a00;
-  --customer: #a5b4fc;
-  --customer-on: #14123d;
-  --rider: #5eead4;
+  --bg: #0f1419;
+  --surface: #1a2029;
+  --text: #f1f5f9;
+  --muted: #a8b3c2;
+  --border: #334155;
+  --control-border: #8391a6;
+  --accent: #91b7fe;
+  --accent-text: #0b1120;
+  --accent-text-muted: #1e293b;
+  --rider: #59d4cd;
   --rider-on: #062b27;
-  --danger: #ff7b7b;
+  --danger: #fca5a5;
   --danger-on: #2a0505;
-  --warn-bg: #3d2d05;
-  --warn-text: #ffd98a;
-  --warn-border: #d99a1e;
-  --ok: #4ade80;
-  --ok-bg: #123a22;
-  --ask: #93c5fd;
-  --ask-bg: #1b2f52;
+  --warn-bg: #3a2a08;
+  --warn-text: #fde68a;
+  --warn-border: #ca8a04;
+  --ok: #89d298;
+  --ok-bg: #152d1a;
+  --ask: #96c0fe;
+  --ask-bg: #18273c;
   --ask-text: #dbeafe;
-  --gate: #fb923c;
-  --gate-bg: #3a2210;
-  --floor: #a5b4fc;
-  --floor-bg: #26264f;
-  --cross: #f9a8d4;
-  --cross-bg: #3f1730;
-  --main: #5eead4;
-  --main-bg: #0f3a35;
-  --block: #cbd5e1;
-  --block-bg: #2b3340;
-  --flat: #67e8f9;
-  --flat-bg: #0e3540;
-  --landmark: #f0abfc;
-  --landmark-bg: #3b1a45;
+  --gate: #f9a782;
+  --gate-bg: #391f13;
+  --floor: #c3b0fd;
+  --floor-bg: #28223a;
+  --cross: #fba0ad;
+  --cross-bg: #391d21;
+  --main: #57d4d4;
+  --main-bg: #012d2d;
+  --block: #b7bec8;
+  --block-bg: #1f2731;
+  --flat: #d4bd67;
+  --flat-bg: #2d2609;
+  --landmark: #e6a4e0;
+  --landmark-bg: #331e31;
 }
-/* Each person's pages carry their colour: the header band, links and every primary button. */
-:root[data-role="customer"] { --accent: var(--customer); --accent-text: var(--customer-on); }
-:root[data-role="rider"] { --accent: var(--rider); --accent-text: var(--rider-on); }
+/* The header band says whose page it is. Actions use the one accent on both. */
+:root[data-role="customer"] { --band: var(--customer); }
+:root[data-role="rider"] { --band: var(--rider); }
 * { box-sizing: border-box; }
 body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Noto Sans Bengali",
+    "Noto Sans Devanagari", "Noto Sans Kannada", "Noto Sans Tamil", "Noto Sans Telugu",
+    "Noto Sans Malayalam", "Noto Sans Gujarati", "Noto Sans Gurmukhi", sans-serif;
 }
-main { max-width: 36rem; margin: 0 auto; padding: 1rem; }
-h1 { margin: 0; font-size: 1.5rem; }
-h2 { margin: 1rem 0 0.25rem; font-size: 0.85rem; color: var(--muted); text-transform: uppercase; }
-.sub { margin: 0.25rem 0 1rem; color: var(--muted); }
-/* A 44 x 44 px tap target for the small text links in the header. The padding grows the hit area
+/* Indic scripts have tall marks above and below the line: 1.5 for body text and 1.25 for the big
+   tile values keep them from touching (checked for all eight scripts by a screenshot test). */
+main {
+  max-width: 36rem; margin: 0 auto; padding: var(--sp-2);
+  padding-left: max(var(--sp-2), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--sp-2), env(safe-area-inset-right, 0px));
+  padding-bottom: calc(var(--sp-2) + var(--safe-bottom));
+}
+h1 { margin: 0; font-size: var(--fs-4); line-height: 1.3; }
+h2 { margin: var(--sp-2) 0 var(--sp-0); font-size: var(--fs-1); color: var(--muted); text-transform: uppercase; }
+.sub { margin: var(--sp-0) 0 var(--sp-2); color: var(--muted); }
+/* A 48 x 48 px tap target for the small text links in the header. The padding grows the hit area
    and the equal negative margin takes it back, so the text sits exactly where it did. */
-.sub a { display: inline-block; padding: 12px 6px; margin: -12px -6px; }
-.pairs { border: 1px solid var(--border); border-radius: 0.75rem; padding: 0.5rem 1rem; }
-.pairs label { display: block; padding: 0.4rem 0; min-height: 2.75rem; }
-.talk { display: grid; gap: 0.75rem; margin: 1rem 0; }
+.sub a { display: inline-block; min-width: var(--tap); padding: 14px 12px; margin: -14px -12px; }
+.pairs { border: 1px solid var(--border); border-radius: var(--radius); padding: var(--sp-1) var(--sp-2); }
+.pairs label { display: block; padding: 0.4rem 0; min-height: var(--tap); }
+.talk { display: grid; gap: 0.75rem; margin: var(--sp-2) 0; }
+
+/* The microphone. States are data-state on the button: idle (none), recording (aria-pressed),
+   processing (busy, disabled), done and error (the last send). */
 .talk-btn {
+  position: relative; overflow: hidden;
   display: flex; align-items: center; justify-content: center; gap: 0.75rem;
-  min-height: 5.5rem; border: 2px solid var(--accent); border-radius: 1rem;
-  background: var(--surface); color: var(--text); font: inherit; font-size: 1.15rem; font-weight: 600;
+  min-height: 4.5rem; padding: 0 var(--sp-2); border: 3px solid var(--accent); border-radius: 1rem;
+  background: var(--surface); color: var(--text); font: inherit; font-size: var(--fs-3); font-weight: 600;
 }
+.talk-btn[data-state="done"] { border-color: var(--ok); }
+.talk-btn[data-state="error"] { border-color: var(--danger); }
 .talk-btn[aria-pressed="true"] { background: var(--danger); border-color: var(--danger); color: var(--danger-on); }
-.talk-btn:disabled { opacity: 0.5; }
-.icon { width: 1.75rem; height: 1.75rem; fill: currentColor; }
+/* Disabled is dimmed by colour, not opacity: the customer's sticky button must stay opaque over the page. */
+.talk-btn:disabled { color: var(--muted); border-color: var(--border); }
+.talk-btn:disabled[data-state="processing"] { color: var(--text); border-color: var(--accent); border-style: dashed; }
+/* Processing: a bar runs along the bottom edge. */
+.talk-btn:disabled[data-state="processing"]::after {
+  content: ""; position: absolute; left: 0; bottom: 0; height: 0.3rem; width: 100%; background: var(--accent);
+}
+.talk-elapsed { font-variant-numeric: tabular-nums; font-weight: 700; }
+.icon { width: 1.75rem; height: 1.75rem; fill: currentColor; flex: none; }
 .icon-stop { display: none; }
 .talk-btn[aria-pressed="true"] .icon-stop { display: block; }
 .talk-btn[aria-pressed="true"] .icon-mic { display: none; }
-button:focus-visible, input:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
-.status { min-height: 1.5rem; margin: 0.5rem 0; font-weight: 500; }
+.talk-btn .l-en { color: inherit; opacity: 0.85; }
+/* Keyboard focus is visible on everything that can take it. */
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible {
+  outline: 3px solid var(--accent); outline-offset: 3px;
+}
+.status { min-height: 1.5rem; margin: var(--sp-1) 0; font-weight: 500; }
 .status.error { color: var(--danger); }
-.repeat-prompt { margin: 0.5rem 0; padding: 0.5rem 0.75rem; border-left: 4px solid var(--accent); background: var(--surface); }
+.repeat-prompt { margin: var(--sp-1) 0; padding: var(--sp-1) 0.75rem; border-left: 4px solid var(--accent); background: var(--surface); }
 .repeat-prompt p { margin: 0; font-weight: 500; }
 .repeat-prompt .small { font-weight: 400; }
-.actions { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.actions { display: flex; gap: var(--sp-1); flex-wrap: wrap; margin-bottom: var(--sp-2); }
 .actions button, #replay {
-  min-height: 2.75rem; padding: 0 1rem; border-radius: 0.6rem; border: 2px solid var(--accent);
+  min-height: var(--tap); padding: 0 var(--sp-2); border-radius: 0.6rem; border: 2px solid var(--accent);
   background: var(--accent); color: var(--accent-text); font: inherit; font-weight: 600;
 }
 .actions button.secondary, #replay { background: transparent; color: var(--accent); }
-.result { background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; padding: 0.5rem 1rem 1rem; }
-.result p { margin: 0; font-size: 1.2rem; overflow-wrap: anywhere; }
-#replay { margin-top: 1rem; }
-.timings { display: grid; grid-template-columns: auto 1fr; gap: 0.2rem 1rem; margin: 1rem 0 0; font-size: 0.9rem; color: var(--muted); }
+.result { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: var(--sp-1) var(--sp-2) var(--sp-2); }
+.result p { margin: 0; font-size: var(--fs-3); overflow-wrap: anywhere; }
+#replay { margin-top: var(--sp-2); }
+.timings { display: grid; grid-template-columns: auto 1fr; gap: 0.2rem var(--sp-2); margin: var(--sp-2) 0 0; font-size: var(--fs-1); color: var(--muted); }
 .timings dt { font-weight: 500; }
 .timings dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
 [hidden] { display: none !important; }
 @media (min-width: 30rem) { .talk { grid-template-columns: 1fr 1fr; } }
 
-/* Rooms: customer and rider screens */
-label { display: block; margin: 1rem 0 0.25rem; font-weight: 600; }
+/* Rooms: customer and rider screens. Inputs are 16 px or larger so a phone does not zoom on focus. */
+label { display: block; margin: var(--sp-2) 0 var(--sp-0); font-weight: 600; }
 select, input[type="text"] {
-  width: 100%; min-height: 3.25rem; padding: 0 0.75rem; font: inherit; font-size: 1.1rem;
-  color: var(--text); background: var(--surface); border: 2px solid var(--border); border-radius: 0.6rem;
+  width: 100%; min-height: 3.25rem; padding: 0 0.75rem; font: inherit; font-size: 1.125rem;
+  color: var(--text); background: var(--surface); border: 2px solid var(--control-border); border-radius: 0.6rem;
 }
 input[type="text"] { text-transform: uppercase; letter-spacing: 0.2em; font-weight: 700; }
-select:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 a { color: var(--accent); }
 .big-btn {
   display: flex; align-items: center; justify-content: center; gap: 0.75rem; width: 100%;
-  min-height: 4.5rem; margin: 1rem 0; padding: 0 1rem; border: 2px solid var(--accent);
+  min-height: 4.5rem; margin: var(--sp-2) 0; padding: 0 var(--sp-2); border: 2px solid var(--accent);
   border-radius: 1rem; background: var(--accent); color: var(--accent-text); font: inherit;
-  font-size: 1.25rem; font-weight: 700; text-decoration: none; text-align: center;
+  font-size: var(--fs-3); font-weight: 700; text-decoration: none; text-align: center;
 }
 .big-btn.secondary { background: transparent; color: var(--accent); }
-.big-btn:disabled, .reply-btn:disabled { opacity: 0.5; }
-button.secondary { min-height: 2.75rem; padding: 0 1rem; border-radius: 0.6rem; border: 2px solid var(--accent);
+.big-btn:disabled, .reply-btn:disabled { opacity: 0.55; }
+button.secondary { min-height: var(--tap); padding: 0 var(--sp-2); border-radius: 0.6rem; border: 2px solid var(--accent);
   background: transparent; color: var(--accent); font: inherit; font-weight: 600; }
-.entry { display: grid; gap: 0.5rem; }
-.small { margin: 0.25rem 0; font-size: 0.9rem; color: var(--muted); }
+.entry { display: grid; gap: var(--sp-1); }
+.small { margin: var(--sp-0) 0; font-size: var(--fs-1); color: var(--muted); }
 .mono { font-family: ui-monospace, Consolas, monospace; overflow-wrap: anywhere; }
-.code-box { background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; padding: 0.5rem 1rem; }
+.code-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: var(--sp-1) var(--sp-2); }
 .code { margin: 0; font: 700 2.75rem/1.2 ui-monospace, Consolas, monospace; letter-spacing: 0.25em; }
 /* Fact tiles: two columns from 360 px up. A landmark that would start a row spans both columns. */
-.chips { list-style: none; margin: 0.5rem 0; padding: 0; display: grid; gap: 0.5rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.chips { list-style: none; margin: var(--sp-1) 0; padding: 0; display: grid; gap: var(--sp-1); grid-template-columns: repeat(2, minmax(0, 1fr)); }
 /* Each kind of fact has its own hue and icon: a tinted tile, a coloured border and icon, and text in
    the normal high-contrast colour. */
 .chip-gate, .k-gate { --k: var(--gate); --k-bg: var(--gate-bg); }
@@ -169,23 +219,23 @@ button.secondary { min-height: 2.75rem; padding: 0 1rem; border-radius: 0.6rem; 
 .chip-flat, .k-flat { --k: var(--flat); --k-bg: var(--flat-bg); }
 .chip-landmark, .k-landmark { --k: var(--landmark); --k-bg: var(--landmark-bg); }
 .chip {
-  position: relative; display: flex; flex-direction: column; gap: 0.15rem; padding: 0.5rem 0.65rem;
-  background: var(--k-bg); border: 2px solid var(--k); border-radius: 0.6rem; min-width: 0;
+  position: relative; display: flex; flex-direction: column; gap: 0.15rem; padding: var(--sp-1) 0.75rem;
+  background: var(--k-bg); border: 2px solid var(--k); border-radius: 0.75rem; min-width: 0;
 }
-.icon-kind { position: absolute; top: 0.5rem; left: 0.6rem; width: 1.3rem; height: 1.3rem; color: var(--k); }
-.chip .chip-label { padding-left: 1.7rem; }
+.icon-kind { position: absolute; top: var(--sp-1); left: 0.6rem; width: 1.3rem; height: 1.3rem; color: var(--k); }
+.chip .chip-label { padding-left: 1.75rem; }
 /* Confirmed: the whole tile turns green and shows a tick. */
 .chip-confirmed { background: var(--ok-bg); border-color: var(--ok); }
 .chip-landmark:nth-child(odd) { grid-column: 1 / -1; }
-.chip-label { font-size: var(--fs-label); font-weight: 700; text-transform: uppercase; color: var(--muted); padding-right: 1.6rem; }
+.chip-label { font-size: var(--fs-label); font-weight: 700; text-transform: uppercase; color: var(--text); padding-right: 1.6rem; }
 .chip-label .l-en { font-size: 0.85em; }
 /* break-word, not anywhere: a name wraps between words and is cut inside a word only when that one
    word is wider than the tile (a long glued Indic word on a phone). */
-.chip-value { font-size: var(--fs-value); font-weight: 800; line-height: 1.15; overflow-wrap: break-word; word-break: normal; }
-.chip-original { font-size: 1rem; font-weight: 600; color: var(--muted); }
+.chip-value { font-size: var(--fs-value); font-weight: 800; line-height: 1.25; overflow-wrap: break-word; word-break: normal; }
+.chip-original { font-size: var(--fs-2); font-weight: 600; color: var(--muted); }
 /* A caution or a change is amber with its own text, never red: red means something went wrong. */
 .chip-note {
-  align-self: flex-start; padding: 0.1rem 0.5rem; border: 1px solid var(--warn-border); border-radius: 0.4rem;
+  align-self: flex-start; padding: 0.1rem var(--sp-1); border: 1px solid var(--warn-border); border-radius: 0.4rem;
   background: var(--warn-bg); color: var(--warn-text); font-size: var(--fs-label); font-weight: 600;
 }
 .chip-uncertain { border-style: dashed; }
@@ -193,80 +243,99 @@ button.secondary { min-height: 2.75rem; padding: 0 1rem; border-radius: 0.6rem; 
 .chip-confirmed > .icon-check { position: absolute; top: 0.4rem; right: 0.45rem; color: var(--ok); }
 /* Asked: a blue question badge. */
 .chip-question {
-  align-self: flex-start; padding: 0.1rem 0.5rem; border: 1px solid var(--ask); border-radius: 0.4rem;
+  align-self: flex-start; padding: 0.1rem var(--sp-1); border: 1px solid var(--ask); border-radius: 0.4rem;
   background: var(--ask-bg); color: var(--ask-text); font-size: 1.05rem; font-weight: 700;
 }
-.chip-actions { display: flex; gap: 0.4rem; margin-top: 0.25rem; }
+/* Confirm and ask: 48 x 48 px at the least. */
+.chip-actions { display: flex; gap: var(--sp-1); margin-top: var(--sp-0); }
 .chip-actions button {
-  flex: 1; min-height: 2.75rem; min-width: 2.75rem; padding: 0; display: flex; align-items: center;
-  justify-content: center; border: 2px solid var(--ok); border-radius: 0.5rem;
+  flex: 1; min-height: var(--tap); min-width: var(--tap); padding: 0; display: flex; align-items: center;
+  justify-content: center; border: 2px solid var(--ok); border-radius: 0.6rem;
   background: var(--surface); color: var(--ok);
 }
 .chip-actions .icon-check, .chip-actions .icon-ask { width: 1.5rem; height: 1.5rem; }
 .chip-actions .chip-ask { border-color: var(--ask); color: var(--ask); }
-.chip-actions button:focus-visible { outline-offset: 2px; }
-.card { margin: 1rem 0; }
-.card h2 { margin: 0 0 0.25rem; }
-.chips.big .chip { padding: 0.5rem 0.65rem; }
-.translation { margin: 0.5rem 0; font-size: 1.1rem; overflow-wrap: anywhere; }
-.reply { background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; padding: 0.5rem 1rem 1rem; margin: 1rem 0; }
-.reply-text { margin: 0 0 0.5rem; font-size: 1.6rem; font-weight: 700; overflow-wrap: anywhere; }
-.replies { display: grid; gap: 0.5rem; }
+.card { margin: var(--sp-2) 0; }
+.card h2 { margin: 0 0 var(--sp-0); }
+.translation { margin: var(--sp-1) 0; font-size: 1.125rem; overflow-wrap: anywhere; }
+.reply { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: var(--sp-1) var(--sp-2) var(--sp-2); margin: var(--sp-2) 0; }
+.reply-text { margin: 0 0 var(--sp-1); font-size: var(--fs-4); font-weight: 700; overflow-wrap: anywhere; }
+/* Quick replies: a compact grid of tappable chips, two across on a phone. */
+.replies { display: grid; gap: var(--sp-1); grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr)); }
 .reply-btn {
-  min-height: 4rem; padding: 0.5rem 1rem; border: 2px solid var(--accent); border-radius: 0.8rem;
-  background: var(--surface); color: var(--text); font: inherit; font-size: 1.2rem; font-weight: 600; text-align: left;
+  min-height: var(--tap); padding: var(--sp-0) 0.75rem; border: 2px solid var(--control-border); border-radius: 0.75rem;
+  background: var(--surface); color: var(--text); font: inherit; font-size: var(--fs-2); font-weight: 600; text-align: left;
 }
-.talk-btn[aria-pressed="false"]:not(:disabled) { border-width: 3px; }
+.reply-btn:not(:disabled):active { border-color: var(--accent); }
 /* The rider's microphone: present, but quieter than the reply buttons above it. */
-.talk-btn.minor { min-height: 3.25rem; font-size: 1rem; }
-.talk-btn.minor[aria-pressed="false"] { border-color: var(--border); }
-.talk-btn.minor[aria-pressed="false"]:not(:disabled) { border-width: 2px; }
+.talk-btn.minor { min-height: 3.5rem; font-size: var(--fs-2); border-width: 2px; }
+.talk-btn.minor[data-state="idle"] { border-color: var(--control-border); }
 .talk-btn.minor .icon { width: 1.25rem; height: 1.25rem; }
-#repeat.secondary { margin: 0.5rem 0; }
+#repeat.secondary { margin: var(--sp-1) 0; }
 .badge {
-  display: inline-block; margin: 0.25rem 0; padding: 0.15rem 0.6rem; border: 2px solid var(--accent);
-  border-radius: 999px; color: var(--accent); font-size: 0.85rem; font-weight: 700;
+  display: inline-block; margin: var(--sp-0) 0; padding: 0.15rem 0.6rem; border: 2px solid var(--accent);
+  border-radius: 999px; color: var(--accent); font-size: var(--fs-1); font-weight: 700;
 }
 .demo-banner {
-  margin: 0 0 1rem; padding: 0.5rem 0.75rem; border: 2px dashed var(--accent);
+  margin: 0 0 var(--sp-2); padding: var(--sp-1) 0.75rem; border: 2px dashed var(--control-border);
   border-radius: 0.6rem; color: var(--text); font-weight: 600;
 }
-.demo { display: grid; gap: 0.5rem; margin: 1rem 0; }
-.demo select { min-height: 2.75rem; }
-.demo button { min-height: 2.75rem; }
-.demo .big-btn { margin: 0.25rem 0; min-height: 3.5rem; font-size: 1.1rem; }
-.demo-on .talk-btn { margin-top: 0.25rem; }
+.demo { display: grid; gap: var(--sp-1); margin: var(--sp-2) 0; }
+.demo select { min-height: var(--tap); }
+.demo button { min-height: var(--tap); }
+.demo .big-btn { margin: var(--sp-0) 0; min-height: 3.5rem; font-size: 1.125rem; }
+.demo-on .talk-btn { margin-top: var(--sp-0); }
 
-/* The code box is the first thing the customer needs; once the rider is in it shrinks to one line. */
+/* The code box is the first thing the customer needs; once the rider is in it shrinks to one line
+   with a button that opens it again (room-screen.js adds the button). */
 /* A white quiet zone keeps the code scannable in the dark theme. */
-.qr { display: block; margin: 0.5rem auto; background: #fff; padding: 0.5rem; border-radius: 0.5rem; max-width: 100%; height: auto; }
+.qr { display: block; margin: var(--sp-1) auto; background: #fff; padding: var(--sp-1); border-radius: var(--sp-1); max-width: 100%; height: auto; }
 .qr[hidden] { display: none; }
 .code-box.compact .qr { display: none; }
-.code-box.compact { display: flex; align-items: baseline; gap: 0.75rem; padding: 0.25rem 0.75rem; }
+.code-box.compact { display: flex; align-items: center; flex-wrap: wrap; gap: var(--sp-1) 0.75rem; padding: var(--sp-0) 0.75rem; }
 .code-box.compact .small, .code-box.compact #link { display: none; }
-.code-box.compact .code { font-size: 1.1rem; letter-spacing: 0.2em; }
+.code-box.compact .code { font-size: var(--fs-3); letter-spacing: 0.2em; }
+.code-toggle {
+  display: inline-flex; align-items: center; gap: var(--sp-1); min-height: var(--tap); padding: 0 var(--sp-1);
+  border: 0; background: transparent; color: var(--accent); font: inherit; font-weight: 600;
+}
+.code-box.compact .code-toggle { margin-left: auto; }
+.code-toggle::after {
+  content: ""; width: 0.5rem; height: 0.5rem; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor;
+  transform: rotate(45deg) translateY(-0.1rem);
+}
+.code-toggle[aria-expanded="true"]::after { transform: rotate(-135deg) translateY(-0.1rem); }
 
 /* One quiet line for who has joined. */
-.status.quiet { min-height: 0; margin: 0.5rem 0; font-weight: 400; color: var(--muted); font-size: 0.9rem; }
+.status.quiet { min-height: 0; margin: var(--sp-1) 0; font-weight: 400; color: var(--muted); font-size: var(--fs-1); }
 
 /* Timings: one line in demo mode, the per-stage list behind a toggle elsewhere. */
-.timings-box { margin: 0.5rem 0; font-size: 0.9rem; color: var(--muted); }
-.timings-box summary { min-height: 2.75rem; display: block; padding: 0.3rem 0; cursor: pointer; }
-.timings-box summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
-.timings-box .timings { margin-top: 0.25rem; }
+.timings-box { margin: var(--sp-1) 0; font-size: var(--fs-1); color: var(--muted); }
+.timings-box summary { min-height: var(--tap); display: block; padding: 0.7rem 0; cursor: pointer; }
+.timings-box .timings { margin-top: var(--sp-0); }
 .demo-on .timings-box summary { cursor: default; pointer-events: none; list-style: none; font-variant-numeric: tabular-nums; }
 .demo-on .timings-box summary::-webkit-details-marker { display: none; }
 .demo-on .timings-box .timings { display: none; }
 
-/* Room screens: a tighter top so the four fact tiles fit a 360 x 780 phone without scrolling. */
-main:has(#room) h1 { font-size: 1.25rem; }
-main:has(#room) .sub { margin: 0 0 0.5rem; }
-main:has(#room) .demo-banner { margin: 0 0 0.5rem; padding: 0.3rem 0.6rem; font-size: 0.8rem; font-weight: 600; }
-main:has(#room) .status { margin: 0.25rem 0; }
+/* Room screens: a tighter top so the delivery card is the first thing on screen. The title and the
+   back link share one row. */
+main:has(#room) header { display: flex; align-items: baseline; justify-content: space-between; gap: var(--sp-2); }
+main:has(#room) h1 { font-size: var(--fs-3); }
+main:has(#room) .sub { margin: 0; }
+main:has(#room) .demo-banner { margin: 0 0 var(--sp-1); padding: 0.3rem 0.6rem; font-size: var(--fs-1); font-weight: 600; }
+main:has(#room) .status { margin: var(--sp-0) 0; }
 main:has(#room) .small { margin: 0.1rem 0; }
-main:has(#room) .card { margin: 0.5rem 0; }
-main:has(#room) h2 { margin: 0.5rem 0 0.15rem; }
+main:has(#room) .card { margin: var(--sp-1) 0; }
+main:has(#room) h2 { margin: var(--sp-1) 0 0.15rem; }
 .chips { margin: 0.35rem 0; }
+/* Reserved space for the card, so the page does not jump when the first tile arrives. */
+#card-chips:empty { min-height: 5rem; border: 2px dashed var(--border); border-radius: 0.75rem; }
+/* The customer's microphone stays in the thumb zone, above the home bar, while the page scrolls. */
+:root[data-role="customer"] .talk-btn {
+  min-height: 4.5rem; position: sticky; z-index: 2; bottom: calc(var(--sp-1) + var(--safe-bottom));
+  box-shadow: 0 0.25rem 1rem rgb(15 23 42 / 0.2);
+}
+:root[data-role="customer"] .talk-btn.minor { font-size: var(--fs-3); }
 
 /* Landing page and brand mark. */
 .brand { display: flex; align-items: center; gap: 0.6rem; }
@@ -274,61 +343,77 @@ main:has(#room) h2 { margin: 0.5rem 0 0.15rem; }
 /* The two speech bubbles are the two people: customer and rider colours. */
 .logo-a { fill: var(--customer); }
 .logo-b { fill: var(--rider); stroke: var(--bg); stroke-width: 2; paint-order: stroke; }
-.landing .wordmark { font-size: 1.5rem; font-weight: 800; }
+.landing .wordmark { font-size: var(--fs-4); font-weight: 800; }
 .landing .headline {
-  margin: 1.25rem 0 0.5rem; padding-left: 0.75rem; border-left: 0.4rem solid var(--brand);
-  font-size: 1.9rem; font-weight: 800; line-height: 1.2;
+  margin: var(--sp-2) 0 var(--sp-1); padding-left: 0.75rem; border-left: 0.4rem solid var(--brand);
+  font-size: 1.75rem; font-weight: 800; line-height: 1.25;
 }
-.landing .pitch { margin: 0.75rem 0 0.5rem; font-size: 1.15rem; font-weight: 600; line-height: 1.4; }
-.kind-strip { list-style: none; display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; padding: 0; }
+.landing .pitch { margin: var(--sp-1) 0; font-size: var(--fs-2); font-weight: 500; line-height: 1.5; }
+.kind-strip { list-style: none; display: flex; flex-wrap: wrap; gap: 0.4rem; margin: var(--sp-1) 0; padding: 0; }
 .kind-strip li {
   display: flex; align-items: center; gap: 0.35rem; padding: 0.2rem 0.6rem 0.2rem 0.4rem;
-  background: var(--k-bg); border: 2px solid var(--k); border-radius: 0.6rem; font-size: 0.9rem; font-weight: 700;
+  background: var(--k-bg); border: 2px solid var(--k); border-radius: 0.6rem; font-size: var(--fs-1); font-weight: 700;
 }
 .kind-strip .icon-kind { position: static; width: 1.2rem; height: 1.2rem; }
 .role-customer { --accent: var(--customer); --accent-text: var(--customer-on); }
 .role-rider { --accent: var(--rider); --accent-text: var(--rider-on); }
+.landing .entry .big-btn { margin: 0; }
+/* On a phone the two role buttons and the demo link come before the longer explanation. */
+.landing { display: flex; flex-direction: column; }
+.landing .problem { order: 1; }
+.landing .notes { order: 2; }
 
 /* A coloured band on a person's own pages, and the light/dark switch. The switch is on the English
    pages only (landing, demo bar); room pages follow the saved choice or the system setting, so no
    interface text there needs an untranslated label. */
-:root[data-role] body { border-top: 0.4rem solid var(--accent); }
+:root[data-role] body { border-top: 0.4rem solid var(--band); }
 .theme-toggle {
-  display: flex; align-items: center; justify-content: center; width: 2.75rem; height: 2.75rem; padding: 0;
-  border: 2px solid var(--border); border-radius: 0.6rem; background: var(--surface); color: var(--text);
+  display: flex; align-items: center; justify-content: center; width: var(--tap); height: var(--tap); padding: 0;
+  border: 2px solid var(--control-border); border-radius: 0.6rem; background: var(--surface); color: var(--text);
 }
 .brand .theme-toggle { margin-left: auto; }
 .in-frame .theme-toggle { display: none; }
 
 /* Motion: short, and only for people who have not asked for less. A new tile pops in, a changed
-   badge pulses once, a confirm tick draws itself. */
+   badge pulses once, a confirm tick draws itself, a recording pulses, processing runs a bar. */
 @media (prefers-reduced-motion: no-preference) {
   @keyframes pop { from { transform: translateY(0.4rem); opacity: 0.4; } to { transform: none; opacity: 1; } }
   @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
   @keyframes tick { from { stroke-dashoffset: 20; } to { stroke-dashoffset: 0; } }
+  @keyframes ring { from { box-shadow: 0 0 0 0 var(--danger); } to { box-shadow: 0 0 0 1rem transparent; } }
+  @keyframes run { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
   .chip { animation: pop 200ms ease-out; }
   .chip-changed .chip-note { animation: pulse 240ms ease-in-out 200ms 1; }
   .chip-confirmed > .icon-check path { stroke-dasharray: 20; animation: tick 220ms ease-out; }
+  .talk-btn[aria-pressed="true"] { overflow: visible; animation: ring 1.2s ease-out infinite; }
+  .talk-btn:disabled[data-state="processing"]::after { animation: run 1.1s ease-in-out infinite; }
   button, .big-btn { transition: background-color 120ms, border-color 120ms, color 120ms; }
 }
-.landing .problem { margin: 0 0 0.5rem; color: var(--muted); }
-.notes { margin-top: 1.5rem; padding-top: 0.5rem; border-top: 1px solid var(--border); }
-.notes ul { margin: 0.25rem 0; padding-left: 1.2rem; color: var(--muted); font-size: 0.9rem; }
-.notes li { margin: 0.25rem 0; }
+/* Reduced motion: the recording state is still obvious, as a solid double ring. */
+@media (prefers-reduced-motion: reduce) {
+  .talk-btn[aria-pressed="true"] { overflow: visible; box-shadow: 0 0 0 0.25rem var(--bg), 0 0 0 0.5rem var(--danger); }
+}
+.landing .problem { margin: var(--sp-1) 0; color: var(--muted); }
+.notes { margin-top: var(--sp-3); padding-top: var(--sp-1); border-top: 1px solid var(--border); }
+.notes ul { margin: var(--sp-0) 0; padding-left: 1.2rem; color: var(--muted); font-size: var(--fs-1); }
+.notes li { margin: var(--sp-0) 0; }
 
-/* Bilingual text: the viewer's language is the main line, the English twin sits smaller below it.
-   Both lines inherit the element's colour, so the contrast of the main line carries over. */
+/* Bilingual text: the viewer's language is the primary line, the English twin is visibly secondary:
+   smaller, lighter and muted. On a filled button the muted colour is the dedicated on-accent one. */
 .l-main, .l-en { display: block; }
-.l-en { font-size: 0.8em; font-weight: 400; }
+.l-main { font-weight: 600; }
+.l-en { font-size: 0.8em; font-weight: 400; color: var(--muted); }
+.big-btn:not(.secondary) .l-en { color: var(--accent-text-muted); }
 .big-btn:has(> .l-en) { flex-direction: column; gap: 0; }
 button .l-main, button .l-en, .reply-btn .l-main, .reply-btn .l-en { text-align: inherit; }
 button:has(.l-en) { padding-top: 0.4rem; padding-bottom: 0.4rem; }
+.talk-btn[aria-pressed="true"] .l-en { color: inherit; }
 
 /* Once a room is active the demo banner and the status lines share one compact, wrapping line under
    the delivery card. */
-.room-line { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.1rem 0.9rem; margin: 0.25rem 0; }
-main:has(#room) .room-line > p { margin: 0; min-height: 0; font-size: 0.85rem; }
-main:has(#room) .room-line > .demo-banner { padding: 0 0.5rem; border-width: 1px; border-radius: 0.4rem; font-size: 0.8rem; }
+.room-line { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.1rem 0.9rem; margin: var(--sp-0) 0; }
+main:has(#room) .room-line > p { margin: 0; min-height: 0; font-size: var(--fs-1); }
+main:has(#room) .room-line > .demo-banner { padding: 0 var(--sp-1); border-width: 1px; border-radius: 0.4rem; font-size: var(--fs-1); }
 main:has(#room) .room-line > .status.error { font-weight: 600; }
 
 /* The demo split shows each page in a half-screen frame filmed at 1080p and watched on a phone:
@@ -342,7 +427,7 @@ main:has(#room) .room-line > .status.error { font-weight: 600; }
 /* The banner is one line, the local and English text side by side and cut with an ellipsis; the
    demo bar says the same thing on the split page, and the clip picker below is the real cue. */
 main:has(#room) .room-line > .demo-banner:not([hidden]) {
-  display: flex; gap: 0.5rem; flex: 1 1 100%; min-width: 0; white-space: nowrap;
+  display: flex; gap: var(--sp-1); flex: 1 1 100%; min-width: 0; white-space: nowrap;
 }
 main:has(#room) .room-line > .demo-banner > span { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 main:has(#room) .room-line > .demo-banner > .l-main { flex: 1 1 auto; }
@@ -355,3 +440,6 @@ main:has(#room) .room-line > .demo-banner > .l-en { flex: 0 1 auto; font-weight:
   main:has(#room) .room-line > .demo-banner > .l-main,
   main:has(#room) .room-line > .demo-banner > .l-en { flex: 1 1 100%; }
 }
+/* Room for the sticky microphone: the last status line and the demo text scroll clear of it
+   (button height, a gap, and the home-bar inset). */
+:root[data-role="customer"] main { padding-bottom: calc(4.5rem + var(--sp-2) + var(--safe-bottom)); }
