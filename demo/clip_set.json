@@ -1,0 +1,1381 @@
+{
+  "version": 1,
+  "clips": [
+    {
+      "id": "bn-street",
+      "lang": "bn",
+      "type": "street",
+      "text": "দ্বিতীয় ক্রস, চতুর্থ মেইন, গেট নম্বর তিন, মন্দিরের কাছে।",
+      "expected": [
+        {
+          "kind": "cross",
+          "value": "2"
+        },
+        {
+          "kind": "main",
+          "value": "4"
+        },
+        {
+          "kind": "gate",
+          "value": "3"
+        },
+        {
+          "kind": "landmark",
+          "value": "মন্দির"
+        }
+      ],
+      "tgt": "en",
+      "review_status": "for author review",
+      "label": "Street address: 2nd cross, 4th main, gate 3, temple",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "bn-apartment",
+      "lang": "bn",
+      "type": "apartment",
+      "text": "ব্লক দুই, তৃতীয় তলা, ফ্ল্যাট বারো।",
+      "expected": [
+        {
+          "kind": "block",
+          "value": "2"
+        },
+        {
+          "kind": "floor",
+          "value": "3"
+        },
+        {
+          "kind": "flat",
+          "value": "12"
+        }
+      ],
+      "tgt": "hi",
+      "review_status": "for author review",
+      "label": "Apartment: block 2, 3rd floor, flat 12",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "bn-correction",
+      "lang": "bn",
+      "type": "correction",
+      "text": "তৃতীয় ক্রস, পঞ্চম মেইন, গেট নম্বর চার। দুঃখিত, গেট নম্বর দুই, চার না।",
+      "expected": [
+        {
+          "kind": "cross",
+          "value": "3"
+        },
+        {
+          "kind": "main",
+          "value": "5"
+        },
+        {
+          "kind": "gate",
+          "value": "2"
+        }
+      ],
+      "tgt": "kn",
+      "review_status": "for author review",
+      "label": "Correction: gate 4, sorry, gate 2",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "bn-mixed",
+      "lang": "bn",
+      "type": "mixed",
+      "text": "ভাই, ফোর্থ ক্রস, থার্ড মেইন, গেট নম্বর ওয়ান, স্কুলের সামনে।",
+      "expected": [
+        {
+          "kind": "cross",
+          "value": "4"
+        },
+        {
+          "kind": "main",
+          "value": "3"
+        },
+        {
+          "kind": "gate",
+          "value": "1"
+        },
+        {
+          "kind": "landmark",
+          "value": "স্কুল"
+        }
+      ],
+      "tgt": "te",
+      "review_status": "for author review",
+      "label": "Code-mixed: 4th cross, 3rd main, gate 1, school",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "bn-landmark",
+      "lang": "bn",
+      "type": "landmark",
+      "text": "গেট নম্বর পাঁচ, বাস স্টপের সামনে, ফার্মেসির পিছনে।",
+      "expected": [
+        {
+          "kind": "gate",
+          "value": "5"
+        },
+        {
+          "kind": "landmark",
+          "value": "বাস স্টপ"
+        },
+        {
+          "kind": "landmark",
+          "value": "ফার্মেসি"
+        }
+      ],
+      "tgt": "gu",
+      "review_status": "for author review",
+      "label": "Landmarks: gate 5, bus stop, pharmacy",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "en-street",
+      "lang": "en",
+      "type": "street",
+      "text": "Second cross, fourth main, gate number three, near the temple.",
+      "expected": [
+        {
+          "kind": "cross",
+          "value": "2"
+        },
+        {
+          "kind": "main",
+          "value": "4"
+        },
+        {
+          "kind": "gate",
+          "value": "3"
+        },
+        {
+          "kind": "landmark",
+          "value": "temple"
+        }
+      ],
+      "tgt": "ml",
+      "review_status": "machine-written, not reviewed",
+      "label": "Street address: 2nd cross, 4th main, gate 3, temple",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "en-apartment",
+      "lang": "en",
+      "type": "apartment",
+      "text": "Block two, third floor, flat twelve.",
+      "expected": [
+        {
+          "kind": "block",
+          "value": "2"
+        },
+        {
+          "kind": "floor",
+          "value": "3"
+        },
+        {
+          "kind": "flat",
+          "value": "12"
+        }
+      ],
+      "tgt": "mr",
+      "review_status": "machine-written, not reviewed",
+      "label": "Apartment: block 2, 3rd floor, flat 12",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "en-correction",
+      "lang": "en",
+      "type": "correction",
+      "text": "Third cross, fifth main, gate number four. Sorry, gate number two, not four.",
+      "expected": [
+        {
+          "kind": "cross",
+          "value": "3"
+        },
+        {
+          "kind": "main",
+          "value": "5"
+        },
+        {
+          "kind": "gate",
+          "value": "2"
+        }
+      ],
+      "tgt": "pa",
+      "review_status": "machine-written, not reviewed",
+      "label": "Correction: gate 4, sorry, gate 2",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "en-mixed",
+      "lang": "en",
+      "type": "mixed",
+      "text": "Bhaiya, fourth cross, third main, gate number one, opposite the school, okay?",
+      "expected": [
+        {
+          "kind": "cross",
+          "value": "4"
+        },
+        {
+          "kind": "main",
+          "value": "3"
+        },
+        {
+          "kind": "gate",
+          "value": "1"
+        },
+        {
+          "kind": "landmark",
+          "value": "school"
+        }
+      ],
+      "tgt": "ta",
+      "review_status": "machine-written, not reviewed",
+      "label": "Code-mixed: 4th cross, 3rd main, gate 1, school",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "en-landmark",
+      "lang": "en",
+      "type": "landmark",
+      "text": "Gate number five, opposite the bus stop, behind the pharmacy.",
+      "expected": [
+        {
+          "kind": "gate",
+          "value": "5"
+        },
+        {
+          "kind": "landmark",
+          "value": "bus stop"
+        },
+        {
+          "kind": "landmark",
+          "value": "pharmacy"
+        }
+      ],
+      "tgt": "bn",
+      "review_status": "machine-written, not reviewed",
+      "label": "Landmarks: gate 5, bus stop, pharmacy",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "hi-street",
+      "lang": "hi",
+      "type": "street",
+      "text": "दूसरे क्रॉस, चौथे मेन, गेट नंबर तीन, मंदिर के पास।",
+      "expected": [
+        {
+          "kind": "cross",
+          "value": "2"
+        },
+        {
+          "kind": "main",
+          "value": "4"
+        },
+        {
+          "kind": "gate",
+          "value": "3"
+        },
+        {
+          "kind": "landmark",
+          "value": "मंदिर"
+        }
+      ],
+      "tgt": "en",
+      "review_status": "for author review",
+      "label": "Street address: 2nd cross, 4th main, gate 3, temple",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "hi-apartment",
+      "lang": "hi",
+      "type": "apartment",
+      "text": "ब्लॉक दो, तीसरी मंजिल, फ्लैट बारह।",
+      "expected": [
+        {
+          "kind": "block",
+          "value": "2"
+        },
+        {
+          "kind": "floor",
+          "value": "3"
+        },
+        {
+          "kind": "flat",
+          "value": "12"
+        }
+      ],
+      "tgt": "kn",
+      "review_status": "for author review",
+      "label": "Apartment: block 2, 3rd floor, flat 12",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "hi-correction",
+      "lang": "hi",
+      "type": "correction",
+      "text": "तीसरे क्रॉस, पांचवें मेन, गेट नंबर चार। सॉरी, गेट नंबर दो, चार नहीं।",
+      "expected": [
+        {
+          "kind": "cross",
+          "value": "3"
+        },
+        {
+          "kind": "main",
+          "value": "5"
+        },
+        {
+          "kind": "gate",
+          "value": "2"
+        }
+      ],
+      "tgt": "te",
+      "review_status": "for author review",
+      "label": "Correction: gate 4, sorry, gate 2",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "hi-mixed",
+      "lang": "hi",
+      "type": "mixed",
+      "text": "भैया, फोर्थ क्रॉस, थर्ड मेन, गेट नंबर वन, स्कूल के सामने।",
+      "expected": [
+        {
+          "kind": "cross",
+          "value": "4"
+        },
+        {
+          "kind": "main",
+          "value": "3"
+        },
+        {
+          "kind": "gate",
+          "value": "1"
+        },
+        {
+          "kind": "landmark",
+          "value": "स्कूल"
+        }
+      ],
+      "tgt": "gu",
+      "review_status": "for author review",
+      "label": "Code-mixed: 4th cross, 3rd main, gate 1, school",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "hi-landmark",
+      "lang": "hi",
+      "type": "landmark",
+      "text": "गेट नंबर पांच, बस स्टॉप के सामने, फार्मेसी के पीछे।",
+      "expected": [
+        {
+          "kind": "gate",
+          "value": "5"
+        },
+        {
+          "kind": "landmark",
+          "value": "बस स्टॉप"
+        },
+        {
+          "kind": "landmark",
+          "value": "फार्मेसी"
+        }
+      ],
+      "tgt": "ml",
+      "review_status": "for author review",
+      "label": "Landmarks: gate 5, bus stop, pharmacy",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "kn-wrong-translation",
+      "lang": "kn",
+      "type": "street",
+      "text": "ನಮ್ಮ ಮನೆ ಎರಡನೇ ಕ್ರಾಸ್, ಮೂರನೇ ಮೇನ್, ಗೇಟ್ ನಂಬರ್ ಎರಡು ಹತ್ತಿರ, ಆಪೋಸಿಟ್ ಗಣೇಶ ದೇವಸ್ಥಾನ",
+      "expected": [
+        {
+          "kind": "cross",
+          "value": "2"
+        },
+        {
+          "kind": "main",
+          "value": "3"
+        },
+        {
+          "kind": "gate",
+          "value": "2"
+        },
+        {
+          "kind": "landmark",
+          "value": "ಗಣೇಶ ದೇವಸ್ಥಾನ"
+        }
+      ],
+      "tgt": "hi",
+      "review_status": "machine-written, not reviewed",
+      "label": "Gate 2, Ganesha temple",
+      "label_local": "ಗೇಟ್ 2, ಗಣೇಶ ದೇವಸ್ಥಾನ",
+      "existing": true,
+      "note": "recorded earlier; the Ganesha temple clip"
+    },
+    {
+      "id": "kn-apartment",
+      "lang": "kn",
+      "type": "apartment",
+      "text": "ಬ್ಲಾಕ್ ಎರಡು, ಮೂರನೇ ಮಹಡಿ, ಫ್ಲಾಟ್ ಹನ್ನೆರಡು.",
+      "expected": [
+        {
+          "kind": "block",
+          "value": "2"
+        },
+        {
+          "kind": "floor",
+          "value": "3"
+        },
+        {
+          "kind": "flat",
+          "value": "12"
+        }
+      ],
+      "tgt": "mr",
+      "review_status": "machine-written, not reviewed",
+      "label": "Apartment: block 2, 3rd floor, flat 12",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "kn-gate-correction",
+      "lang": "kn",
+      "type": "correction",
+      "text": "ಕ್ಷಮಿಸಿ, ಗೇಟ್ ನಂಬರ್ ಎರಡು",
+      "expected": [
+        {
+          "kind": "gate",
+          "value": "2"
+        }
+      ],
+      "tgt": "hi",
+      "review_status": "machine-written, not reviewed",
+      "label": "Sorry, gate 2",
+      "label_local": "ಕ್ಷಮಿಸಿ, ಗೇಟ್ 2",
+      "existing": true,
+      "note": "recorded earlier; a bare spoken correction (gate 4 to 2) that follows kn-bakery, not an address plus a correction"
+    },
+    {
+      "id": "kn-mixed",
+      "lang": "kn",
+      "type": "mixed",
+      "text": "ಅಣ್ಣ, ಫೋರ್ತ್ ಕ್ರಾಸ್, ಥರ್ಡ್ ಮೇನ್, ಗೇಟ್ ನಂಬರ್ ಒನ್, ಸ್ಕೂಲ್ ಎದುರು.",
+      "expected": [
+        {
+          "kind": "cross",
+          "value": "4"
+        },
+        {
+          "kind": "main",
+          "value": "3"
+        },
+        {
+          "kind": "gate",
+          "value": "1"
+        },
+        {
+          "kind": "landmark",
+          "value": "ಸ್ಕೂಲ್"
+        }
+      ],
+      "tgt": "pa",
+      "review_status": "machine-written, not reviewed",
+      "label": "Code-mixed: 4th cross, 3rd main, gate 1, school",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "kn-bakery",
+      "lang": "kn",
+      "type": "landmark",
+      "text": "ಮೂರನೇ ಕ್ರಾಸ್, ಐದನೇ ಮೇನ್, ಗೇಟ್ ನಂಬರ್ ನಾಲ್ಕು, ಬೇಕರಿ ಪಕ್ಕ",
+      "expected": [
+        {
+          "kind": "cross",
+          "value": "3"
+        },
+        {
+          "kind": "main",
+          "value": "5"
+        },
+        {
+          "kind": "gate",
+          "value": "4"
+        },
+        {
+          "kind": "landmark",
+          "value": "ಬೇಕರಿ"
+        }
+      ],
+      "tgt": "hi",
+      "review_status": "machine-written, not reviewed",
+      "label": "Gate 4, bakery",
+      "label_local": "ಗೇಟ್ 4, ಬೇಕರಿ",
+      "existing": true,
+      "note": "recorded earlier; a plain turn with a bakery landmark, mapped to the landmark slot"
+    },
+    {
+      "id": "te-gate",
+      "lang": "te",
+      "type": "street",
+      "text": "రెండో క్రాస్, నాలుగో మెయిన్, గేట్ నంబర్ ఒకటి, హనుమాన్ గుడి ఎదురుగా",
+      "expected": [
+        {
+          "kind": "cross",
+          "value": "2"
+        },
+        {
+          "kind": "main",
+          "value": "4"
+        },
+        {
+          "kind": "gate",
+          "value": "1"
+        },
+        {
+          "kind": "landmark",
+          "value": "హనుమాన్ గుడి"
+        }
+      ],
+      "tgt": "en",
+      "review_status": "machine-written, not reviewed",
+      "label": "Gate 1, Hanuman temple",
+      "label_local": "గేట్ 1, హనుమాన్ గుడి",
+      "existing": true,
+      "note": "recorded earlier; Hanuman temple landmark"
+    },
+    {
+      "id": "te-apartment",
+      "lang": "te",
+      "type": "apartment",
+      "text": "బ్లాక్ రెండు, మూడో ఫ్లోర్, ఫ్లాట్ పన్నెండు.",
+      "expected": [
+        {
+          "kind": "block",
+          "value": "2"
+        },
+        {
+          "kind": "floor",
+          "value": "3"
+        },
+        {
+          "kind": "flat",
+          "value": "12"
+        }
+      ],
+      "tgt": "ta",
+      "review_status": "machine-written, not reviewed",
+      "label": "Apartment: block 2, 3rd floor, flat 12",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "te-correction",
+      "lang": "te",
+      "type": "correction",
+      "text": "మూడో క్రాస్, ఐదో మెయిన్, గేట్ నంబర్ నాలుగు. సారీ, గేట్ నంబర్ రెండు, నాలుగు కాదు.",
+      "expected": [
+        {
+          "kind": "cross",
+          "value": "3"
+        },
+        {
+          "kind": "main",
+          "value": "5"
+        },
+        {
+          "kind": "gate",
+          "value": "2"
+        }
+      ],
+      "tgt": "bn",
+      "review_status": "machine-written, not reviewed",
+      "label": "Correction: gate 4, sorry, gate 2",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "te-mixed",
+      "lang": "te",
+      "type": "mixed",
+      "text": "అన్నా, నాలుగో క్రాస్, మూడో మెయిన్, గేట్ నంబర్ ఒకటి, స్కూల్ ఎదురుగా.",
+      "expected": [
+        {
+          "kind": "cross",
+          "value": "4"
+        },
+        {
+          "kind": "main",
+          "value": "3"
+        },
+        {
+          "kind": "gate",
+          "value": "1"
+        },
+        {
+          "kind": "landmark",
+          "value": "స్కూల్"
+        }
+      ],
+      "tgt": "en",
+      "review_status": "machine-written, not reviewed",
+      "label": "Code-mixed: 4th cross, 3rd main, gate 1, school",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "te-landmark",
+      "lang": "te",
+      "type": "landmark",
+      "text": "గేట్ నంబర్ ఐదు, బస్ స్టాప్ ఎదురుగా, ఫార్మసీ వెనుక.",
+      "expected": [
+        {
+          "kind": "gate",
+          "value": "5"
+        },
+        {
+          "kind": "landmark",
+          "value": "బస్ స్టాప్"
+        },
+        {
+          "kind": "landmark",
+          "value": "ఫార్మసీ"
+        }
+      ],
+      "tgt": "hi",
+      "review_status": "machine-written, not reviewed",
+      "label": "Landmarks: gate 5, bus stop, pharmacy",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "gu-street",
+      "lang": "gu",
+      "type": "street",
+      "text": "બીજો ક્રોસ, ચોથો મેઇન, ગેટ નંબર ત્રણ, મંદિર પાસે.",
+      "expected": [
+        {
+          "kind": "cross",
+          "value": "2"
+        },
+        {
+          "kind": "main",
+          "value": "4"
+        },
+        {
+          "kind": "gate",
+          "value": "3"
+        },
+        {
+          "kind": "landmark",
+          "value": "મંદિર"
+        }
+      ],
+      "tgt": "kn",
+      "review_status": "machine-written, not reviewed",
+      "label": "Street address: 2nd cross, 4th main, gate 3, temple",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "gu-apartment",
+      "lang": "gu",
+      "type": "apartment",
+      "text": "બ્લોક બે, ત્રીજો ફ્લોર, ફ્લેટ બાર.",
+      "expected": [
+        {
+          "kind": "block",
+          "value": "2"
+        },
+        {
+          "kind": "floor",
+          "value": "3"
+        },
+        {
+          "kind": "flat",
+          "value": "12"
+        }
+      ],
+      "tgt": "te",
+      "review_status": "machine-written, not reviewed",
+      "label": "Apartment: block 2, 3rd floor, flat 12",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "gu-correction",
+      "lang": "gu",
+      "type": "correction",
+      "text": "ત્રીજો ક્રોસ, પાંચમો મેઇન, ગેટ નંબર ચાર. માફ કરજો, ગેટ નંબર બે, ચાર નહીં.",
+      "expected": [
+        {
+          "kind": "cross",
+          "value": "3"
+        },
+        {
+          "kind": "main",
+          "value": "5"
+        },
+        {
+          "kind": "gate",
+          "value": "2"
+        }
+      ],
+      "tgt": "ml",
+      "review_status": "machine-written, not reviewed",
+      "label": "Correction: gate 4, sorry, gate 2",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "gu-mixed",
+      "lang": "gu",
+      "type": "mixed",
+      "text": "ભાઈ, ચોથો ક્રોસ, ત્રીજો મેઇન, ગેટ નંબર એક, સ્કૂલ સામે.",
+      "expected": [
+        {
+          "kind": "cross",
+          "value": "4"
+        },
+        {
+          "kind": "main",
+          "value": "3"
+        },
+        {
+          "kind": "gate",
+          "value": "1"
+        },
+        {
+          "kind": "landmark",
+          "value": "સ્કૂલ"
+        }
+      ],
+      "tgt": "mr",
+      "review_status": "machine-written, not reviewed",
+      "label": "Code-mixed: 4th cross, 3rd main, gate 1, school",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "gu-landmark",
+      "lang": "gu",
+      "type": "landmark",
+      "text": "ગેટ નંબર પાંચ, બસ સ્ટોપ સામે, ફાર્મસી પાછળ.",
+      "expected": [
+        {
+          "kind": "gate",
+          "value": "5"
+        },
+        {
+          "kind": "landmark",
+          "value": "બસ સ્ટોપ"
+        },
+        {
+          "kind": "landmark",
+          "value": "ફાર્મસી"
+        }
+      ],
+      "tgt": "pa",
+      "review_status": "machine-written, not reviewed",
+      "label": "Landmarks: gate 5, bus stop, pharmacy",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "ml-street",
+      "lang": "ml",
+      "type": "street",
+      "text": "രണ്ടാം ക്രോസ്, നാലാം മെയിൻ, ഗേറ്റ് നമ്പർ മൂന്ന്, അമ്പലം അടുത്ത്.",
+      "expected": [
+        {
+          "kind": "cross",
+          "value": "2"
+        },
+        {
+          "kind": "main",
+          "value": "4"
+        },
+        {
+          "kind": "gate",
+          "value": "3"
+        },
+        {
+          "kind": "landmark",
+          "value": "അമ്പലം"
+        }
+      ],
+      "tgt": "ta",
+      "review_status": "machine-written, not reviewed",
+      "label": "Street address: 2nd cross, 4th main, gate 3, temple",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "ml-apartment",
+      "lang": "ml",
+      "type": "apartment",
+      "text": "ബ്ലോക്ക് രണ്ട്, മൂന്നാം ഫ്ലോർ, ഫ്ലാറ്റ് പന്ത്രണ്ട്.",
+      "expected": [
+        {
+          "kind": "block",
+          "value": "2"
+        },
+        {
+          "kind": "floor",
+          "value": "3"
+        },
+        {
+          "kind": "flat",
+          "value": "12"
+        }
+      ],
+      "tgt": "bn",
+      "review_status": "machine-written, not reviewed",
+      "label": "Apartment: block 2, 3rd floor, flat 12",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "ml-correction",
+      "lang": "ml",
+      "type": "correction",
+      "text": "മൂന്നാം ക്രോസ്, അഞ്ചാം മെയിൻ, ഗേറ്റ് നമ്പർ നാല്. ക്ഷമിക്കണം, ഗേറ്റ് നമ്പർ രണ്ട്, നാല് അല്ല.",
+      "expected": [
+        {
+          "kind": "cross",
+          "value": "3"
+        },
+        {
+          "kind": "main",
+          "value": "5"
+        },
+        {
+          "kind": "gate",
+          "value": "2"
+        }
+      ],
+      "tgt": "en",
+      "review_status": "machine-written, not reviewed",
+      "label": "Correction: gate 4, sorry, gate 2",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "ml-mixed",
+      "lang": "ml",
+      "type": "mixed",
+      "text": "ചേട്ടാ, നാലാം ക്രോസ്, മൂന്നാം മെയിൻ, ഗേറ്റ് നമ്പർ ഒന്ന്, സ്കൂൾ എതിർവശം.",
+      "expected": [
+        {
+          "kind": "cross",
+          "value": "4"
+        },
+        {
+          "kind": "main",
+          "value": "3"
+        },
+        {
+          "kind": "gate",
+          "value": "1"
+        },
+        {
+          "kind": "landmark",
+          "value": "സ്കൂൾ"
+        }
+      ],
+      "tgt": "hi",
+      "review_status": "machine-written, not reviewed",
+      "label": "Code-mixed: 4th cross, 3rd main, gate 1, school",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "ml-landmark",
+      "lang": "ml",
+      "type": "landmark",
+      "text": "ഗേറ്റ് നമ്പർ അഞ്ച്, ബസ് സ്റ്റോപ്പ് എതിർവശം, ഫാർമസി പിന്നിൽ.",
+      "expected": [
+        {
+          "kind": "gate",
+          "value": "5"
+        },
+        {
+          "kind": "landmark",
+          "value": "ബസ് സ്റ്റോപ്പ്"
+        },
+        {
+          "kind": "landmark",
+          "value": "ഫാർമസി"
+        }
+      ],
+      "tgt": "kn",
+      "review_status": "machine-written, not reviewed",
+      "label": "Landmarks: gate 5, bus stop, pharmacy",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "mr-street",
+      "lang": "mr",
+      "type": "street",
+      "text": "दुसरा क्रॉस, चौथा मेन, गेट नंबर तीन, मंदिराजवळ.",
+      "expected": [
+        {
+          "kind": "cross",
+          "value": "2"
+        },
+        {
+          "kind": "main",
+          "value": "4"
+        },
+        {
+          "kind": "gate",
+          "value": "3"
+        },
+        {
+          "kind": "landmark",
+          "value": "मंदिर"
+        }
+      ],
+      "tgt": "te",
+      "review_status": "machine-written, not reviewed",
+      "label": "Street address: 2nd cross, 4th main, gate 3, temple",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "mr-apartment",
+      "lang": "mr",
+      "type": "apartment",
+      "text": "ब्लॉक दोन, तिसरा फ्लोअर, फ्लॅट बारा.",
+      "expected": [
+        {
+          "kind": "block",
+          "value": "2"
+        },
+        {
+          "kind": "floor",
+          "value": "3"
+        },
+        {
+          "kind": "flat",
+          "value": "12"
+        }
+      ],
+      "tgt": "gu",
+      "review_status": "machine-written, not reviewed",
+      "label": "Apartment: block 2, 3rd floor, flat 12",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "mr-correction",
+      "lang": "mr",
+      "type": "correction",
+      "text": "तिसरा क्रॉस, पाचवा मेन, गेट नंबर चार. सॉरी, गेट नंबर दोन, चार नाही.",
+      "expected": [
+        {
+          "kind": "cross",
+          "value": "3"
+        },
+        {
+          "kind": "main",
+          "value": "5"
+        },
+        {
+          "kind": "gate",
+          "value": "2"
+        }
+      ],
+      "tgt": "ml",
+      "review_status": "machine-written, not reviewed",
+      "label": "Correction: gate 4, sorry, gate 2",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "mr-mixed",
+      "lang": "mr",
+      "type": "mixed",
+      "text": "दादा, चौथा क्रॉस, तिसरा मेन, गेट नंबर एक, स्कूलसमोर.",
+      "expected": [
+        {
+          "kind": "cross",
+          "value": "4"
+        },
+        {
+          "kind": "main",
+          "value": "3"
+        },
+        {
+          "kind": "gate",
+          "value": "1"
+        },
+        {
+          "kind": "landmark",
+          "value": "स्कूल"
+        }
+      ],
+      "tgt": "pa",
+      "review_status": "machine-written, not reviewed",
+      "label": "Code-mixed: 4th cross, 3rd main, gate 1, school",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "mr-landmark",
+      "lang": "mr",
+      "type": "landmark",
+      "text": "गेट नंबर पाच, बस स्टॉपसमोर, फार्मसीच्या मागे.",
+      "expected": [
+        {
+          "kind": "gate",
+          "value": "5"
+        },
+        {
+          "kind": "landmark",
+          "value": "बस स्टॉप"
+        },
+        {
+          "kind": "landmark",
+          "value": "फार्मसी"
+        }
+      ],
+      "tgt": "ta",
+      "review_status": "machine-written, not reviewed",
+      "label": "Landmarks: gate 5, bus stop, pharmacy",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "pa-street",
+      "lang": "pa",
+      "type": "street",
+      "text": "ਦੂਜਾ ਕਰਾਸ, ਚੌਥਾ ਮੇਨ, ਗੇਟ ਨੰਬਰ ਤਿੰਨ, ਮੰਦਰ ਨੇੜੇ.",
+      "expected": [
+        {
+          "kind": "cross",
+          "value": "2"
+        },
+        {
+          "kind": "main",
+          "value": "4"
+        },
+        {
+          "kind": "gate",
+          "value": "3"
+        },
+        {
+          "kind": "landmark",
+          "value": "ਮੰਦਰ"
+        }
+      ],
+      "tgt": "bn",
+      "review_status": "machine-written, not reviewed",
+      "label": "Street address: 2nd cross, 4th main, gate 3, temple",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "pa-apartment",
+      "lang": "pa",
+      "type": "apartment",
+      "text": "ਬਲਾਕ ਦੋ, ਤੀਜਾ ਫਲੋਰ, ਫਲੈਟ ਬਾਰਾਂ.",
+      "expected": [
+        {
+          "kind": "block",
+          "value": "2"
+        },
+        {
+          "kind": "floor",
+          "value": "3"
+        },
+        {
+          "kind": "flat",
+          "value": "12"
+        }
+      ],
+      "tgt": "en",
+      "review_status": "machine-written, not reviewed",
+      "label": "Apartment: block 2, 3rd floor, flat 12",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "pa-correction",
+      "lang": "pa",
+      "type": "correction",
+      "text": "ਤੀਜਾ ਕਰਾਸ, ਪੰਜਵਾਂ ਮੇਨ, ਗੇਟ ਨੰਬਰ ਚਾਰ. ਮਾਫ਼ ਕਰਨਾ, ਗੇਟ ਨੰਬਰ ਦੋ, ਚਾਰ ਨਹੀਂ.",
+      "expected": [
+        {
+          "kind": "cross",
+          "value": "3"
+        },
+        {
+          "kind": "main",
+          "value": "5"
+        },
+        {
+          "kind": "gate",
+          "value": "2"
+        }
+      ],
+      "tgt": "hi",
+      "review_status": "machine-written, not reviewed",
+      "label": "Correction: gate 4, sorry, gate 2",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "pa-mixed",
+      "lang": "pa",
+      "type": "mixed",
+      "text": "ਵੀਰ ਜੀ, ਚੌਥਾ ਕਰਾਸ, ਤੀਜਾ ਮੇਨ, ਗੇਟ ਨੰਬਰ ਇੱਕ, ਸਕੂਲ ਸਾਹਮਣੇ.",
+      "expected": [
+        {
+          "kind": "cross",
+          "value": "4"
+        },
+        {
+          "kind": "main",
+          "value": "3"
+        },
+        {
+          "kind": "gate",
+          "value": "1"
+        },
+        {
+          "kind": "landmark",
+          "value": "ਸਕੂਲ"
+        }
+      ],
+      "tgt": "kn",
+      "review_status": "machine-written, not reviewed",
+      "label": "Code-mixed: 4th cross, 3rd main, gate 1, school",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "pa-landmark",
+      "lang": "pa",
+      "type": "landmark",
+      "text": "ਗੇਟ ਨੰਬਰ ਪੰਜ, ਬੱਸ ਸਟਾਪ ਸਾਹਮਣੇ, ਫਾਰਮੇਸੀ ਪਿੱਛੇ.",
+      "expected": [
+        {
+          "kind": "gate",
+          "value": "5"
+        },
+        {
+          "kind": "landmark",
+          "value": "ਬੱਸ ਸਟਾਪ"
+        },
+        {
+          "kind": "landmark",
+          "value": "ਫਾਰਮੇਸੀ"
+        }
+      ],
+      "tgt": "te",
+      "review_status": "machine-written, not reviewed",
+      "label": "Landmarks: gate 5, bus stop, pharmacy",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "ta-gate",
+      "lang": "ta",
+      "type": "street",
+      "text": "இரண்டாவது கிராஸ், மூன்றாவது மெயின், கேட் நம்பர் மூன்று, பேக்கரி எதிரில்",
+      "expected": [
+        {
+          "kind": "cross",
+          "value": "2"
+        },
+        {
+          "kind": "main",
+          "value": "3"
+        },
+        {
+          "kind": "gate",
+          "value": "3"
+        },
+        {
+          "kind": "landmark",
+          "value": "பேக்கரி"
+        }
+      ],
+      "tgt": "hi",
+      "review_status": "machine-written, not reviewed",
+      "label": "Gate 3, bakery",
+      "label_local": "கேட் 3, பேக்கரி",
+      "existing": true,
+      "note": "recorded earlier; bakery landmark"
+    },
+    {
+      "id": "ta-apartment",
+      "lang": "ta",
+      "type": "apartment",
+      "text": "பிளாக் இரண்டு, மூன்றாவது ஃப்ளோர், பிளாட் பன்னிரெண்டு.",
+      "expected": [
+        {
+          "kind": "block",
+          "value": "2"
+        },
+        {
+          "kind": "floor",
+          "value": "3"
+        },
+        {
+          "kind": "flat",
+          "value": "12"
+        }
+      ],
+      "tgt": "gu",
+      "review_status": "machine-written, not reviewed",
+      "label": "Apartment: block 2, 3rd floor, flat 12",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "ta-correction",
+      "lang": "ta",
+      "type": "correction",
+      "text": "மூன்றாவது கிராஸ், ஐந்தாவது மெயின், கேட் நம்பர் நான்கு. மன்னிக்கவும், கேட் நம்பர் இரண்டு, நான்கு இல்லை.",
+      "expected": [
+        {
+          "kind": "cross",
+          "value": "3"
+        },
+        {
+          "kind": "main",
+          "value": "5"
+        },
+        {
+          "kind": "gate",
+          "value": "2"
+        }
+      ],
+      "tgt": "ml",
+      "review_status": "machine-written, not reviewed",
+      "label": "Correction: gate 4, sorry, gate 2",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "ta-mixed",
+      "lang": "ta",
+      "type": "mixed",
+      "text": "அண்ணா, நான்காவது கிராஸ், மூன்றாவது மெயின், கேட் நம்பர் ஒன்று, ஸ்கூல் எதிரில்.",
+      "expected": [
+        {
+          "kind": "cross",
+          "value": "4"
+        },
+        {
+          "kind": "main",
+          "value": "3"
+        },
+        {
+          "kind": "gate",
+          "value": "1"
+        },
+        {
+          "kind": "landmark",
+          "value": "ஸ்கூல்"
+        }
+      ],
+      "tgt": "mr",
+      "review_status": "machine-written, not reviewed",
+      "label": "Code-mixed: 4th cross, 3rd main, gate 1, school",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    },
+    {
+      "id": "ta-landmark",
+      "lang": "ta",
+      "type": "landmark",
+      "text": "கேட் நம்பர் ஐந்து, பஸ் ஸ்டாப் எதிரில், ஃபார்மசி பின்னால்.",
+      "expected": [
+        {
+          "kind": "gate",
+          "value": "5"
+        },
+        {
+          "kind": "landmark",
+          "value": "பஸ் ஸ்டாப்"
+        },
+        {
+          "kind": "landmark",
+          "value": "ஃபார்மசி"
+        }
+      ],
+      "tgt": "pa",
+      "review_status": "machine-written, not reviewed",
+      "label": "Landmarks: gate 5, bus stop, pharmacy",
+      "label_local": "",
+      "existing": false,
+      "note": ""
+    }
+  ]
+}

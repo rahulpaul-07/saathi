@@ -206,6 +206,27 @@ async def test_guided_demo_replays_a_stored_turn_with_zero_gnani_calls(tmp_path:
     assert body["timings"]["total_ms"] == 0
 
 
+async def test_guided_demo_replay_shares_the_per_ip_turn_rate_limit(tmp_path: Path) -> None:
+    clip = make_wav(0.7)
+    write_bundle(tmp_path, clip)
+    settings = public_settings(
+        demo_bundle_dir=tmp_path, demo_clips_dir=tmp_path / "clips", turn_rate_limit_per_minute=2
+    )
+    async with make_client(settings, NoGnani()) as client:
+        room = await make_room(client, "en", "hi")  # local translation: the costly path
+        codes = [
+            (
+                await client.post(
+                    f"/rooms/{room['code']}/turn",
+                    files={"audio": ("a.wav", clip, "audio/wav")},
+                    headers={**auth(room["customer"]), "X-Demo-Clip": "1"},
+                )
+            ).status_code
+            for _ in range(3)
+        ]
+    assert codes == [200, 200, 429]
+
+
 async def test_guided_demo_refuses_an_unknown_clip_instead_of_going_live(tmp_path: Path) -> None:
     write_bundle(tmp_path, make_wav(0.7))
     settings = public_settings(demo_bundle_dir=tmp_path, demo_clips_dir=tmp_path / "clips")
@@ -220,9 +241,11 @@ async def test_guided_demo_refuses_an_unknown_clip_instead_of_going_live(tmp_pat
     assert response.json()["detail"]["code"] == "demo_no_match"
 
 
-async def test_guided_demo_does_not_match_the_wrong_language_pair(tmp_path: Path) -> None:
+async def test_guided_demo_does_not_match_a_clip_in_another_source_language(
+    tmp_path: Path,
+) -> None:
     clip = make_wav(0.7)
-    write_bundle(tmp_path, clip, src="en", tgt="kn")
+    write_bundle(tmp_path, clip, src="kn", tgt="en")
     settings = public_settings(demo_bundle_dir=tmp_path, demo_clips_dir=tmp_path / "clips")
     async with make_client(settings, NoGnani()) as client:
         room = await make_room(client, "en", "hi")
@@ -232,6 +255,50 @@ async def test_guided_demo_does_not_match_the_wrong_language_pair(tmp_path: Path
             headers={**auth(room["customer"]), "X-Demo-Clip": "1"},
         )
     assert response.status_code == 422
+    assert response.json()["detail"]["code"] == "demo_no_match"
+
+
+async def test_guided_demo_serves_a_listener_language_that_was_not_recorded(
+    tmp_path: Path,
+) -> None:
+    clip = make_wav(0.7)
+    write_bundle(tmp_path, clip, src="en", tgt="kn")  # recorded for kn only
+    settings = public_settings(demo_bundle_dir=tmp_path, demo_clips_dir=tmp_path / "clips")
+    async with make_client(settings, NoGnani()) as client:  # any Gnani use fails the test
+        room = await make_room(client, "en", "hi")
+        response = await client.post(
+            f"/rooms/{room['code']}/turn",
+            files={"audio": ("a.wav", clip, "audio/wav")},
+            headers={**auth(room["customer"]), "X-Demo-Clip": "1"},
+        )
+        assert response.status_code == 200
+        body = response.json()
+        assert body["facts"], "facts are computed locally for the new listener language"
+        # No audio was recorded for hi, so none may be offered for this turn.
+        audio = await client.get(
+            f"/rooms/{room['code']}/turns/{body['turn_id']}/audio", headers=auth(room["rider"])
+        )
+    assert audio.status_code == 404
+
+
+async def test_guided_demo_recorded_language_still_plays_its_stored_audio(
+    tmp_path: Path,
+) -> None:
+    clip = make_wav(0.7)
+    write_bundle(tmp_path, clip, src="en", tgt="kn")
+    settings = public_settings(demo_bundle_dir=tmp_path, demo_clips_dir=tmp_path / "clips")
+    async with make_client(settings, NoGnani()) as client:
+        room = await make_room(client, "en", "kn")
+        response = await client.post(
+            f"/rooms/{room['code']}/turn",
+            files={"audio": ("a.wav", clip, "audio/wav")},
+            headers={**auth(room["customer"]), "X-Demo-Clip": "1"},
+        )
+        turn_id = response.json()["turn_id"]
+        audio = await client.get(
+            f"/rooms/{room['code']}/turns/{turn_id}/audio", headers=auth(room["rider"])
+        )
+    assert audio.status_code == 200 and audio.content.startswith(b"RIFF")
 
 
 async def test_without_the_demo_header_the_same_clip_goes_to_the_live_path(

@@ -8,6 +8,7 @@ again. Needs network only when something is missing. Spends no Gnani calls.
 import sys
 
 from huggingface_hub import snapshot_download
+from huggingface_hub.errors import GatedRepoError
 
 from saathi.translate import MODEL_REVISIONS, ROUTE_MODELS
 
@@ -17,6 +18,14 @@ def main() -> int:
         print(f"checking {route}: {repo}", flush=True)
         try:
             snapshot_download(repo_id=repo, revision=MODEL_REVISIONS[repo])
+        except GatedRepoError:
+            # The error text can quote request details; print only what the operator must do.
+            print(
+                f"{repo} is gated: accept its terms on Hugging Face with the account that owns "
+                "HF_TOKEN, and set HF_TOKEN in the environment",
+                file=sys.stderr,
+            )
+            return 1
         except OSError as exc:
             print(f"could not fetch {repo}: {type(exc).__name__}", file=sys.stderr)
             return 1

@@ -179,7 +179,9 @@ button.secondary { min-height: 2.75rem; padding: 0 1rem; border-radius: 0.6rem; 
 .chip-landmark:nth-child(odd) { grid-column: 1 / -1; }
 .chip-label { font-size: var(--fs-label); font-weight: 700; text-transform: uppercase; color: var(--muted); padding-right: 1.6rem; }
 .chip-label .l-en { font-size: 0.85em; }
-.chip-value { font-size: var(--fs-value); font-weight: 800; line-height: 1.15; overflow-wrap: anywhere; }
+/* break-word, not anywhere: a name wraps between words and is cut inside a word only when that one
+   word is wider than the tile (a long glued Indic word on a phone). */
+.chip-value { font-size: var(--fs-value); font-weight: 800; line-height: 1.15; overflow-wrap: break-word; word-break: normal; }
 .chip-original { font-size: 1rem; font-weight: 600; color: var(--muted); }
 /* A caution or a change is amber with its own text, never red: red means something went wrong. */
 .chip-note {
@@ -337,7 +339,6 @@ main:has(#room) .room-line > .status.error { font-weight: 600; }
 /* Wide pane: all four fact tiles in one row, so the card stays above the fold at the larger size. */
 .in-frame .chips { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .in-frame .chip-landmark:nth-child(odd) { grid-column: auto; }
-
 /* The banner is one line, the local and English text side by side and cut with an ellipsis; the
    demo bar says the same thing on the split page, and the clip picker below is the real cue. */
 main:has(#room) .room-line > .demo-banner:not([hidden]) {
@@ -346,3 +347,11 @@ main:has(#room) .room-line > .demo-banner:not([hidden]) {
 main:has(#room) .room-line > .demo-banner > span { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 main:has(#room) .room-line > .demo-banner > .l-main { flex: 1 1 auto; }
 main:has(#room) .room-line > .demo-banner > .l-en { flex: 0 1 auto; font-weight: 400; }
+/* On a phone the banner wraps and shows both lines in full: the one-line ellipsis above would cut
+   the sentence that says these are prepared clips. Kept last so it overrides the rules above. */
+@media (max-width: 30rem) {
+  main:has(#room) .room-line > .demo-banner:not([hidden]) { flex-wrap: wrap; white-space: normal; }
+  main:has(#room) .room-line > .demo-banner > span { overflow: visible; text-overflow: clip; overflow-wrap: break-word; }
+  main:has(#room) .room-line > .demo-banner > .l-main,
+  main:has(#room) .room-line > .demo-banner > .l-en { flex: 1 1 100%; }
+}

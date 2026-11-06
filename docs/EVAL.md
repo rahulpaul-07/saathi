@@ -205,6 +205,25 @@ Caveats:
   the model load time, which is not measured here.
 - The pair is an example; roles are independent of languages and other pairs were not measured.
 
+## STT output format: verbatim vs transcribe (3 real calls plus 1 failed, run 2026-11-03)
+
+Saathi sends no `format` field, so Gnani's default (verbatim: numbers spelled as words) applies.
+A one-off probe sent `format=transcribe` (inverse text normalization) for one Gnani TTS clip per
+language, same endpoint and default model, and compared it with the stored bundle transcript of
+the same clip. The Tamil request first returned an HTTP 504 and was sent again later; the ledger
+counted all 4 attempts. The probe script and its raw output were throwaway files and are not in the repo.
+
+| Clip | Verbatim | transcribe | Facts, both |
+|---|---|---|---|
+| kn-gate-correction | ... ನಂಬರ್ ಎರಡು | ... ನಂಬರ್ 2 | gate=2 |
+| ta-gate | இரண்டாவது ... மூன்று | 2nd ... 3rd ... 3 | cross=2, main=3, gate=3, landmark |
+| te-gate | రెండో క్రాస్ నాలుగు ... ఒకటి | రెండో క్రాస్ 4 ... 1 | cross=2, main=4, gate=1, landmark |
+
+- Digits came back for all three languages (Tamil ordinals as "2nd", "3rd"; the Telugu ordinal
+  stayed a word). Saathi's extractor found identical facts from both outputs on every clip.
+- n=3 short synthetic clips, one per language: it shows the option works on these clips, not how
+  accurate it is. Saathi was not changed to use it, since number words already work.
+
 ## Not run tonight
 
 - Start-of-clip split (first-2-word miss rate): needs the real-speech set; not run.
@@ -623,3 +642,93 @@ removes the "fourth floor reads as 4 floors" failure and wins the matrix, but be
 default it needs (a) a native speaker to check the restored ordinal forms in each language, since
 gender and case agreement are not handled, (b) a floor-specific look at why plain still wins there,
 and (c) a run on real recorded speech. The scorer fix should ship regardless.
+
+## Guided-demo set, first pass (held-out, run 2026-11-07)
+
+50 synthetic clips, 5 types (street, apartment, correction, code-mixed, landmark) x 10 languages. The
+texts and expected facts were written before the run; the clip set is `demo/clip_set.json`. Each clip
+was spoken by Gnani TTS, mixed with street noise, transcribed by Gnani STT, and the facts were read
+from the transcript by the production extractor. 5 of the 50 are the earlier demo clips (kept, not
+re-recorded); 45 are new. Full 50-row table: `eval/results/demo_set_first_pass.md`.
+
+**First-pass result: 23 of 50 clips have exactly the expected facts (18 of the 45 new clips, plus the
+5 earlier ones). 5 clips were not built because Gnani returned a 504 on the transcription call. 22
+built clips have a mismatch.** This number is the held-out result and is not edited after the fixes
+below; the later re-score is reported separately and is not held-out.
+
+Cost: 130 real Gnani calls (45 clips x 3 calls, less the 5 failed clips' rider-speech call).
+
+### Failures by cause (27 clips)
+
+| cause | clips | count |
+|---|---|---|
+| Gnani 504 on transcription, clip not built | bn-apartment, bn-mixed, te-correction, pa-mixed, ta-correction | 5 |
+| Speech-to-text error (the transcript is wrong) | en-street, en-correction, en-mixed, kn-mixed, mr-street, gu-apartment, mr-apartment, ta-apartment, ml-landmark, ta-landmark, te-landmark, ta-mixed | 12 |
+| Spoken-correction parsing ("... 4, sorry, gate 2, not 4" read as a new gate value) | bn-correction, hi-correction, mr-correction, pa-correction, gu-correction | 5 |
+| Missing lexicon entry or cue | gu-street, gu-mixed (Gujarati "main"), ml-street (glued cue), mr-mixed, mr-landmark (Marathi has no landmark support) | 5 |
+
+STT errors seen: English ordinals written as fractions ("1/4 main" for "fourth main"), "mail" for
+"main", "class" for "cross" in Kannada, a garbled "flat twelve" in gu, mr and ta, "फार्मसी" and
+"ஃபார்மசி" rendered as other words, and a truncated "எதிரி" for "எதிரில்". These are properties of the
+speech service on this audio, not of Saathi; the extractor correctly reports the facts it cannot
+find rather than inventing them. Gate numbers in particular were never invented in the 45 new clips
+(every wrong gate is the correction pattern above).
+
+### Fluent but wrong translations (found in the stored translations)
+
+The translator verifier passed both of these; they are the failure mode the card is there to cover,
+because a listener reads fluent text.
+
+- `ta-mixed` (Tamil, "opposite the school"): the Marathi translation ends "शाळेचा शत्रू", "enemy of the
+  school", because the transcript was cut at "எதிரி" ("enemy").
+- `ml-mixed` (Malayalam, "opposite the school"): the Hindi translation ends "स्कूल बनाम", "school
+  versus", a literal reading of "എതിർവശം".
+
+The structured facts on the card (cross, main, gate, landmark name) are unaffected by either.
+
+Caveats: one run, one voice per language, synthetic text; bn and hi texts are marked for author
+review and the other eight are machine-written and not reviewed by a native speaker; the five earlier
+clips were chosen after earlier probes and are not blind.
+
+Three further built clips (hi-landmark, gu-correction, mr-correction, all to Malayalam) were marked
+unverified by the translation check and fell back to the facts-only rendering; they are included in
+the counts above.
+
+## Guided-demo set, after fixes (not held-out)
+
+The same 50 clips re-scored from the stored speech-to-text transcripts after the fixes below. The
+fixes were written while reading these transcripts, so this is a regression check on known data and
+must not be quoted as held-out accuracy; the held-out number is the first pass above (23 of 50).
+No Gnani calls were made for the re-score. Table: `eval/results/demo_set_after_fixes.md`.
+
+**After fixes: 34 of 50 clips have exactly the expected facts.** The 11 additional clips:
+
+| change | clips that now match |
+|---|---|
+| Retry of the 5 Gnani 504 clips (8 real calls; bn-apartment, bn-mixed and ta-correction built, te-correction and pa-mixed returned 504 again and were not retried further) | bn-apartment, ta-correction (bn-mixed built but has a transcript error) |
+| Spoken "not" corrections: `V R not` and `not R` forms in hi, bn, mr, pa, gu, kn, ta, en | bn-correction, hi-correction, mr-correction, pa-correction, gu-correction, ta-correction |
+| Gujarati "main" as the STT writes it (મેઈન) | gu-street, gu-mixed |
+| Marathi cue "समोर" and "मागे", also when the STT glues it to the name ("स्कूलसमोर") | mr-mixed, mr-landmark |
+
+Rule for "not": in "gate 2, 4 not" the last value and the "not" are dropped (gate 2); in "gate 4, not
+2" the "not" and the value after it are dropped (gate 4). A number that runs into a trigger word
+("not 2 floor") is a new fact and is kept, and a compound number ("twenty four not") is not split.
+The words are hi नहीं, bn না, mr नाही, pa ਨਹੀਂ, gu નહીં, kn ಅಲ್ಲ, ta இல்லை and English "not".
+Kannada had no negation word defined before this change, so it is now handled by the same rule.
+
+Remaining 16 clips, by cause:
+
+| cause | clips |
+|---|---|
+| Gnani 504 again, not built | te-correction, pa-mixed |
+| Speech-to-text error | bn-mixed, en-street, en-correction, en-mixed, kn-mixed, mr-street, gu-apartment, mr-apartment, ta-apartment, te-landmark, ml-landmark, ta-landmark |
+| Cue is a real word the STT mangled or glued by sandhi; no ordinary spelling to add | ml-street ("അമ്പലമടുത്ത്"), ta-mixed ("எதிரி", a truncation meaning "enemy") |
+
+No lexicon entry was added for the garbled forms (ഫാമസി, உபானசி, వెనగా, मंदिराज); they are not
+ordinary spellings and adding them would teach the extractor the recogniser's mistakes.
+
+### Guided demo after the re-score
+
+The picker lists only clips whose facts match in full (`build_demo_set.py --manifest`, no calls).
+The other 16 stay in the eval set. Clips offered per language: bn 4, en 2, gu 4, hi 5, kn 4, ml 3,
+mr 3, pa 4, ta 2, te 3 (34 in total). No language has zero.

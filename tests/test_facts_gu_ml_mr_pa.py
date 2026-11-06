@@ -144,9 +144,9 @@ def test_each_landmark_cue_makes_the_word_before_it_a_landmark(lang: str, cue: s
     assert pairs(f"{name} {cue}", lang) == [("landmark", name)]
 
 
-def test_marathi_has_no_landmark_cues_because_the_stt_glued_them_to_the_name() -> None:
-    assert MR.landmark_after == frozenset()
-    assert pairs("बेकरीसमोर", "mr") == []
+def test_marathi_cue_glued_to_the_name_by_the_stt_is_read_as_a_suffix() -> None:
+    # The STT wrote "स्कूलसमोर" as one word; the name is what precedes the cue.
+    assert pairs("बेकरीसमोर", "mr") == [("landmark", "बेकरी")]
 
 
 def test_punjabi_cardinal_before_a_trigger_is_read_as_the_ordinal_the_stt_wrote() -> None:

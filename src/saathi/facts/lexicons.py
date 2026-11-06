@@ -6,6 +6,8 @@ validated against real STT output of speakers. Anything not listed is simply not
 Tamil and Telugu live in lexicons_ta_te.py and were built from real STT output instead.
 """
 
+from dataclasses import replace
+
 from saathi.facts.lexicon import Lexicon, merge, phrases, same, table, trigger_map, words
 from saathi.facts.lexicons_gu_ml_mr_pa import GU, ML, MR, PA
 from saathi.facts.lexicons_ta_te import TA, TE
@@ -270,8 +272,28 @@ NATIVE: dict[str, Lexicon] = {
     "kn": KN, "hi": HI, "bn": BN, "ta": TA, "te": TE, "gu": GU, "ml": ML, "mr": MR, "pa": PA,
 }  # fmt: skip
 
+# Spoken-correction words, as the STT wrote them: "gate 2, 4 not" keeps 2. Only languages whose
+# negation was seen in real transcripts or is the plain word are listed.
+_NEGATIONS: dict[str, str] = {
+    "en": "not",
+    "hi": "नहीं नही",
+    "bn": "না নয়",
+    "mr": "नाही",
+    "pa": "ਨਹੀਂ ਨਹੀ",
+    "gu": "નહીં નહી",
+    "kn": "ಅಲ್ಲ",
+    "ta": "இல்லை",  # seen in the ta-correction transcript: "... கேட் நம்பர் இரண்டு நான்கு இல்லை"
+}
+# The STT glued these postpositions to the name in real Marathi transcripts ("स्कूलसमोर").
+_GLUED: dict[str, str] = {"mr": "समोर मागे"}
+
 
 def lexicon_for(language: str) -> Lexicon:
     """The merged lexicon for a language code: English universal layer plus its native layer."""
     native = NATIVE.get(language)
-    return EN if native is None or language == "en" else merge(EN, native)
+    base = EN if native is None or language == "en" else merge(EN, native)
+    return replace(
+        base,
+        negations=base.negations | words("not") | words(_NEGATIONS.get(language, "")),
+        landmark_glued=base.landmark_glued | words(_GLUED.get(language, "")),
+    )

@@ -128,6 +128,98 @@ test("split-screen page loads both screens in one 16:9 stage", async ({ page }) 
   await expect(page.frameLocator("#rider-frame").locator("#code-input")).toHaveValue(code ?? "");
 });
 
+test("replay: a rider language with no stored audio shows text and tiles, no error and no retry", async ({
+  browser,
+}) => {
+  const REPLAY = "http://127.0.0.1:8768"; // tests/e2e/serve.py --replay: bundle holds kn -> hi only
+  const customer = await (await browser.newContext()).newPage();
+  const rider = await (await browser.newContext()).newPage();
+  /** @type {string[]} */
+  const problems = [];
+  /** @type {string[]} */
+  const requests = [];
+  for (const page of [customer, rider]) {
+    page.on("console", (m) => {
+      if (["error", "warning"].includes(m.type())) problems.push(m.text());
+    });
+    page.on("pageerror", (e) => problems.push(e.message));
+    page.on("request", (r) => {
+      const path = new URL(r.url()).pathname;
+      if (path.endsWith("/turn") || path.endsWith("/audio")) requests.push(path.split("/").pop() ?? "");
+    });
+  }
+  await customer.goto(`${REPLAY}/customer.html`);
+  await customer.locator("#language").selectOption("kn");
+  await customer.getByRole("button", { name: ui("kn", "create_room") }).click();
+  await expect(customer.locator("#code")).toHaveText(/^[A-Z0-9]{6}$/);
+  const code = (await customer.locator("#code").textContent()) ?? "";
+  await rider.goto(`${REPLAY}/rider.html?code=${code}`);
+  await rider.locator("#language").selectOption("bn"); // never recorded for this clip
+  await rider.getByRole("button", { name: ui("bn", "join_and_sound") }).click();
+  await expect(customer.locator("#peer")).toContainText(ui.has("kn", "rider_joined"));
+
+  await customer.locator("#demo-clip").selectOption("clip-kn");
+  await customer.locator("#demo-send").click();
+  await expect(rider.locator("#card-chips .chip-gate .chip-value")).toHaveText("2");
+  await expect(rider.locator("#translation")).not.toHaveText("");
+  await expect(rider.locator("#demo-badge")).toBeVisible();
+  await expect(rider.locator("#incoming-status")).not.toContainText(ui.has("bn", "audio_failed"));
+  await expect(rider.locator("#incoming-status")).not.toContainText(ui.has("bn", "speech_unavailable"));
+  await expect(customer.locator("#sent-demo-badge")).toBeVisible();
+  // One turn request, and the audio route was never asked for: no 404, so no retry either.
+  expect(requests).toEqual(["turn"]);
+  expect(problems).toEqual([]);
+});
+
+test.describe("phone, 412 px wide", () => {
+  test.use({ viewport: { width: 412, height: 800 } });
+
+  test("split-screen page stacks two panes that fill the viewport height, with no sideways scroll", async ({
+    page,
+  }) => {
+    await page.goto(`${DEMO}/demo.html`);
+    const customer = await page.locator(".pane-customer").boundingBox();
+    const rider = await page.locator(".pane-rider").boundingBox();
+    const stage = await page.locator(".stage").boundingBox();
+    if (!customer || !rider || !stage) throw new Error("layout missing");
+    expect(rider.y).toBeGreaterThanOrEqual(customer.y + customer.height - 1); // stacked
+    expect(stage.height).toBeGreaterThanOrEqual(800 - 1); // 100dvh at least
+    expect(Math.abs(customer.height - rider.height)).toBeLessThan(2);
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    );
+    expect(overflow).toBeLessThanOrEqual(0);
+  });
+
+  test("demo banner wraps and is shown in full, and a long name wraps between words", async ({
+    page,
+  }) => {
+    await page.goto(`${DEMO}/customer.html`);
+    await page.locator("#language").selectOption("kn");
+    await page.getByRole("button", { name: ui("kn", "create_room") }).click();
+    await expect(page.locator("#demo-banner")).toBeVisible();
+    await expect(page.locator("#code")).toHaveText(/^[A-Z0-9]{6}$/);
+    const clipped = await page.evaluate(() =>
+      [...document.querySelectorAll("#demo-banner > span")].map(
+        (s) => s.scrollWidth > s.clientWidth + 1,
+      ),
+    );
+    expect(clipped).toEqual([false, false]);
+    const wrap = await page.evaluate(() => {
+      const el = document.createElement("span");
+      el.className = "chip-value";
+      document.body.append(el);
+      const style = getComputedStyle(el);
+      return [style.overflowWrap, style.wordBreak];
+    });
+    expect(wrap).toEqual(["break-word", "normal"]);
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    );
+    expect(overflow).toBeLessThanOrEqual(0);
+  });
+});
+
 test("demo mode: a language with no clips gets the banner but no empty clip picker", async ({
   page,
 }) => {
