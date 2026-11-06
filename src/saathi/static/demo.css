@@ -17,7 +17,9 @@ body { margin: 0; }
 .pane h1 { margin: 0; padding: 0.35rem 1rem; font-size: 0.95rem; font-weight: 800; letter-spacing: 0.05em;
   text-transform: uppercase; background: var(--band); color: var(--band-on); }
 iframe { flex: 1; width: 100%; border: 0; min-height: 0; background: var(--bg); }
+/* Phone: the two panes stack and together fill the visible height (dvh follows the browser bar). */
 @media (max-width: 700px) {
-  .stage { aspect-ratio: auto; grid-template-columns: 1fr; grid-template-rows: auto; }
-  iframe { height: 80vh; }
+  .stage { width: auto; aspect-ratio: auto; min-height: 100dvh; box-sizing: border-box;
+    grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr) minmax(0, 1fr); }
+  .pane { min-height: 22rem; }
 }
