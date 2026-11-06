@@ -6,6 +6,7 @@
 import { AudioPlayer } from "./audio-player.js";
 import { cardChips, chipsFromFacts } from "./chips.js";
 import { clipsForLanguage, oneLine, parseDemoClips } from "./demo-clips.js";
+import { formatElapsed } from "./elapsed.js";
 import { nameForViewer } from "./languages.js";
 import { applyChrome, Bi, bi, renderText, setLanguage, tb } from "./i18n.js";
 import { parseQuickReplyTable, quickReplyOptions } from "./quick-replies.js";
@@ -80,14 +81,24 @@ export function enterRoom(room, languages, players, onEnded) {
   // applyChrome has stored the page's English text on the element, so the idle label keeps both lines.
   const idleLabel = tb(String(talkLabel.dataset.i18n), talkLabel.dataset.en ?? "");
   /** @type {{recording: import("./recorder.js").Recording | null, busy: boolean,
-   *   peerJoined: boolean, pending: Blob | null, pendingDemo: boolean}} */
+   *   peerJoined: boolean, pending: Blob | null, pendingDemo: boolean,
+   *   outcome: "" | "done" | "error"}} */
   const state = {
     recording: null,
     busy: false,
     peerJoined: false,
     pending: null,
     pendingDemo: false,
+    outcome: "", // how the last send ended, shown as the colour of the microphone button
   };
+  // The recording clock sits inside the microphone button; it is digits, so it needs no text key.
+  const elapsedEl = document.createElement("span");
+  elapsedEl.className = "talk-elapsed";
+  elapsedEl.hidden = true;
+  elapsedEl.setAttribute("aria-hidden", "true");
+  talkButton.append(elapsedEl);
+  let elapsedTimer = 0;
+  let recordingStartedAt = 0;
   /** @type {import("./demo-clips.js").DemoClip[]} */
   let demoClips = [];
   const stream = new AbortController();
@@ -141,9 +152,33 @@ export function enterRoom(room, languages, players, onEnded) {
     );
   }
 
+  function showElapsed() {
+    elapsedEl.textContent = formatElapsed(Date.now() - recordingStartedAt);
+  }
+
+  /** @param {boolean} recording */
+  function syncElapsed(recording) {
+    if (recording && elapsedTimer === 0) {
+      recordingStartedAt = Date.now();
+      showElapsed();
+      elapsedEl.hidden = false;
+      elapsedTimer = window.setInterval(showElapsed, 1000);
+    } else if (!recording && elapsedTimer !== 0) {
+      window.clearInterval(elapsedTimer);
+      elapsedTimer = 0;
+      elapsedEl.hidden = true;
+    }
+  }
+
   function render() {
     const recording = state.recording !== null;
     talkButton.setAttribute("aria-pressed", String(recording));
+    syncElapsed(recording);
+    talkButton.dataset.state = recording
+      ? "recording"
+      : state.busy
+        ? "processing"
+        : state.outcome || "idle";
     talkButton.disabled = !state.peerJoined || state.busy || state.pending !== null;
     renderText(talkLabel, recording ? tb("tap_to_stop", "Tap to stop and send") : idleLabel);
     actionsEl.hidden = state.pending === null || state.busy;
@@ -244,7 +279,31 @@ export function enterRoom(room, languages, players, onEnded) {
         : tb("customer_joined", "The customer joined.");
     renderText(peerEl, bi`${joined} ${tb("their_language", "Their language")}: ${languageName(code)}.`);
     // The code has done its job; keep it as a small line in case the rider has to rejoin.
-    codeBoxEl?.classList.add("compact");
+    if (codeBoxEl && !codeBoxEl.classList.contains("compact") && !codeToggle) collapseCodeBox(codeBoxEl);
+  }
+
+  /** @type {HTMLButtonElement | null} */
+  let codeToggle = null;
+
+  /**
+   * Shrink the code box to one line and add a button that opens it again. Opened by hand, it stays
+   * open: later peer events do not collapse it a second time.
+   * @param {HTMLElement} box
+   */
+  function collapseCodeBox(box) {
+    box.classList.add("compact");
+    const toggle = document.createElement("button");
+    toggle.type = "button";
+    toggle.className = "code-toggle";
+    toggle.setAttribute("aria-controls", box.id);
+    toggle.setAttribute("aria-expanded", "false");
+    renderText(toggle, tb("room_code", "Room code"));
+    toggle.addEventListener("click", () => {
+      const open = box.classList.toggle("compact") === false;
+      toggle.setAttribute("aria-expanded", String(open));
+    });
+    box.append(toggle);
+    codeToggle = toggle;
   }
 
   /**
@@ -398,12 +457,14 @@ export function enterRoom(room, languages, players, onEnded) {
 
   async function beginRecording() {
     state.busy = true;
+    state.outcome = "";
     render();
     try {
       state.recording = await startRecording(() => void finishRecording());
       setStatus(statusEl, tb("recording", "Recording. Tap again when you are done (60 s maximum)."));
     } catch (error) {
       if (!(error instanceof RecorderError)) throw error;
+      state.outcome = "error";
       setStatus(statusEl, error.text, true);
     } finally {
       state.busy = false;
@@ -422,6 +483,7 @@ export function enterRoom(room, languages, players, onEnded) {
       await submit(await toWav(await recording.stop()));
     } catch (error) {
       if (!(error instanceof RecorderError)) throw error;
+      state.outcome = "error";
       setStatus(statusEl, error.text, true);
     } finally {
       state.busy = false;
@@ -459,10 +521,12 @@ export function enterRoom(room, languages, players, onEnded) {
     const result = await postTurn(room, wav, demoClip);
     if (!result.ok) {
       if (!result.keepRecording) state.pending = null;
+      state.outcome = "error";
       setStatus(statusEl, result.message, true);
       return;
     }
     state.pending = null;
+    state.outcome = "done";
     if (sentEl && sentChipsEl && sentEmptyEl) {
       renderChips(sentChipsEl, chipsFromFacts(result.data.facts));
       sentEmptyEl.hidden = sentChipsEl.childElementCount > 0;
@@ -499,6 +563,7 @@ export function enterRoom(room, languages, players, onEnded) {
   });
   discardButton.addEventListener("click", () => {
     state.pending = null;
+    state.outcome = "";
     setStatus(statusEl, tb("recording_discarded", "Recording discarded. Ready."));
     render();
   });
