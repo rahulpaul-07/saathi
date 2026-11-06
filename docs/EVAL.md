@@ -205,6 +205,25 @@ Caveats:
   the model load time, which is not measured here.
 - The pair is an example; roles are independent of languages and other pairs were not measured.
 
+## STT output format: verbatim vs transcribe (3 real calls plus 1 failed, run 2026-11-03)
+
+Saathi sends no `format` field, so Gnani's default (verbatim: numbers spelled as words) applies.
+A one-off probe sent `format=transcribe` (inverse text normalization) for one Gnani TTS clip per
+language, same endpoint and default model, and compared it with the stored bundle transcript of
+the same clip. The Tamil request first returned an HTTP 504 and was sent again later; the ledger
+counted all 4 attempts. The probe script and its raw output were throwaway files and are not in the repo.
+
+| Clip | Verbatim | transcribe | Facts, both |
+|---|---|---|---|
+| kn-gate-correction | ... ನಂಬರ್ ಎರಡು | ... ನಂಬರ್ 2 | gate=2 |
+| ta-gate | இரண்டாவது ... மூன்று | 2nd ... 3rd ... 3 | cross=2, main=3, gate=3, landmark |
+| te-gate | రెండో క్రాస్ నాలుగు ... ఒకటి | రెండో క్రాస్ 4 ... 1 | cross=2, main=4, gate=1, landmark |
+
+- Digits came back for all three languages (Tamil ordinals as "2nd", "3rd"; the Telugu ordinal
+  stayed a word). Saathi's extractor found identical facts from both outputs on every clip.
+- n=3 short synthetic clips, one per language: it shows the option works on these clips, not how
+  accurate it is. Saathi was not changed to use it, since number words already work.
+
 ## Not run tonight
 
 - Start-of-clip split (first-2-word miss rate): needs the real-speech set; not run.
