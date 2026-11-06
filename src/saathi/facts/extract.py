@@ -194,6 +194,68 @@ def _match_at(tokens: list[Token], index: int, phrase: tuple[str, ...]) -> bool:
     return True
 
 
+def _number_start(tokens: list[Token], end: int, lex: Lexicon) -> int | None:
+    """Index where the longest number that ends just before token `end` starts, if any."""
+    for start in range(max(0, end - 5), end):
+        number = parse_number(tokens, start, lex)
+        if number is not None and number.end == end:
+            return start
+    return None
+
+
+def _rejected(tokens: list[Token], neg: int, lex: Lexicon) -> set[int]:
+    """Tokens a spoken "not" at `neg` takes back (the NEG itself included), or an empty set.
+
+    "gate 4, not 2": the 4 stands and "not 2" goes. "gate 2 4 not" (two, four, not): the 4 and the
+    "not" go, and the 2 stands. A number that goes straight into a trigger word is a new fact, not
+    a rejected one, and "twenty four not" is one number, so neither is touched.
+    """
+    after = neg + 1
+    if (
+        neg >= 1
+        and after < len(tokens)
+        and not tokens[neg].break_after
+        and _number_start(tokens, neg, lex) is not None
+    ):
+        rejected = parse_number(tokens, after, lex)
+        if rejected is not None and not (
+            rejected.end < len(tokens) and tokens[rejected.end].key in lex.triggers
+        ):
+            return set(range(neg, rejected.end))
+    for start in range(max(0, neg - 5), neg):
+        number = parse_number(tokens, start, lex)
+        if number is None or number.end != neg:
+            continue
+        if number.ambiguous and neg - start == 2:  # "2 4 not": a digit run read as 24
+            return {start + 1, neg}
+        earlier = _number_start(tokens, start, lex)
+        if earlier is not None and earlier < start:
+            return set(range(start, neg + 1))
+        return set()
+    return set()
+
+
+def _drop_rejected(tokens: list[Token], lex: Lexicon) -> list[Token]:
+    """`tokens` without the values a spoken correction says were wrong."""
+    dropped: set[int] = set()
+    for index, token in enumerate(tokens):
+        if token.key in lex.negations and index not in dropped:
+            dropped |= _rejected(tokens, index, lex)
+    return [token for index, token in enumerate(tokens) if index not in dropped]
+
+
+def _glued_suffix(token: Token, lex: Lexicon) -> str | None:
+    """The postposition glued to the end of a name ("स्कूलसमोर"), if the token has one."""
+    for suffix in lex.landmark_glued:
+        if (
+            token.key.endswith(suffix)
+            and token.text.endswith(suffix)
+            and len(token.key) > len(suffix)
+        ):
+            return suffix
+    return None
+
+
 def _landmarks(tokens: list[Token], lex: Lexicon, used: set[int], text: str) -> list[Fact]:
     first_words = {phrase[0] for phrase in lex.landmark_before | lex.landmark_after}
 
@@ -212,6 +274,8 @@ def _landmarks(tokens: list[Token], lex: Lexicon, used: set[int], text: str) -> 
     while index < len(tokens):
         before = _longest_match(tokens, index, lex.landmark_before)
         after = _longest_match(tokens, index, lex.landmark_after)
+        glued = None if before or after or index in used else _glued_suffix(tokens[index], lex)
+        end_trim = 0
         if before:
             span = _collect_forward(tokens, index + len(before), stops)
             confidence: Confidence = "high"
@@ -220,6 +284,11 @@ def _landmarks(tokens: list[Token], lex: Lexicon, used: set[int], text: str) -> 
             span = _collect_backward(tokens, index, stops)
             confidence = "low"  # open-ended: the name is whatever precedes the postposition
             skip = len(after)
+        elif glued:
+            span = [*_collect_backward(tokens, index, stops), index]
+            confidence = "low"
+            skip = 1
+            end_trim = len(glued)
         else:
             index += 1
             continue
@@ -227,6 +296,8 @@ def _landmarks(tokens: list[Token], lex: Lexicon, used: set[int], text: str) -> 
         if span:
             used.update(span)
             start, end = tokens[span[0]].start, tokens[span[-1]].end
+            if span[-1] == index and glued:
+                end -= end_trim  # the name ends where the glued postposition begins
             facts.append(Fact("landmark", text[start:end], start, end, text[start:end], confidence))
         index += skip
     return facts
@@ -285,7 +356,7 @@ def extract_facts(text: str, language: str) -> list[Fact]:
     if len(text) > MAX_TEXT_CHARS:
         raise ValueError(f"text longer than {MAX_TEXT_CHARS} characters")
     lex = lexicon_for(language)
-    tokens = tokenize(text)
+    tokens = _drop_rejected(tokenize(text), lex)
     facts, used = _structured(tokens, lex, text)
     facts += _landmarks(tokens, lex, used, text)
     return sorted(facts, key=lambda fact: fact.start)

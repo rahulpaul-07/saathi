@@ -26,6 +26,10 @@ class Lexicon:
     stopwords: frozenset[str]  # end a landmark name ("my house", "turn left")
     leading_particles: frozenset[str]  # dropped from the start of a landmark ("the")
     trailing_particles: frozenset[str]  # dropped from its end (Hindi "के")
+    # "not" in the language: "gate 2, 4 not" means 2, and "gate 4, not 2" means 4.
+    negations: frozenset[str] = frozenset()
+    # Postpositions the STT glues to the name ("स्कूलसमोर"): matched as a token suffix.
+    landmark_glued: frozenset[str] = frozenset()
 
 
 def words(spec: str) -> frozenset[str]:
@@ -89,4 +93,6 @@ def merge(*lexicons: Lexicon) -> Lexicon:
         stopwords=frozenset().union(*(lx.stopwords for lx in lexicons)),
         leading_particles=frozenset().union(*(lx.leading_particles for lx in lexicons)),
         trailing_particles=frozenset().union(*(lx.trailing_particles for lx in lexicons)),
+        negations=frozenset().union(*(lx.negations for lx in lexicons)),
+        landmark_glued=frozenset().union(*(lx.landmark_glued for lx in lexicons)),
     )
