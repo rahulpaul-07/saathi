@@ -58,7 +58,13 @@
   --fs-4: 1.5rem;
   --fs-5: 2rem;
   --fs-label: var(--fs-1);
-  --fs-value: var(--fs-5);
+  /* Sizes that grow with the window. Each is its phone value up to 640 px wide, its laptop value from
+     1024 px wide, and linear in between (clamp holds the two ends). The split page's frames are about
+     as wide as a phone, so they keep the phone values. */
+  --fs-value: clamp(var(--fs-5), 1.1667rem + 2.0833vw, 2.5rem); /* tile text: 32 px to 40 px */
+  --fs-hero: clamp(1.75rem, 0.5rem + 3.125vw, 2.5rem); /* home headline: 28 px to 40 px */
+  --btn-h: clamp(3.5rem, 6.1667rem - 4.1667vw, 4.5rem); /* big buttons and the mic: 72 px to 56 px */
+  --btn-fs: clamp(1.125rem, 1.4583rem - 0.5208vw, 1.25rem); /* their label: 20 px to 18 px */
   --sp-0: 0.25rem;
   --sp-1: 0.5rem;
   --sp-2: 1rem;
@@ -121,7 +127,7 @@ body {
 /* Indic scripts have tall marks above and below the line: 1.5 for body text and 1.25 for the big
    tile values keep them from touching (checked for all eight scripts by a screenshot test). */
 main {
-  max-width: 36rem; margin: 0 auto; padding: var(--sp-2);
+  max-width: 40rem; margin: 0 auto; padding: var(--sp-2);
   padding-left: max(var(--sp-2), env(safe-area-inset-left, 0px));
   padding-right: max(var(--sp-2), env(safe-area-inset-right, 0px));
   padding-bottom: calc(var(--sp-2) + var(--safe-bottom));
@@ -139,10 +145,10 @@ h2 { margin: var(--sp-2) 0 var(--sp-0); font-size: var(--fs-1); color: var(--mut
 /* The microphone. States are data-state on the button: idle (none), recording (aria-pressed),
    processing (busy, disabled), done and error (the last send). */
 .talk-btn {
-  position: relative; overflow: hidden;
+  position: relative; overflow: hidden; width: 100%; /* a button sizes to its label unless told otherwise */
   display: flex; align-items: center; justify-content: center; gap: 0.75rem;
-  min-height: 4.5rem; padding: 0 var(--sp-2); border: 3px solid var(--accent); border-radius: 1rem;
-  background: var(--surface); color: var(--text); font: inherit; font-size: var(--fs-3); font-weight: 600;
+  min-height: var(--btn-h); padding: 0 var(--sp-2); border: 3px solid var(--accent); border-radius: 1rem;
+  background: var(--surface); color: var(--text); font: inherit; font-size: var(--btn-fs); font-weight: 600;
 }
 .talk-btn[data-state="done"] { border-color: var(--ok); }
 .talk-btn[data-state="error"] { border-color: var(--danger); }
@@ -190,13 +196,16 @@ select, input[type="text"] {
   width: 100%; min-height: 3.25rem; padding: 0 0.75rem; font: inherit; font-size: 1.125rem;
   color: var(--text); background: var(--surface); border: 2px solid var(--control-border); border-radius: 0.6rem;
 }
+/* A chosen option too wide for the control (the Tamil "Choose a clip" with its English twin, on a
+   412 px phone) ends in an ellipsis; without this the browser cuts it with no sign. */
+select { text-overflow: ellipsis; }
 input[type="text"] { text-transform: uppercase; letter-spacing: 0.2em; font-weight: 700; }
 a { color: var(--accent); }
 .big-btn {
   display: flex; align-items: center; justify-content: center; gap: 0.75rem; width: 100%;
-  min-height: 4.5rem; margin: var(--sp-2) 0; padding: 0 var(--sp-2); border: 2px solid var(--accent);
+  min-height: var(--btn-h); margin: var(--sp-2) 0; padding: 0 var(--sp-2); border: 2px solid var(--accent);
   border-radius: 1rem; background: var(--accent); color: var(--accent-text); font: inherit;
-  font-size: var(--fs-3); font-weight: 700; text-decoration: none; text-align: center;
+  font-size: var(--btn-fs); font-weight: 700; text-decoration: none; text-align: center;
 }
 .big-btn.secondary { background: transparent; color: var(--accent); }
 .big-btn:disabled, .reply-btn:disabled { opacity: 0.55; }
@@ -332,10 +341,10 @@ main:has(#room) h2 { margin: var(--sp-1) 0 0.15rem; }
 #card-chips:empty { min-height: 5rem; border: 2px dashed var(--border); border-radius: 0.75rem; }
 /* The customer's microphone stays in the thumb zone, above the home bar, while the page scrolls. */
 :root[data-role="customer"] .talk-btn {
-  min-height: 4.5rem; position: sticky; z-index: 2; bottom: calc(var(--sp-1) + var(--safe-bottom));
+  min-height: var(--btn-h); position: sticky; z-index: 2; bottom: calc(var(--sp-1) + var(--safe-bottom));
   box-shadow: 0 0.25rem 1rem rgb(15 23 42 / 0.2);
 }
-:root[data-role="customer"] .talk-btn.minor { font-size: var(--fs-3); }
+:root[data-role="customer"] .talk-btn.minor { font-size: var(--btn-fs); }
 
 /* Landing page and brand mark. */
 .brand { display: flex; align-items: center; gap: 0.6rem; }
@@ -346,7 +355,7 @@ main:has(#room) h2 { margin: var(--sp-1) 0 0.15rem; }
 .landing .wordmark { font-size: var(--fs-4); font-weight: 800; }
 .landing .headline {
   margin: var(--sp-2) 0 var(--sp-1); padding-left: 0.75rem; border-left: 0.4rem solid var(--brand);
-  font-size: 1.75rem; font-weight: 800; line-height: 1.25;
+  font-size: var(--fs-hero); font-weight: 800; line-height: 1.25;
 }
 .landing .pitch { margin: var(--sp-1) 0; font-size: var(--fs-2); font-weight: 500; line-height: 1.5; }
 .kind-strip { list-style: none; display: flex; flex-wrap: wrap; gap: 0.4rem; margin: var(--sp-1) 0; padding: 0; }
@@ -358,10 +367,9 @@ main:has(#room) h2 { margin: var(--sp-1) 0 0.15rem; }
 .role-customer { --accent: var(--customer); --accent-text: var(--customer-on); }
 .role-rider { --accent: var(--rider); --accent-text: var(--rider-on); }
 .landing .entry .big-btn { margin: 0; }
-/* On a phone the two role buttons and the demo link come before the longer explanation. */
-.landing { display: flex; flex-direction: column; }
-.landing .problem { order: 1; }
-.landing .notes { order: 2; }
+/* One column in reading order: the role buttons and the demo link first, then the sample card and the
+   longer explanation. Flex keeps each block's own margins, as they were before the intro was wrapped. */
+.landing, .landing .intro { display: flex; flex-direction: column; }
 
 /* A coloured band on a person's own pages, and the light/dark switch. The switch is on the English
    pages only (landing, demo bar); room pages follow the saved choice or the system setting, so no
@@ -397,6 +405,28 @@ main:has(#room) h2 { margin: var(--sp-1) 0 0.15rem; }
 .notes { margin-top: var(--sp-3); padding-top: var(--sp-1); border-top: 1px solid var(--border); }
 .notes ul { margin: var(--sp-0) 0; padding-left: 1.2rem; color: var(--muted); font-size: var(--fs-1); }
 .notes li { margin: var(--sp-0) 0; }
+/* A sample delivery card on the home page: the tiles the rider sees, framed in the rider's colour.
+   It is a picture of the result, so the tiles do not pop in and carry no buttons. */
+.preview {
+  margin: var(--sp-2) 0; padding: 0 var(--sp-2) var(--sp-2); background: var(--surface);
+  border: 1px solid var(--border); border-top: 0.4rem solid var(--rider); border-radius: var(--radius);
+}
+.preview h2 { margin: var(--sp-1) 0 0; }
+.preview .badge { margin-top: 0; }
+.preview .chips { margin: var(--sp-1) 0 0; }
+.preview .chip { animation: none; }
+/* Laptop: the explanation and the two role buttons on the left, the sample card on the right, and
+   the longer text across the full width below. */
+@media (min-width: 64rem) {
+  .landing {
+    display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); column-gap: var(--sp-4);
+    align-items: start; max-width: 70rem;
+  }
+  .landing .brand, .landing .problem, .landing .notes { grid-column: 1 / -1; }
+  .landing .problem { max-width: 48rem; }
+  .notes ul { columns: 2; column-gap: var(--sp-4); }
+  .notes li { break-inside: avoid; }
+}
 
 /* Bilingual text: the viewer's language is the primary line, the English twin is visibly secondary:
    smaller, lighter and muted. On a filled button the muted colour is the dedicated on-accent one. */
@@ -407,6 +437,9 @@ main:has(#room) h2 { margin: var(--sp-1) 0 0.15rem; }
 .big-btn:has(> .l-en) { flex-direction: column; gap: 0; }
 button .l-main, button .l-en, .reply-btn .l-main, .reply-btn .l-en { text-align: inherit; }
 button:has(.l-en) { padding-top: 0.4rem; padding-bottom: 0.4rem; }
+/* On a laptop the buttons are shorter, so the two lines of a bilingual button get less padding to
+   stay under 64 px. */
+@media (min-width: 64rem) { button:has(.l-en) { padding-top: 0.25rem; padding-bottom: 0.25rem; } }
 .talk-btn[aria-pressed="true"] .l-en { color: inherit; }
 
 /* Once a room is active the demo banner and the status lines share one compact, wrapping line under
@@ -421,25 +454,21 @@ main:has(#room) .room-line > .status.error { font-weight: 600; }
 :root.in-frame { font-size: 125%; }
 .in-frame body { font-size: 1rem; }
 .in-frame main { max-width: none; padding: 0.75rem 1.25rem; }
-/* Wide pane: all four fact tiles in one row, so the card stays above the fold at the larger size. */
-.in-frame .chips { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-.in-frame .chip-landmark:nth-child(odd) { grid-column: auto; }
-/* The banner is one line, the local and English text side by side and cut with an ellipsis; the
-   demo bar says the same thing on the split page, and the clip picker below is the real cue. */
+/* The banner wraps and shows both lines in full: on a page of its own it is the one place that says
+   these are prepared clips, so no width may cut it. */
 main:has(#room) .room-line > .demo-banner:not([hidden]) {
-  display: flex; gap: var(--sp-1); flex: 1 1 100%; min-width: 0; white-space: nowrap;
+  display: flex; flex-wrap: wrap; gap: var(--sp-1); flex: 1 1 100%; min-width: 0;
 }
-main:has(#room) .room-line > .demo-banner > span { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-main:has(#room) .room-line > .demo-banner > .l-main { flex: 1 1 auto; }
-main:has(#room) .room-line > .demo-banner > .l-en { flex: 0 1 auto; font-weight: 400; }
-/* On a phone the banner wraps and shows both lines in full: the one-line ellipsis above would cut
-   the sentence that says these are prepared clips. Kept last so it overrides the rules above. */
-@media (max-width: 30rem) {
-  main:has(#room) .room-line > .demo-banner:not([hidden]) { flex-wrap: wrap; white-space: normal; }
-  main:has(#room) .room-line > .demo-banner > span { overflow: visible; text-overflow: clip; overflow-wrap: break-word; }
-  main:has(#room) .room-line > .demo-banner > .l-main,
-  main:has(#room) .room-line > .demo-banner > .l-en { flex: 1 1 100%; }
+main:has(#room) .room-line > .demo-banner > span { flex: 1 1 100%; min-width: 0; overflow-wrap: break-word; }
+main:has(#room) .room-line > .demo-banner > .l-en { font-weight: 400; }
+/* Only in a split-page frame wide enough for two lines side by side is it one line, the local and
+   English text cut with an ellipsis: the demo bar above the panes says the same thing there, and the
+   clip picker below is the real cue. A narrower frame (the panes stacked on a phone) wraps as above. */
+@media (min-width: 30rem) {
+  .in-frame main:has(#room) .room-line > .demo-banner:not([hidden]) { flex-wrap: nowrap; white-space: nowrap; }
+  .in-frame main:has(#room) .room-line > .demo-banner > span { flex: 0 1 auto; overflow: hidden; text-overflow: ellipsis; }
+  .in-frame main:has(#room) .room-line > .demo-banner > .l-main { flex: 1 1 auto; }
 }
 /* Room for the sticky microphone: the last status line and the demo text scroll clear of it
    (button height, a gap, and the home-bar inset). */
-:root[data-role="customer"] main { padding-bottom: calc(4.5rem + var(--sp-2) + var(--safe-bottom)); }
+:root[data-role="customer"] main { padding-bottom: calc(var(--btn-h) + var(--sp-2) + var(--safe-bottom)); }
