@@ -1,15 +1,40 @@
 # Saathi
 
-[![CI](https://github.com/rahulpaul-07/saathi/actions/workflows/ci.yml/badge.svg)](https://github.com/rahulpaul-07/saathi/actions/workflows/ci.yml)
-
-Built for the Gnani.ai Great Indian AI Internship Challenge.
-
-Demo video: (link added after recording)
-
 **A customer speaks delivery directions in their language; the rider, in another Indian language,
 gets the gate, floor, cross, main and landmark as big chips plus translated audio.**
 
+**Try it:** https://saathi.indiasouthcentral.cloudapp.azure.com. Open "Both screens side by side
+(demo)", pick a customer language and a rider language, and send a demo clip. The guided demo
+replays stored clips and spends no Gnani credits.
+
+Demo video: (link added after recording)
+
+Built on Gnani Prisma (speech to text) and Timbre (text to speech), with IndicTrans2 run locally for
+translation. An entry to the Gnani.ai Great Indian AI Internship Challenge.
+
+[![CI](https://github.com/rahulpaul-07/saathi/actions/workflows/ci.yml/badge.svg)](https://github.com/rahulpaul-07/saathi/actions/workflows/ci.yml)
+
 ![Rider and customer screens side by side: the delivery card, a changed gate marked, and a confirm-or-ask prompt](docs/media/design/after/split-1920-4-confirm-and-ask.png)
+
+**It handles code-mixed speech.** People give directions in one language with English address words
+in it: Kannada with "2nd cross" and "gate number". Gnani's Kannada speech to text writes those words
+in Kannada script (ಕ್ರಾಸ್, ಮೇನ್, ಗೇಟ್ ನಂಬರ್, ಆಪೋಸಿಟ್), as the probe transcripts in
+[probe_codemix.json](eval/results/probe_codemix.json) show, and the Kannada street clip
+`kn-wrong-translation` (one of five earlier clips, so not blind) was read as cross 2, main 3, gate 2
+and its landmark. The demo set has one code-mixed clip per language (the `mixed` rows of the
+[first pass](eval/results/demo_set_first_pass.md) and the
+[re-score after fixes](eval/results/demo_set_after_fixes.md)): 3 of those 10 had exactly the
+expected facts on the held-out first pass and 5 of 10 after the fixes, which is not held-out. The
+Kannada code-mixed clip still misses its cross: the speech service wrote "class" for "cross". All of
+this is synthetic speech; real phone audio of code-mixed directions was not tested.
+
+Three numbers, each from a result file:
+
+| Number | What it is | Data |
+|---|---|---|
+| 23 of 50 | Synthetic clips (5 types x 10 languages) with exactly the expected facts on the held-out first pass. 34 of 50 after fixes written while reading the same transcripts, so that figure is not held-out. | [first pass](eval/results/demo_set_first_pass.md), [after fixes](eval/results/demo_set_after_fixes.md) |
+| 0.067 | Mean character error rate of the speech service on 100 real read-speech clips (FLEURS, 10 per language, 95% CI 0.043 to 0.097); 0.101 with street noise at 5 dB. | [speech_summary.md](eval/results/speech_summary.md) |
+| 2.9 s | Median time for one spoken turn (speech to text, translation, text to speech); p95 4.0 s, slowest 16.2 s. Bengali to Kannada, n=20, one laptop on AC power with an RTX 3050 6 GB, clean synthetic audio, run 2026-11-01. Translation on 2 CPU cores was measured separately: about 3 s at the median and p95 5.5 to 5.8 s, two runs of n=20 on the same laptop. The hosted VM was not measured. | [latency.json](eval/results/latency.json), [cpu_latency.json](eval/results/cpu_latency.json) |
 
 Why this matters:
 
@@ -83,6 +108,9 @@ Safety layers, in the order a wrong fact would have to get past them:
 | Journey tests | 10 language-pair journeys plus the split-screen journey, all passing | fake Gnani and translator, Playwright, two browser contexts | [`tests/e2e/journeys.spec.js`](tests/e2e/journeys.spec.js) |
 | Translation-safety matrix, 10x10, back-translation score | 0.796 plain, 0.784 masked, 0.812 conditional masking | 90 pairs, 20 machine-generated sentences per pair, 5130 facts, local model, fixed scorer | [masking_conditional_matrix.json](eval/results/masking_conditional_matrix.json) |
 | Same matrix, target-language score | 0.374 plain, 0.445 masked, 0.447 conditional | as above | [masking_conditional_matrix.json](eval/results/masking_conditional_matrix.json) |
+| Guided-demo set, held-out first pass | 23 of 50 clips with exactly the expected facts | 50 synthetic clips, 5 types x 10 languages, expected facts written before the run; 5 clips were not built because Gnani returned a 504; 5 of the 50 are earlier clips that were not blind | [demo_set_first_pass.md](eval/results/demo_set_first_pass.md) |
+| Same 50 clips after fixes, not held-out | 34 of 50 | the fixes were written while reading these transcripts, so this is a regression check and not accuracy; 2 clips are still unbuilt after a retry | [demo_set_after_fixes.md](eval/results/demo_set_after_fixes.md) |
+| Guided-demo replay, all 90 ordered language pairs | 90 of 90 pairs passed; 306 clip replays, 0 failed; 21 of the 306 translations failed the placeholder check and gave the facts-only text (19 of them for Bengali and Malayalam riders) | the 34 clips whose stored transcripts give exactly the expected facts, sent through the room API with the real local translator and no speech service; stored audio for the 34 recorded pairs, locally translated text only for the other 272; 0 Gnani calls; the unverified count changed between reruns and the times were taken on battery power, so neither is a benchmark | [language_matrix.md](eval/results/language_matrix.md) |
 
 Scorer note, 2026-11-01: the English fact extractor was fixed to read "Gate No. 2" and "4 floors", and every fact-recall number above uses the fixed one. Before the fix the same outputs scored 0.674 / 0.747 / 0.843 (A/B, kept in [masking_ab.json](eval/results/masking_ab.json)) and 0.748 plain / 0.679 masked (matrix back score, [translation_matrix.json](eval/results/translation_matrix.json)). The noise, speech and extraction rows are identical under both scorers. Default masking stays `current`; the comparison is in `docs/EVAL.md`.
 
@@ -135,8 +163,10 @@ Off unless `SAATHI_PUBLIC=1`; unset, the app behaves exactly as for local use. W
   **kill switch** (a file, checked on every call, no restart). Every HTTP attempt is counted,
   retries included; when spent, live turns return a clear 503 and nothing is sent to Gnani.
 - **Caps** on rooms, room lifetime, room creations per IP per hour and upload size.
-- **A guided demo** that replays 5 stored turns (recorded once with real calls) through the real
-  screens with zero Gnani calls. A clip outside the bundle is refused, never sent live.
+- **A guided demo** that replays 34 prepared clips (recorded once with real calls) through the real
+  screens with zero Gnani calls. For a rider language that was recorded, the stored translation and
+  audio play; for any other, the stored transcript is translated on the host and shown as text with
+  no audio. A clip outside the bundle is refused, never sent live.
 - A CPU container image, a QR code for the rider link, and translation models pinned to full
   commits because they run Hub-hosted code.
 
@@ -154,11 +184,49 @@ measured.
 - Synthetic speech is clean and one voice per language; it cannot reproduce phone microphones.
 - Small samples are small: 4 sentences per language in the held-out set, 20 utterances in the noise
   test.
-- The translation models are comfortable on a GPU (an RTX 3050 6 GB here). On 2 CPU cores the
-  translation step alone measured about 3 s at the median in a container on that laptop, so a
-  CPU-only host feels slower than the GPU latency figures above; a cloud host was not measured.
+- **A wrong transcript gives a missing or garbled chip.** The extractor reports what the transcript
+  says. In the held-out first pass, 12 of the 27 clips that failed had a wrong transcript ("mail" for
+  "main", "class" for "cross", a garbled "flat twelve"), and 12 of the 16 that still fail after the
+  fixes do.
+- **The guided demo shows the clips that work.** Its picker lists the 34 of 50 clips whose facts
+  matched in full after the fixes; the other 16 stay in the evaluation set. The held-out figure is
+  23 of 50, not 34.
+- **Marathi landmarks are limited to two cues.** A landmark is read only when its name is followed
+  by "समोर" (in front of) or "मागे" (behind), including when the speech service glues the cue to the
+  name ("स्कूलसमोर"). "Near" and "next to" are not read. In the demo set the Marathi street clip lost
+  its landmark because the speech service garbled the word.
+- **Number words above 20 are not read in Tamil, Telugu, Gujarati, Malayalam, Marathi and Punjabi.**
+  Their number words were probed only up to 20, and in those probes the speech service wrote number
+  words, not digits. A gate, floor or flat above 20 spoken in these languages is expected to give no
+  chip unless the service writes digits; this was not tested.
+- **Malayalam and Bengali riders get the facts-only text most often.** In the 10x10 guided-demo
+  replay, the check that each masked number and address word comes back from the translator exactly
+  once failed for 12 of 31 replays to Malayalam and 7 of 30 to Bengali; the other eight languages had
+  2 failures between them (21 of 306 in all). Those riders get the facts spelled out from tables
+  instead of the model's sentence, and the delivery card is unaffected. The total changed between
+  reruns of the same matrix (30 and 36 in two earlier runs that were not kept, 21 in the run kept
+  here); the cause was not established.
+- **The guided demo is replayed, not live.** It plays stored transcripts and audio, so it shows the
+  screens and the fact pipeline but not how the speech service does on what a visitor says. A rider
+  language that was not recorded for a clip is translated on the host from the stored transcript and
+  has no audio. Live microphone turns spend Gnani credit and are bounded by a daily budget (the
+  code's default is 200 requests per UTC day, and a live turn takes two); once it is spent, live
+  turns are refused with a 503 and only the guided demo works until the next UTC day.
+- The translation models are comfortable on a GPU (an RTX 3050 6 GB here) and slower on a CPU. The
+  public site runs on a single 2-vCPU VM, so translation there runs on the CPU: on 2 cores in a
+  container on the laptop it took about 3 s at the median (p95 5.5 to 5.8 s), so expect the hosted
+  site to be slower than the GPU latency figures above. The VM itself was not measured, nor how many
+  people it can serve at once. Rooms live in the memory of one process, at most 20 at a time by
+  default in public mode, and a restart ends every open room.
 - The Gnani STT endpoint returned intermittent 504 errors in the long runs; the scripts are
-  resumable.
+  resumable. Two of the 50 demo clips (`te-correction`, `pa-mixed`) never built because it returned
+  504 again on retry.
+- **The all-languages screen check used this machine's fonts.** Customer and rider screens in all 10
+  languages were checked in a real browser at 412x915 and 1280x800: every label present and in the
+  right script, no raw keys or "undefined", no missing-glyph boxes, no silently clipped text. The app
+  ships no web fonts, so a device without Indic fonts will show boxes. The check cannot tell Hindi
+  from Marathi (both Devanagari), and the Tamil prompt "Choose a clip" is cut with an ellipsis in
+  the clip picker on a 412 px phone.
 - iOS Safari is untested, and the microphone needs localhost or HTTPS.
 
 ## Try it locally
