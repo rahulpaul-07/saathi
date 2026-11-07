@@ -30,7 +30,9 @@ export function makeUi(languages) {
     language === "en"
       ? `${english(key)} ${value}`
       : `${main(language, key)} ${value} ${english(key)} ${value}`;
-  return Object.assign(ui, { main, english, has, with: withValue });
+  // Every interface key, so an audit can tell a raw key on screen from ordinary text.
+  const keys = Object.keys(languages.en ?? {});
+  return Object.assign(ui, { main, english, has, with: withValue, keys });
 }
 
 /**
