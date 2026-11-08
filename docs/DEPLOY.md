@@ -93,22 +93,29 @@ containers, volumes, memory limit, the names the env file needs) are in
 
 ## Guided demo (no Gnani calls)
 
-The guided demo replays stored turns (transcript, translation, spoken audio) through the real room
-screens. It reuses the demo-clip picker: when a valid bundle is present in public mode, the picker
-is shown, and a clip sent with the demo header is answered from the bundle. A clip that is not in
-the bundle, or a language pair that was not stored, gets `422 demo_no_match`; it is never sent to
-Gnani. The chips and the card are recomputed locally from the stored transcript with the same code
-as a live turn.
+The guided demo replays stored turns through the real room screens. It reuses the demo-clip picker:
+when a valid bundle is present in public mode, the picker is shown, and a clip sent with the demo
+header is answered from the bundle. A clip that is not in the bundle gets `422 demo_no_match`; it is
+never sent to Gnani. Each picker clip has a stored turn for every rider language other than its
+own: the transcript, the translation, the facts as the rider sees them (landmark rendering
+included), the verified flag and the spoken audio. A stored turn is a plain lookup, with no
+translation at serve time. A pair missing from the bundle is translated on the host from the stored
+transcript and plays no audio.
 
-The bundle is built once, by hand, with real Gnani calls:
+The bundle is built once, by hand, with real Gnani calls: `scripts/build_demo_set.py` records the
+clips and each clip's own rider voice, then `scripts/build_rider_voices.py` adds the other rider
+languages:
 
 ```
-uv run --no-sync python scripts/build_demo_bundle.py --dry-run   # prints the exact call budget
-uv run --no-sync python scripts/build_demo_bundle.py --run       # spends the calls shown
+uv run --no-sync python scripts/build_rider_voices.py --dry-run   # prints the exact call budget
+uv run --no-sync python scripts/build_rider_voices.py --run       # spends the calls shown
 ```
 
-`--dry-run` lists each clip and the call total (2 per clip: one speech-to-text, one text-to-speech)
-and checks it against the evaluation ledger cap. It sends nothing and needs no key.
+`--dry-run` prints the pairs that have no stored audio, the turns to add per rider language, and the
+call total (one text-to-speech call per pair) against the evaluation ledger. It sends nothing and
+needs no key. A run translates each pair once, waits at least 3.5 s between calls, makes one attempt
+per call (a failure is recorded, not retried) and saves after every call, so a stopped run resumes
+without paying twice. Copy the whole `demo/bundle` folder to the server, beside `demo/clips`.
 
 **To verify that guided-demo mode makes zero calls**, any of these:
 
