@@ -67,6 +67,13 @@ or the repository.
 If the first start has no network access to download the models, the container stops with an
 error instead of serving without a translator.
 
+The proxy configuration used on the Azure VM is [deploy/Caddyfile](../deploy/Caddyfile): HTTPS for
+the site address, HSTS for one year without `includeSubDomains`, `nosniff`, no referrer, a
+permissions policy that allows the microphone only, no `Server` header, and a reverse proxy to the
+app container on port 8000. The Docker commands used there (network, image, app and Caddy
+containers, volumes, memory limit, the names the env file needs) are in
+[deploy/run.sh](../deploy/run.sh), with the redeploy sequence.
+
 ## Budget and kill switch
 
 - Every Gnani HTTP attempt, retries included, is counted before it is sent. When the day's budget
@@ -114,7 +121,7 @@ and checks it against the evaluation ledger cap. It sends nothing and needs no k
 
 ## Not built
 
-- Any platform-specific manifest or deploy script.
+- An automated deploy. `deploy/run.sh` records the commands used by hand; it is not an installer.
 - Monitoring and alerting beyond `/healthz`.
 - Rooms live in memory in one process; run one instance. A restart ends every room.
 
