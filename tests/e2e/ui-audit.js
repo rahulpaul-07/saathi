@@ -15,6 +15,20 @@
 // box is not judged for that page either: a stand-in font's widths say nothing about the real one
 // (`fitJudged`). This tells whether each character has a glyph; it does not judge how a conjunct
 // is shaped.
+//
+// Why the glyph check depends on the fonts of the machine it runs on: the app ships no font, so
+// the browser draws every character with whatever the host has, and for a character no font has it
+// draws that font's own "missing glyph" shape, or nothing. The check needs that shape as its
+// reference. A host with almost no fonts (a bare CI runner) may draw nothing for it, which cannot
+// be told from the empty control, or a shape that differs between missing characters. The controls
+// then fail, `glyphs.controlsOk` is false, and the glyph findings mean nothing either way: they
+// are not reported as faults and must not be read as a pass. A caller then skips only its glyph
+// assertions, naming GLYPH_AUDIT_UNAVAILABLE as the reason, and keeps asserting everything else.
+// CI installs fonts-noto-core so that it does not normally come to that.
+
+/** Why a glyph assertion was skipped when `glyphs.controlsOk` is false. */
+export const GLYPH_AUDIT_UNAVAILABLE =
+  "glyph audit unavailable: host cannot calibrate missing-glyph detection";
 
 /**
  * The script each interface language is written in, by Unicode script name.
@@ -62,9 +76,12 @@ const DATA = [
 
 /**
  * @typedef {object} Audit
- * @property {string[]} problems what is wrong, one line each
- * @property {{checked: number, unavailable: string[], controlsOk: boolean}} glyphs characters
- *   compared, scripts the device has no font for, and whether the method's controls held
+ * @property {string[]} problems what is wrong, one line each, except the glyph findings, which
+ *   are in `glyphs.missing` because they can only be read when the glyph controls held
+ * @property {{checked: number, unavailable: string[], controlsOk: boolean, missing: string[]}}
+ *   glyphs characters compared, scripts the device has no font for, whether the method's controls
+ *   held (false: the host cannot calibrate missing-glyph detection, so `missing` is not to be
+ *   read, either way), and the characters the device draws as a missing glyph, one line each
  * @property {boolean} fitJudged false when the device has no font for a script on the page, so
  *   whether text fits its box was not judged (its width is a stand-in's)
  * @property {string[]} marked chosen options of a select that are wider than it and end in an
@@ -255,7 +272,12 @@ function runAudit({ lang, script, probes, keys, same, names, data }) {
   }
 
   // --- a glyph for every character ------------------------------------------------------------
-  const glyphs = { checked: 0, unavailable: /** @type {string[]} */ ([]), controlsOk: true };
+  const glyphs = {
+    checked: 0,
+    unavailable: /** @type {string[]} */ ([]),
+    controlsOk: true,
+    missing: /** @type {string[]} */ ([]),
+  };
   const canvas = document.createElement("canvas");
   canvas.width = 96;
   canvas.height = 64;
@@ -308,7 +330,7 @@ function runAudit({ lang, script, probes, keys, same, names, data }) {
         glyphs.checked += 1;
         if (ink(font, ch) === missing) {
           const code = (ch.codePointAt(0) ?? 0).toString(16).toUpperCase().padStart(4, "0");
-          problems.push(`no glyph for U+${code} (◌${ch}) on this device`);
+          glyphs.missing.push(`no glyph for U+${code} (◌${ch}) on this device`);
         }
       }
     }
@@ -321,7 +343,7 @@ function runAudit({ lang, script, probes, keys, same, names, data }) {
 
   return {
     problems: [...new Set(problems)],
-    glyphs,
+    glyphs: { ...glyphs, missing: [...new Set(glyphs.missing)] },
     fitJudged,
     marked: fitJudged ? [...new Set(marked)] : [],
     webFonts: document.fonts.size,

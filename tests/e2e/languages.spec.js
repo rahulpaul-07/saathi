@@ -12,7 +12,7 @@
 import { expect, test } from "@playwright/test";
 import { nameForViewer, parseLanguages } from "../../src/saathi/static/js/languages.js";
 import { loadUi, makeUi } from "./chrome-text.js";
-import { SCRIPT, auditPage, collectProblems } from "./ui-audit.js";
+import { GLYPH_AUDIT_UNAVAILABLE, SCRIPT, auditPage, collectProblems } from "./ui-audit.js";
 
 const DEMO = "http://127.0.0.1:8766"; // tests/e2e/serve.py --demo
 
@@ -45,7 +45,21 @@ const namesFor = (viewer) =>
   offered.map((language) => nameForViewer(language, viewer, language.name));
 
 /**
+ * Records on the running test that its glyph assertions were not made, once. A scenario cannot use
+ * test.skip for this: that ends the test, and with it the script, raw-key, clipping and overflow
+ * assertions that can be made on this host. The dedicated glyph tests below do skip.
+ */
+function noteGlyphAuditUnavailable() {
+  const { annotations } = test.info();
+  if (!annotations.some(({ type }) => type === "glyph assertions skipped")) {
+    annotations.push({ type: "glyph assertions skipped", description: GLYPH_AUDIT_UNAVAILABLE });
+  }
+}
+
+/**
  * Audits what a viewer sees now. Soft: a scenario reports every faulty screen, not only the first.
+ * The glyph part is asserted only when the host can calibrate it (see ui-audit.js); everything else
+ * always is.
  * @param {Page} page
  * @param {string} lang the viewer's language
  * @param {string} state a name for the screen, for the failure message
@@ -57,10 +71,12 @@ async function audit(page, lang, state) {
   const same = lang === "en" ? [] : ui.keys.filter((key) => ui.main(lang, key) === ui.english(key));
   const result = await auditPage(page, { lang, keys: ui.keys, same, names: namesFor(lang) });
   expect.soft(result.seen, `${state}: almost nothing on screen to audit`).toBeGreaterThan(LEAST_TEXTS);
-  expect
-    .soft(result.glyphs.controlsOk, `${state}: the missing-glyph reference cannot be trusted`)
-    .toBe(true);
   expect.soft(result.problems, state).toEqual([]);
+  if (result.glyphs.controlsOk) {
+    expect.soft(result.glyphs.missing, `${state}: characters with no glyph`).toEqual([]);
+  } else {
+    noteGlyphAuditUnavailable();
+  }
   return result;
 }
 
@@ -117,13 +133,16 @@ for (const { name, viewport } of SCREENS) {
 
         // One line per scenario, so a run shows what was and was not checked on this device.
         const glyphs = audits.reduce((sum, one) => sum + one.glyphs.checked, 0);
+        const glyphAudit = audits.every((one) => one.glyphs.controlsOk)
+          ? "ran"
+          : GLYPH_AUDIT_UNAVAILABLE;
         const withoutFont = [...new Set(audits.flatMap((one) => one.glyphs.unavailable))];
         const fitJudged = audits.every((one) => one.fitJudged);
         const marked = [...new Set(audits.flatMap((one) => one.marked))];
         console.log(
           `languages ${name} ${customerLang}->${riderLang}: ${audits.length} screens, ` +
-            `${audits.reduce((sum, one) => sum + one.seen, 0)} texts, ${glyphs} glyphs compared, ` +
-            `no device font for: ${withoutFont.join(", ") || "none"}, ` +
+            `${audits.reduce((sum, one) => sum + one.seen, 0)} texts, ${glyphs} glyphs compared ` +
+            `(glyph audit: ${glyphAudit}), no device font for: ${withoutFont.join(", ") || "none"}, ` +
             `fit judged: ${fitJudged}, cut with an ellipsis: ${marked.join("; ") || "none"}, ` +
             `web fonts declared: ${Math.max(...audits.map((one) => one.webFonts))}`,
         );
@@ -181,9 +200,51 @@ test.describe("the audit itself", () => {
    * @param {string[]} names the language names the page writes for this viewer
    */
   async function auditSample(page, lang, body, documentLang = lang, names = []) {
+    await showSample(page, body, documentLang);
+    return auditSampleAs(page, lang, names);
+  }
+
+  /**
+   * @param {Page} page
+   * @param {string} body
+   * @param {string} documentLang what the page declares
+   */
+  async function showSample(page, body, documentLang) {
     await page.setContent(`<!doctype html><html><body>${body}</body></html>`);
     await page.evaluate((value) => (document.documentElement.lang = value), documentLang);
+  }
+
+  /**
+   * @param {Page} page
+   * @param {string} lang
+   * @param {string[]} names
+   */
+  function auditSampleAs(page, lang, names = []) {
     return auditPage(page, { lang, keys: ["create_room", "join_and_sound"], same: [], names });
+  }
+
+  // One of each fault that does not depend on the host's fonts. The glyph fault is kept apart
+  // (NO_GLYPH): only a host that can calibrate that check may be asked to find it.
+  const FAULTS = [
+    `<p data-i18n="join_and_sound">Join and sound</p>`, // English only in a Hindi screen
+    `<p>தமிழ்</p>`, // the wrong script
+    `<p>create_room</p>`, // a raw key
+    `<p>Distance: undefined</p>`, // a value that never arrived
+    `<div style="width: 60px; overflow: hidden; white-space: nowrap">A label too long to fit</div>`,
+    `<div style="width: 2000px">wider than the window</div>`,
+    `<select style="width: 90px"><option>An option far too long for this control</option></select>`,
+  ].join("");
+  const NO_GLYPH = `<p>\u{10FFFF}</p>`; // a character no font has
+
+  /** @param {string} found the audit's problems, joined */
+  function expectEveryFaultButTheGlyph(found) {
+    expect(found).toContain("English only, no hi text");
+    expect(found).toContain("letters outside Devanagari and Latin");
+    expect(found).toContain("shows a raw key");
+    expect(found).toContain("shows a placeholder or null");
+    expect(found).toContain("text wider than its box, cut off");
+    expect(found).toContain("the page scrolls sideways");
+    expect(found).toContain("chosen option wider than its select, cut off");
   }
 
   test("passes a screen with nothing wrong", async ({ page }) => {
@@ -193,34 +254,38 @@ test.describe("the audit itself", () => {
       `<p data-i18n="create_room">${LABEL}</p><p>Room code <b id="code">AB12CD</b></p>`,
     );
     expect(result.problems).toEqual([]);
-    expect(result.glyphs.controlsOk).toBe(true);
     expect(result.seen).toBeGreaterThan(0);
+    // Not claimed where the host cannot calibrate the glyph check; see the glyph tests below.
+    if (result.glyphs.controlsOk) expect(result.glyphs.missing).toEqual([]);
   });
 
-  test("finds each fault it exists for", async ({ page }) => {
-    const result = await auditSample(
-      page,
-      "hi",
-      [
-        `<p data-i18n="join_and_sound">Join and sound</p>`, // English only in a Hindi screen
-        `<p>தமிழ்</p>`, // the wrong script
-        `<p>create_room</p>`, // a raw key
-        `<p>Distance: undefined</p>`, // a value that never arrived
-        `<div style="width: 60px; overflow: hidden; white-space: nowrap">A label too long to fit</div>`,
-        `<p>\u{10FFFF}</p>`, // a character no font has
-        `<div style="width: 2000px">wider than the window</div>`,
-        `<select style="width: 90px"><option>An option far too long for this control</option></select>`,
-      ].join(""),
-    );
-    const found = result.problems.join("\n");
-    expect(found).toContain("English only, no hi text");
-    expect(found).toContain("letters outside Devanagari and Latin");
-    expect(found).toContain("shows a raw key");
-    expect(found).toContain("shows a placeholder or null");
-    expect(found).toContain("text wider than its box, cut off");
-    expect(found).toContain("no glyph for U+10FFFF");
-    expect(found).toContain("the page scrolls sideways");
-    expect(found).toContain("chosen option wider than its select, cut off");
+  test("finds each fault it exists for, apart from the glyph one", async ({ page }) => {
+    const result = await auditSample(page, "hi", FAULTS + NO_GLYPH);
+    expectEveryFaultButTheGlyph(result.problems.join("\n"));
+    // Whatever the host's fonts, a glyph finding never comes out as an ordinary problem.
+    expect(result.problems.join("\n")).not.toContain("no glyph for");
+  });
+
+  test("finds a character that no font has", async ({ page }) => {
+    const result = await auditSample(page, "hi", NO_GLYPH);
+    test.skip(!result.glyphs.controlsOk, GLYPH_AUDIT_UNAVAILABLE);
+    expect(result.glyphs.missing.join("\n")).toContain("no glyph for U+10FFFF");
+  });
+
+  test("says the glyph audit is unavailable when the host cannot calibrate it, and still finds every other fault", async ({
+    page,
+  }) => {
+    await showSample(page, FAULTS + NO_GLYPH, "hi");
+    // A host whose fonts draw nothing for any character: every canvas stays blank, as on a runner
+    // with almost no fonts, so the missing-glyph reference equals the empty control.
+    await page.evaluate(() => {
+      CanvasRenderingContext2D.prototype.fillText = () => {};
+    });
+    const result = await auditSampleAs(page, "hi");
+    expect(result.glyphs.controlsOk).toBe(false);
+    expect(result.glyphs.missing).toEqual([]);
+    expect(result.glyphs.checked).toBe(0);
+    expectEveryFaultButTheGlyph(result.problems.join("\n"));
   });
 
   test("reports a select cut with an ellipsis as marked, not as a problem", async ({ page }) => {
