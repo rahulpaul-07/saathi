@@ -36,14 +36,15 @@ class ChromeTableOut(BaseModel):
 
 class FeaturesOut(BaseModel):
     demo_input: bool  # prepared clips may be sent instead of the microphone
+    solo_page: bool  # the single-phone test page works here (it needs the legacy /turn route)
 
 
-def catalog_router(demo_input: bool = False) -> APIRouter:
+def catalog_router(demo_input: bool = False, solo_page: bool = True) -> APIRouter:
     router = APIRouter()
 
     @router.get("/features")
     async def features() -> FeaturesOut:
-        return FeaturesOut(demo_input=demo_input)
+        return FeaturesOut(demo_input=demo_input, solo_page=solo_page)
 
     @router.get("/languages")
     async def languages() -> list[LanguageOut]:

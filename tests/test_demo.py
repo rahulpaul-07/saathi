@@ -55,7 +55,7 @@ async def on(tmp_path: Path) -> AsyncIterator[httpx.AsyncClient]:
 
 async def test_demo_is_off_by_default_and_exposes_nothing(off: httpx.AsyncClient) -> None:
     assert Settings(gnani_api_key=SecretStr("k")).demo_input is False
-    assert (await off.get("/features")).json() == {"demo_input": False}
+    assert (await off.get("/features")).json() == {"demo_input": False, "solo_page": True}
     assert (await off.get("/demo/clips")).status_code == 404
     assert (await off.get("/demo/clips/kn-gate.wav")).status_code == 404
 
@@ -63,7 +63,7 @@ async def test_demo_is_off_by_default_and_exposes_nothing(off: httpx.AsyncClient
 async def test_demo_lists_and_serves_only_manifest_clips_with_a_file(
     on: httpx.AsyncClient,
 ) -> None:
-    assert (await on.get("/features")).json() == {"demo_input": True}
+    assert (await on.get("/features")).json() == {"demo_input": True, "solo_page": True}
     listed = (await on.get("/demo/clips")).json()
     assert listed == [{"id": "kn-gate", "lang": "kn", "label": "Gate 2", "label_local": ""}]
     audio = await on.get("/demo/clips/kn-gate.wav")

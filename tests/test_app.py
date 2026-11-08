@@ -227,3 +227,13 @@ async def test_healthz_needs_no_auth_and_no_upstream(
     assert response.status_code == 200
     assert response.json() == {"status": "ok"}
     assert not upstream.calls  # a probe must never reach Gnani
+
+
+@pytest.mark.parametrize("path", ["/docs", "/redoc", "/openapi.json"])
+async def test_local_development_keeps_the_api_docs(client: httpx.AsyncClient, path: str) -> None:
+    assert (await client.get(path)).status_code == 200
+
+
+async def test_local_development_offers_the_single_phone_page(client: httpx.AsyncClient) -> None:
+    assert (await client.get("/features")).json()["solo_page"] is True
+    assert (await client.get("/solo.html")).status_code == 200
