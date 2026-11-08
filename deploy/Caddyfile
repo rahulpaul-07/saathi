@@ -1,0 +1,18 @@
+# Caddy in front of the app on the Azure VM (see docs/DEPLOY.md). Caddy gets and renews the
+# certificate for the site address by itself; "saathi" is the app container's name on the shared
+# Docker network. Caddy's reverse_proxy sets X-Forwarded-For from the connection it sees and does not
+# trust one the client sent, which is what SAATHI_TRUSTED_PROXIES relies on.
+saathi.indiasouthcentral.cloudapp.azure.com {
+	header {
+		# One year, this host only: no includeSubDomains, so no other name under the domain is pinned.
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "no-referrer"
+		# The microphone is the app's whole point; nothing else is needed.
+		Permissions-Policy "microphone=(self), camera=(), geolocation=()"
+		# Do not name the proxy in a Server header.
+		-Server
+	}
+
+	reverse_proxy saathi:8000
+}

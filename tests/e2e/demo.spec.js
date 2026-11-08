@@ -230,3 +230,22 @@ test("demo mode: a language with no clips gets the banner but no empty clip pick
   await expect(page.locator("#demo-banner")).toBeVisible();
   await expect(page.locator("#demo")).toBeHidden();
 });
+
+// The single-phone page needs the legacy /turn route, which public mode switches off, so the home
+// page links to it only where it works. The link starts hidden and /features reveals it.
+const SOLO_LINK = "Single-phone test page";
+
+test("local mode: the home page links to the single-phone test page", async ({ page }) => {
+  await page.goto(`${NORMAL}/index.html`);
+  await expect(page.getByRole("link", { name: SOLO_LINK })).toBeVisible();
+});
+
+test("public mode: the home page does not link to the single-phone test page", async ({ page }) => {
+  const REPLAY = "http://127.0.0.1:8768"; // tests/e2e/serve.py --replay: public mode
+  const features = page.waitForResponse((r) => new URL(r.url()).pathname === "/features");
+  await page.goto(`${REPLAY}/index.html`);
+  await features;
+  await page.waitForLoadState("networkidle"); // landing.js has acted on the answer by now
+  await expect(page.getByRole("link", { name: SOLO_LINK })).toBeHidden();
+  await expect(page.getByRole("link", { name: "Both screens side by side (demo)" })).toBeVisible();
+});

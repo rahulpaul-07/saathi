@@ -10,8 +10,9 @@ above 20 only digits are understood.
 The STT wrote number words, never digits, for all four languages: without this table a spoken gate,
 cross or floor produces no chip at all.
 
-Marathi landmarks are not covered: the STT glued the cue to the name ("बेकरीसमोर"), and the
-extractor matches whole tokens, so there is no postposition to recognise.
+Marathi landmarks are limited to two cues, "समोर" (in front of) and "मागे" (behind): the STT glued
+the cue to the name ("बेकरीसमोर"), so the extractor matches them as a suffix of the name as well as
+a separate word. Other cues are not read.
 """
 
 from collections.abc import Mapping

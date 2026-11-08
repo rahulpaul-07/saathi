@@ -9,7 +9,7 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Annotated
 
-from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
+from fastapi import FastAPI, File, Form, HTTPException, Request, Response, UploadFile
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
@@ -116,7 +116,14 @@ def create_app(
         yield
         await gnani.aclose()
 
-    app = FastAPI(title="Saathi", lifespan=lifespan)
+    # The interactive API docs are for development; a public host does not publish its route map.
+    app = FastAPI(
+        title="Saathi",
+        lifespan=lifespan,
+        docs_url=None if public else "/docs",
+        redoc_url=None if public else "/redoc",
+        openapi_url=None if public else "/openapi.json",
+    )
     app.add_middleware(
         CspMiddleware, policy=content_security_policy(allow_same_origin_frames=demo_input)
     )
@@ -148,7 +155,8 @@ def create_app(
         )
     )
 
-    app.include_router(catalog_router(demo_input))
+    # The single-phone page posts to /turn, which public mode switches off: not offered there.
+    app.include_router(catalog_router(demo_input, solo_page=not public))
     if demo_input:
         app.include_router(demo_router(settings.demo_clips_dir))
 
@@ -161,7 +169,6 @@ def create_app(
             return {"status": "ok"}
         return {"status": "ok", "live": gate.live()}
 
-    @app.post("/turn")
     async def turn(
         request: Request,
         audio: Annotated[UploadFile, File()],
@@ -228,6 +235,16 @@ def create_app(
             audio_base64=base64.b64encode(result.audio).decode("ascii"),
             timings=TimingsOut(**vars(timings)),
         )
+
+    if public:
+        # The single-phone route sits outside the room flow's guards, and the public UI never calls
+        # it. Answered explicitly: left unrouted, the static mount below would say 405, not 404.
+        async def turn_disabled(_: Request) -> Response:
+            return Response(status_code=404)
+
+        app.add_route("/turn", turn_disabled, methods=["POST"], include_in_schema=False)
+    else:
+        app.post("/turn")(turn)
 
     # Mounted last so it never shadows /turn. Same origin as the API, so no CORS.
     app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="ui")

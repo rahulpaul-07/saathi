@@ -14,7 +14,7 @@ translation. An entry to the Gnani.ai Great Indian AI Internship Challenge.
 
 [![CI](https://github.com/rahulpaul-07/saathi/actions/workflows/ci.yml/badge.svg)](https://github.com/rahulpaul-07/saathi/actions/workflows/ci.yml)
 
-![Rider and customer screens side by side: the delivery card, a changed gate marked, and a confirm-or-ask prompt](docs/media/design/after/split-1920-4-confirm-and-ask.png)
+![Customer and rider screens side by side after a Kannada to Hindi demo clip, with scripted sample text: the delivery card with a changed gate marked, and confirm or ask buttons on the rider side](docs/media/design/current/split-1920-kn-hi.png)
 
 **It handles code-mixed speech.** People give directions in one language with English address words
 in it: Kannada with "2nd cross" and "gate number". Gnani's Kannada speech to text writes those words
@@ -50,15 +50,15 @@ Portfolio project. It runs on a LAN by default; an opt-in public mode with spend
 
 ## See it
 
-| Before (earlier layout) | After (current) |
+| Before (earlier layout) | After (current; scripted sample text, not model output) |
 |---|---|
-| ![Split screen before](docs/media/design/before/split-1920-4-confirm-and-ask.png) | ![Split screen after](docs/media/design/after/split-1920-4-confirm-and-ask.png) |
+| ![Split screen before](docs/media/design/before/split-1920-4-confirm-and-ask.png) | ![Split screen after](docs/media/design/current/split-1920-kn-hi.png) |
 
-The same moment on a 360 px phone, rider side, with the delivery card directly under the header:
+The same moment on a 412 px wide phone, rider side, with the delivery card directly under the header (scripted sample text, not model output):
 
-![Rider on a 360 px phone: the card first, then the translated audio and the confirm or ask prompt](docs/media/design/after/phone-360-rider-4-confirm-and-ask.png)
+![Rider on a 412 px wide phone, scripted sample text: the delivery card first, then the translated audio, the repeat button and the quick replies](docs/media/design/current/rider-412x915.png)
 
-All five steps for both roles are in [`docs/media/design/after/`](docs/media/design/after/). The
+These are in [`docs/media/design/current/`](docs/media/design/current/). The earlier five-step captures for both roles are in [`docs/media/design/before/`](docs/media/design/before/) and [`docs/media/design/after/`](docs/media/design/after/). The
 people and addresses in them are synthetic; the clips are labelled demo clips.
 
 ## How it works
@@ -210,7 +210,7 @@ measured.
   screens and the fact pipeline but not how the speech service does on what a visitor says. A rider
   language that was not recorded for a clip is translated on the host from the stored transcript and
   has no audio. Live microphone turns spend Gnani credit and are bounded by a daily budget (the
-  code's default is 200 requests per UTC day, and a live turn takes two); once it is spent, live
+  code's default is 200 requests per UTC day, the live server is set to 150, and a live turn takes two); once it is spent, live
   turns are refused with a 503 and only the guided demo works until the next UTC day.
 - The translation models are comfortable on a GPU (an RTX 3050 6 GB here) and slower on a CPU. The
   public site runs on a single 2-vCPU VM, so translation there runs on the CPU: on 2 cores in a

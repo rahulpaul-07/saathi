@@ -157,9 +157,9 @@ languages, so without these tables a spoken gate, cross or floor produced no chi
 
 ## Known gaps
 
-- **Marathi landmarks are not covered.** The STT glued the cue to the name ("बेकरीसमोर"), and the
-  extractor matches whole tokens, so there is no postposition to match. Marathi gets no landmark
-  chip; the rider still gets the translated audio.
+- **Marathi landmarks are limited to two cues.** The STT glued the cue to the name ("बेकरीसमोर"), so
+  the extractor also matches "समोर" (in front of) and "मागे" (behind) as a suffix of the name. Any
+  other cue gets no landmark chip; the rider still gets the translated audio.
 - **Punjabi ordinal 17 is absent.** The STT wrote the spoken ordinal as the cardinal ਸਤਾਰ੍ਹਾਂ, so 17
   has no ordinal entry; as a cardinal before a trigger it already reads as 17.
 - **Malayalam "മീൻ" (fish) for "മെയിൻ"** once, for 15 (ml-probe-7). It is STT noise and is not mapped.

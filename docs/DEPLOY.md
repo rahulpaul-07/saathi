@@ -1,12 +1,14 @@
 # Deploying Saathi publicly
 
-**Status: image built and started locally, not deployed.** The code paths here are covered by unit
-and API tests with Gnani mocked. The image was built and run once on a laptop with the models
+**Status: deployed at https://saathi.indiasouthcentral.cloudapp.azure.com** on a single Azure
+B2ls_v2 VM (2 vCPU, 4 GB RAM, India South Central), with Caddy for HTTPS, the app in Docker, the
+models in a volume and `SAATHI_DAILY_GNANI_BUDGET=150`. The code paths here are covered by unit
+and API tests with Gnani mocked. The image was first built and run on a laptop with the models
 mounted from a local cache: `/healthz` answered, the process ran as a non-root user and Docker
-reported it healthy (idle memory about 620 MiB). The first-start model download and any real
-host are untested. This guide is
-platform-neutral on purpose: it names no hosting provider and makes no claim about any provider's
-free tier, limits or behaviour.
+reported it healthy (idle memory about 620 MiB). It was then built and run on the Azure VM named
+above, deployed on 2026-11-06, and the first-start model download was exercised there. This guide
+is platform-neutral on purpose: apart from the host named above, it names no hosting provider and
+makes no claim about any provider's free tier, limits or behaviour.
 
 Public mode is off unless `SAATHI_PUBLIC=1`. With it unset, the app behaves exactly as in local
 development.
@@ -65,6 +67,13 @@ or the repository.
 If the first start has no network access to download the models, the container stops with an
 error instead of serving without a translator.
 
+The proxy configuration used on the Azure VM is [deploy/Caddyfile](../deploy/Caddyfile): HTTPS for
+the site address, HSTS for one year without `includeSubDomains`, `nosniff`, no referrer, a
+permissions policy that allows the microphone only, no `Server` header, and a reverse proxy to the
+app container on port 8000. The Docker commands used there (network, image, app and Caddy
+containers, volumes, memory limit, the names the env file needs) are in
+[deploy/run.sh](../deploy/run.sh), with the redeploy sequence.
+
 ## Budget and kill switch
 
 - Every Gnani HTTP attempt, retries included, is counted before it is sent. When the day's budget
@@ -112,7 +121,7 @@ and checks it against the evaluation ledger cap. It sends nothing and needs no k
 
 ## Not built
 
-- Any platform-specific manifest or deploy script.
+- An automated deploy. `deploy/run.sh` records the commands used by hand; it is not an installer.
 - Monitoring and alerting beyond `/healthz`.
 - Rooms live in memory in one process; run one instance. A restart ends every room.
 

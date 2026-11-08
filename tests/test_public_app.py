@@ -192,7 +192,7 @@ async def test_guided_demo_replays_a_stored_turn_with_zero_gnani_calls(tmp_path:
     write_bundle(tmp_path, clip)
     settings = public_settings(demo_bundle_dir=tmp_path, demo_clips_dir=tmp_path / "clips")
     async with make_client(settings, NoGnani()) as client:
-        assert (await client.get("/features")).json() == {"demo_input": True}
+        assert (await client.get("/features")).json() == {"demo_input": True, "solo_page": False}
         room = await make_room(client, "en", "kn")
         response = await client.post(
             f"/rooms/{room['code']}/turn",
@@ -316,13 +316,13 @@ async def test_without_the_demo_header_the_same_clip_goes_to_the_live_path(
 
 async def test_public_mode_without_a_bundle_offers_no_demo() -> None:
     async with make_client(public_settings(), FakeGnani()) as client:
-        assert (await client.get("/features")).json() == {"demo_input": False}
+        assert (await client.get("/features")).json() == {"demo_input": False, "solo_page": False}
 
 
 async def test_invalid_bundle_is_ignored_not_fatal(tmp_path: Path) -> None:
     (tmp_path / BUNDLE_NAME).write_text("{broken", encoding="utf-8")
     async with make_client(public_settings(demo_bundle_dir=tmp_path), FakeGnani()) as client:
-        assert (await client.get("/features")).json() == {"demo_input": False}
+        assert (await client.get("/features")).json() == {"demo_input": False, "solo_page": False}
 
 
 async def test_qr_encodes_the_public_origin_and_the_rider_page_only() -> None:
@@ -354,3 +354,33 @@ def test_a_public_base_url_must_be_a_bare_origin(value: str) -> None:
 
 def test_an_empty_public_base_url_means_unset() -> None:
     assert public_settings(public_base_url="").public_base_url is None
+
+
+@pytest.mark.parametrize("path", ["/docs", "/redoc", "/openapi.json"])
+async def test_public_mode_does_not_publish_the_api_docs(path: str) -> None:
+    async with make_client(public_settings(), FakeGnani()) as client:
+        response = await client.get(path)
+    assert response.status_code == 404
+
+
+async def test_public_mode_has_no_single_phone_turn_route() -> None:
+    async with make_client(public_settings(), FakeGnani()) as client:
+        response = await post_turn_legacy(client)
+    assert response.status_code == 404
+
+
+async def post_turn_legacy(client: httpx.AsyncClient) -> httpx.Response:
+    return await client.post(
+        "/turn",
+        files={"audio": ("a.wav", make_wav(), "audio/wav")},
+        data={"src": "bn", "tgt": "kn"},
+    )
+
+
+async def test_public_mode_does_not_offer_the_single_phone_page() -> None:
+    async with make_client(public_settings(), FakeGnani()) as client:
+        features = (await client.get("/features")).json()
+        home = (await client.get("/")).text
+    assert features["solo_page"] is False
+    # The link ships hidden and only /features can reveal it, so no public visitor is shown it.
+    assert '<span id="solo-link" hidden>' in home

@@ -4,7 +4,7 @@
 #
 # Built and started once with the translation models mounted from a local cache: /healthz
 # answered, the process ran as uid 10001 and the health check reported healthy. The first-start
-# download needs HF_TOKEN (the models are gated); that path has not been run.
+# download needs HF_TOKEN (the models are gated); it was run on the Azure VM on 2026-11-06.
 
 FROM python:3.12-slim-bookworm
 
@@ -58,4 +58,5 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=900s --retries=3 \
 
 # --no-proxy-headers: uvicorn must not rewrite the client address from X-Forwarded-For. The app
 # does that itself, and only for the proxies listed in SAATHI_TRUSTED_PROXIES.
-CMD ["sh", "-c", "python scripts/fetch_models.py && exec uvicorn saathi.app:create_app --factory --host 0.0.0.0 --port 8000 --no-proxy-headers"]
+# --no-server-header: do not advertise the stack in a Server header.
+CMD ["sh", "-c", "python scripts/fetch_models.py && exec uvicorn saathi.app:create_app --factory --host 0.0.0.0 --port 8000 --no-proxy-headers --no-server-header"]

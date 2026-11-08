@@ -3,6 +3,7 @@
 // and a sample delivery card drawn with the same code the rider's screen uses.
 import { chipsFromFacts } from "./chips.js";
 import { KINDS, kindIcon } from "./kind-icons.js";
+import { getJson } from "./room-client.js";
 import { SAMPLE_FACTS } from "./sample-card.js";
 import { renderChips } from "./ui.js";
 
@@ -16,3 +17,14 @@ for (const kind of KINDS) {
 
 const sample = document.getElementById("preview-chips");
 if (sample) renderChips(sample, chipsFromFacts(SAMPLE_FACTS));
+
+// The single-phone page needs the legacy /turn route, which a public host switches off. The link
+// starts hidden and appears only when the server says the page works, so a failed or slow
+// /features never shows a link that leads to an error.
+try {
+  const features = /** @type {any} */ (await getJson("/features"));
+  const soloLink = document.getElementById("solo-link");
+  if (soloLink && features?.solo_page === true) soloLink.hidden = false;
+} catch {
+  // No flag means no link; the page is a developer convenience.
+}
