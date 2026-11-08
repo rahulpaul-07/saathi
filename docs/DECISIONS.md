@@ -719,9 +719,9 @@ retries once; three consecutive failures stop that run.
 - **Synthetic results are named `*_synth`.** Noise results from TTS speech sit in
   `noise_stt_synth.json` and `noise_summary_synth.md`, so a file name can never be quoted as
   human-speech evidence. FLEURS (real read speech) keeps plain names.
-- **Marathi has no landmark chips.** The STT glues the cue to the name, and the extractor matches
-  whole tokens only. Splitting inside tokens would add false positives for every language; left
-  as a known gap.
+- **Marathi landmarks are limited to two cues.** The STT glues the cue to the name, so for Marathi
+  only, "समोर" and "मागे" are also matched as a suffix of the name. Splitting inside tokens for
+  every language would add false positives. "Near" and "next to" are not read.
 - **Lexicon probe round 2 raised the limit to 72 calls.** Round 1 left four languages without a
   single observed spelling; 70 calls were spent, and the unused two stay in the budget.
 - **Held-out set for ta te gu ml mr pa, and the pre-fix score is the one reported.** The pinned

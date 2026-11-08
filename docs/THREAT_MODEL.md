@@ -266,7 +266,9 @@ Residual:
   per process: run one instance. A visitor can exhaust the day's budget for everyone else; that is
   the intended failure (the demo keeps working), not a prevented attack.
 - The pinned model commits were not audited, and the remote model code was not reviewed.
-- No external review, no load test, and the first-start model download path is untested.
+- No external review and no load test. The first-start model download was exercised on the Azure
+  VM on 2026-11-06 with `HF_TOKEN` set: it stalled once on a hung connection, and restarting the
+  container resumed it, because completed files stay in the models volume.
 
 ### Framing (clickjacking)
 

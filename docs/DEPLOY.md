@@ -1,12 +1,14 @@
 # Deploying Saathi publicly
 
-**Status: image built and started locally, not deployed.** The code paths here are covered by unit
-and API tests with Gnani mocked. The image was built and run once on a laptop with the models
+**Status: deployed at https://saathi.indiasouthcentral.cloudapp.azure.com** on a single Azure
+B2ls_v2 VM (2 vCPU, 4 GB RAM, India South Central), with Caddy for HTTPS, the app in Docker, the
+models in a volume and `SAATHI_DAILY_GNANI_BUDGET=150`. The code paths here are covered by unit
+and API tests with Gnani mocked. The image was first built and run on a laptop with the models
 mounted from a local cache: `/healthz` answered, the process ran as a non-root user and Docker
-reported it healthy (idle memory about 620 MiB). The first-start model download and any real
-host are untested. This guide is
-platform-neutral on purpose: it names no hosting provider and makes no claim about any provider's
-free tier, limits or behaviour.
+reported it healthy (idle memory about 620 MiB). It was then built and run on the Azure VM named
+above, deployed on 2026-11-06, and the first-start model download was exercised there. This guide
+is platform-neutral on purpose: apart from the host named above, it names no hosting provider and
+makes no claim about any provider's free tier, limits or behaviour.
 
 Public mode is off unless `SAATHI_PUBLIC=1`. With it unset, the app behaves exactly as in local
 development.

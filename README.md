@@ -210,7 +210,7 @@ measured.
   screens and the fact pipeline but not how the speech service does on what a visitor says. A rider
   language that was not recorded for a clip is translated on the host from the stored transcript and
   has no audio. Live microphone turns spend Gnani credit and are bounded by a daily budget (the
-  code's default is 200 requests per UTC day, and a live turn takes two); once it is spent, live
+  code's default is 200 requests per UTC day, the live server is set to 150, and a live turn takes two); once it is spent, live
   turns are refused with a 503 and only the guided demo works until the next UTC day.
 - The translation models are comfortable on a GPU (an RTX 3050 6 GB here) and slower on a CPU. The
   public site runs on a single 2-vCPU VM, so translation there runs on the CPU: on 2 cores in a
