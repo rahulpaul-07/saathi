@@ -132,7 +132,7 @@ class Progress:
     failures: dict[str, str] = field(default_factory=dict)
 
 
-def _write_json(path: Path, body: object) -> None:
+def write_json(path: Path, body: object) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_suffix(".tmp")
     temporary.write_text(json.dumps(body, ensure_ascii=False, indent=2), "utf-8")
@@ -149,7 +149,7 @@ def load_progress(bundle_dir: Path) -> Progress:
 
 def _save_progress(bundle_dir: Path, progress: Progress) -> None:
     body = {"transcripts": progress.transcripts, "failures": progress.failures}
-    _write_json(bundle_dir / PROGRESS_NAME, body)
+    write_json(bundle_dir / PROGRESS_NAME, body)
 
 
 def read_turns(bundle_dir: Path) -> list[BundleTurn]:
@@ -160,9 +160,9 @@ def read_turns(bundle_dir: Path) -> list[BundleTurn]:
         return []
 
 
-def _write_turns(bundle_dir: Path, turns: Sequence[BundleTurn]) -> None:
+def write_turns(bundle_dir: Path, turns: Sequence[BundleTurn]) -> None:
     body = {"version": BUNDLE_VERSION, "turns": [turn.model_dump() for turn in turns]}
-    _write_json(bundle_dir / BUNDLE_NAME, body)
+    write_json(bundle_dir / BUNDLE_NAME, body)
 
 
 def _sha(data: bytes) -> str:
@@ -320,7 +320,7 @@ async def _build_clip(
             audio=name,
         )
     )
-    _write_turns(layout.bundle_dir, turns)
+    write_turns(layout.bundle_dir, turns)
 
 
 def write_manifest(clips: Sequence[SetClip], layout: Layout) -> list[str]:
@@ -347,7 +347,7 @@ def write_manifest(clips: Sequence[SetClip], layout: Layout) -> list[str]:
                     "label_local": clip.label_local,
                 }
             )
-    _write_json(layout.clips_dir / MANIFEST_NAME, {"clips": entries})
+    write_json(layout.clips_dir / MANIFEST_NAME, {"clips": entries})
     return [entry["id"] for entry in entries]
 
 
