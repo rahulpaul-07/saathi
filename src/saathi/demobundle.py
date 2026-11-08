@@ -2,10 +2,11 @@
 
 A bundle is a directory with bundle.json and one WAV per stored turn. A turn is matched by the
 SHA-256 of the uploaded clip plus its source language, so only the prepared clips replay and nothing
-the caller sends can reach Gnani on this path. Facts and landmarks are recomputed locally from the
-stored source transcript, the same way the live pipeline does, so the chips and the card behave
-exactly as they do live. A listener language with no recorded turn is translated locally and
-plays no audio. The bundle is built by scripts/build_demo_bundle.py (a paid, manual step).
+the caller sends can reach Gnani on this path. A stored turn holds everything the rider sees: the
+translation, the facts (landmark rendering included), the verified flag and the spoken audio, and
+is served as a plain lookup. A listener language with no stored turn is translated locally and
+plays no audio. Bundles are built by scripts/build_demo_set.py and scripts/build_rider_voices.py
+(paid, manual steps).
 """
 
 import asyncio
@@ -16,7 +17,8 @@ from pathlib import Path
 
 from pydantic import BaseModel, ValidationError
 
-from saathi.facts import extract_facts
+from saathi.facts import Fact, extract_facts
+from saathi.facts.types import Confidence, FactKind
 from saathi.landmarks import localize_landmarks
 from saathi.pipeline import Timings, TurnResult, translate_transcript
 from saathi.translate import Translator
@@ -31,6 +33,29 @@ class NoDemoMatchError(Exception):
     """The uploaded clip and language pair are not in the bundle."""
 
 
+class StoredFact(BaseModel):
+    """A `Fact` as the rider saw it when the turn was built, landmark rendering included."""
+
+    kind: FactKind
+    value: str
+    start: int
+    end: int
+    heard: str
+    confidence: Confidence = "high"
+    ambiguous: bool = False
+    reading: str | None = None
+    value_start: int | None = None
+    value_end: int | None = None
+    local: str | None = None
+
+    @classmethod
+    def of(cls, fact: Fact) -> "StoredFact":
+        return cls(**vars(fact))
+
+    def to_fact(self) -> Fact:
+        return Fact(**self.model_dump())
+
+
 class BundleTurn(BaseModel):
     clip_sha256: str
     src: str
@@ -39,6 +64,8 @@ class BundleTurn(BaseModel):
     translation: str
     verified: bool
     audio: str  # file name inside the bundle directory
+    # None only for a turn stored before facts were kept; it is then rebuilt locally at serve time.
+    facts: list[StoredFact] | None = None
 
 
 def clip_digest(data: bytes) -> str:
@@ -75,8 +102,12 @@ class DemoBundle:
                 transcript, translation, b"", Timings(0.0, 0.0, 0.0, 0.0), facts, verified
             )
         audio = (self._directory / turn.audio).read_bytes()
-        facts = tuple(extract_facts(transcript, src))
-        facts = await asyncio.to_thread(localize_landmarks, facts, src, tgt, translator)
+        if turn.facts is not None:
+            # A complete stored turn: nothing is translated or localised here.
+            facts = tuple(stored.to_fact() for stored in turn.facts)
+        else:
+            facts = tuple(extract_facts(transcript, src))
+            facts = await asyncio.to_thread(localize_landmarks, facts, src, tgt, translator)
         return TurnResult(
             transcript,
             turn.translation,

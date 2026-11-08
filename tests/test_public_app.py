@@ -3,6 +3,7 @@ and the zero-call guided demo. Gnani is always a fake; no network is used."""
 
 import json
 from collections.abc import AsyncIterator
+from dataclasses import replace
 from pathlib import Path
 from typing import Any, cast
 
@@ -12,7 +13,8 @@ from pydantic import SecretStr
 
 from saathi.app import create_app
 from saathi.config import Settings
-from saathi.demobundle import BUNDLE_NAME, BUNDLE_VERSION, clip_digest
+from saathi.demobundle import BUNDLE_NAME, BUNDLE_VERSION, StoredFact, clip_digest
+from saathi.facts import extract_facts
 from saathi.gnani import GnaniClient, LiveSpeechUnavailable
 from test_room_api import FakeGnani, FakeTranslator, auth, make_room, post_turn
 from wavs import make_wav
@@ -25,6 +27,13 @@ class NoGnani:
 
     def __getattr__(self, name: str) -> Any:
         raise AssertionError(f"Gnani was touched: {name}")
+
+
+class ForbiddenTranslator:
+    """Any use at all is a test failure: a stored turn needs no translation or localisation."""
+
+    def translate(self, text: str, src: str, tgt: str) -> str:
+        raise AssertionError("the translator was used")
 
 
 class PausedGnani(FakeGnani):
@@ -298,6 +307,37 @@ async def test_guided_demo_recorded_language_still_plays_its_stored_audio(
         audio = await client.get(
             f"/rooms/{room['code']}/turns/{turn_id}/audio", headers=auth(room["rider"])
         )
+    assert audio.status_code == 200 and audio.content.startswith(b"RIFF")
+
+
+async def test_guided_demo_stored_turn_is_a_pure_lookup_for_text_facts_and_landmark(
+    tmp_path: Path,
+) -> None:
+    clip = make_wav(0.7)
+    write_bundle(tmp_path, clip, src="en", tgt="kn")
+    manifest = tmp_path / BUNDLE_NAME
+    body = json.loads(manifest.read_text("utf-8"))
+    facts = [
+        StoredFact.of(replace(f, local="stored rendering")) for f in extract_facts(TRANSCRIPT, "en")
+    ]
+    body["turns"][0]["facts"] = [f.model_dump() for f in facts]
+    manifest.write_text(json.dumps(body), encoding="utf-8")
+    settings = public_settings(demo_bundle_dir=tmp_path, demo_clips_dir=tmp_path / "clips")
+    app = create_app(settings, cast(GnaniClient, NoGnani()), ForbiddenTranslator())
+    transport = httpx.ASGITransport(app=app)
+    async with httpx.AsyncClient(transport=transport, base_url="http://saathi") as client:
+        room = await make_room(client, "en", "kn")
+        response = await client.post(
+            f"/rooms/{room['code']}/turn",
+            files={"audio": ("a.wav", clip, "audio/wav")},
+            headers={**auth(room["customer"]), "X-Demo-Clip": "1"},
+        )
+        body = response.json()
+        audio = await client.get(
+            f"/rooms/{room['code']}/turns/{body['turn_id']}/audio", headers=auth(room["rider"])
+        )
+    assert response.status_code == 200 and body["verified"] is True
+    assert {fact["local"] for fact in body["facts"]} == {"stored rendering"}
     assert audio.status_code == 200 and audio.content.startswith(b"RIFF")
 
 

@@ -485,9 +485,8 @@ def render_report(
         f"- Gnani calls made by this run: {gnani_attempts}. The client the app was given refuses "
         "any use, and `.env` was not read.",
         f"- Replays where the rider got stored audio: {len(stored)}; the text-only fallback: "
-        f"{len(text_only)}. Only the pairs recorded in `demo/bundle` have audio; that is the "
-        "guided demo's design, so this run checks text, chips and routing for every pair and "
-        "playback only for the recorded ones.",
+        f"{len(text_only)}. Every pair in `demo/bundle` has a stored translation, facts and "
+        "audio; a text-only replay means a pair is missing from the bundle.",
         "",
         "## Matrix",
         "",
@@ -513,8 +512,9 @@ def render_report(
         "",
         "## Response time",
         "",
-        "Wall-clock time of the one POST, in ms. A recorded pair replays the stored translation "
-        "(landmarks are still localised live); any other pair runs the real local translator.",
+        "Wall-clock time of the one POST, in ms. A stored pair is a lookup: translation, facts and "
+        "audio are read from the bundle. A pair missing from the bundle runs the real local "
+        "translator.",
         "",
         "| path | replays | median | 95th percentile | slowest |",
         "|---|---|---|---|---|",
@@ -558,7 +558,7 @@ def render_report(
         "facts, by the rule the demo-set scoring uses, and every rider chip has a label;",
         "- the translation is not empty;",
         "- the rider gets stored audio that loads as a WAV when the bundle holds one for that "
-        "pair, and the text-only fallback otherwise.",
+        "pair (all of them should), and the text-only fallback otherwise.",
         "",
         "A verified clip is one listed in `demo/clips/manifest.json`: its stored transcript "
         "yields exactly the expected facts. Speech recognition and synthesis are not run (the "

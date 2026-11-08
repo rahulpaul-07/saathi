@@ -110,7 +110,7 @@ Safety layers, in the order a wrong fact would have to get past them:
 | Same matrix, target-language score | 0.374 plain, 0.445 masked, 0.447 conditional | as above | [masking_conditional_matrix.json](eval/results/masking_conditional_matrix.json) |
 | Guided-demo set, held-out first pass | 23 of 50 clips with exactly the expected facts | 50 synthetic clips, 5 types x 10 languages, expected facts written before the run; 5 clips were not built because Gnani returned a 504; 5 of the 50 are earlier clips that were not blind | [demo_set_first_pass.md](eval/results/demo_set_first_pass.md) |
 | Same 50 clips after fixes, not held-out | 34 of 50 | the fixes were written while reading these transcripts, so this is a regression check and not accuracy; 2 clips are still unbuilt after a retry | [demo_set_after_fixes.md](eval/results/demo_set_after_fixes.md) |
-| Guided-demo replay, all 90 ordered language pairs | 90 of 90 pairs passed; 306 clip replays, 0 failed; 21 of the 306 translations failed the placeholder check and gave the facts-only text (19 of them for Bengali and Malayalam riders) | the 34 clips whose stored transcripts give exactly the expected facts, sent through the room API with the real local translator and no speech service; stored audio for the 34 recorded pairs, locally translated text only for the other 272; 0 Gnani calls; the unverified count changed between reruns and the times were taken on battery power, so neither is a benchmark | [language_matrix.md](eval/results/language_matrix.md) |
+| Guided-demo replay, all 90 ordered language pairs | 90 of 90 pairs passed; 306 clip replays, 0 failed; all 306 with stored rider audio, 0 text-only; median 2 ms, 95th percentile 3 ms, slowest 18 ms per replay; 24 of the 306 stored translations failed the placeholder check and gave the facts-only text (21 of them for Bengali and Malayalam riders) | the 34 clips whose stored transcripts give exactly the expected facts, sent through the room API in public mode with every translation, fact set and voice read from the stored bundle, and no speech service; 272 voices built once with real Gnani calls, 0 Gnani calls in this run; times taken on AC power, a correctness run and not a benchmark | [language_matrix.md](eval/results/language_matrix.md) |
 
 Scorer note, 2026-11-01: the English fact extractor was fixed to read "Gate No. 2" and "4 floors", and every fact-recall number above uses the fixed one. Before the fix the same outputs scored 0.674 / 0.747 / 0.843 (A/B, kept in [masking_ab.json](eval/results/masking_ab.json)) and 0.748 plain / 0.679 masked (matrix back score, [translation_matrix.json](eval/results/translation_matrix.json)). The noise, speech and extraction rows are identical under both scorers. Default masking stays `current`; the comparison is in `docs/EVAL.md`.
 
@@ -164,9 +164,9 @@ Off unless `SAATHI_PUBLIC=1`; unset, the app behaves exactly as for local use. W
   retries included; when spent, live turns return a clear 503 and nothing is sent to Gnani.
 - **Caps** on rooms, room lifetime, room creations per IP per hour and upload size.
 - **A guided demo** that replays 34 prepared clips (recorded once with real calls) through the real
-  screens with zero Gnani calls. For a rider language that was recorded, the stored translation and
-  audio play; for any other, the stored transcript is translated on the host and shown as text with
-  no audio. A clip outside the bundle is refused, never sent live.
+  screens with zero Gnani calls. Every clip has a stored turn for each of the nine other rider languages:
+  the translation, the facts and the spoken audio are read from the bundle, with no translation at
+  serve time. A clip outside the bundle is refused, never sent live.
 - A CPU container image, a QR code for the rider link, and translation models pinned to full
   commits because they run Hub-hosted code.
 
@@ -201,15 +201,16 @@ measured.
   chip unless the service writes digits; this was not tested.
 - **Malayalam and Bengali riders get the facts-only text most often.** In the 10x10 guided-demo
   replay, the check that each masked number and address word comes back from the translator exactly
-  once failed for 12 of 31 replays to Malayalam and 7 of 30 to Bengali; the other eight languages had
-  2 failures between them (21 of 306 in all). Those riders get the facts spelled out from tables
-  instead of the model's sentence, and the delivery card is unaffected. The total changed between
-  reruns of the same matrix (30 and 36 in two earlier runs that were not kept, 21 in the run kept
-  here); the cause was not established.
+  once failed for 13 of 31 replays to Malayalam and 8 of 30 to Bengali; the other eight languages had
+  3 failures between them (24 of 306 in all). Those riders get the facts spelled out from tables
+  instead of the model's sentence, and the delivery card is unaffected. Each translation is made
+  once when the bundle is built and the result is stored, so this count no longer varies between
+  matrix runs; it varied between earlier runs that translated at serve time (30 and 36 in two runs
+  that were not kept, 21 in a third), and the cause was not established.
 - **The guided demo is replayed, not live.** It plays stored transcripts and audio, so it shows the
-  screens and the fact pipeline but not how the speech service does on what a visitor says. A rider
-  language that was not recorded for a clip is translated on the host from the stored transcript and
-  has no audio. Live microphone turns spend Gnani credit and are bounded by a daily budget (the
+  screens and the fact pipeline but not how the speech service does on what a visitor says. Every
+  rider language has a stored voice for every picker clip; a pair missing from the bundle would be
+  translated on the host from the stored transcript and have no audio. Live microphone turns spend Gnani credit and are bounded by a daily budget (the
   code's default is 200 requests per UTC day, the live server is set to 150, and a live turn takes two); once it is spent, live
   turns are refused with a 503 and only the guided demo works until the next UTC day.
 - The translation models are comfortable on a GPU (an RTX 3050 6 GB here) and slower on a CPU. The

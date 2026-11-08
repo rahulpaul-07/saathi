@@ -1,13 +1,13 @@
 # Language matrix: 90 ordered pairs through the guided demo
 
-Run 2026-11-07T18:38:54+00:00 on NVIDIA GeForce RTX 3050 6GB Laptop GPU (battery power), commit 5ef51b1, torch 2.9.1+cu128, IndicTrans2 with 1 beam(s). Produced by `scripts/language_matrix.py`.
+Run 2026-11-08T17:06:49+00:00 on NVIDIA GeForce RTX 3050 6GB Laptop GPU (ac power), commit 2f4b8f1, torch 2.9.1+cu128, IndicTrans2 with 1 beam(s). Produced by `scripts/language_matrix.py`.
 
 ## Result
 
 - 90 of 90 ordered pairs passed. A pair passes when every verified clip of the customer's language passed.
 - Clip replays: 306, from 34 verified clips. 306 passed, 0 failed.
 - Gnani calls made by this run: 0. The client the app was given refuses any use, and `.env` was not read.
-- Replays where the rider got stored audio: 34; the text-only fallback: 272. Only the pairs recorded in `demo/bundle` have audio; that is the guided demo's design, so this run checks text, chips and routing for every pair and playback only for the recorded ones.
+- Replays where the rider got stored audio: 306; the text-only fallback: 0. Every pair in `demo/bundle` has a stored translation, facts and audio; a text-only replay means a pair is missing from the bundle.
 
 ## Matrix
 
@@ -15,16 +15,16 @@ Rows are the customer's language, columns the rider's. Each cell is the result a
 
 | from \ to | bn | en | gu | hi | kn | ml | mr | pa | ta | te |
 |---|---|---|---|---|---|---|---|---|---|---|
-| bn | n/a | ok 3652 | ok 3691 | ok 5742 | ok 4356 | ok 5818 | ok 5269 | ok 8428 | ok 4917 | ok 4756 |
-| en | ok 3163 | n/a | ok 4387 | ok 3983 | ok 5088 | ok 5458 | ok 2427 | ok 4854 | ok 4083 | ok 4604 |
-| gu | ok 5103 | ok 3963 | n/a | ok 6865 | ok 4720 | ok 5862 | ok 3956 | ok 6953 | ok 4575 | ok 4755 |
-| hi | ok 4516 | ok 3766 | ok 4294 | n/a | ok 5303 | ok 5955 | ok 5359 | ok 8688 | ok 4830 | ok 3919 |
-| kn | ok 3537 | ok 3262 | ok 3458 | ok 413 | n/a | ok 4216 | ok 2823 | ok 5610 | ok 3924 | ok 3570 |
-| ml | ok 4988 | ok 2955 | ok 4060 | ok 5126 | ok 5136 | n/a | ok 4595 | ok 6921 | ok 4465 | ok 5180 |
-| mr | ok 4477 | ok 5197 | ok 5510 | ok 5174 | ok 4300 | ok 4539 | n/a | ok 5232 | ok 4026 | ok 4870 |
-| pa | ok 3726 | ok 3363 | ok 4404 | ok 4382 | ok 4611 | ok 5498 | ok 3790 | n/a | ok 4092 | ok 3695 |
-| ta | ok 5536 | ok 4243 | ok 4886 | ok 2807 | ok 5888 | ok 2821 | ok 4952 | ok 7682 | n/a | ok 4720 |
-| te | ok 4334 | ok 529 | ok 4526 | ok 6467 | ok 4924 | ok 7162 | ok 4488 | ok 7414 | ok 4659 | n/a |
+| bn | n/a | ok 2 | ok 2 | ok 2 | ok 2 | ok 2 | ok 2 | ok 2 | ok 2 | ok 2 |
+| en | ok 2 | n/a | ok 2 | ok 2 | ok 2 | ok 2 | ok 3 | ok 2 | ok 3 | ok 2 |
+| gu | ok 2 | ok 2 | n/a | ok 2 | ok 2 | ok 2 | ok 3 | ok 2 | ok 3 | ok 2 |
+| hi | ok 2 | ok 2 | ok 2 | n/a | ok 2 | ok 2 | ok 2 | ok 2 | ok 2 | ok 2 |
+| kn | ok 2 | ok 3 | ok 3 | ok 4 | n/a | ok 3 | ok 3 | ok 2 | ok 2 | ok 2 |
+| ml | ok 2 | ok 2 | ok 2 | ok 2 | ok 2 | n/a | ok 2 | ok 2 | ok 2 | ok 2 |
+| mr | ok 2 | ok 2 | ok 2 | ok 2 | ok 2 | ok 1 | n/a | ok 2 | ok 2 | ok 2 |
+| pa | ok 2 | ok 2 | ok 2 | ok 3 | ok 2 | ok 3 | ok 3 | n/a | ok 3 | ok 2 |
+| ta | ok 3 | ok 3 | ok 2 | ok 2 | ok 2 | ok 2 | ok 2 | ok 2 | n/a | ok 2 |
+| te | ok 2 | ok 2 | ok 2 | ok 2 | ok 2 | ok 2 | ok 2 | ok 2 | ok 2 | n/a |
 
 ## Failures
 
@@ -32,12 +32,12 @@ None: every replay passed.
 
 ## Response time
 
-Wall-clock time of the one POST, in ms. A recorded pair replays the stored translation (landmarks are still localised live); any other pair runs the real local translator.
+Wall-clock time of the one POST, in ms. A stored pair is a lookup: translation, facts and audio are read from the bundle. A pair missing from the bundle runs the real local translator.
 
 | path | replays | median | 95th percentile | slowest |
 |---|---|---|---|---|
-| stored translation and audio | 34 | 358 | 1730 | 1761 |
-| local translation, text only | 272 | 4939 | 7602 | 12330 |
+| stored translation and audio | 306 | 2 | 3 | 18 |
+| local translation, text only | 0 | - | - | - |
 
 This is a correctness run, not a benchmark: nothing was done to quiet the machine, so these times show what a laptop in ordinary use did, not what the app can do. Latency under stated conditions is in `eval/results/latency.json`.
 
@@ -49,15 +49,15 @@ Landmark chips are the open-vocabulary facts; one with no rendering in the rider
 
 | rider | replays | translation not verified | landmark chips | with a rendering |
 |---|---|---|---|---|
-| bn | 30 | 7 | 22 | 22 |
+| bn | 30 | 8 | 22 | 22 |
 | en | 32 | 1 | 23 | 23 |
 | gu | 30 | 0 | 21 | 21 |
 | hi | 29 | 0 | 21 | 21 |
-| kn | 30 | 1 | 23 | 23 |
-| ml | 31 | 12 | 24 | 24 |
+| kn | 30 | 0 | 23 | 23 |
+| ml | 31 | 13 | 24 | 24 |
 | mr | 31 | 0 | 22 | 22 |
 | pa | 30 | 0 | 22 | 22 |
-| ta | 32 | 0 | 24 | 24 |
+| ta | 32 | 2 | 24 | 24 |
 | te | 31 | 0 | 23 | 23 |
 
 ## What was checked
@@ -67,7 +67,7 @@ Each replay is one `POST /rooms/{code}/turn` with the demo-clip header, made in 
 - the turn is accepted and raises no exception;
 - the chips on the customer's screen and on the rider's screen equal the clip's expected facts, by the rule the demo-set scoring uses, and every rider chip has a label;
 - the translation is not empty;
-- the rider gets stored audio that loads as a WAV when the bundle holds one for that pair, and the text-only fallback otherwise.
+- the rider gets stored audio that loads as a WAV when the bundle holds one for that pair (all of them should), and the text-only fallback otherwise.
 
 A verified clip is one listed in `demo/clips/manifest.json`: its stored transcript yields exactly the expected facts. Speech recognition and synthesis are not run (the transcripts and audio are stored), so this does not test how a person's voice is heard.
 
