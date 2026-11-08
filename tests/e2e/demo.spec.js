@@ -111,7 +111,7 @@ test("demo input is absent when the flag is off", async ({ page }) => {
   expect(response.status()).toBe(404);
 });
 
-test("split-screen page loads both screens in one 16:9 stage", async ({ page }) => {
+test("split-screen page loads both screens and copies the room code across", async ({ page }) => {
   await page.setViewportSize({ width: 1920, height: 1080 });
   await page.goto(`${DEMO}/demo.html`);
   await expect(page.frameLocator("#customer-frame").locator("h1")).toHaveText("Customer");

@@ -1,15 +1,19 @@
-/* Tokens, body and base type come from app.css; this file is only the 16:9 frame for a screen recording. */
+/* Tokens, body and base type come from app.css; this file is only the frame of the split page.
+   Phone: the two panes stack and together fill the screen, each scrolling inside its frame.
+   Tablet (40rem): one column the width of a phone, each frame as tall as its page.
+   Laptop (64rem): the panes side by side, each frame as tall as its page. */
 body { margin: 0; }
-/* One stage that scales to the window: a brand bar over two equal panes. */
-.stage { width: min(100vw, 100vh * 16 / 9); aspect-ratio: 16 / 9; margin: 0 auto;
-  display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto minmax(0, 1fr);
-  gap: 0.75rem; padding: 0.75rem; }
+.stage {
+  display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.75rem; padding: 0.75rem;
+  min-height: 100dvh; /* dvh follows the browser bar on a phone */
+}
 .bar { grid-column: 1 / -1; display: flex; align-items: center; gap: 0.6rem; }
 .bar .logo { width: 1.75rem; height: 1.75rem; }
 .wordmark { font-size: 1.25rem; font-weight: 800; letter-spacing: 0.01em; }
 .tag { margin-left: auto; font-size: 0.9rem; color: var(--muted); }
 .bar .theme-toggle { margin-left: 0; }
-.pane { display: flex; flex-direction: column; min-height: 0; background: var(--surface);
+.pane { display: flex; flex-direction: column; min-height: 22rem; background: var(--surface);
   border: 2px solid var(--band); border-radius: 0.75rem; overflow: hidden; }
 /* Each side wears its colour on the header band, so the split reads at a glance. */
 .pane-customer { --band: var(--customer); --band-on: var(--customer-on); }
@@ -17,9 +21,17 @@ body { margin: 0; }
 .pane h1 { margin: 0; padding: 0.35rem 1rem; font-size: 0.95rem; font-weight: 800; letter-spacing: 0.05em;
   text-transform: uppercase; background: var(--band); color: var(--band-on); }
 iframe { flex: 1; width: 100%; border: 0; min-height: 0; background: var(--bg); }
-/* Phone: the two panes stack and together fill the visible height (dvh follows the browser bar). */
-@media (max-width: 700px) {
-  .stage { width: auto; aspect-ratio: auto; min-height: 100dvh; box-sizing: border-box;
-    grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr) minmax(0, 1fr); }
-  .pane { min-height: 22rem; }
+
+/* The frame is as tall as the taller of the two pages (demo-split.js sets --content-h), but never taller
+   than the window less the bar, the padding and the pane header, so the customer's microphone, which
+   sticks to the bottom of its frame, stays on screen. A page taller than that scrolls inside its frame. */
+@media (min-width: 40rem) {
+  .stage { max-width: 40rem; margin: 0 auto; min-height: 0; grid-template-rows: none; }
+  .pane { min-height: 0; }
+  iframe { flex: none; height: min(var(--content-h, 24rem), calc(100dvh - 9rem)); min-height: 18rem; }
+}
+/* The stage stops at 80rem so each frame stays under 40rem wide, the width the pages inside were
+   designed and tested at; a wider window gets margins, not wider panes. */
+@media (min-width: 64rem) {
+  .stage { max-width: 80rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
