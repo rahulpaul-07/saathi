@@ -105,12 +105,32 @@ export function renderTimings(list, timings, extraRows = []) {
 }
 
 /**
+ * Whether the server timed the turn. A stored replay is a lookup: it measures nothing and reports
+ * zeros, and a readout of "0.0 s" would be a number nobody took.
+ * @param {{total_ms: number}} timings
+ */
+export function wasTimed(timings) {
+  return timings.total_ms > 0;
+}
+
+/**
  * The whole turn on one line: "2.8 s: Speech to text 0.8, Translation 0.9, Text to speech 1.1".
  * @param {{stt_ms: number, translate_ms: number, tts_ms: number, total_ms: number}} timings
  */
 export function timingsSummary(timings) {
   const s = (/** @type {number} */ value) => (value / 1000).toFixed(1);
   return bi`${s(timings.total_ms)} s: ${tb("time_stt", "Speech to text")} ${s(timings.stt_ms)}, ${tb("time_translate", "Translation")} ${s(timings.translate_ms)}, ${tb("time_tts", "Text to speech")} ${s(timings.tts_ms)}`;
+}
+
+/**
+ * How far to scroll down so that `target` ends `gap` above `cover`; 0 when it already does. For a control
+ * pinned to the bottom of the screen that would otherwise sit on top of the button the person needs next.
+ * @param {{bottom: number}} target
+ * @param {{top: number}} cover
+ * @param {number} gap
+ */
+export function scrollToClear(target, cover, gap) {
+  return Math.max(0, target.bottom + gap - cover.top);
 }
 
 /**
