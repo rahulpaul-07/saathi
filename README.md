@@ -58,6 +58,10 @@ The same moment on a 412 px wide phone, rider side, with the delivery card direc
 
 ![Rider on a 412 px wide phone, scripted sample text: the delivery card first, then the translated audio, the repeat button and the quick replies](docs/media/design/current/rider-412x915.png)
 
+The landing page at 1366 x 768 in the light theme. The sample card is fixed example content drawn with the same code as the rider's screen, not model output:
+
+![Landing page at 1366 x 768: the headline, the customer and rider buttons, the side-by-side demo button and a sample delivery card labelled as a demo clip](docs/media/design/current/landing-1366x768.png)
+
 These are in [`docs/media/design/current/`](docs/media/design/current/). The earlier five-step captures for both roles are in [`docs/media/design/before/`](docs/media/design/before/) and [`docs/media/design/after/`](docs/media/design/after/). The
 people and addresses in them are synthetic; the clips are labelled demo clips.
 

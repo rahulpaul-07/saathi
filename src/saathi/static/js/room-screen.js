@@ -21,7 +21,18 @@ import {
   sendChipReply,
   sendQuickReply,
 } from "./room-client.js";
-import { byId, renderChips, renderTimings, setStatus, timingsSummary } from "./ui.js";
+import {
+  byId,
+  renderChips,
+  renderTimings,
+  scrollToClear,
+  setStatus,
+  timingsSummary,
+  wasTimed,
+} from "./ui.js";
+
+// The space between the Send button and the pinned microphone: the microphone's own inset (--sp-1, 0.5rem).
+const SEND_GAP_PX = 8;
 
 /**
  * @param {import("./room-client.js").RoomInfo} room
@@ -224,6 +235,20 @@ export function enterRoom(room, languages, players, onEnded) {
     document.body.classList.add("demo-on");
     talkButton.classList.add("minor");
     render();
+  }
+
+  /**
+   * With a clip chosen, Send is the next step. On a short screen the pinned microphone sits on top of it,
+   * so scroll just enough to bring it clear. Only this window scrolls: inside a split-page frame the page
+   * around the frame stays where it is.
+   */
+  function revealSend() {
+    const by = scrollToClear(
+      demoSendButton.getBoundingClientRect(),
+      talkButton.getBoundingClientRect(),
+      SEND_GAP_PX,
+    );
+    if (by > 0) window.scrollBy(0, by);
   }
 
   async function sendDemoClip() {
@@ -533,15 +558,19 @@ export function enterRoom(room, languages, players, onEnded) {
       sentEl.hidden = false;
     }
     sentDemoBadgeEl.hidden = !demoClip;
-    renderTimings(timingsEl, result.data.timings);
-    // In demo mode the one-line summary is the readout; elsewhere the detail sits behind a toggle.
-    const demoMode = document.body.classList.contains("demo-on");
-    renderText(
-      timingsSummaryEl,
-      demoMode ? timingsSummary(result.data.timings) : tb("time_taken", "Time taken by your last message"),
-    );
-    timingsBoxEl.open = demoMode;
-    timingsBoxEl.hidden = false;
+    // A stored replay was not timed, so there is no readout to show for it.
+    const timed = wasTimed(result.data.timings);
+    timingsBoxEl.hidden = !timed;
+    if (timed) {
+      renderTimings(timingsEl, result.data.timings);
+      // In demo mode the one-line summary is the readout; elsewhere the detail sits behind a toggle.
+      const demoMode = document.body.classList.contains("demo-on");
+      renderText(
+        timingsSummaryEl,
+        demoMode ? timingsSummary(result.data.timings) : tb("time_taken", "Time taken by your last message"),
+      );
+      timingsBoxEl.open = demoMode;
+    }
     showRepeatPrompt(result.data.repeat);
     setStatus(statusEl, sentMessage(demoClip, result.data.verified === true));
   }
@@ -570,7 +599,10 @@ export function enterRoom(room, languages, players, onEnded) {
   repeatButton.addEventListener("click", () => void turnPlayer.replay());
   replyReplayButton.addEventListener("click", () => void replyPlayer.replay());
   demoSendButton.addEventListener("click", () => void sendDemoClip());
-  demoSelect.addEventListener("change", render);
+  demoSelect.addEventListener("change", () => {
+    render();
+    revealSend();
+  });
 
   if (room.peer_language) showPeer(room.peer_language);
   render();

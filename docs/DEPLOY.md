@@ -74,6 +74,11 @@ app container on port 8000. The Docker commands used there (network, image, app 
 containers, volumes, memory limit, the names the env file needs) are in
 [deploy/run.sh](../deploy/run.sh), with the redeploy sequence.
 
+The app sends `Cache-Control: no-cache` on the UI files (pages, scripts, styles): a browser keeps its
+copy but asks first, and gets an empty 304 when nothing changed. A redeploy therefore needs no
+cache-busting names. Do not give those paths a longer cache policy at the proxy, or an old script
+can be paired with a new page again.
+
 ## Budget and kill switch
 
 - Every Gnani HTTP attempt, retries included, is counted before it is sent. When the day's budget

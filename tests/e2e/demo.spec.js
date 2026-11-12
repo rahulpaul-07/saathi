@@ -128,6 +128,25 @@ test("split-screen page loads both screens and copies the room code across", asy
   await expect(page.frameLocator("#rider-frame").locator("#code-input")).toHaveValue(code ?? "");
 });
 
+test("split-screen page names each person's language in the pane header and hides the Back link", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1920, height: 1080 });
+  await page.goto(`${DEMO}/demo.html`);
+  await expect(page.locator("#customer-lang")).toHaveText(""); // nothing is preselected
+  await page.frameLocator("#customer-frame").locator("#language").selectOption("kn");
+  await page.frameLocator("#rider-frame").locator("#language").selectOption("hi");
+  // The header names the language in its own script with the English name, and marks it as that language.
+  await expect(page.locator("#customer-lang")).toHaveText(/\(Kannada\)$/);
+  await expect(page.locator("#customer-lang")).toHaveAttribute("lang", "kn");
+  await expect(page.locator("#rider-lang")).toHaveText(/\(Hindi\)$/);
+  await expect(page.locator("#rider-lang")).toHaveAttribute("lang", "hi");
+  // Back would load the home page into half the screen, so a framed page does not offer it.
+  for (const id of ["customer-frame", "rider-frame"]) {
+    await expect(page.frameLocator(`#${id}`).locator('a[href="index.html"]')).toBeHidden();
+  }
+});
+
 test("replay: a rider language with no stored audio shows text and tiles, no error and no retry", async ({
   browser,
 }) => {
@@ -170,6 +189,31 @@ test("replay: a rider language with no stored audio shows text and tiles, no err
   expect(requests).toEqual(["turn"]);
   expect(problems).toEqual([]);
 });
+
+// A stored turn is a lookup that times nothing; the speaker's screen must not print "0.0 s" for it.
+for (const riderLanguage of ["hi", "bn"]) {
+  test(`replay: the speaker sees no timing readout for a stored turn (${riderLanguage} rider)`, async ({
+    browser,
+  }) => {
+    const REPLAY = "http://127.0.0.1:8768"; // tests/e2e/serve.py --replay: bundle holds kn -> hi only
+    const customer = await (await browser.newContext()).newPage();
+    const rider = await (await browser.newContext()).newPage();
+    await customer.goto(`${REPLAY}/customer.html`);
+    await customer.locator("#language").selectOption("kn");
+    await customer.getByRole("button", { name: ui("kn", "create_room") }).click();
+    await expect(customer.locator("#code")).toHaveText(/^[A-Z0-9]{6}$/);
+    const code = (await customer.locator("#code").textContent()) ?? "";
+    await rider.goto(`${REPLAY}/rider.html?code=${code}`);
+    await rider.locator("#language").selectOption(riderLanguage);
+    await rider.getByRole("button", { name: ui(riderLanguage, "join_and_sound") }).click();
+    await expect(customer.locator("#peer")).toContainText(ui.has("kn", "rider_joined"));
+
+    await customer.locator("#demo-clip").selectOption("clip-kn");
+    await customer.locator("#demo-send").click();
+    await expect(customer.locator("#sent-demo-badge")).toBeVisible(); // the turn has come back
+    await expect(customer.locator("#timings-box")).toBeHidden();
+  });
+}
 
 test.describe("phone, 412 px wide", () => {
   test.use({ viewport: { width: 412, height: 800 } });
@@ -247,5 +291,7 @@ test("public mode: the home page does not link to the single-phone test page", a
   await features;
   await page.waitForLoadState("networkidle"); // landing.js has acted on the answer by now
   await expect(page.getByRole("link", { name: SOLO_LINK })).toBeHidden();
+  // The paragraph that holds the link takes no space either, so the public page has no gap there.
+  await expect(page.locator(".landing .sub")).toHaveCSS("display", "none");
   await expect(page.getByRole("link", { name: "Both screens side by side (demo)" })).toBeVisible();
 });
