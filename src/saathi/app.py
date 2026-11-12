@@ -10,7 +10,6 @@ from pathlib import Path
 from typing import Annotated
 
 from fastapi import FastAPI, File, Form, HTTPException, Request, Response, UploadFile
-from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from saathi.audio import MAX_AUDIO_BYTES, AudioError, AudioTooLargeError, wav_duration_s
@@ -34,6 +33,7 @@ from saathi.ratelimit import SlidingWindowLimiter
 from saathi.room_routes import TimingsOut, live_paused_detail, room_router
 from saathi.rooms import RoomManager
 from saathi.security_headers import CspMiddleware, content_security_policy
+from saathi.static_files import RevalidatedStaticFiles
 from saathi.translate import RoutingTranslator, Translator
 
 log = logging.getLogger(__name__)
@@ -247,6 +247,6 @@ def create_app(
         app.post("/turn")(turn)
 
     # Mounted last so it never shadows /turn. Same origin as the API, so no CORS.
-    app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="ui")
+    app.mount("/", RevalidatedStaticFiles(directory=STATIC_DIR, html=True), name="ui")
 
     return app

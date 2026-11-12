@@ -256,6 +256,11 @@ Mitigations and tests:
   `test_qr_encodes_the_public_origin_and_the_rider_page_only`.
 - Translation models run Hub-hosted code, so each is pinned to a full commit:
   `test_translate.py::test_every_route_model_is_pinned_to_a_full_commit`.
+- The UI files are sent with `Cache-Control: no-cache`, so a browser asks again before it reuses a
+  page or script and a fix to the UI reaches a returning visitor on their next load, not after a
+  cache period the browser chose itself. An unchanged file costs an empty 304:
+  `test_static_cache.py::test_pages_and_assets_are_revalidated_on_every_load`,
+  `test_an_unchanged_file_is_answered_with_an_empty_304`.
 
 Residual:
 - A bundle makes the demo-clip list and clip audio available without a token (as in demo mode).
@@ -279,6 +284,7 @@ directive. Residual: very old browsers ignore it.
 ## Not covered by this model
 
 Denial of service by network flood, TLS and certificate handling (the app is served over plain
-HTTP locally and has no TLS of its own), dependency vulnerabilities (no audit is automated),
-microphone permission prompts in the browser, and the privacy of the phone's own recording
-buffers. See PATH_TO_PRODUCTION.md for what a deployment would still need.
+HTTP locally and has no TLS of its own), dependency vulnerabilities (no audit is automated; the
+one manual audit, on 2026-11-12, is in DECISIONS.md), microphone permission prompts in the
+browser, and the privacy of the phone's own recording buffers. See PATH_TO_PRODUCTION.md for what
+a deployment would still need.
