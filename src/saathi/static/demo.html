@@ -24,11 +24,17 @@
         <button type="button" class="theme-toggle" data-theme-toggle aria-label="Dark theme"></button>
       </header>
       <section class="pane pane-customer" aria-labelledby="customer-title">
-        <h1 id="customer-title">Customer</h1>
+        <header class="pane-head">
+          <h1 id="customer-title">Customer</h1>
+          <span class="pane-lang" id="customer-lang"></span>
+        </header>
         <iframe id="customer-frame" title="Customer screen" src="customer.html" allow="microphone"></iframe>
       </section>
       <section class="pane pane-rider" aria-labelledby="rider-title">
-        <h1 id="rider-title">Rider</h1>
+        <header class="pane-head">
+          <h1 id="rider-title">Rider</h1>
+          <span class="pane-lang" id="rider-lang"></span>
+        </header>
         <iframe id="rider-frame" title="Rider screen" src="rider.html" allow="microphone"></iframe>
       </section>
     </div>

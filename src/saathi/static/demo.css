@@ -18,8 +18,11 @@ body { margin: 0; }
 /* Each side wears its colour on the header band, so the split reads at a glance. */
 .pane-customer { --band: var(--customer); --band-on: var(--customer-on); }
 .pane-rider { --band: var(--rider); --band-on: var(--rider-on); }
-.pane h1 { margin: 0; padding: 0.35rem 1rem; font-size: 0.95rem; font-weight: 800; letter-spacing: 0.05em;
-  text-transform: uppercase; background: var(--band); color: var(--band-on); }
+.pane-head { display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem;
+  padding: 0.35rem 1rem; background: var(--band); color: var(--band-on); }
+.pane h1 { margin: 0; font-size: 0.95rem; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; }
+/* Who speaks what: the language the person chose, in its own script with the English name. */
+.pane-lang { min-width: 0; font-size: 0.95rem; font-weight: 600; text-align: right; overflow-wrap: anywhere; }
 iframe { flex: 1; width: 100%; border: 0; min-height: 0; background: var(--bg); }
 
 /* The frame is as tall as the taller of the two pages (demo-split.js sets --content-h), but never taller

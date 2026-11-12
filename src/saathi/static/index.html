@@ -4,6 +4,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="color-scheme" content="light dark" />
+    <meta
+      name="description"
+      content="Say the directions your way. The rider gets them theirs. A customer speaks in their language; the delivery rider sees the gate, floor and landmark as big coloured tiles and hears them in theirs."
+    />
     <title>Saathi</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="app.css" />
@@ -22,26 +26,35 @@
         <button type="button" class="theme-toggle" data-theme-toggle aria-label="Dark theme"></button>
       </header>
       <div class="intro">
-        <h1 class="headline">Say the directions your way. The rider gets them theirs.</h1>
+        <h1 class="headline">
+          <span class="say">Say the directions your way.</span>
+          <span class="get">The rider gets them theirs.</span>
+        </h1>
         <p class="pitch">
           A customer speaks in their language; the delivery rider sees the gate, floor and landmark as
           big coloured tiles and hears them in theirs.
         </p>
-        <ul class="kind-strip" id="kind-strip" aria-label="The facts on the tiles"></ul>
         <nav class="entry" aria-label="Choose your role">
           <a class="big-btn role-customer" href="customer.html">I am the customer</a>
           <a class="big-btn role-rider" href="rider.html">I am the delivery rider</a>
         </nav>
-        <p class="sub">
-          <a href="demo.html">Both screens side by side (demo)</a>
-          <span id="solo-link" hidden>&middot; <a href="solo.html">Single-phone test page</a></span>
-        </p>
+        <a class="big-btn secondary demo-link" href="demo.html">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path class="logo-a" d="M2 7a2 2 0 0 1 2-2h7v14H4a2 2 0 0 1-2-2z" />
+            <path class="logo-b" d="M13 5h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-7z" />
+          </svg>
+          Both screens side by side (demo)
+        </a>
+        <p class="sub"><span id="solo-link" hidden><a href="solo.html">Single-phone test page</a></span></p>
       </div>
-      <section class="preview" aria-labelledby="preview-heading">
-        <h2 id="preview-heading">Delivery card</h2>
-        <p class="badge">Demo clip, not live speech</p>
-        <ul class="chips" id="preview-chips" aria-labelledby="preview-heading"></ul>
-      </section>
+      <div class="showcase">
+        <section class="preview" aria-labelledby="preview-heading">
+          <h2 id="preview-heading">Delivery card</h2>
+          <p class="badge">Demo clip, not live speech</p>
+          <ul class="chips" id="preview-chips" aria-labelledby="preview-heading"></ul>
+        </section>
+        <ul class="kind-strip" id="kind-strip" aria-label="The facts on the tiles"></ul>
+      </div>
       <p class="problem">
         Directions are the part of a delivery that goes wrong when two people do not share a language.
         A rider who misses one number or one landmark loses minutes at the wrong gate.

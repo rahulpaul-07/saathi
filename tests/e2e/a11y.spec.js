@@ -145,7 +145,6 @@ const TEXT_PAIRS = [
   ["--danger", "--surface"],
   ["--danger-on", "--danger"],
   ["--warn-text", "--warn-bg"],
-  ["--brand-on", "--brand"],
   ["--customer-on", "--customer"],
   ["--rider-on", "--rider"],
   ["--customer", "--bg"],

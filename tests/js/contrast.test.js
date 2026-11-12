@@ -60,7 +60,6 @@ const TEXT = [
   ["--danger-on", "--danger"],
   ["--rider-on", "--rider"],
   ["--customer-on", "--customer"],
-  ["--brand-on", "--brand"],
   ["--warn-text", "--warn-bg"],
   ["--ask-text", "--ask-bg"],
   ["--muted", "--warn-bg"],

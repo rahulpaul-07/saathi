@@ -33,6 +33,26 @@ const smallTargets = (page) =>
     return found;
   }, MIN_TAP);
 
+/**
+ * A Kannada customer and a Hindi rider in one room on the demo server; only the customer's screen is sized.
+ * @param {import("@playwright/test").Browser} browser
+ * @param {{width: number, height: number}} viewport
+ */
+async function demoRoom(browser, viewport) {
+  const customer = await (await browser.newContext({ viewport })).newPage();
+  const rider = await (await browser.newContext()).newPage();
+  await customer.goto(`${DEMO}/customer.html`);
+  await customer.locator("#language").selectOption("kn");
+  await customer.getByRole("button", { name: ui("kn", "create_room") }).click();
+  await expect(customer.locator("#code")).toHaveText(/^[A-Z0-9]{6}$/);
+  const code = (await customer.locator("#code").textContent()) ?? "";
+  await rider.goto(`${DEMO}/rider.html?code=${code}`);
+  await rider.locator("#language").selectOption("hi");
+  await rider.getByRole("button", { name: ui("hi", "join_and_sound") }).click();
+  await expect(customer.locator("#peer")).toContainText(ui.has("kn", "rider_joined"));
+  return { customer, rider };
+}
+
 for (const size of [
   { width: 360, height: 800 },
   { width: 412, height: 915 },
@@ -96,6 +116,27 @@ for (const size of [
       await customer.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
       const after = await mic.boundingBox();
       expect((after?.y ?? 0) + (after?.height ?? 0)).toBeLessThanOrEqual(size.height);
+    });
+
+    test("customer in demo mode: choosing a clip brings the Send button clear of the pinned microphone", async ({
+      browser,
+    }) => {
+      const { customer } = await demoRoom(browser, size);
+      await customer.locator("#demo-clip").selectOption("clip-kn");
+      await expect(customer.locator("#demo-send")).toBeEnabled();
+
+      // The microphone is pinned to the bottom of the screen, and on a 360 px wide phone the Send button
+      // starts out behind it. Choosing a clip is what makes Send the next step, so it scrolls into view.
+      const where = await customer.evaluate(() => {
+        const mic = document.getElementById("talk")?.getBoundingClientRect();
+        const send = document.getElementById("demo-send")?.getBoundingClientRect();
+        if (!mic || !send) throw new Error("no microphone or Send button");
+        return {
+          offScreen: send.top < 0 || send.bottom > window.innerHeight,
+          underMic: send.left < mic.right && send.right > mic.left && send.top < mic.bottom && send.bottom > mic.top,
+        };
+      });
+      expect(where).toEqual({ offScreen: false, underMic: false });
     });
 
     test("rider after a demo clip: the delivery card is above the fold and the buttons are big", async ({
@@ -166,6 +207,42 @@ test("customer at 412 x 915 after a demo clip: the status line scrolls clear of 
   });
   expect(covered).toEqual([]);
   expect(await overflow(customer)).toBeLessThanOrEqual(0);
+});
+
+test("customer at 360 x 560: keyboard focus never lands entirely behind the pinned microphone", async ({
+  browser,
+}) => {
+  const { customer } = await demoRoom(browser, { width: 360, height: 560 });
+
+  // Tab from the first control to the last. A control that is on screen but under the microphone counts as
+  // visible to the browser, so it does not scroll, and the person cannot see where the focus is.
+  await customer.evaluate(() => window.scrollTo(0, 0));
+  await customer.locator("header a").focus();
+  const MORE_STOPS_THAN_THE_PAGE_HAS = 30;
+  const stops = [];
+  for (let i = 0; i < MORE_STOPS_THAN_THE_PAGE_HAS; i++) {
+    await customer.keyboard.press("Tab");
+    const stop = await customer.evaluate(() => {
+      const micButton = document.getElementById("talk");
+      const focused = document.activeElement;
+      if (!micButton || !focused) throw new Error("no microphone or focused element");
+      const mic = micButton.getBoundingClientRect();
+      const box = focused.getBoundingClientRect();
+      return {
+        name: focused.id || focused.className || focused.tagName,
+        hidden:
+          focused !== micButton &&
+          box.top >= mic.top &&
+          box.bottom <= mic.bottom &&
+          box.left >= mic.left &&
+          box.right <= mic.right,
+      };
+    });
+    stops.push(stop);
+    if (stop.name === "close") break;
+  }
+  expect(stops[stops.length - 1]?.name, "Tab reached the last control").toBe("close");
+  expect(stops.filter((stop) => stop.hidden).map((stop) => stop.name)).toEqual([]);
 });
 
 test("recording shows the clock and a pressed state, then returns to idle", async ({ browser }) => {
