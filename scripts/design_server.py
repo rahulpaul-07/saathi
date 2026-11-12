@@ -28,6 +28,15 @@ from serve import FakeGnani  # noqa: E402  (shares the silent-audio fake with th
 
 SCRIPT_IDS = ("kn-bakery", "kn-gate-correction")
 LANDMARKS = {"bakery": "बेकरी", "ಬೇಕರಿ": "बेकरी"}
+# The Kannada words that stay in the two scripted sentences once their numbers are masked.
+HINDI_WORDS = {
+    "ಕ್ಷಮಿಸಿ": "क्षमा करें",
+    "ಕ್ರಾಸ್": "क्रॉस",
+    "ಮೇನ್": "मेन",
+    "ಗೇಟ್": "गेट",
+    "ನಂಬರ್": "नंबर",
+    "ಪಕ್ಕ": "के पास",
+}
 
 
 class ScriptedGnani(FakeGnani):
@@ -49,7 +58,11 @@ class DictionaryTranslator:
     def translate(self, text: str, src: str, tgt: str) -> str:
         if text in LANDMARKS:
             return LANDMARKS[text]
-        return text.replace("ಪಕ್ಕ", "के पास") if "#" in text else text
+        if "#" not in text:
+            return text
+        for word, hindi in HINDI_WORDS.items():
+            text = text.replace(word, hindi)
+        return text
 
 
 def clips_dir() -> Path:

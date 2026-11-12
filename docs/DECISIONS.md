@@ -783,3 +783,80 @@ docs/PATH_TO_PRODUCTION.md section 3.
 - The room-line (item 5) shows the demo banner as one ellipsised line with the peer and status lines
   tight below it. A true single line would need a new translated "Demo mode" string, which marks
   every language's interface text unreviewed again; left for the author to decide.
+
+## Level-up pass: look, screens and delivery (2026-11-12)
+
+Aim: a clearer first impression and fewer rough edges at real sizes, without a new identity. The two
+role colours, the tile kinds and the rider-first layout stay. Held throughout: no new interface text
+(each string needs reviewed translations in ten languages), the Content Security Policy unchanged
+(no inline styles or scripts), the contrast tests as the gate for every colour, no Gnani call.
+
+Look
+- The headline is said by the two people in the logo's two colours: what the customer does in blue,
+  what the rider gets in teal. On a laptop the sample delivery card sits level with it and is as
+  tall as the explanation and the role buttons together; on a phone it follows the buttons.
+- One filled button at a time. A disabled big button is an outline, not a pale copy of the filled
+  one, which read as pressable. The demo link is an outline under the two filled role buttons, with
+  the two people's colours as its icon: it is the way in for someone with only one device.
+- Confirm and ask under a tile are one two-part bar, so the value stays the loudest thing on the
+  tile. Both parts keep the 48 px minimum.
+- A tile that a correction changed rings once in amber, and its badge pulses. Like every animation
+  here it is off under `prefers-reduced-motion`.
+- Split page: each pane header names the language that person picked, in its own script with the
+  English name, taken from the existing language list. Inside a frame the title row, colour band and
+  Back link are hidden (the heading stays for screen readers; "back" would load the home page into
+  half the screen) and the demo banner is a quiet caption instead of a dashed box.
+- `--brand` and `--brand-on` were aliases of `--accent` and `--accent-text`. They were removed with
+  their one contrast pair; the accent pairs they duplicated are still tested in both themes.
+- The home page has a meta description. It is the headline and the pitch word for word, so no new
+  copy.
+
+Behaviour found by looking at real sizes
+- The pinned microphone sat on top of "Send demo clip" on a 360 px phone and in the split page's
+  customer frame at 1366 x 768, so the step after choosing a clip was out of sight. First try: a
+  static microphone in demo mode. It broke the tested rule that the microphone is large and inside
+  the viewport once the rider has joined, so it was reverted and the test left as it was. Chosen:
+  the microphone stays pinned in the thumb zone, and choosing a clip scrolls just enough to bring
+  Send clear above it (`revealSend` in `room-screen.js`; the arithmetic is `scrollToClear` in
+  `ui.js`, with node tests). It uses `window.scrollBy`, so only the frame's own window moves; a
+  screenshot of the split page confirmed the page around the frame stayed put.
+- Keyboard focus could land entirely under the pinned microphone: the browser counts a control
+  under it as on screen, so Tab left it there (WCAG 2.2 criterion 2.4.11, Focus Not Obscured). The
+  customer page now has `scroll-padding-bottom` equal to the room already reserved at the bottom
+  of the page (`--mic-room`, one definition for both). That room is an estimate (button height, a
+  gap and the home-bar inset: 88 px at 360 px wide), and a two-line microphone label is taller
+  (101 px plus its 8 px inset in Kannada at 360 px), so a control can still be partly covered by
+  up to about 21 px. The e2e test at 360 x 560 asserts the criterion as written: never entirely
+  hidden. Checked in Chromium only; Safari scroll-padding behaviour is not verified.
+- A stored replay is a lookup and measures nothing, so the server reports zeros for it on purpose
+  (`test_public_app.py` asserts that). The screens showed that as a timing readout of "0.0 s", a
+  number nobody took. The client now hides the readout when the total is not positive
+  (`wasTimed` in `ui.js`); the server contract is unchanged.
+
+Delivery
+- UI files are sent with `Cache-Control: no-cache` (`RevalidatedStaticFiles` in `static_files.py`).
+  The pages, scripts and styles keep fixed names and the server sent no cache header, so a browser
+  could keep an old script or style by its own rule after a redeploy and pair it with a new page.
+  `no-cache` keeps the copy but asks first: an unchanged file costs an empty 304, a changed one is
+  sent in full. The header is also set on the 304, and API responses get none
+  (`tests/test_static_cache.py`). It does not reach the live site until the next deploy.
+
+Checks, and what they found
+- `npm audit`: no vulnerabilities.
+- `uv audit`: safe patch updates exist for certifi (2026.7.22 to 2026.10.23), filelock (4.0.10 to
+  4.2.10), opentelemetry-api (1.45.0 to 1.45.2) and setuptools (84.0.0 to 84.2.1). Not applied:
+  the working environment cannot be re-synced without pulling a CUDA build of torch, and a lock
+  change should run the full suite and CI. To apply them: `uv lock --upgrade-package certifi
+  --upgrade-package filelock --upgrade-package opentelemetry-api --upgrade-package setuptools`.
+  transformers 4.46.3 (44 advisories listed) and torch 2.9.1 (5) are deliberate pins (the
+  translation models run pinned remote code); moving them means re-running the evaluation with
+  weights, so they are recorded here and not changed.
+- Read-only requests to the live site: `/healthz` answers, `/features` reports the guided demo on
+  and the single-phone page off, and all 33 UI files match the repository once line endings are
+  ignored. The policy headers split as DEPLOY.md says: the content security policy comes from the
+  app (tested here), and HSTS, `nosniff`, the referrer policy and the permissions policy come from
+  the Caddy configuration (not tested here, only observed on the live site).
+- For the author to decide: CI has no dependency audit step. `npm audit` would pass today; a Python
+  audit step would fail today on the two pinned packages above, so it needs an allow-list first.
+  Dependabot is the other option; confirm its `uv` support against its documentation before
+  relying on it.
