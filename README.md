@@ -123,6 +123,16 @@ quick reply, more than one process, a long soak, and anything in production cond
 extraction scores are optimistic because the gold texts are written in forms the recognizer was
 observed to produce.
 
+## Product
+
+How this would be run as a product: who it is for, what it should achieve, and how to test whether it helps. These documents are written by the author and no delivery rider has been interviewed yet, so the problem statement is an assumption until that is done.
+
+- [One-page summary](docs/product/ONE_PAGER.md)
+- [Product requirements (PRD)](docs/product/PRD.md): requirements graded by evidence, metrics, launch gates
+- [Competitive analysis](docs/product/COMPETITIVE_ANALYSIS.md)
+- [Pilot experiment design](docs/product/PILOT_EXPERIMENT.md)
+- [Roadmap](docs/product/ROADMAP.md), [backlog](docs/product/BACKLOG.md), [UX audit](docs/product/UX_AUDIT.md), [market sizing](docs/product/MARKET_SIZING.md), [rider interview guide](docs/product/RIDER_INTERVIEWS.md)
+
 ## What works in all 10 languages
 
 Bengali, English, Gujarati, Hindi, Kannada, Malayalam, Marathi, Punjabi, Tamil and Telugu work as
@@ -143,7 +153,7 @@ speech input and output.
 
 ## Security
 
-Addresses are personal data. Rooms are in memory and expire (30 min idle, 2 h hard); transcripts are
+Addresses are personal data. Rooms are in memory and expire (30 min idle, 2 h hard when run locally; 10 min idle, 1 h hard in public mode by default); transcripts are
 never logged or stored; tests, evaluation and demos use synthetic addresses only; the API key never
 reaches logs or settings output (tested). Per-IP and per-room rate limits, bounded uploads and
 queues, strict input schemas, generic error messages and a strict content security policy. The full

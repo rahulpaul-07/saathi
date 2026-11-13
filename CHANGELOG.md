@@ -30,7 +30,7 @@ the reasons for design choices in [`docs/DECISIONS.md`](docs/DECISIONS.md).
 
 ## 2026-10-30
 
-- Translator failures fall back to a fact summary instead of an error.
+- When a translation fails the placeholder check, the listener gets a spoken fact summary instead of a possibly wrong sentence. If the translator itself is unavailable, the turn returns a localized 502 error.
 - Fact extraction for gu, ml, mr, pa, ta and te, built from real Gnani STT output
   (`docs/LEXICON_EVIDENCE.md`), with an evaluation across all ten languages.
 - Translation-safety matrix across 90 language pairs, and the masking diagnosis.
