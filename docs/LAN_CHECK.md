@@ -33,8 +33,7 @@ Default uvicorn binds 127.0.0.1, which phones cannot reach. Bind all interfaces:
     uv run --no-sync uvicorn saathi.app:create_app --factory --host 0.0.0.0 --port 8000
 
 Find the laptop address with `ipconfig` (IPv4 of the Wi-Fi adapter on the hotspot). It changes
-with every hotspot session, so redo step 3 when it does. LAN only; no tunnel (public deployment is out of
-scope). The server has no login: anyone on the same network who has a room code can join, so use a network you trust.
+with every hotspot session, so redo step 3 when it does. LAN only for this check; no tunnel (the public deployment is documented in DEPLOY.md). The server has no login: anyone on the same network who has a room code can join, so use a network you trust.
 
 ## 3. Chrome flag on each phone
 - [ ] Open `chrome://flags/#unsafely-treat-insecure-origin-as-secure`.

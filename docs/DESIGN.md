@@ -27,8 +27,7 @@ pair named in this document, in tests or in demos is an example only.
      and for quick replies. Intended for use at a stop or pulled over; no claim of safety while
      riding.
   5. Any-to-any across the 10 languages Gnani supports for both STT and TTS.
-- Non-goals: streaming interpretation, accounts, history, a native app, public deployment (the
-  demo is a recorded video on a LAN), a hosted LLM, free-speech replies from the rider,
+- Non-goals: streaming interpretation, accounts, history, a native app, a hosted LLM, free-speech replies from the rider,
   Odia, Assamese and Urdu (Gnani supports none of them for STT or TTS; stated in the README).
 
 ## 3. Languages and support tiers
@@ -97,9 +96,9 @@ floor, cross, main, block, flat, landmark) the customer gave, so both screens ca
 an in-memory dict on the room, dropped when the room closes or expires (the same `close()` that
 wipes turn audio), never logged and never written to disk. Only customer turns update it; a
 rider's facts show for that turn only. A value the latest update replaced carries `previous`, shown
-as "changed, was X" until the next customer turn that has facts. The server sends it as a `card`
+as "changed, was X" until the rider confirms the card. The server sends it as a `card`
 event after such a turn and inside the `state` snapshot, with labels in each viewer's language.
-Limits: it holds address data for up to the room TTL (30 min idle, 2 h hard); there is no history,
+Limits: it holds address data for up to the room TTL (30 min idle, 2 h hard locally; 10 min idle, 1 h hard in public mode by default); there is no history,
 so only the one previous value is visible; a changed landmark's "was" value is in the source script.
 
 ## 7. Interfaces (planned, finalized in slice 2)
@@ -146,7 +145,7 @@ about 30 bits); a third participant is refused.
   stressor. SNR is computed against speech-active RMS, seeded.
 - Transport: upload with POST, push to the other phone with Server-Sent Events. Rejected:
   WebSocket (more machinery for one-way pushes), polling.
-- Network: LAN only, no public tunnel. Mic needs a secure context, so any phone that
+- Network: the first design ran on a LAN with no tunnel; a public HTTPS mode now exists (`docs/DEPLOY.md`). Mic needs a secure context, so any phone that
   records (the customer's always, the rider's only for the optional talk button) needs HTTPS or the
   Chrome insecure-origin flag; quick replies need no microphone.
 - Kept from the first design: plain ES modules with JSDoc and strict `tsc`; the browser encodes
@@ -173,7 +172,7 @@ about 30 bits); a third participant is refused.
   counts only; the Gnani error body log at `gnani.py` is to be dropped), in-memory rooms that
   expire, synthetic addresses only in tests, eval and demos, downloaded audio gitignored. The
   delivery card (section 6) is the only address data a room keeps, in memory with the room TTL.
-- Not hardened for the public internet (no auth beyond room tokens); LAN use only.
+- Public mode adds rate limits, a daily Gnani budget and a kill switch (`docs/DEPLOY.md`), but there is no auth beyond room tokens and no external security review.
 
 ## 11. Evaluation
 Replaces the Gnani parts of old slice 5. The translation evaluation already run (FLORES, greedy

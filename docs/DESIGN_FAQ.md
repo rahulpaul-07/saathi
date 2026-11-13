@@ -11,14 +11,14 @@ cross, main, landmark) are exactly what machine translation damages. Saathi show
 facts as chips taken from what the customer said, and adds translated audio as a backup.
 
 **2. Why not just translate and speak?**
-Because a fluent translation can still be wrong. On the gold turns, plain translation kept 67% of
+Because a fluent translation can still be wrong. On the gold turns, plain translation kept 70% of
 the facts (0.701); even with masking and a fallback it kept 85% (0.854). One lost digit sends the
 rider to the wrong gate, so the chips cannot depend on the translator.
 
 **3. Why chips from the transcript and not from the translation?**
 Independence. The chips come from the speech-to-text transcript in the speaker's own language, so a
 wrong or looping translation sits next to correct chips. The cost is that the extractor needs rules
-for each language (lexicons), which is real work and only machine-verified for six of the ten.
+for each language (lexicons), which is real work and only machine-verified (no native reader) for the six beta languages.
 
 **4. Why no LLM?**
 A hosted LLM adds latency, cost and a place for addresses to leave the machine, and an LLM that
@@ -71,7 +71,7 @@ survives proxies. Tokens are bearer headers, so the browser reads the stream wit
 
 **13. How are language tiers decided?**
 By evidence, not by how good the language is. kn, en, hi and bn have native-word extraction rules
-and the synthetic gold set; te is machine-verified; gu, ml, mr, pa and ta are beta. The tier is
+and the synthetic gold set; gu, ml, mr, pa, ta and te are beta (machine-verified only). The tier is
 shown in the UI. Machine-verified means each lexicon entry is a spelling the real STT wrote when it
 heard Gnani TTS speech; no native reader has checked them.
 
@@ -154,7 +154,7 @@ API spends a few credits and is run by hand. Real phones and real human address 
 tested.
 
 **25. Is this production-ready?**
-No, and `PATH_TO_PRODUCTION.md` says why: it is one process with in-memory rooms, LAN only, no
+No, and `PATH_TO_PRODUCTION.md` says why: it is one process with in-memory rooms, a small public deployment with a daily budget, no
 accounts, one machine's GPU, no external security review, no native-speaker review for most
 languages, and no integration with a delivery partner. It is a portfolio project that shows the
 approach and measures it honestly.

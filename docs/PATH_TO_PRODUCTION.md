@@ -2,8 +2,7 @@
 
 **Status: design, not built.** Nothing in this document exists in the code. It describes how the
 current app could grow into a service a delivery partner calls, which numbers it would be sized
-from, and what is still missing. The shipped app is a single-process portfolio demo (no accounts, no public
-deployment; see README "Scope"). Numbers marked MEASURED come from
+from, and what is still missing. The shipped app is a single-process portfolio demo (no accounts; a demo-scale public mode exists, see README "Honest limits" and DEPLOY.md). Numbers marked MEASURED come from
 this repo's docs; everything else is an ASSUMPTION or a PLACEHOLDER and is labelled as such.
 
 ## 1. Integration with a delivery partner
@@ -169,7 +168,7 @@ What a real deployment would still need (to be confirmed with someone qualified,
 
 An honest list of what is missing or unproven today:
 
-- No public deployment, TLS, or reverse proxy configuration has been done or tested.
+- A small public deployment exists (HTTPS through Caddy, public mode, daily Gnani budget; see `DEPLOY.md`). It is a demo-scale setup: no load test, no external security review, and no multi-process or multi-region design.
 - State is in one process; a restart ends every room.
 - Rate limiters are per process and per client IP as the server sees it; behind a proxy all users
   would share one IP bucket unless forwarded addresses are handled.
