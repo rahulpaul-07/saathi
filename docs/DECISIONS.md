@@ -910,3 +910,23 @@ Decisions
 Checked in Chromium only. A real back-forward cache restore cannot be reproduced headless, so that
 path is tested by dispatching a `pageshow` event with `persisted` set, and the leave prompt by a
 cancelable `beforeunload` event; neither was seen in a headed browser.
+
+CI race: a link to another room dropped the old room too late (2026-11-14)
+- Symptom: "a rider link for another room wins over the room saved in the tab" failed once in CI on
+  main (`#setup` stayed hidden after the last `goto("/rider.html")`) and passed locally and on the PR.
+- Cause: a race in the app and in the test together, not a wrong expectation. The rider page dropped
+  the saved room only after two requests (`/chrome`, `/languages`) had come back, but the join screen
+  is what the page shows by default, so the test's assertions (`#setup` visible, code prefilled, `#room`
+  hidden) were already true before start-up ran. The test then left the page before the drop, and the
+  next plain visit resumed the old room. Reproduced unthrottled at 2 of 50 on the old code and 30 of 30
+  with each start-up request held 150 ms; CPU throttling alone never reproduced it.
+- Fix in the app: the saved-room decision (`loadSession` with the link code) now runs before any
+  request goes out, so leaving the page at any point after it has already forgotten the old room.
+  Fix in the test: the original test and a new one that never lets the language list load both wait
+  on the page's own start-up signal (the language list is filled in by the step that chooses between
+  the join screen and a saved room) instead of on a state that was true from the first paint.
+- Not changed: the customer page loads its saved room late in the same way, but it has no link that
+  overrides it, so there is nothing to drop and no equivalent race.
+- Harness note: the e2e server keeps the default `MAX_ROOMS` of 50 and a room lives until its idle
+  timeout, so `--repeat-each` above about 25 on a test that opens two rooms fails with "Still busy".
+  Set `MAX_ROOMS` for such runs; that was not the CI failure.

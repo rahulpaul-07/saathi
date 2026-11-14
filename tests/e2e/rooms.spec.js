@@ -314,6 +314,16 @@ async function openRoom(browser) {
 }
 
 /**
+ * Wait until a room page has finished starting up. The language list is filled in by the same step
+ * that chooses between the join screen and a saved room, and until then the page shows the join
+ * screen by default, so "the join screen is showing" proves nothing yet.
+ * @param {import("@playwright/test").Page} page
+ */
+async function startedUp(page) {
+  await expect(page.locator("#language option")).toHaveCount(11); // placeholder + 10
+}
+
+/**
  * @param {import("@playwright/test").Page} page
  * @param {string} language the language of this page
  */
@@ -458,12 +468,35 @@ test("a rider link for another room wins over the room saved in the tab", async 
   await expect(rider.locator("#room")).toBeVisible();
 
   await rider.goto(`/rider.html?code=${other}`);
+  await startedUp(rider);
   await expect(rider.locator("#setup")).toBeVisible();
   await expect(rider.locator("#code-input")).toHaveValue(other);
   await expect(rider.locator("#room")).toBeHidden();
   // The old room was dropped from the tab, not merely hidden.
   await rider.goto("/rider.html");
+  await startedUp(rider);
   await expect(rider.locator("#setup")).toBeVisible();
+  await expect(rider.locator("#room")).toBeHidden();
+  expect(problems).toEqual([]);
+});
+
+// The drop must not wait for the network: a visit that ends while the language list is still loading
+// has to have forgotten the old room already, or the next visit reopens it.
+test("a link to another room drops the saved room even if the page is left before it has started up", async ({
+  browser,
+}) => {
+  const { rider, problems } = await openRoom(browser);
+  const other = (await (await rider.request.post("/rooms", { data: { language: "kn" } })).json()).code;
+
+  // Never answer the language list, so this visit cannot get past the start of its start-up.
+  await rider.route("**/languages", () => {});
+  await rider.goto(`/rider.html?code=${other}`);
+  await rider.unroute("**/languages");
+
+  await rider.goto("/rider.html");
+  await startedUp(rider);
+  await expect(rider.locator("#setup")).toBeVisible();
+  await expect(rider.locator("#room")).toBeHidden();
   expect(problems).toEqual([]);
 });
 
