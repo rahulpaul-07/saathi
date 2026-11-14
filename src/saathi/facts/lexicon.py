@@ -23,13 +23,30 @@ class Lexicon:
     triggers: Mapping[str, FactKind]  # structural trigger word -> fact kind
     landmark_before: frozenset[tuple[str, ...]]  # trigger precedes the name ("opposite X")
     landmark_after: frozenset[tuple[str, ...]]  # postposition follows the name ("X के सामने")
-    stopwords: frozenset[str]  # end a landmark name ("my house", "turn left")
+    # End a landmark name: "my house", "turn left", and the speaker or the person spoken to ("I",
+    # "brother"), who stand before the place in a direction and are never part of its name.
+    stopwords: frozenset[str]
     leading_particles: frozenset[str]  # dropped from the start of a landmark ("the")
     trailing_particles: frozenset[str]  # dropped from its end (Hindi "के")
     # "not" in the language: "gate 2, 4 not" means 2, and "gate 4, not 2" means 4.
     negations: frozenset[str] = frozenset()
     # Postpositions the STT glues to the name ("स्कूलसमोर"): matched as a token suffix.
     landmark_glued: frozenset[str] = frozenset()
+    # Hundred words that count only after a unit ("এক শো"). Alone they are ordinary words (Bengali
+    # "শো" is also "show"), so masking leaves a lone one to the model.
+    hundred_suffixes: frozenset[str] = frozenset()
+    # Bengali "ঊন" (less): written as its own word before a tens word it makes the number one below
+    # it ("ঊন ষাট" is 59). The joined spellings ("ঊনষাট") are ordinary entries in `numbers`.
+    one_less_prefixes: frozenset[str] = frozenset()
+    # Words that name a flat only when "number" comes with them: "door number 57", "57 number door".
+    # Alone they are ordinary words ("the third door", "open the door"), so unlike a trigger a bare
+    # value beside one is not a flat.
+    numbered_flat_words: frozenset[str] = frozenset()
+    # Hindi "के" in "57 नंबर के दरवाजे": may sit between "number" and a flat word.
+    flat_linkers: frozenset[str] = frozenset()
+    # Hindi "वाले" in "मंदिर के पास वाले गेट" (the gate near the temple): straight after a postposition
+    # it makes the noun that follows part of the same landmark instead of a second, headless one.
+    landmark_linkers: frozenset[str] = frozenset()
 
 
 def words(spec: str) -> frozenset[str]:
@@ -95,4 +112,9 @@ def merge(*lexicons: Lexicon) -> Lexicon:
         trailing_particles=frozenset().union(*(lx.trailing_particles for lx in lexicons)),
         negations=frozenset().union(*(lx.negations for lx in lexicons)),
         landmark_glued=frozenset().union(*(lx.landmark_glued for lx in lexicons)),
+        hundred_suffixes=frozenset().union(*(lx.hundred_suffixes for lx in lexicons)),
+        one_less_prefixes=frozenset().union(*(lx.one_less_prefixes for lx in lexicons)),
+        numbered_flat_words=frozenset().union(*(lx.numbered_flat_words for lx in lexicons)),
+        flat_linkers=frozenset().union(*(lx.flat_linkers for lx in lexicons)),
+        landmark_linkers=frozenset().union(*(lx.landmark_linkers for lx in lexicons)),
     )

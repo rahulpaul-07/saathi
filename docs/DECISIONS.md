@@ -930,3 +930,229 @@ CI race: a link to another room dropped the old room too late (2026-11-14)
 - Harness note: the e2e server keeps the default `MAX_ROOMS` of 50 and a room lives until its idle
   timeout, so `--repeat-each` above about 25 on a test that opens two rooms fails with "Still busy".
   Set `MAX_ROOMS` for such runs; that was not the CI failure.
+
+## Live test with a native Kannada speaker (2026-11-14)
+
+A native Kannada speaker used the live site on 14 November as the customer, with a Bengali rider and
+once a Hindi rider, and reported seven problems (F1 to F7 in the README). F1 to F4 were changed, each
+with tests that failed first; F5 to F7 are written up and left alone. No server or deploy change, no
+new dependency and no new interface text.
+
+What the evidence is, and is not
+- Everything here was measured offline on this laptop: the local IndicTrans2 models, the stored gold
+  set and the stored demo transcripts. No Gnani call was made (the ledger stays at 1342 of 1500). The
+  fixes were not tried on the live site and were not re-tested with the speaker.
+- The tester's audio and transcripts were not available. The sentences were rebuilt from the report,
+  so the local translator failed in the same way as the live one but did not give the same strings.
+  The tester saw 500 and 507; the local run on the old code gave "fifty sixty" and "fifty seven" in
+  Bengali. The class of failure is the same, the strings are not.
+- The number-word and digit measurements come from `scripts/number_accuracy.py` (local model, no Gnani
+  call): `uv run --no-sync python scripts/number_accuracy.py --out after.json`, with `--digits` for the
+  digit set. The old-code figures are the same script run with `PYTHONPATH` pointing at a copy of the
+  code from commit d0d2162 (`git archive d0d2162 src`, extracted outside the repo), and
+  `--compare before.json after.json` prints the difference. The script was first used from a
+  gitignored scratch folder and was moved into `scripts/` with no change in behaviour; re-running it
+  gave the same 377, 598, 215 and 208 kept, and the same result for every case. The gold-set, demo-set
+  and masking A/B figures come from the other committed scripts (`scripts/score_facts.py`,
+  `scripts/review_demo_set.py`, `scripts/eval_masking.py`).
+
+F1: a number in the source could be changed or lost without a word
+- Reproduction (old code): "ಅಣ್ಣ, ಐವತ್ತಾರು ಅಲ್ಲ, ಐವತ್ತೇಳು ನಂಬರ್ ಡೋರ್ ಗೆ ಬನ್ನಿ" read as 56 and 57 by the number
+  reader, but it made no tile (`facts: []`) and nothing was masked, so the turn counted as verified.
+  The Bengali output was "আন্ন, পঞ্চাশ ষাট নয়, পঞ্চাশ সাত নম্বর দরজায় আসুন।" and the Hindi output "भाई,
+  पचास नहीं, पचास-सात नंबर के दरवाजे पर आएं।"; English was right. Kannada 77 alone came out as
+  "সপ্তদশ" (seventeenth) in Bengali and "सत्रह" (17) in Hindi.
+- Control: the same sentence with "gate" instead of "door" made a gate tile, and 57 came back exactly,
+  but the 56 was still sent as text and came back as "পঞ্চাশ" and "पचास" (50).
+- Cause: masking covered only a tile's own value and the loanwords, and `verified` counted only the
+  placeholders that had been put in. A number that was not a tile value was neither protected nor
+  checked, and with no tile in the sentence nothing was checked at all.
+- Rule now: every digit group (up to four digits) and every number word from ten up is locked, that is
+  replaced by a placeholder before translation and restored after it, from the parsed value written as
+  plain ASCII digits ("05" comes back as "5"). A slot that does not come back exactly once makes the
+  turn unverified, which reuses the existing path: the listener gets the tile summary spelled from
+  tables (or, with no tile, the plain translation), and the speaker gets the existing "please repeat"
+  prompt. Holding numbers out was chosen over translating freely and checking the result: the
+  placeholder mechanism and its fallback already exist and were probed
+  (`scripts/probe_placeholders.py`), while a check on the translated sentence would need a number
+  reader for every listener language, including the odd forms the model writes ("পঞ্চশত সাত"), and
+  would still need something to speak when it fails.
+- Left to the translator on purpose: number words below ten (they double as ordinary words: Hindi "एक"
+  is also "a", Bengali "নয়" is also "is not"); ordinals ("third door" is a position, not a 3); a
+  hundred suffix on its own (Bengali "শো" is also "show"); digit runs the grammar calls ambiguous;
+  two numbers that touch across a space or one of `. : , - – —` ("2.5", "5:30", "twenty first"),
+  because locking half of a figure would put a wrong number in the sentence ("56, 57" with a space
+  after the comma is a list and is locked); a number that overlaps a tile value (the tile owns it);
+  and digit runs of five or more digits.
+- Measured on the local translator, kept meaning the intended number appears in the rider's sentence.
+  The cases are 22 values and a hundred, in a minutes, a meters and a door sentence, from kn, hi and bn
+  to en, hi, bn and kn (621 cases for words, 216 for digits):
+
+  | | Kept | Silent losses | Flagged unverified |
+  |---|---|---|---|
+  | Number words, old code | 377 of 621 | 244 | 0 |
+  | Number words, now | 598 of 621 | 0 | 23 |
+  | Digits, old code | 215 of 216 | 1 | 0 |
+  | Digits, now | 208 of 216 | 0 | 8 |
+
+  Compound words (405 cases) went from 174 to 390 kept; single-digit words from 203 to 208 of 216. The
+  words below ten were kept 72 of 72 in both the minutes and the meters sentences before and after,
+  so leaving them to the translator cost nothing there; in the door sentences they went from 59 to
+  64 of 72, and the other 8 are the flagged Kannada-to-Hindi door cases below. After the change no
+  wrong or missing number went unflagged in these cases.
+
+The Kannada-to-Hindi door sentences are all flagged (a cost, stated plainly)
+- All 31 Kannada-to-Hindi door sentences (8 digit values and 23 word values) come out unverified. The
+  masked text is the same for every number ("ಅಣ್ಣ, #L51 ನಂಬರ್ ಡೋರ್ ಗೆ ಬನ್ನಿ"), and the Hindi model
+  answers it with "भाई, नंबर 1 पर आएं।", so the placeholder never comes back. The flag is correct, and
+  the fallback is the tile summary: "फ्लैट N" carried the right number in 31 of 31 end to end, with none
+  wrong. The speaker gets the "please repeat" prompt each time, and the Hindi listener hears a short
+  tile, not a sentence.
+- On the old code the same sentences gave the right number in 8 of 8 digit cases and 11 of 23 word
+  cases, and lost it silently in 12 of 23. So this trades 12 silent losses for 31 flagged turns.
+- The Hindi model dropping placeholders is not new. Run on the committed code, "दादा, ঊনষাট নম্বর
+  গেটে আসুন" (Bengali to Hindi) came out as "दादा, ऊनबिंश द्वार पर आएं।" with the turn counted as
+  verified (the 59 garbled), and the Kannada door sentence as "भाई, दरवाजे पर चलो, पचास नंबर पर" (50
+  instead of 57), also verified. The same sentences now hit the check. Only these four sentences were
+  run on both versions of the code; the larger figures above compare stored runs.
+- When the sentence has no tile the flag does not protect what the listener hears: nothing exists to
+  speak in place of the translation, so the listener still hears the plain translation, as before.
+  Seen in Bengali to Hindi with the inflected "গেটে", which made no gate tile in these runs (the bare
+  "গেট" did): the word-number sentence reached the Hindi rider garbled and the same sentence with "৫৯"
+  as "59 वें गेट", and both were flagged.
+- What the listener's screen shows for a flagged turn with no tile, checked on 2026-11-15 with the real
+  app and pages in Chromium and a stub translator that loses the placeholder and answers the plain
+  sentence with a wrong number (no Gnani call, no model):
+  - The masked sentence with the lost placeholder ("नंबर 1 ...") is never spoken or shown. Text to
+    speech and the screen both get the plain translation, which can carry a wrong number.
+  - The listener's screen does show "The translation could not be fully checked; trust the facts
+    above." in both directions, and again when the last message is shown after a reload. With no tile
+    there are no facts above it: the pinned card is empty, or holds only a landmark, so the advice has
+    nothing to point at and does not say which part to doubt.
+  - If the browser does not start the audio by itself, that line is replaced by "Tap Repeat to hear
+    it.", and Repeat then plays the unchecked sentence with no warning in the status line. The
+    translation text, with the wrong number, stays on screen. `rider.js` assumes audio is locked after
+    a reload until a tap; headless Chromium still allowed it, so the refusal was reproduced only with
+    autoplay emulated strictly (a play() allowed only inside a tap or on an element a tap already
+    started). A real phone was not tried.
+  - A turn whose only tile is a landmark with no usable local name speaks the plain translation too
+    (the summary is empty). With a usable name, only "Landmark <name>" is spoken and the number in the
+    sentence is not spoken at all.
+  - The single-phone test page (`/turn`) gets neither `verified` nor the tiles, so it shows and speaks
+    the same text with no warning. In public mode `/turn` answers 404, so only a local server has it.
+  - With the real model the case did not turn up: all 31 flagged turns in the measured set are
+    Kannada to Hindi door sentences with a Flat tile, so the listener heard "फ्लैट N" each time (run
+    through `translate_transcript`: 31 flagged, 31 with a tile, none without).
+- Not done: translating again as plain text and reading the result back for the number. That is a
+  separate design with its own failure modes; the choice is the author's (see the end of this section).
+
+F2: door, house and room numbers made no tile
+- Before this, English "flat" and "house", Kannada "ಹೌಸ್" and Hindi "मकान" were flat triggers. The
+  door and room words in all four languages (ಡೋರ್, दरवाजा, দরজা, "room") and the other house words
+  were not. They now make the existing Flat tile, with no new tile type, when a word for "number"
+  links them to the value, in both orders: "door number 57" and "57 number door" in English,
+  Kannada, Hindi and Bengali, and in Hindi also "57 नंबर के दरवाजे" (a linker word, `flat_linkers`).
+- The "number" word is required (`numbered_flat_words`). Alone these are ordinary words ("the third
+  door", "open the door"), so a bare value beside one is not a flat. The old triggers keep their old
+  behaviour.
+- Not covered: "room 304" without "number"; Hindi "मकान का नंबर 57" with the trigger first; the
+  other six languages; and a correction after the door word ("door number 56, not 57"), where the
+  existing negation rule keeps the first number, which is right in English and wrong in Kannada,
+  Hindi and Bengali, where "not" follows the number it cancels.
+
+F3: Bengali 59 (ঊনষাট) came out as 99
+- Reader check first: the joined long-vowel form (ঊন, U+098A) was read correctly; the joined
+  short-vowel form (উন, U+0989) read nothing from 39 to 89 (29 worked from a table); the split form
+  "ঊন ষাট" read as 60. So the parser was partly wrong, and it never returned 99.
+- Fix: `one_less_prefixes` in the Bengali lexicon. A one-less prefix with a tens word of 30 or more
+  gives the tens minus one. Joined forms read 19 to 89 in both vowel spellings, split forms 29 to 89,
+  and after a hundred only the joined form is read ("একশো ঊন ষাট" stays 100 and 59).
+- Not explained: the live 99. The reader cannot produce it, and the local translator's plain output
+  for ঊনষাট was a garbled word in Hindi, 19 in Kannada and "sixty-nine" in English, which makes a
+  mistranslation plausible but is not the live result. Its cause is not established, and the README
+  says so. With the number held out, the sentence gave 59 in Kannada and English; the Hindi
+  translation was flagged unverified. With a door word, "দাদা, ঊনষাট নম্বর ঘরে আসুন" made a flat 59
+  tile and verified in Kannada, Hindi and English.
+
+F4: the speaker was part of a landmark tile
+- Cause: the landmark is the run of words before a place word ("near", "के पास"), and "I" and a form of
+  address were not stop words. "भैया मैं मंदिर के पास वाले गेट के पास हूँ" gave two tiles, "भैया मैं
+  मंदिर" and "वाले गेट"; "আমি মন্দিরের কাছে গেটে আছি" gave "আমি মন্দিরের"; "ಅಣ್ಣ ನಾನು ದೇವಸ್ಥಾನದ ಹತ್ತಿರ
+  ಇದ್ದೇನೆ" gave "ಅಣ್ಣ ನಾನು ದೇವಸ್ಥಾನದ". Not every wording split: "भैया मैं मंदिर वाले गेट के पास हूँ" was
+  already one tile "मंदिर वाले गेट" on the old code, so only the "के पास वाले" and "के सामने वाले"
+  wordings reproduced the split.
+- Fix: the speaker and the address words are stop words for Hindi, Bengali and Kannada (`_PERSON_HI`,
+  `_PERSON_BN`, `_PERSON_KN` in `facts/lexicons.py`), and in Hindi "X के पास वाले Y" stays one landmark
+  (`_linked_noun`, `landmark_linkers`). Now: "मंदिर के पास वाले गेट", "मंदिर के सामने वाले गेट",
+  "মন্দিরের" and "ದೇವಸ್ಥಾನದ".
+- Costs: a place name that starts with one of these words (a temple called "दादा ...", "ಅಕ್ಕ ...") loses
+  that word in the tile, not in the translation. "Sir", "madam" and Latin "main" are not listed. There
+  is no join across a comma, the join needs a noun after the linker, and it is Hindi only.
+- The translated chips for the joined Hindi tile "मंदिर वाले गेट" read well in Bengali ("মন্দিরের গেট")
+  and literally in English ("Temple holders gate") and Kannada. That is the translator's output for the
+  tile text and was not changed.
+
+Not changed, as observed
+- F5, a landmark cut at four words. Reproduced on the rebuilt letter-by-letter sentence "ಎಚ್ ಎಸ್ ಆರ್ ಬಿ
+  ಡಿ ಕಾಂಪ್ಲೆಕ್ಸ್ ಹತ್ತಿರ", which gives the tile "ಆರ್ ಬಿ ಡಿ ಕಾಂಪ್ಲೆಕ್ಸ್"; with an "ಎ" after "ಡಿ" it gives
+  "ಬಿ ಡಿ ಎ ಕಾಂಪ್ಲೆಕ್ಸ್". `_MAX_LANDMARK_TOKENS = 4` keeps the four words nearest the place word. The
+  tester's exact transcript is not known. Raising the cap changes every landmark tile, so it needs
+  acronym cases in the gold set first.
+- F6, "ಅಣ್ಣ" as "না". Not reproduced: on the local translator it came out as "ভাই" in Bengali, "भाई"
+  in Hindi and "Brother" in English. Cause not established. A side observation from the same check:
+  Bengali "দাদা" came out as "Grandpa" in English and "ಅಜ್ಜ" in Kannada, so address words are translated
+  like ordinary words.
+- F7, "Nothing sent yet." after a live turn with no tiles. From the code
+  (`src/saathi/static/js/room-screen.js`) the line is hidden only when the turn produced at least one
+  tile (`sentEmptyEl.hidden = sentChipsEl.childElementCount > 0`). Not reproduced in a browser. A fix
+  needs new or changed interface text, which is not mine to add (the Bengali and Hindi text is
+  reviewed by the author).
+- Long speech. The tester's roughly 20 second instruction came through only in part. Saathi is built
+  for one short direction at a time, and nothing here changes that. It also does not detect when a
+  person speaks a different language from the one selected.
+- Also seen, not related to the fixes: Bengali to Kannada with masking garbled a placeholder into
+  "<ಐ. ಡಿ. 2>"; "our house third floor" reads the ordinal as a flat 3; two demo clips never built
+  because Gnani returned 504; and the committed `eval/results/masking_ab.json` and the `docs/EVAL.md`
+  tables use older scoring, so they are not comparable with the figures below.
+
+Verification
+- Gold set (30 utterances, `scripts/score_facts.py --split all`), before and after identical:
+  precision 1.00, recall 0.95, 106 true positives, 0 false positives, 5 misses; landmarks 24 of 24.
+- Demo set (50 clips, `scripts/review_demo_set.py`), output byte-identical before and after: 34 match
+  in full, 16 do not (two of them never built, Gnani 504).
+- Masking A/B on the same 90 gold pairs with the real IndicTrans2 (the extractor reads the translated
+  text, so recall and extras are scored on the rider's sentence), before and after:
+
+  | Arm | Recall | Wrong extras | All correct | Loanwords kept |
+  |---|---|---|---|---|
+  | A, plain translation | 0.701 to 0.705 | 66 to 68 | 11 to 11 of 90 | 128 to 128 of 255 |
+  | B, masked | 0.805 to 0.812 | 66 to 66 | 14 to 14 of 90 | 162 to 165 of 255 |
+  | C, masked with the tile fallback (what the app speaks) | 0.847 to 0.851 | 64 to 64 | 17 to 18 of 90 | 167 to 169 of 255 |
+
+  Unverified masked turns stayed at 4 of 90 and landmarks at 72 of 72. The one worse cell is arm A's
+  wrong extras (66 to 68). Arm A uses no masking, so the translator output is identical in both runs;
+  the change is the extractor reading it. Two Bengali outputs where the model wrote "gate number 1" or
+  "gate number 2" as "1 নম্বর দরজা" (door) are now read as a flat, and the same change reads one more
+  correct flat ("বাড়ি নম্বর 14"). The scorer reads facts from the translation while the app reads
+  them from what the speaker said, so the app is not affected.
+- Checks on the finished code: ruff check and ruff format --check clean; mypy clean (181 files,
+  including `scripts/number_accuracy.py`); pytest excluding model and torch tests 1346 passed; the
+  model tests that run on this laptop 24 passed; `npm test` 96 passed and typecheck clean; the full
+  Playwright suite 128 passed.
+- New tests: `tests/test_masking.py` and `tests/test_facts.py` (extended),
+  `tests/test_facts_door_numbers.py` and `tests/test_facts_landmark_edges.py` (new). They were
+  written first and run red on the old code (for the landmark edges, 19 of 26 cases failed and 7
+  already passed). A Bengali hundred-suffix guard was shown to fail when the guard was removed.
+
+Checked offline only. The live translator, the live speech service and the tester's real voice were
+not used, so a fix that passes here can still behave differently on the live site; the exact live
+strings (500, 507, 50 and 99) were not reproduced.
+
+For the author to decide
+- Kannada to Hindi door sentences: keep the flag and the tile fallback as they are, or add a plain-text
+  retry with a post-check for the number (a separate design).
+- F5: whether to raise or restructure the landmark cap, once acronym landmarks are in the gold set.
+- A flagged turn with no tile to speak: keep the plain translation with the warning line (now), speak
+  nothing and ask the listener to wait for a repeat, or use the plain-text retry above. Whichever is
+  chosen, "trust the facts above" has nothing to point at when there are no facts, and "Tap Repeat to
+  hear it." replaces the warning when the browser does not start the audio.
