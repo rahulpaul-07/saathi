@@ -3,9 +3,12 @@
 // localStorage: it is per tab and gone when the tab closes, so the bearer token does not outlive
 // the person's use of the room. Storage is passed in so tests need no browser, and every access is
 // guarded because it can be missing or throw (private windows, blocked site data).
+//
+// One entry per role. The split page runs a customer frame and a rider frame in one tab, and the
+// frames share this storage, so a single shared key would let the second room overwrite the first.
 
-const SESSION_KEY = "saathi.session";
-const NOTICE_KEY = "saathi.notice";
+const SESSION_PREFIX = "saathi.session.";
+const NOTICE_PREFIX = "saathi.notice.";
 const CODE_PATTERN = /^[A-Z0-9]{6}$/;
 const ROLES = ["customer", "rider"];
 const FIELD_MAX = 64;
@@ -13,6 +16,23 @@ const FIELD_MAX = 64;
 /**
  * @typedef {Pick<Storage, "getItem" | "setItem" | "removeItem">} KeyValueStore
  */
+
+/** @type {KeyValueStore} */
+const NO_STORAGE = { getItem: () => null, setItem: () => {}, removeItem: () => {} };
+
+/**
+ * This tab's storage. A browser that blocks site data can throw on the very first reference to
+ * `sessionStorage`, which would break a page that only wanted to read a courtesy notice, so a blocked
+ * tab gets a store that remembers nothing instead.
+ * @returns {KeyValueStore}
+ */
+export function tabStorage() {
+  try {
+    return globalThis.sessionStorage ?? NO_STORAGE;
+  } catch {
+    return NO_STORAGE;
+  }
+}
 
 /** @param {unknown} value */
 const shortText = (value) =>
@@ -54,47 +74,63 @@ export function parseSession(value) {
 export function saveSession(store, room) {
   const { code, token, role, language, peer_language: peer } = room;
   try {
-    store.setItem(SESSION_KEY, JSON.stringify({ code, token, role, language, peer_language: peer ?? null }));
+    store.setItem(
+      SESSION_PREFIX + role,
+      JSON.stringify({ code, token, role, language, peer_language: peer ?? null }),
+    );
   } catch {
     // Without storage a reload just returns to the create/join screen.
   }
 }
 
 /**
- * The saved session for this page's role, or null. A malformed entry is removed.
+ * The saved session for this page's role, or null. A malformed entry, or one stored under the wrong
+ * role, is removed. A link to a different room wins over the saved one: the person asked for that
+ * room, so the old session is dropped and the page shows the join screen for the new code.
  * @param {KeyValueStore} store
  * @param {string} role the role this page plays
+ * @param {string | null} [linkCode] the room code from the page's link, if it had one
  * @returns {import("./room-client.js").RoomInfo | null}
  */
-export function loadSession(store, role) {
+export function loadSession(store, role, linkCode = null) {
   try {
-    const raw = store.getItem(SESSION_KEY);
+    const raw = store.getItem(SESSION_PREFIX + role);
     if (raw === null) return null;
     const session = parseSession(JSON.parse(raw));
-    if (session === null) store.removeItem(SESSION_KEY);
-    return session !== null && session.role === role ? session : null;
+    const wanted = linkCode?.toUpperCase() ?? "";
+    const otherRoom = CODE_PATTERN.test(wanted) && session !== null && session.code !== wanted;
+    if (session === null || session.role !== role || otherRoom) {
+      store.removeItem(SESSION_PREFIX + role);
+      return null;
+    }
+    return session;
   } catch {
     return null;
   }
 }
 
-/** @param {KeyValueStore} store */
-export function clearSession(store) {
+/**
+ * @param {KeyValueStore} store
+ * @param {string} role
+ */
+export function clearSession(store, role) {
   try {
-    store.removeItem(SESSION_KEY);
+    store.removeItem(SESSION_PREFIX + role);
   } catch {
     // Nothing to clear.
   }
 }
 
 /**
- * A one-shot message shown on the next create/join screen (after the room ended).
+ * A one-shot message for the next screen (after the room ended): the home page, or the create/join
+ * screen of a split-page frame.
  * @param {KeyValueStore} store
+ * @param {string} role
  * @param {string} text
  */
-export function setNotice(store, text) {
+export function setNotice(store, role, text) {
   try {
-    store.setItem(NOTICE_KEY, text);
+    store.setItem(NOTICE_PREFIX + role, text);
   } catch {
     // The message is a courtesy; losing it is fine.
   }
@@ -102,14 +138,26 @@ export function setNotice(store, text) {
 
 /**
  * @param {KeyValueStore} store
+ * @param {string} role
  * @returns {string | null}
  */
-export function takeNotice(store) {
+export function takeNotice(store, role) {
   try {
-    const text = store.getItem(NOTICE_KEY);
-    store.removeItem(NOTICE_KEY);
+    const text = store.getItem(NOTICE_PREFIX + role);
+    store.removeItem(NOTICE_PREFIX + role);
     return text;
   } catch {
     return null;
   }
+}
+
+/**
+ * The home page does not know which role's room just ended: take whichever notice is waiting, and
+ * clear them all so none is shown late.
+ * @param {KeyValueStore} store
+ * @returns {string | null}
+ */
+export function takeAnyNotice(store) {
+  const notices = ROLES.map((role) => takeNotice(store, role));
+  return notices.find((text) => text !== null) ?? null;
 }

@@ -13,6 +13,7 @@ import { parseQuickReplyTable, quickReplyOptions } from "./quick-replies.js";
 import { followStream } from "./reconnect.js";
 import { RecorderError, startRecording, toWav } from "./recorder.js";
 import {
+  closeRoom,
   fetchAudioUrl,
   fetchDemoClip,
   getJson,
@@ -38,8 +39,8 @@ const SEND_GAP_PX = 8;
  * @param {import("./room-client.js").RoomInfo} room
  * @param {import("./languages.js").Language[]} languages
  * @param {AudioPlayer[]} players unlocked by the caller inside the tap that created or joined
- * @param {(end: "closed" | "gone") => void} onEnded the room is over for good (ended or expired)
- * @returns {{stop: () => void}} stop following the room (the caller closes it on the server)
+ * @param {(end: "closed" | "gone") => void} onEnded the room is over for good (ended by either
+ *   person or expired); called once, and the page is expected to leave
  */
 export function enterRoom(room, languages, players, onEnded) {
   const [turnPlayer, replyPlayer] = players;
@@ -53,6 +54,8 @@ export function enterRoom(room, languages, players, onEnded) {
   const talkButton = byId("talk", HTMLButtonElement);
   const talkLabel = /** @type {HTMLElement} */ (talkButton.querySelector(".label"));
   const statusEl = byId("status", HTMLElement);
+  const closeButton = byId("close", HTMLButtonElement);
+  const closeStatusEl = byId("close-status", HTMLElement);
   const actionsEl = byId("actions", HTMLElement);
   const retryButton = byId("retry", HTMLButtonElement);
   const discardButton = byId("discard", HTMLButtonElement);
@@ -462,6 +465,51 @@ export function enterRoom(room, languages, players, onEnded) {
     else replyPlayer.load(url);
   }
 
+  /** True while a recording is running or one that failed to send is waiting for Try again. */
+  const holdsUnsentRecording = () => state.recording !== null || state.pending !== null;
+
+  /** @param {BeforeUnloadEvent} event */
+  function warnBeforeLeaving(event) {
+    if (holdsUnsentRecording()) event.preventDefault();
+  }
+  // Closing the tab or reloading would throw a recording away. Nothing else is asked: a room that
+  // is idle has nothing to lose, because a reload rejoins it.
+  window.addEventListener("beforeunload", warnBeforeLeaving);
+
+  let over = false;
+  /**
+   * The room is over. The server can say so twice (the event stream and the answer to End room), and
+   * the page must leave once, without the leave warning: the room it would protect is gone.
+   * @param {"closed" | "gone"} end
+   */
+  function finish(end) {
+    if (over) return;
+    over = true;
+    window.removeEventListener("beforeunload", warnBeforeLeaving);
+    stream.abort();
+    onEnded(end);
+  }
+
+  /**
+   * End the room for both people. The page leaves only after the server has closed it; if that fails
+   * the room is still open, so the person stays in it and can try again.
+   */
+  async function endRoom() {
+    closeButton.disabled = true;
+    setStatus(closeStatusEl, "");
+    const end = await closeRoom(room);
+    if (end !== null) {
+      finish(end);
+      return;
+    }
+    closeButton.disabled = false;
+    setStatus(
+      closeStatusEl,
+      tb("no_connection", "No connection to the server. Check the network and try again."),
+      true,
+    );
+  }
+
   /** Keep one event stream open, backing off after drops, until the room is over. */
   async function followRoom() {
     const end = await followStream({
@@ -477,7 +525,7 @@ export function enterRoom(room, languages, players, onEnded) {
       signal: stream.signal,
     });
     reconnectingEl.hidden = true;
-    if (end !== "stopped") onEnded(end);
+    if (end !== "stopped") finish(end);
   }
 
   async function beginRecording() {
@@ -598,6 +646,7 @@ export function enterRoom(room, languages, players, onEnded) {
   });
   repeatButton.addEventListener("click", () => void turnPlayer.replay());
   replyReplayButton.addEventListener("click", () => void replyPlayer.replay());
+  closeButton.addEventListener("click", () => void endRoom());
   demoSendButton.addEventListener("click", () => void sendDemoClip());
   demoSelect.addEventListener("change", () => {
     render();
@@ -618,6 +667,4 @@ export function enterRoom(room, languages, players, onEnded) {
       renderText(repliesNoteEl, tb("quick_replies_failed", "Quick replies could not be loaded."));
     }
   }
-
-  return { stop: () => stream.abort() };
 }

@@ -1,12 +1,14 @@
 // @ts-check
 import { AudioPlayer } from "./audio-player.js";
-import { applyChrome, decodeBi, encodeBi, setChromeTable, setLanguage, tb } from "./i18n.js";
+import { applyChrome, decodeBi, setChromeTable, setLanguage, tb } from "./i18n.js";
 import { parseLanguages } from "./languages.js";
 import { getJson, joinRoom } from "./room-client.js";
+import { leaveRoom, reloadWhenRestored } from "./room-exit.js";
 import { enterRoom } from "./room-screen.js";
-import { clearSession, loadSession, saveSession, setNotice, takeNotice } from "./session.js";
+import { loadSession, saveSession, tabStorage, takeNotice } from "./session.js";
 import { byId, fillLanguageSelect, requireChoice, setStatus } from "./ui.js";
 
+const ROLE = "rider";
 const CODE_PATTERN = /^[A-Z0-9]{6}$/;
 
 const codeInput = byId("code-input", HTMLInputElement);
@@ -16,6 +18,7 @@ const joinStatusEl = byId("join-status", HTMLElement);
 const setupEl = byId("setup", HTMLElement);
 const roomEl = byId("room", HTMLElement);
 const statusEl = byId("status", HTMLElement);
+const store = tabStorage();
 
 /** @type {import("./languages.js").Language[]} */
 let languages = [];
@@ -36,7 +39,7 @@ async function onJoin() {
     setStatus(joinStatusEl, result.message, true);
     return;
   }
-  saveSession(sessionStorage, result.data);
+  saveSession(store, result.data);
   showRoom(result.data, players);
   if (!unlocked) setStatus(statusEl, tb("tap_repeat_each", "Tap Repeat to hear each message."));
 }
@@ -48,24 +51,11 @@ async function onJoin() {
 function showRoom(info, players) {
   setupEl.hidden = true;
   roomEl.hidden = false;
-  enterRoom(info, languages, players, onEnded);
-}
-
-/** @param {"closed" | "gone"} end */
-function onEnded(end) {
-  clearSession(sessionStorage);
-  setNotice(
-    sessionStorage,
-    encodeBi(
-      end === "closed"
-        ? tb("room_ended", "The room has ended.")
-        : tb("room_expired_rider", "The room has expired. Ask for a new code."),
-    ),
-  );
-  location.reload();
+  enterRoom(info, languages, players, (end) => leaveRoom(ROLE, end));
 }
 
 joinButton.addEventListener("click", () => void onJoin());
+reloadWhenRestored();
 
 const prefill = new URLSearchParams(location.search).get("code");
 if (prefill) codeInput.value = prefill.toUpperCase().slice(0, 6);
@@ -81,13 +71,14 @@ try {
   languages = parseLanguages(await getJson("/languages"));
   fillLanguageSelect(languageSelect, languages);
   requireChoice([languageSelect], [joinButton]);
-  const saved = loadSession(sessionStorage, "rider");
+  // A link to another room wins over the room saved in this tab: the person asked for that one.
+  const saved = loadSession(store, ROLE, prefill);
   if (saved) {
     // After a reload there is no tap, so audio stays locked until the person taps Repeat.
     showRoom(saved, [new AudioPlayer(), new AudioPlayer()]);
     setStatus(statusEl, tb("tap_repeat_each", "Tap Repeat to hear each message."));
   } else {
-    const notice = takeNotice(sessionStorage);
+    const notice = takeNotice(store, ROLE);
     if (notice) setStatus(joinStatusEl, decodeBi(notice));
   }
 } catch {
