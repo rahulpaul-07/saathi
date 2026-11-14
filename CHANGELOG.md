@@ -3,6 +3,31 @@
 User-facing changes, newest first. Evaluation numbers live in [`docs/EVAL.md`](docs/EVAL.md) and
 the reasons for design choices in [`docs/DECISIONS.md`](docs/DECISIONS.md).
 
+## 2026-11-15
+
+From the live test with a native Kannada speaker on 14 November (details in the README and
+[`docs/DECISIONS.md`](docs/DECISIONS.md#live-test-with-a-native-kannada-speaker-2026-11-14)). Checked
+offline against stored transcripts and the local translator; not yet tried on the live site.
+
+- Numbers now reach the other person unchanged, or the turn is marked unverified. Every number of ten
+  or more and every number written in digits is held out of the translation and put back afterwards.
+  Before, a Kannada "not 56, 57" reached a Bengali rider as 500 and 507. When a number does not come
+  back the speaker is asked to repeat; the listener hears the tiles if the turn made any to speak, or
+  the plain translation if it made none, and sees a line saying the translation could not be fully
+  checked.
+- Door, house and room numbers make a Flat tile in English, Kannada, Hindi and Bengali, in both word
+  orders ("door number 57", "57 number door").
+- A Kannada sentence with a door number, spoken to a Hindi listener, is now flagged unverified every
+  time, because the Hindi translation drops the held-out number. The listener hears the Flat tile
+  instead of a translated sentence, and the speaker is asked to repeat.
+- Bengali numbers with "ঊন" or "উন" (one less than a tens word: ঊনষাট is 59) are read in both
+  spellings, as one word or as two.
+- "I" and words for the person spoken to ("brother") are no longer part of a landmark tile in Hindi,
+  Bengali and Kannada, and Hindi "मंदिर के पास वाले गेट" stays one tile.
+- Not fixed, and listed under Honest limits in the README: a landmark tile is cut at four words, so a
+  name written letter by letter loses its start; "ಅಣ್ಣ" came out as "no" in one live turn and was not
+  reproduced; and the rider page can say "Nothing sent yet." after a turn that made no tiles.
+
 ## 2026-11-14
 
 - Ending a room takes both people to the home page with a one-time message ("The room has ended.") in

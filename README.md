@@ -189,6 +189,27 @@ CPU with 2 cores, translation alone took a median of about 3 s (p95 about 5.5 to
 on a laptop ([`eval/results/cpu_latency.json`](eval/results/cpu_latency.json)); a cloud host was not
 measured.
 
+## Live test with a native Kannada speaker (Nov 14)
+
+A native Kannada speaker used the live site as the customer, with a Bengali rider and once a Hindi
+rider, and found seven problems. Four got a code change (F3 only in part), each with tests that
+failed before the change; three are not fixed. The changes were checked offline against stored
+transcripts and the local translator, with no Gnani calls, and have not been tried on the live site.
+
+| | What the tester saw | Status |
+|---|---|---|
+| F1 | "ಅಣ್ಣ, ಐವತ್ತಾರು ಅಲ್ಲ, ಐವತ್ತೇಳು ನಂಬರ್ ಡೋರ್ ಗೆ ಬನ್ನಿ" (not 56, come to door number 57) reached the Bengali rider as "পাঁচশো নয়, পঞ্চশত সাত নম্বর ঘরে আসুন" (500 and 507) with no tile and no warning; a Kannada 77 reached a rider as 50 | Fixed. Every number in the sentence is held out of the translation and put back after it; if one does not come back, the turn is flagged unverified |
+| F2 | "door / house / room number" made no tile | Fixed for en, kn, hi, bn: it is a Flat tile |
+| F3 | Bengali 59, said as ঊনষাট, came out as 99 | Partly fixed. The number reader missed some spellings of "ঊন" numbers and now reads them; what produced the 99 is unexplained |
+| F4 | "I" before a landmark was part of its tile ("भैया मैं मंदिर", "আমি মন্দিরের") | Fixed for hi, bn, kn |
+| F5 | "HSR BDA Complex", written letter by letter by the speech service, showed as "RBD Complex" | Not fixed |
+| F6 | "ಅಣ್ಣ" (brother) came out as "না" (no) | Not fixed; not reproduced here |
+| F7 | After a live turn with no tiles the rider page said "Nothing sent yet." although the message was sent | Not fixed |
+
+Reasons, measurements and what each fix leaves alone:
+[`docs/DECISIONS.md`](docs/DECISIONS.md#live-test-with-a-native-kannada-speaker-2026-11-14). What is
+still wrong is listed under Honest limits.
+
 ## Honest limits
 
 - Translation is machine output and no human has reviewed the renderings. A wrong but fluent
@@ -242,6 +263,57 @@ measured.
   ships no web fonts, so a device without Indic fonts will show boxes. The check cannot tell Hindi
   from Marathi (both Devanagari), and the Tamil prompt "Choose a clip" is cut with an ellipsis in
   the clip picker on a 412 px phone.
+- **Made for short directions.** In the live test of Nov 14 a spoken instruction of about 20 seconds
+  with several sentences came through only partly. Saathi is built for one short direction at a time
+  (a gate, a floor, a landmark, one correction); long speech is not a supported use.
+- **No language detection.** Saathi does not notice when someone speaks a different language from
+  the one selected for them; the speech is handled as the selected language.
+- **Number words below ten are not held out of the translation.** Digits and number words from ten
+  up are (see the live-test section). Words below ten, ordinals ("third") and two numbers that touch
+  ("twenty first", "2.5", "5:30") are left to the translator, because they double as ordinary words
+  or may be one figure; a gate, floor, flat or door value is still protected by its tile. Digit
+  groups longer than four digits are not read as numbers either.
+- **A flagged number with no tile still reaches the listener as plain text.** When the translator
+  drops a held-out number and the sentence has no tile to speak instead, the listener hears the
+  plain translation, as before the change, and the speaker is told to repeat. The listener's screen
+  shows the same text and the line "The translation could not be fully checked; trust the facts
+  above", but with no tile there are no facts above it. If the browser does not start the audio by
+  itself, that line is replaced by "Tap Repeat to hear it." and the warning is gone while the text,
+  possibly with a wrong number, stays on screen (reproduced with autoplay emulated strictly, not on a
+  phone). The single-phone test page, which a public server does not offer, shows no warning for any
+  turn. Seen in Bengali to Hindi: "দাদা, ঊনষাট নম্বর গেটে আসুন" reached the Hindi rider with a garbled
+  word where 59 should be, and the same sentence with ৫৯ came out as 59; both were flagged. The
+  inflected "গেটে" made no gate tile in these runs, "গেট" did. Kannada to Hindi sentences with a door
+  number are always flagged; there the listener hears the Flat tile.
+- **Door, house and room numbers are read in four languages and two word orders.** English, Kannada,
+  Hindi and Bengali read "door number 57" and "57 number door" (Hindi also "57 नंबर के दरवाजे").
+  "Room 304" without "number", Hindi "मकान का नंबर 57" and the other six languages make no tile.
+  When the correction comes after the door word ("door number 56, not 57") the first number is
+  kept, which is wrong in Kannada, Hindi and Bengali, where "not" follows the number it cancels.
+- **Bengali "ঊন" numbers.** Both vowel spellings are read from 19 to 89 when written as one word
+  ("ঊনষাট"), and from 29 to 89 as two ("ঊন ষাট"). After a hundred only the one-word form is read:
+  "একশো ঊনষাট" is 159, but "একশো ঊন ষাট" reads as 100 and 59.
+- **The live 99 for Bengali 59 is unexplained.** The number reader never gives 99 for 59. On the
+  local translator the plain translation of "ঊনষাট" came out as "sixty-nine" in English, as 19 in
+  Kannada and as a garbled word in Hindi, so a mistranslation is plausible, but the live turn was not
+  reproduced and the cause is not established. With the number held out, the same sentence gave 59
+  in Kannada and English, and the Hindi translation was flagged unverified.
+- **Landmark tiles still have gaps.** A landmark is cut at four words, so a name the speech service
+  writes letter by letter loses its start (F5: "HSR BDA Complex" showed as "RBD Complex"; reproduced on
+  a rebuilt sentence, the exact transcript was not kept). The speaker and the person spoken to are
+  dropped from a landmark only in Hindi, Bengali and Kannada, and a place name that starts with one of
+  those words ("दादा", "ಅಕ್ಕ") loses that word in the tile, not in the translation. Only Hindi "वाले"
+  joins "मंदिर के पास वाले गेट" into one landmark; a glued "मंदिरवाले" and a chain of two are not
+  joined. The translated chip for the joined Hindi phrase "मंदिर वाले गेट" read well in Bengali
+  ("মন্দিরের গেট") but literally in English ("Temple holders gate") and Kannada on the local
+  translator.
+- **"ಅಣ್ಣ" came out as "না" (no) in the live test (F6).** It was not reproduced on the local
+  translator, where it came out as "ভাই" (brother), and the cause is not established. On the same
+  translator Bengali "দাদা" came out as "Grandpa" in English and "ಅಜ್ಜ" in Kannada: words of address
+  are translated like ordinary words.
+- **The rider page can say "Nothing sent yet." after a turn was sent (F7).** From the code
+  (`room-screen.js`), the line is hidden only when the turn produced at least one tile, so a turn
+  with no tiles shows it. It has not been reproduced in a browser.
 - iOS Safari is untested, and the microphone needs localhost or HTTPS.
 
 ## Try it locally
