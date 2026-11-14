@@ -147,6 +147,45 @@ test("split-screen page names each person's language in the pane header and hide
   }
 });
 
+test("split page: a reload keeps both people in their own rooms, and ending one returns each frame to its start screen", async ({
+  page,
+}) => {
+  /** @type {string[]} */
+  const problems = [];
+  page.on("console", (m) => {
+    if (["error", "warning"].includes(m.type())) problems.push(m.text());
+  });
+  page.on("pageerror", (e) => problems.push(e.message));
+  await page.setViewportSize({ width: 1920, height: 1080 });
+  await page.goto(`${DEMO}/demo.html`);
+  const customer = page.frameLocator("#customer-frame");
+  const rider = page.frameLocator("#rider-frame");
+  await customer.locator("#language").selectOption("kn");
+  await customer.getByRole("button", { name: ui("kn", "create_room") }).click();
+  await expect(customer.locator("#code")).toHaveText(/^[A-Z0-9]{6}$/);
+  await expect(rider.locator("#code-input")).toHaveValue(/^[A-Z0-9]{6}$/);
+  await rider.locator("#language").selectOption("hi");
+  await rider.getByRole("button", { name: ui("hi", "join_and_sound") }).click();
+  await expect(rider.locator("#room")).toBeVisible();
+  await expect(customer.locator("#talk")).toBeEnabled();
+
+  // Both frames share the tab's storage; each must find its own room again, not the last one saved.
+  await page.reload();
+  await expect(customer.locator("#room")).toBeVisible();
+  await expect(rider.locator("#room")).toBeVisible();
+  await expect(customer.locator("#peer")).toContainText(ui.has("kn", "rider_joined"));
+  await expect(rider.locator("#peer")).toContainText(ui.has("hi", "customer_joined"));
+
+  // Ending a room reloads the frame, not the page around it, and each side is told in its language.
+  await customer.getByRole("button", { name: ui("kn", "end_room") }).click();
+  await expect(page).toHaveURL(/\/demo\.html$/);
+  await expect(customer.locator("#setup-status")).toHaveText(ui("kn", "room_ended"));
+  await expect(rider.locator("#join-status")).toHaveText(ui("hi", "room_ended"));
+  await expect(customer.locator("#room")).toBeHidden();
+  await expect(rider.locator("#room")).toBeHidden();
+  expect(problems).toEqual([]);
+});
+
 test("replay: a rider language with no stored audio shows text and tiles, no error and no retry", async ({
   browser,
 }) => {

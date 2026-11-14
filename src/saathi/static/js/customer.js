@@ -1,11 +1,14 @@
 // @ts-check
 import { AudioPlayer } from "./audio-player.js";
-import { applyChrome, decodeBi, encodeBi, setChromeTable, setLanguage, tb } from "./i18n.js";
+import { applyChrome, decodeBi, setChromeTable, setLanguage, tb } from "./i18n.js";
 import { parseLanguages } from "./languages.js";
 import { createRoom, fetchQrUrl, getJson } from "./room-client.js";
+import { leaveRoom, reloadWhenRestored } from "./room-exit.js";
 import { enterRoom } from "./room-screen.js";
-import { clearSession, loadSession, saveSession, setNotice, takeNotice } from "./session.js";
+import { loadSession, saveSession, tabStorage, takeNotice } from "./session.js";
 import { byId, fillLanguageSelect, requireChoice, setStatus } from "./ui.js";
+
+const ROLE = "customer";
 
 const languageSelect = byId("language", HTMLSelectElement);
 const createButton = byId("create", HTMLButtonElement);
@@ -15,27 +18,22 @@ const roomEl = byId("room", HTMLElement);
 const codeEl = byId("code", HTMLElement);
 const linkEl = byId("link", HTMLElement);
 const qrEl = byId("qr", HTMLImageElement);
-const closeButton = byId("close", HTMLButtonElement);
+const store = tabStorage();
 
 /** @type {import("./languages.js").Language[]} */
 let languages = [];
-/** @type {import("./room-client.js").RoomInfo | null} */
-let room = null;
-/** @type {{stop: () => void} | null} */
-let screen = null;
 
 /**
  * @param {import("./room-client.js").RoomInfo} info
  * @param {AudioPlayer[]} players
  */
 function showRoom(info, players) {
-  room = info;
   setupEl.hidden = true;
   roomEl.hidden = false;
   codeEl.textContent = info.code;
   linkEl.textContent = `${location.origin}/rider.html?code=${info.code}`;
   void showQr(info);
-  screen = enterRoom(info, languages, players, onEnded);
+  enterRoom(info, languages, players, (end) => leaveRoom(ROLE, end));
 }
 
 /**
@@ -49,20 +47,6 @@ async function showQr(info) {
   qrEl.hidden = false;
 }
 
-/** @param {"closed" | "gone"} end */
-function onEnded(end) {
-  clearSession(sessionStorage);
-  setNotice(
-    sessionStorage,
-    encodeBi(
-      end === "closed"
-        ? tb("room_ended", "The room has ended.")
-        : tb("room_expired_customer", "The room has expired. Start a new one."),
-    ),
-  );
-  location.reload();
-}
-
 async function onCreate() {
   createButton.disabled = true;
   // Both players are started inside this tap, which lets the other person's audio play later.
@@ -74,22 +58,12 @@ async function onCreate() {
     setStatus(setupStatusEl, result.message, true);
     return;
   }
-  saveSession(sessionStorage, result.data);
+  saveSession(store, result.data);
   showRoom(result.data, players);
 }
 
 createButton.addEventListener("click", () => void onCreate());
-closeButton.addEventListener("click", () => {
-  screen?.stop();
-  clearSession(sessionStorage);
-  if (room) {
-    void fetch(`/rooms/${room.code}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${room.token}` },
-    });
-  }
-  location.reload();
-});
+reloadWhenRestored();
 
 /** The page follows the language picked in the form, before a room exists. */
 languageSelect.addEventListener("change", () => {
@@ -102,12 +76,12 @@ try {
   languages = parseLanguages(await getJson("/languages"));
   fillLanguageSelect(languageSelect, languages);
   requireChoice([languageSelect], [createButton]);
-  const saved = loadSession(sessionStorage, "customer");
+  const saved = loadSession(store, ROLE);
   if (saved) {
     // After a reload there is no tap, so audio stays locked until the person taps Repeat.
     showRoom(saved, [new AudioPlayer(), new AudioPlayer()]);
   } else {
-    const notice = takeNotice(sessionStorage);
+    const notice = takeNotice(store, ROLE);
     if (notice) setStatus(setupStatusEl, decodeBi(notice));
   }
 } catch {

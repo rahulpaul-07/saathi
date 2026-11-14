@@ -229,19 +229,21 @@ for (const [index, [customerLanguage, riderLanguage]] of PAIRS.entries()) {
     await expect(rider.locator("#reconnecting")).toBeHidden({ timeout: 15_000 });
     await expect(rider.locator("#peer")).toContainText(ui.has(riderLanguage, "customer_joined"));
 
-    // End the room: the other side is told, the stored session is gone, the stream stops retrying.
+    // End the room: both people are taken home and told, the stored session is gone, the stream
+    // stops retrying.
     let eventRequests = 0;
     rider.on("request", (request) => {
       if (request.url().endsWith("/events")) eventRequests += 1;
     });
     await press(customer.getByRole("button", { name: ui(customerLanguage, "end_room") }), phone);
-    await expect(rider.locator("#setup")).toBeVisible();
-    await expect(rider.locator("#join-status")).toHaveText(ui(riderLanguage, "room_ended"));
-    await expect(customer.locator("#setup")).toBeVisible();
+    await expect(customer).toHaveURL(/:8767\/$/);
+    await expect(customer.locator("#notice")).toHaveText(ui(customerLanguage, "room_ended"));
+    await expect(rider).toHaveURL(/:8767\/$/);
+    await expect(rider.locator("#notice")).toHaveText(ui(riderLanguage, "room_ended"));
     const afterEnd = eventRequests;
     await rider.waitForTimeout(3000);
     expect(eventRequests).toBe(afterEnd);
-    await rider.reload();
+    await rider.goto("/rider.html");
     await expect(rider.locator("#setup")).toBeVisible();
     await expect(rider.locator("#join-status")).toHaveText("");
 

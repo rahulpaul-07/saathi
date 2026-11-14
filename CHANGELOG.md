@@ -3,6 +3,20 @@
 User-facing changes, newest first. Evaluation numbers live in [`docs/EVAL.md`](docs/EVAL.md) and
 the reasons for design choices in [`docs/DECISIONS.md`](docs/DECISIONS.md).
 
+## 2026-11-14
+
+- Ending a room takes both people to the home page with a one-time message ("The room has ended.") in
+  their own language, and the room is forgotten, so a reload does not bring it back. End room now waits
+  for the server before leaving; if the network is down the person stays in the room and is told.
+- The rider has an End room button too. Either person ending closes the room for both.
+- On the side-by-side demo page a reload keeps both people in their own rooms (the two screens used to
+  share one saved room, so the second overwrote the first), and ending a room returns that screen to
+  its start screen.
+- A rider link for a different room now joins that room instead of reopening the one saved in the tab.
+- A page restored with the browser's Back or Forward buttons reloads instead of showing a stale room.
+- The browser warns before the tab is closed or left only while a recording is being made or is
+  waiting to be sent.
+
 ## 2026-11-01
 
 - Telugu is now beta. No speaker has checked it. Tiers are two: core (kn, en, hi, bn, evaluated on the

@@ -376,22 +376,150 @@ test("a dropped stream shows Reconnecting and recovers by itself", async ({ brow
   expect(problems.filter((text) => !text.includes("ERR_FAILED"))).toEqual([]);
 });
 
-test("when the room ends the other side returns to the join screen with a message", async ({
+// Home is the landing page; a room page that is over leaves for it.
+const HOME = /:8765\/$/;
+
+test("when the room ends both people are taken home with a message and the room is forgotten", async ({
   browser,
 }) => {
   const { customer, rider, problems } = await openRoom(browser);
   await customer.getByRole("button", { name: ui("ta", "end_room") }).click();
 
-  await expect(rider.locator("#setup")).toBeVisible();
-  await expect(rider.locator("#join-status")).toHaveText(ui("ml", "room_ended"));
-  await expect(rider.locator("#room")).toBeHidden();
-  // The stored session is gone, so another reload stays on the join screen.
+  await expect(customer).toHaveURL(HOME);
+  await expect(customer.locator("#notice")).toHaveText(ui("ta", "room_ended"));
+  await expect(rider).toHaveURL(HOME);
+  await expect(rider.locator("#notice")).toHaveText(ui("ml", "room_ended"));
+  // The message is shown once, and the stored session is gone: the join page starts clean.
   await rider.reload();
+  await expect(rider.locator("#notice")).toHaveText("");
+  await rider.goto("/rider.html");
   await expect(rider.locator("#setup")).toBeVisible();
   await expect(rider.locator("#join-status")).toHaveText("");
-
-  await expect(customer.locator("#setup")).toBeVisible();
   expect(problems).toEqual([]);
+});
+
+test("the rider can end the room too, and the server has closed it before the page leaves", async ({
+  browser,
+}) => {
+  const { customer, rider, problems } = await openRoom(browser);
+  const deleted = rider.waitForResponse((response) => response.request().method() === "DELETE");
+  await rider.getByRole("button", { name: ui("ml", "end_room") }).click();
+
+  expect((await deleted).status()).toBe(204);
+  await expect(rider).toHaveURL(HOME);
+  await expect(rider.locator("#notice")).toHaveText(ui("ml", "room_ended"));
+  await expect(customer).toHaveURL(HOME);
+  await expect(customer.locator("#notice")).toHaveText(ui("ta", "room_ended"));
+  expect(problems).toEqual([]);
+});
+
+test("End room that cannot reach the server keeps the room open and says so", async ({ browser }) => {
+  const { customer, rider, problems } = await openRoom(browser);
+  const endRoom = rider.getByRole("button", { name: ui("ml", "end_room") });
+  await rider.route("**/rooms/*", (route) =>
+    route.request().method() === "DELETE" ? route.abort() : route.fallback(),
+  );
+  await endRoom.click();
+
+  await expect(rider.locator("#close-status")).toHaveText(ui("ml", "no_connection"));
+  await expect(rider.locator("#room")).toBeVisible();
+  await expect(endRoom).toBeEnabled();
+  await expect(customer.locator("#room")).toBeVisible();
+
+  // With the network back, the same button ends it for both.
+  await rider.unroute("**/rooms/*");
+  await endRoom.click();
+  await expect(rider).toHaveURL(HOME);
+  await expect(customer).toHaveURL(HOME);
+  // A refused request is logged by the browser as a console error; nothing else may be.
+  expect(problems.filter((text) => !text.includes("ERR_FAILED"))).toEqual([]);
+});
+
+test("a room that has expired takes the person home with the expiry message", async ({ browser }) => {
+  const { rider, problems } = await openRoom(browser);
+  await rider.route("**/events", (route) =>
+    route.fulfill({ status: 404, contentType: "application/json", body: '{"detail":"Room not found"}' }),
+  );
+  await rider.reload();
+
+  await expect(rider).toHaveURL(HOME);
+  await expect(rider.locator("#notice")).toHaveText(ui("ml", "room_expired_rider"));
+  // The 404 is logged by the browser as a console error; nothing else may be.
+  expect(problems.filter((text) => !text.includes("404"))).toEqual([]);
+});
+
+test("a rider link for another room wins over the room saved in the tab", async ({ browser }) => {
+  const { customer, rider, problems } = await openRoom(browser);
+  const code = (await customer.locator("#code").textContent()) ?? "";
+  const other = (await (await rider.request.post("/rooms", { data: { language: "kn" } })).json()).code;
+
+  // The link to the room the rider is already in changes nothing.
+  await rider.goto(`/rider.html?code=${code}`);
+  await expect(rider.locator("#room")).toBeVisible();
+
+  await rider.goto(`/rider.html?code=${other}`);
+  await expect(rider.locator("#setup")).toBeVisible();
+  await expect(rider.locator("#code-input")).toHaveValue(other);
+  await expect(rider.locator("#room")).toBeHidden();
+  // The old room was dropped from the tab, not merely hidden.
+  await rider.goto("/rider.html");
+  await expect(rider.locator("#setup")).toBeVisible();
+  expect(problems).toEqual([]);
+});
+
+test("a page restored from the back-forward cache reloads instead of showing a stale room", async ({
+  browser,
+}) => {
+  const { customer, rider, problems } = await openRoom(browser);
+  for (const page of [customer, rider]) {
+    await page.evaluate(() => {
+      /** @type {any} */ (window).staleMarker = true;
+    });
+    await Promise.all([
+      page.waitForEvent("load"),
+      page.evaluate(() => window.dispatchEvent(new PageTransitionEvent("pageshow", { persisted: true }))),
+    ]);
+    expect(await page.evaluate(() => /** @type {any} */ (window).staleMarker)).toBeUndefined();
+    await expect(page.locator("#room")).toBeVisible();
+  }
+  expect(problems).toEqual([]);
+});
+
+/** True when the browser would ask before this page is closed or left. @param {import("@playwright/test").Page} page */
+const warnsBeforeLeaving = (page) =>
+  page.evaluate(() => {
+    const event = new Event("beforeunload", { cancelable: true });
+    window.dispatchEvent(event);
+    return event.defaultPrevented;
+  });
+
+test("the browser warns before leaving only while a recording is being made or is unsent", async ({
+  browser,
+}) => {
+  const { customer, rider, problems } = await openRoom(browser);
+  expect(await warnsBeforeLeaving(customer)).toBe(false);
+
+  await customer.locator("#talk").click();
+  await expect(customer.locator("#status")).toContainText(ui.has("ta", "recording"));
+  expect(await warnsBeforeLeaving(customer)).toBe(true);
+  await customer.waitForTimeout(1500); // let the fake microphone produce some audio
+  await customer.locator("#talk").click();
+  await expect(customer.locator("#talk")).toHaveAttribute("data-state", "done");
+  expect(await warnsBeforeLeaving(customer)).toBe(false);
+
+  // A recording that could not be sent is still the person's work until they discard it.
+  await customer.route("**/turn", (route) => route.abort());
+  await customer.locator("#talk").click();
+  await expect(customer.locator("#status")).toContainText(ui.has("ta", "recording"));
+  await customer.waitForTimeout(1500);
+  await customer.locator("#talk").click();
+  await expect(customer.locator("#retry")).toBeVisible();
+  expect(await warnsBeforeLeaving(customer)).toBe(true);
+
+  // A room that ends under it is not something to ask about: the page leaves without a prompt.
+  await rider.getByRole("button", { name: ui("ml", "end_room") }).click();
+  await expect(customer).toHaveURL(HOME);
+  expect(problems.filter((text) => !text.includes("ERR_FAILED"))).toEqual([]);
 });
 
 test("on a phone, ask and confirm on different chips each send exactly one chip-reply, and a re-render keeps untouched buttons", async ({

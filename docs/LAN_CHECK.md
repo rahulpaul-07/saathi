@@ -55,7 +55,9 @@ with every hotspot session, so redo step 3 when it does. LAN only for this check
 - [ ] The rider taps the secondary talk button and speaks; the customer phone shows chips and plays
       the translation.
 - [ ] Note timings from the server log (stt/translate/tts/total) and any console errors.
-- [ ] End room on the customer phone; confirm the rider is told the room closed.
+- [ ] End room on the customer phone; confirm both phones go to the home page showing "The room has
+      ended." in their own language, and that a reload there does not bring the room back. Then
+      repeat with the rider ending the room.
 
 ## 5. Cleanup afterwards
 - [ ] Stop uvicorn (Ctrl+C). Rooms live only in memory, so they are gone.

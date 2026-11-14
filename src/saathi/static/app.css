@@ -391,6 +391,10 @@ main:has(#room) h2 { margin: var(--sp-1) 0 0.15rem; }
 /* The single-phone link ships hidden and is shown only where that page works. Until then its paragraph
    takes no space, so a public page has no stray gap under the demo button. */
 .landing .sub:has(> [hidden]) { display: none; }
+/* The one-time message after a room ends. Empty it takes no room but stays in the accessibility tree,
+   which is what lets a screen reader announce it when it is filled in. */
+.landing .notice { margin: var(--sp-1) 0 var(--sp-2); padding: var(--sp-1) 0.75rem; border-left: 4px solid var(--rider); background: var(--surface); }
+.landing .notice:empty { min-height: 0; margin: 0; padding: 0; border: 0; }
 @media (hover: hover) {
   .landing .big-btn:not(.secondary):hover { filter: brightness(1.12); }
   .landing .demo-link:hover { background: var(--surface); }

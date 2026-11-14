@@ -103,6 +103,18 @@ export function joinRoom(code, language) {
 }
 
 /**
+ * End the room for both people. Resolves only once the server has answered, so a page that leaves
+ * afterwards is never leaving a room that is still open. A 404 means the room was already gone.
+ * @param {RoomInfo} room
+ * @returns {Promise<"closed" | "gone" | null>} null when the server could not be reached or refused
+ */
+export async function closeRoom(room) {
+  const result = await request(`/rooms/${room.code}`, { method: "DELETE", headers: bearer(room.token) });
+  if (result.ok) return "closed";
+  return result.status === 404 ? "gone" : null;
+}
+
+/**
  * @param {RoomInfo} room
  * @param {string} phraseId
  * @returns {Promise<Result>}
