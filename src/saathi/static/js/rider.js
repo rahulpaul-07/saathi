@@ -60,6 +60,11 @@ reloadWhenRestored();
 const prefill = new URLSearchParams(location.search).get("code");
 if (prefill) codeInput.value = prefill.toUpperCase().slice(0, 6);
 
+// What the tab remembers is settled before any request goes out, so it never depends on how fast the
+// network is. A link to another room wins over the room saved in this tab (the person asked for that
+// one) and drops the saved room here, so leaving the page while it loads cannot bring the old room back.
+const saved = loadSession(store, ROLE, prefill);
+
 /** The page follows the language picked in the form, before a room is joined. */
 languageSelect.addEventListener("change", () => {
   setLanguage(languageSelect.value);
@@ -71,8 +76,6 @@ try {
   languages = parseLanguages(await getJson("/languages"));
   fillLanguageSelect(languageSelect, languages);
   requireChoice([languageSelect], [joinButton]);
-  // A link to another room wins over the room saved in this tab: the person asked for that one.
-  const saved = loadSession(store, ROLE, prefill);
   if (saved) {
     // After a reload there is no tap, so audio stays locked until the person taps Repeat.
     showRoom(saved, [new AudioPlayer(), new AudioPlayer()]);
