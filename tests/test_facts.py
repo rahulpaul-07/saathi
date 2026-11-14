@@ -271,6 +271,62 @@ def test_bengali_numbers_above_fifty_and_digit_ordinal(
     assert pairs(text, "bn") == [expected]
 
 
+# "ঊন" (less) before a tens word is one below it. Live test of Nov 14 (finding F3): a Bengali 59
+# reached the listener as 99. The STT may write the prefix with either vowel sign, and the long
+# and short vowels are different letters, so each spelling needs its own entry.
+_BN_UN_NUMBERS = [
+    ("ঊনিশ", "উনিশ", "19"),
+    ("ঊনত্রিশ", "উনত্রিশ", "29"),
+    ("ঊনচল্লিশ", "উনচল্লিশ", "39"),
+    ("ঊনপঞ্চাশ", "উনপঞ্চাশ", "49"),
+    ("ঊনষাট", "উনষাট", "59"),
+    ("ঊনসত্তর", "উনসত্তর", "69"),
+    ("ঊনআশি", "উনআশি", "79"),
+    ("ঊননব্বই", "উননব্বই", "89"),
+]
+
+
+@pytest.mark.parametrize(("long_vowel", "short_vowel", "value"), _BN_UN_NUMBERS)
+def test_bengali_un_numbers_read_with_either_vowel_in_the_prefix(
+    long_vowel: str, short_vowel: str, value: str
+) -> None:
+    assert pairs(f"গেট নম্বর {long_vowel}", "bn") == [("gate", value)]
+    assert pairs(f"গেট নম্বর {short_vowel}", "bn") == [("gate", value)]
+
+
+@pytest.mark.parametrize(
+    ("words", "value"),
+    [
+        ("ঊন ত্রিশ", "29"),
+        ("ঊন চল্লিশ", "39"),
+        ("ঊন পঞ্চাশ", "49"),
+        ("ঊন ষাট", "59"),
+        ("উন ষাট", "59"),
+        ("ঊন সত্তর", "69"),
+        ("ঊন আশি", "79"),
+        ("ঊন নব্বই", "89"),
+    ],
+)
+def test_bengali_un_number_written_as_two_words_is_one_below_the_tens_word(
+    words: str, value: str
+) -> None:
+    assert pairs(f"গেট নম্বর {words}", "bn") == [("gate", value)]
+    # Value first used to read only the tens word and show gate 60 for a spoken 59.
+    assert pairs(f"{words} নম্বর গেট", "bn") == [("gate", value)]
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "গেট নম্বর ঊন পাঁচ",  # not a tens word: nothing is guessed
+        "গেট নম্বর ঊন",
+        "গেট নম্বর ঊন, ষাট",  # a pause between the two words
+    ],
+)
+def test_bengali_un_prefix_is_a_number_only_before_a_tens_word(text: str) -> None:
+    assert pairs(text, "bn") == []
+
+
 def test_bengali_landmark_and_failure() -> None:
     assert pairs("স্কুলের পেছনে", "bn") == [("landmark", "স্কুলের")]
     assert pairs("2 গেট", "bn") == []  # bare value before a gate needs the filler

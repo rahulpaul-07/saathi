@@ -33,11 +33,19 @@ class _Spec:
     letters: bool = False  # the value may carry a label such as 5B
     letter_alone: bool = False  # the value may be just a label: "Block C", "ಟವರ್ ಬಿ"
     fraction: bool = False  # accept the probe's "1/4 floor" misreading
+    linked: bool = False  # a linker may sit between "number" and the trigger: "57 नंबर के दरवाजे"
 
 
 _SPECS: dict[FactKind, _Spec] = {
     "gate": _Spec(99, trigger_first=True, value_first=True, value_first_needs_filler=True),
-    "flat": _Spec(9999, trigger_first=True, value_first=False, letters=True),
+    "flat": _Spec(
+        9999,
+        trigger_first=True,
+        value_first=True,
+        value_first_needs_filler=True,
+        letters=True,
+        linked=True,
+    ),
     "block": _Spec(99, trigger_first=True, value_first=False, letters=True, letter_alone=True),
     "cross": _Spec(99, trigger_first=False, value_first=True),
     "main": _Spec(99, trigger_first=False, value_first=True),
@@ -69,15 +77,33 @@ def _within_range(kind: FactKind, magnitude: int) -> bool:
     return magnitude <= _SPECS[kind].max_value
 
 
+def _trigger(token: Token, lex: Lexicon) -> tuple[FactKind, bool] | None:
+    """The fact kind a word triggers, and whether it counts only beside "number" (a door)."""
+    kind = lex.triggers.get(token.key)
+    if kind is not None:
+        return kind, False
+    return ("flat", True) if token.key in lex.numbered_flat_words else None
+
+
+def _is_linker(tokens: list[Token], index: int, lex: Lexicon) -> bool:
+    """Is token `index` a linker that runs straight into the next one ("के" in "नंबर के दरवाजे")?"""
+    return 0 <= index and tokens[index].key in lex.flat_linkers and not tokens[index].break_after
+
+
 def _after_candidates(
-    tokens: list[Token], trigger: int, kind: FactKind, lex: Lexicon
+    tokens: list[Token], trigger: int, kind: FactKind, lex: Lexicon, *, numbered: bool = False
 ) -> list[_Candidate]:
-    """Value after the trigger: "gate number 2", "ಗೇಟ್ ನಂಬರ್ ಎರಡು", "block C"."""
+    """Value after the trigger: "gate number 2", "ಗೇಟ್ ನಂಬರ್ ಎರಡು", "block C".
+
+    A `numbered` word ("door") takes only a value that "number" introduces: "door number 57".
+    """
     spec = _SPECS[kind]
     if trigger + 1 >= len(tokens) or tokens[trigger].break_after:
         return []
     start = trigger + 1
     filler = tokens[start].key in lex.fillers and joined(tokens, start)
+    if numbered and not filler:
+        return []
     if filler:
         start += 1
     number = parse_number(tokens, start, lex, allow_letter=spec.letters)
@@ -97,6 +123,8 @@ def _before_candidates(
     """Value before the trigger: "2nd cross", "ಎರಡನೇ ಕ್ರಾಸ್", "দুই নম্বর ক্রস", "1/4 floor"."""
     spec = _SPECS[kind]
     end = trigger  # exclusive end of the number
+    if spec.linked and _is_linker(tokens, end - 1, lex):
+        end -= 1
     filler = end >= 1 and tokens[end - 1].key in lex.fillers and not tokens[end - 1].break_after
     if filler:
         end -= 1
@@ -148,10 +176,11 @@ def _build(
 def _structured(tokens: list[Token], lex: Lexicon, text: str) -> tuple[list[Fact], set[int]]:
     candidates: list[tuple[int, _Candidate]] = []
     for index, token in enumerate(tokens):
-        kind = lex.triggers.get(token.key)
-        if kind is None:
+        trigger = _trigger(token, lex)
+        if trigger is None:
             continue
-        found = _after_candidates(tokens, index, kind, lex)
+        kind, numbered = trigger
+        found = _after_candidates(tokens, index, kind, lex, numbered=numbered)
         if _SPECS[kind].value_first:
             found += _before_candidates(tokens, index, kind, lex)
         candidates.extend((index, candidate) for candidate in found)
@@ -203,12 +232,21 @@ def _number_start(tokens: list[Token], end: int, lex: Lexicon) -> int | None:
     return None
 
 
+def _names_a_trigger(tokens: list[Token], index: int, lex: Lexicon) -> bool:
+    """Does a trigger word start at `index`, past an optional "number" and linker?"""
+    if index < len(tokens) and tokens[index].key in lex.fillers:
+        index += 1
+        if index < len(tokens) and tokens[index].key in lex.flat_linkers:
+            index += 1
+    return index < len(tokens) and _trigger(tokens[index], lex) is not None
+
+
 def _rejected(tokens: list[Token], neg: int, lex: Lexicon) -> set[int]:
     """Tokens a spoken "not" at `neg` takes back (the NEG itself included), or an empty set.
 
     "gate 4, not 2": the 4 stands and "not 2" goes. "gate 2 4 not" (two, four, not): the 4 and the
-    "not" go, and the 2 stands. A number that goes straight into a trigger word is a new fact, not
-    a rejected one, and "twenty four not" is one number, so neither is touched.
+    "not" go, and the 2 stands. A number that runs into a trigger word ("2 gate", "57 number door")
+    is a new fact, not a rejected one, and "twenty four not" is one number, so neither is touched.
     """
     after = neg + 1
     if (
@@ -218,9 +256,7 @@ def _rejected(tokens: list[Token], neg: int, lex: Lexicon) -> set[int]:
         and _number_start(tokens, neg, lex) is not None
     ):
         rejected = parse_number(tokens, after, lex)
-        if rejected is not None and not (
-            rejected.end < len(tokens) and tokens[rejected.end].key in lex.triggers
-        ):
+        if rejected is not None and not _names_a_trigger(tokens, rejected.end, lex):
             return set(range(neg, rejected.end))
     for start in range(max(0, neg - 5), neg):
         number = parse_number(tokens, start, lex)
@@ -276,6 +312,7 @@ def _landmarks(tokens: list[Token], lex: Lexicon, used: set[int], text: str) -> 
         after = _longest_match(tokens, index, lex.landmark_after)
         glued = None if before or after or index in used else _glued_suffix(tokens[index], lex)
         end_trim = 0
+        linked: list[int] = []
         if before:
             span = _collect_forward(tokens, index + len(before), stops)
             confidence: Confidence = "high"
@@ -284,6 +321,7 @@ def _landmarks(tokens: list[Token], lex: Lexicon, used: set[int], text: str) -> 
             span = _collect_backward(tokens, index, stops)
             confidence = "low"  # open-ended: the name is whatever precedes the postposition
             skip = len(after)
+            linked = _linked_noun(tokens, index + skip, lex, stops)
         elif glued:
             span = [*_collect_backward(tokens, index, stops), index]
             confidence = "low"
@@ -293,6 +331,9 @@ def _landmarks(tokens: list[Token], lex: Lexicon, used: set[int], text: str) -> 
             index += 1
             continue
         span = _trim(tokens, span, lex)
+        if span and linked:  # "मंदिर के पास वाले गेट": the postposition does not end the place
+            span = [*span, *range(span[-1] + 1, linked[-1] + 1)]
+            skip = linked[-1] + 1 - index
         if span:
             used.update(span)
             start, end = tokens[span[0]].start, tokens[span[-1]].end
@@ -334,6 +375,21 @@ def _collect_backward(tokens: list[Token], trigger: int, stops: Stops) -> list[i
             break
         index -= 1
     return span
+
+
+def _linked_noun(tokens: list[Token], start: int, lex: Lexicon, stops: Stops) -> list[int]:
+    """The "वाले गेट" right after "मंदिर के पास": the linker and the noun it introduces, or [].
+
+    Without it the postposition ends the name and "वाले गेट" becomes a second landmark that starts
+    with a bare linker. A pause, a claimed value ("गेट नंबर 2") or nothing after the linker joins
+    nothing.
+    """
+    if start >= len(tokens) or tokens[start - 1].break_after:
+        return []
+    if tokens[start].key not in lex.landmark_linkers:
+        return []
+    noun = _trim(tokens, _collect_forward(tokens, start + 1, stops), lex)
+    return [start, *noun] if noun else []
 
 
 def _trim(tokens: list[Token], span: list[int], lex: Lexicon) -> list[int]:

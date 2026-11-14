@@ -15,6 +15,15 @@ from saathi.facts.text import key
 
 _NONE: frozenset[tuple[str, ...]] = frozenset()
 
+# The speaker and the person spoken to ("I", "we", "brother", "sister") stand before the place in a
+# direction ("ಅಣ್ಣ ನಾನು ದೇವಸ್ಥಾನದ ಹತ್ತಿರ ಇದ್ದೇನೆ") and are never part of its name, so they end a
+# landmark (live test of Nov 14, finding F4). Pronouns and kinship words only: "sir" and "madam"
+# also start real names ("सर गंगा राम अस्पताल"). Hindi, Bengali and Kannada only: the other native
+# lexicons hold just the spellings the real STT was seen to write and have no such words yet.
+_PERSON_HI = words("मैं मै हम भैया भइया भैय्या भाई दादा दीदी")
+_PERSON_BN = words("আমি আমরা দাদা ভাই ভাইয়া দিদি")
+_PERSON_KN = words("ನಾನು ನಾವು ಅಣ್ಣ ಅಣ್ಣಾ ಅಕ್ಕ ಅಕ್ಕಾ")
+
 
 def _tens(spec: str) -> dict[str, int]:
     """Twenty, thirty, ...: consecutive tens starting at 20."""
@@ -65,6 +74,7 @@ EN = Lexicon(
     ),
     leading_particles=words("the a an to of"),
     trailing_particles=frozenset(),
+    numbered_flat_words=words("door room"),
 )
 
 # --- Kannada ----------------------------------------------------------------------------------
@@ -136,9 +146,10 @@ def _kn_lexicon() -> Lexicon:
         ),
         landmark_before=phrases("ಆಪೋಸಿಟ್|ಅಪೋಸಿಟ್|ನಿಯರ್|ಬಿಹೈಂಡ್|ನೆಕ್ಸ್ಟ್ ಟು"),
         landmark_after=phrases("ಎದುರು|ಎದುರಿಗೆ|ಹತ್ತಿರ|ಪಕ್ಕ|ಪಕ್ಕದಲ್ಲಿ|ಬಳಿ|ಸಮೀಪ|ಹಿಂದೆ|ಹಿಂಭಾಗದಲ್ಲಿ"),
-        stopwords=words("ನಮ್ಮ ಮನೆ ಇದೆ ಬನ್ನಿ ತಗೊಳ್ಳಿ ಲೆಫ್ಟ್ ರೈಟ್ ಮತ್ತು ನಂತರ ಅಲ್ಲಿ ಇಲ್ಲಿ ನೇರ"),
+        stopwords=words("ನಮ್ಮ ಮನೆ ಇದೆ ಬನ್ನಿ ತಗೊಳ್ಳಿ ಲೆಫ್ಟ್ ರೈಟ್ ಮತ್ತು ನಂತರ ಅಲ್ಲಿ ಇಲ್ಲಿ ನೇರ") | _PERSON_KN,
         leading_particles=frozenset(),
         trailing_particles=frozenset(),
+        numbered_flat_words=words("ಡೋರ್ ರೂಮ್ ರೂಂ ಮನೆ"),  # "ಡೋರ್ ನಂಬರ್": live test of Nov 14
     )
 
 
@@ -199,9 +210,12 @@ def _hi_lexicon() -> Lexicon:
         ),
         landmark_before=phrases("ओपोजिट|ऑपोजिट|ओपोसिट|नियर|बिहाइंड|नेक्स्ट टू"),
         landmark_after=phrases("सामने|पास|नजदीक|बगल|पीछे"),
-        stopwords=words("मेरा मेरे मेरी घर है हैं और फिर आइए आना बाएं दाएं लेफ्ट राइट पर आप"),
+        stopwords=words("मेरा मेरे मेरी घर है हैं और फिर आइए आना बाएं दाएं लेफ्ट राइट पर आप") | _PERSON_HI,
         leading_particles=frozenset(),
         trailing_particles=words("के की का"),
+        numbered_flat_words=words("दरवाजा दरवाजे डोर कमरा कमरे रूम घर"),
+        flat_linkers=words("का के की वाला वाले वाली"),
+        landmark_linkers=words("वाला वाले वाली"),
     )
 
 
@@ -229,7 +243,13 @@ _BN_UNIT_STEMS = ("এক", "দুই", "তিন", "চার", "পাঁচ
 
 def _bn_lexicon() -> Lexicon:
     numbers = dict(_BN_TO_50) | _BN_51_TO_99
-    numbers |= {key("বিশ"): 20, key("উনিশ"): 19, key("উনত্রিশ"): 29, key("চোদ্দ"): 14}
+    # The STT may write the "ঊন" (less) prefix of 19, 29 ... 89 with the long or the short vowel
+    # (ঊনষাট, উনষাট). They are different letters, so every long form gets a short twin (live test
+    # of Nov 14, finding F3).
+    numbers |= {
+        word.replace("ঊ", "উ", 1): value for word, value in numbers.items() if word[0] == "ঊ"
+    }
+    numbers |= {key("বিশ"): 20, key("চোদ্দ"): 14}
     numbers |= {key("ষাট"): 60, key("সত্তর"): 70, key("আশি"): 80, key("নব্বই"): 90}
     numbers |= {key("শো"): 100, key("শ"): 100, key("দুশো"): 200, key("দুশ"): 200}
     for value, stem in enumerate(_BN_UNIT_STEMS, start=1):  # তিনশো = 300
@@ -258,9 +278,13 @@ def _bn_lexicon() -> Lexicon:
         ),
         landmark_before=phrases("অপোজিট|নিয়ার"),
         landmark_after=phrases("সামনে|কাছে|পাশে|পিছনে|পেছনে|বিপরীতে"),
-        stopwords=words("আমার বাড়ি বাসা আছে আর এবং তারপর বাঁয়ে ডানে লেফট রাইট এসো"),
+        stopwords=words("আমার বাড়ি বাসা আছে আর এবং তারপর বাঁয়ে ডানে লেফট রাইট এসো") | _PERSON_BN,
         leading_particles=frozenset(),
         trailing_particles=frozenset(),
+        hundred_suffixes=words("শো শ"),
+        one_less_prefixes=words("ঊন উন"),
+        # With the case endings the STT adds: "৫৭ নম্বর ঘরে আসুন" (come to room number 57).
+        numbered_flat_words=words("দরজা দরজায় দরজার ঘর ঘরে ঘরের রুম রুমে রুমের বাড়ি বাড়িতে বাড়ির ডোর"),
     )
 
 

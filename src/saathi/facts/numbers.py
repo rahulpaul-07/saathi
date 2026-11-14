@@ -4,6 +4,7 @@ One generic grammar driven by the lexicon, so a language is data, not a branch:
 
     number    := ordinal | digits[ordinal-suffix] | cardinal | digit-run
     cardinal  := [unit hundred-word | hundred-form] [joiner] [1-99]  |  1-99  |  tens unit (en)
+                 | less-prefix tens (bn "ঊন ষাট" = 59)
     digit-run := two or more single digits in a row ("ಒಂದು ನಾಲ್ಕು", "1 4"): AMBIGUOUS
 
 A digit-run is flagged because "one four" is 14 or 1 and 4 (probe: Gnani writes 14 this way).
@@ -27,6 +28,7 @@ class Number:
     value: str  # "14", "5B"; for an ambiguous run, the joined candidate reading
     end: int  # index of the first token after the number
     ambiguous: bool = False
+    ordinal: bool = False  # "third", "12th": a position, not a quantity
 
     @property
     def magnitude(self) -> int:
@@ -77,7 +79,18 @@ def _remainder(tokens: list[Token], start: int, lex: Lexicon) -> tuple[int, int]
     return value, index + 1
 
 
+def _one_less(tokens: list[Token], start: int, lex: Lexicon) -> tuple[int, int] | None:
+    """A tens word after the "less" prefix is one below it: Bengali "ঊন ষাট" is 59, not 60."""
+    if tokens[start].key not in lex.one_less_prefixes or not joined(tokens, start):
+        return None
+    tens = _word(tokens[start + 1], lex)
+    return (tens - 1, start + 2) if tens is not None and tens >= 30 and tens % 10 == 0 else None
+
+
 def _cardinal_run(tokens: list[Token], start: int, lex: Lexicon) -> tuple[int, int] | None:
+    one_less = _one_less(tokens, start, lex)
+    if one_less is not None:
+        return one_less
     first = _cardinal(tokens[start], lex)
     if first is None:
         return None
@@ -137,9 +150,9 @@ def parse_number(
     with_tail = _DIGITS_WITH_TAIL.fullmatch(token.key)
     if with_tail:
         suffix_ok = with_tail[2] in lex.digit_ordinal_suffixes
-        return Number(str(int(with_tail[1])), index + 1) if suffix_ok else None
+        return Number(str(int(with_tail[1])), index + 1, ordinal=True) if suffix_ok else None
     if token.key in lex.ordinals:
-        return Number(str(lex.ordinals[token.key]), index + 1)
+        return Number(str(lex.ordinals[token.key]), index + 1, ordinal=True)
 
     run = _digit_run(tokens, index, lex)
     cardinal = _cardinal_run(tokens, index, lex)
@@ -149,7 +162,7 @@ def parse_number(
         return None
     value, end = cardinal
     if joined(tokens, end - 1) and tokens[end].key in lex.ordinal_suffix_tokens:
-        return Number(str(value), end + 1)  # split ordinal: "ಎರಡು ನೇ"
+        return Number(str(value), end + 1, ordinal=True)  # split ordinal: "ಎರಡು ನೇ"
     if allow_letter and joined(tokens, end - 1):
         letter = parse_letter(tokens, end, lex)
         if letter:
