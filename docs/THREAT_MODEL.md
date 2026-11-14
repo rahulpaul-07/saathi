@@ -59,9 +59,11 @@ does not. Many IPs multiply the guess rate. No test.
 
 Tokens are 128 bits from `secrets`, sent in an `Authorization: Bearer` header, never in a URL or
 cookie. That removes CSRF (nothing is sent automatically) and keeps tokens out of server logs,
-history and Referer headers. The browser keeps the token in `sessionStorage` so a reload rejoins;
-any script running on the origin can read it, so the defence is making sure none other than ours
-runs, which is what the Content-Security-Policy does.
+history and Referer headers. The browser keeps the token in `sessionStorage` (one entry per role, so
+the split page's two frames do not overwrite each other) so a reload rejoins; any script running on
+the origin can read it, so the defence is making sure none other than ours runs, which is what the
+Content-Security-Policy does. Either person ending the room deletes it on the server and clears the
+entry, and the page leaves only after the server has answered.
 
 Mitigations and tests:
 - Distinct 128-bit tokens, a token from another room is refused:
@@ -74,8 +76,13 @@ Mitigations and tests:
   `test_the_policy_has_no_inline_or_remote_allowance`,
   `test_error_and_stream_responses_carry_the_policy`.
 - `sessionStorage`, not `localStorage`, so the token dies with the tab; storage failures never
-  break the page: `tests/js/session.test.js` (all six tests); a malformed stored session is
-  rejected and removed: `session.test.js::a malformed stored session is rejected and removed`.
+  break the page: `tests/js/session.test.js` (the blocked-storage and throwing-storage tests); a
+  malformed stored session is rejected and removed: `session.test.js::a malformed stored session is
+  rejected and removed`.
+- Ending a room clears the stored session and the server has already closed it before the page
+  leaves: `tests/e2e/rooms.spec.js` "the rider can end the room too, and the server has closed it
+  before the page leaves" and "when the room ends both people are taken home with a message and the
+  room is forgotten".
 - A closed or expired room invalidates every token and clears the stored session:
   `test_room_api.py::test_expired_room_rejects_everything`, `tests/js/reconnect.test.js::stops at
   once, with no retry, when the room is gone or closed`.

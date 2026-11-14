@@ -608,9 +608,10 @@ the customer said it, in their script.
 ## Reconnect (features branch)
 
 - Rejoin after reload: the session `{code, token, role, language, peer_language}` is kept in
-  `sessionStorage` (`saathi.session`), validated strictly on load, and used only by the page whose
-  role matches. Cleared when the customer ends the room, or when the stream reports the room is
-  closed or gone.
+  `sessionStorage` under one key per role (`saathi.session.customer`, `saathi.session.rider`),
+  validated strictly on load, and used only by the page whose role matches. Cleared when either
+  person ends the room, or when the stream reports the room is closed or gone. (It was one key,
+  `saathi.session`, until 2026-11-14; see "Room lifecycle".)
 - Token storage reasoning (for the threat model). `sessionStorage`, not `localStorage`: it is per tab
   and is deleted when the tab closes, so a bearer token does not outlive the person's use of the
   room, and a second tab or a later visit never inherits it. The token is a room-scoped bearer
@@ -630,8 +631,9 @@ the customer said it, in their script.
   after a plain network blip is ignored for a turn or reply already on screen. After a reload there
   is no tap, so audio stays locked until the person taps Repeat.
 - The event stream stops retrying on 404 (the server answers every bad code, token and expired room
-  with the same 404) and on the `closed` event, then clears the session and reloads to the
-  create/join screen with a one-shot message ("The room has ended." / "The room has expired.").
+  with the same 404) and on the `closed` event, then clears the session and leaves the room with a
+  one-shot message ("The room has ended." / "The room has expired."); where it lands is described
+  in "Room lifecycle".
 - Retry schedule: 1, 2, 4, 8 s doubling, capped at 15 s, plus up to 30 percent random so phones that
   lost the network together do not return in lockstep. The attempt counter resets once a
   connection is accepted. Time and randomness are injected, so the tests use no real sleeps. A
@@ -860,3 +862,51 @@ Checks, and what they found
   audit step would fail today on the two pinned packages above, so it needs an allow-list first.
   Dependabot is the other option; confirm its `uv` support against its documentation before
   relying on it.
+
+## Room lifecycle: ending, reloading and going back (2026-11-14)
+
+Aim: leaving a room, reloading it and coming back to it behave the way a finished product's do. No
+server change, no new dependency and no new interface text (every message reuses a string that
+already exists in ten languages).
+
+Defects found by driving the app, each with a test that failed first
+- The split page (`demo.html`) runs a customer frame and a rider frame in one tab, and both wrote
+  the one `saathi.session` key, so after a reload the second room had overwritten the first and one
+  person was dropped to the start screen. The key is now per role.
+- End room reloaded the page at once and sent the delete without waiting for it, so a slow or
+  failed request left a room open that the person believed was closed. The page now waits for the
+  server's answer (`closeRoom` in `room-client.js`) and only then leaves. If the server cannot be
+  reached the person stays in the room, the button comes back and a line says there is no
+  connection; a 404 means the room was already gone and is treated as ended.
+- Ending a room left the person on the same page with an empty form. A top-level page now goes to the
+  home page, replacing its history entry so Back does not return to a dead room, and the home page
+  shows the message once. Inside the split page a frame has no home page to show, so it reloads to
+  its own start screen with the message there.
+- The rider had no way to end a room. Either person can now: the server already let both roles
+  delete, and it tells the other side through the stream it closes.
+- A rider link for another room (`rider.html?code=...`) was ignored in favour of the room saved in
+  the tab. A link with a different code now wins and drops the old session. The old rider slot stays
+  taken on the server (the slot is permanent once taken), which is why this is a join of a new room
+  and not a rejoin.
+- A page restored from the browser's back-forward cache came back exactly as it was left, with a
+  dead event stream. A restored page (`pageshow` with `persisted`) now reloads and starts up normally.
+- Closing the tab or navigating away while recording, or while a recording is waiting to be sent or
+  retried, lost the speech without a word. The browser's leave prompt is armed only in those two
+  states and removed once the room ends, so an idle room never nags.
+
+Decisions
+- No "Are you sure?" step on End room. It would need a new string in ten languages, and the
+  Bengali and Hindi interface text is marked reviewed by the author, so adding words there is not
+  mine to do. The cost is that a mistaken tap ends the room for both people and a new room has to be
+  made. End room is an outlined button at the bottom of the room, not a filled one.
+- The browser's Back button is not intercepted. Taking over Back traps people. The in-room Back link
+  stays and leaves without ending the room, so the person can return from the same tab through the
+  role button on the home page and the saved session. There is no "return to your room" cue on the
+  home page: that is new text and a second source of truth about the room.
+- The storage key and the message are not a security boundary change: the token is still in
+  `sessionStorage`, never in a URL or cookie, and the legacy `saathi.session` entry is ignored and
+  not migrated (a stale token is worth nothing once the room is gone).
+
+Checked in Chromium only. A real back-forward cache restore cannot be reproduced headless, so that
+path is tested by dispatching a `pageshow` event with `persisted` set, and the leave prompt by a
+cancelable `beforeunload` event; neither was seen in a headed browser.
