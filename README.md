@@ -7,9 +7,9 @@ gets the gate, floor, cross, main and landmark as big chips plus translated audi
 (demo)", pick a customer language and a rider language, and send a demo clip. The guided demo
 replays stored clips and spends no Gnani credits.
 
-Demo video: https://youtu.be/SPwJ9-t3WUc 
-Launch posts: LinkedIn - https://lnkd.in/p/dzk5t2BQ
-https://x.com/RahulPaul436388/status/2121625030778057056
+Demo video: https://youtu.be/SPwJ9-t3WUc
+
+Launch posts: [LinkedIn](https://lnkd.in/p/dzk5t2BQ) · [X](https://x.com/RahulPaul436388/status/2121625030778057056)
 
 Built on Gnani Prisma (speech to text) and Timbre (text to speech), with IndicTrans2 run locally for
 translation. An entry to the Gnani.ai Great Indian AI Internship Challenge.
@@ -196,7 +196,7 @@ measured.
 A native Kannada speaker used the live site as the customer, with a Bengali rider and once a Hindi
 rider, and found seven problems. Four got a code change (F3 only in part), each with tests that
 failed before the change; three are not fixed. The changes were checked offline against stored
-transcripts and the local translator, with no Gnani calls, and have not been tried on the live site.
+transcripts and the local translator, with no Gnani calls, and were deployed on Nov 15. A first live re-test after the deploy still lost one number: a Kannada flat number spoken as "aivattaru" (56) reached the Bengali rider as "flat number fifty, floor 2", with a Floor tile, no Flat tile and no warning. The transcript was not kept, so whether the speech service or the number reader lost the 6 is not established.
 
 | | What the tester saw | Status |
 |---|---|---|
