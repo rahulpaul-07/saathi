@@ -7,7 +7,9 @@ gets the gate, floor, cross, main and landmark as big chips plus translated audi
 (demo)", pick a customer language and a rider language, and send a demo clip. The guided demo
 replays stored clips and spends no Gnani credits.
 
-Demo video: (link added after recording)
+Demo video: https://youtu.be/SPwJ9-t3WUc 
+Launch posts: LinkedIn - https://lnkd.in/p/dzk5t2BQ
+https://x.com/RahulPaul436388/status/2121625030778057056
 
 Built on Gnani Prisma (speech to text) and Timbre (text to speech), with IndicTrans2 run locally for
 translation. An entry to the Gnani.ai Great Indian AI Internship Challenge.
