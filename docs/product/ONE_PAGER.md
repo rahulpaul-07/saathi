@@ -2,6 +2,8 @@
 
 **What it is.** A customer speaks delivery directions in their own language. The rider, in another Indian language, sees the gate, floor, cross, main and landmark as large tiles and hears translated audio. Live at https://saathi.indiasouthcentral.cloudapp.azure.com.
 
+**Built on Gnani.** Gnani Prisma v2.5 (speech to text) and Gnani Timbre v2.5 (text to speech); IndicTrans2 translates on my own server. Walkthrough video: https://youtu.be/4ztKw_B39rs
+
 **The problem.** A fluent translation can still send a rider to the wrong gate. Numbers and local address words are what machine translation rewrites without anyone noticing. On 90 test turns, plain translation kept 70% of address facts.
 
 **The bet.** Take the facts from what the customer said, not from the translation, and let the rider confirm or question each one with a tap. The two channels fail independently, so a bad translation still sits next to correct tiles.
@@ -15,6 +17,8 @@
 | Speech error rate on real read speech | 0.067 (100 clips), 0.101 at 5 dB noise |
 | Median turn time | 2.9 s, p95 4.0 s (one laptop GPU, n=20) |
 | Language pairs passing stored replay | 90 of 90 |
+
+**Tested live by a native Kannada speaker (Nov 14).** Seven problems found. The most serious, numbers like 57 reaching the rider as 507 with no warning, is fixed and deployed; one live re-test still lost a number the system did not recognise. Details in the README.
 
 **What is not proven.** That riders have this problem often enough to change behaviour. That it works on real phone audio in traffic. That any language other than Bengali and Hindi reads correctly to a native speaker. No rider has been interviewed.
 
